@@ -7,6 +7,22 @@
 
 ---
 
+## Clarifications
+
+### Session 2026-06-22
+
+- Q: How are poses uniquely identified in the library (for contributor deduplication)? → A: Each pose has a canonical **slug** (e.g., `sleeping-swan`, `dragon-low-lunge`) as its machine identifier. Sanskrit and English names are display fields only. A community-contributed pose whose slug matches an existing record is rejected by CI; the contributor must update the existing record instead of adding a duplicate.
+
+- Q: What personal or health information is transmitted to the AI service when generating a sequence? → A: **No student-identifying information is transmitted.** Contraindications and conditions are abstracted to anonymous categorical descriptors in the AI prompt (e.g., "the class includes a student with hypertension and one who is in their second trimester of pregnancy") — never student names, ages, or other identifying details. Constraint data is stored locally only and never sent to any server in its raw form.
+
+- Q: What format is the cue sheet export? → A: **Web-rendered printable via print CSS.** No server-side PDF generation in v1. The cue sheet is a styled HTML view with a print stylesheet that produces a clean A4/Letter output. This is simplest and works without additional infrastructure.
+
+- Q: What is the expected generation time, and how is AI unavailability communicated to the teacher? → A: Target: **AI-assisted generation completes in under 30 seconds**; rules-engine-only fallback completes in under 5 seconds. When the AI layer is skipped (unavailable or timed out), the teacher sees a subtle, non-alarming indicator (e.g., "Sequence generated without AI enhancement — rules engine only") so they know the thematic richness may be reduced. The sequence is still safe and usable.
+
+- Q: What is the canonical term for the output — "sequence," "class," or "class sequence"? → A: **"Sequence"** is the canonical term throughout the app and codebase. "Class" is acceptable in conversational UI copy (e.g., "Plan your class") but "sequence" is the entity name in data models, APIs, exports, and documentation. "Class sequence" is never used — it is redundant.
+
+---
+
 ## User Scenarios & Testing
 
 ### User Story 1 — Compose a Yin Class from Dimensions (Priority: P1)
@@ -274,7 +290,18 @@ works with a single tap.
   passed safety validation.
 
 - **FR-006**: The system MUST generate a sequence using the rules engine alone when the
-  AI service is unavailable, without blocking the teacher.
+  AI service is unavailable or times out, without blocking the teacher. When the AI
+  layer is skipped, the teacher MUST see a non-alarming indicator (e.g., "Generated
+  without AI enhancement") so they know thematic richness may be reduced.
+
+- **FR-006a**: AI-assisted sequence generation MUST complete in under 30 seconds.
+  Rules-engine-only fallback generation MUST complete in under 5 seconds.
+
+- **FR-006b**: Constraint data entered by the teacher (injuries, conditions, pregnancy
+  status) MUST be stored locally only. When constraints are communicated to the AI
+  service, they MUST be expressed as anonymous categorical descriptors (e.g.,
+  "hypertension," "second-trimester pregnancy") — never with student names, ages, or
+  other identifying details.
 
 - **FR-007**: Generated sequences MUST include: an ordered pose list, hold times for
   each pose, transition notes between poses, a per-pose "why," at least one alternate
@@ -287,11 +314,12 @@ works with a single tap.
 
 **Pose Library**
 
-- **FR-009**: The pose library MUST record for each pose: Sanskrit name, English name,
-  common aliases, target tissue (connective vs. muscular), meridians loaded, body
-  position family (supine/prone/seated/kneeling/standing/inverted), default hold time
-  range, prop requirements, prop-free variations, natural counterposes and rebound poses,
-  difficulty/accessibility level, contraindications, and energetic quality.
+- **FR-009**: The pose library MUST record for each pose: a unique slug identifier,
+  Sanskrit name, English name, common aliases, target tissue (connective vs. muscular),
+  meridians loaded, body position family (supine/prone/seated/kneeling/standing/
+  inverted), default hold time range, prop requirements, prop-free variations, natural
+  counterposes and rebound poses, difficulty/accessibility level, contraindications,
+  energetic quality, and source/lineage attribution.
 
 - **FR-010**: The pose library MUST include at minimum 40 yin poses for P1, covering
   the major meridian pairs and body position families.
@@ -335,9 +363,11 @@ works with a single tap.
 
 **Export**
 
-- **FR-020**: The system MUST produce a cue sheet (printable) containing: pose names
-  (English and Sanskrit), hold times, transition notes, per-pose cues, and the
-  philosophical theme and quote.
+- **FR-020**: The system MUST produce a cue sheet as a web-rendered printable (print
+  CSS), containing: pose names (English and Sanskrit), hold times, transition notes,
+  per-pose cues, and the philosophical theme and quote. The output MUST render legibly
+  on a standard phone screen and print cleanly on A4/Letter paper without server-side
+  PDF generation.
 
 **Persistence (P2)**
 
@@ -360,12 +390,16 @@ works with a single tap.
 - **Teacher Session**: The active planning context — selected dimensions, hard
   constraints, and any session-level notes. Not persisted in P1; persisted locally in P2.
 
-- **Pose**: An atomic unit in the library. Has a yin mode, a yang mode, or both.
-  Contains names, tissue target, meridians, body position, hold range, props, variations,
-  counterposes, contraindications, energetic quality, and source attribution.
+- **Pose**: An atomic unit in the library. Identified by a unique **slug** (e.g.,
+  `sleeping-swan`). Has a yin mode, a yang mode, or both. Contains Sanskrit name,
+  English name, aliases, tissue target, meridians, body position, hold range, props,
+  prop-free variations, counterposes, contraindications, energetic quality, and source
+  attribution.
 
-- **Sequence**: An ordered list of Sequence Items plus metadata (duration, theme
-  statement, philosophical framing, quote). Has a generation provenance (which stages ran).
+- **Sequence**: The canonical term for the app's primary output — an ordered list of
+  Sequence Items plus metadata (duration, theme statement, philosophical framing, quote,
+  generation provenance). "Class" is acceptable in conversational UI copy; "sequence"
+  is the entity name in data models and documentation. "Class sequence" is never used.
 
 - **Sequence Item**: One step in a sequence. Contains a Pose reference, the selected
   mode (yin/yang), hold time, transition-from note, transition-to note, "why" text,
@@ -415,6 +449,15 @@ works with a single tap.
 
 - **SC-009** (P2): A saved sequence is intact and fully accessible after the app is
   closed and reopened on the same device.
+
+- **SC-010**: AI-assisted sequence generation completes in under 30 seconds for 95%
+  of requests under normal conditions.
+
+- **SC-011**: Rules-engine-only fallback generation completes in under 5 seconds.
+
+- **SC-012**: No student-identifying information (names, demographics) is transmitted
+  to external services. All constraint data leaving the device is anonymized to
+  categorical descriptors.
 
 ---
 
