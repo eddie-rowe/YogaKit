@@ -119,6 +119,12 @@ depend on this phase. No user story work begins until this phase is complete.
   - Test: No valid replacement exists → gap inserted with safetyNote
   - Achieve 100% line coverage on `validate.ts`
 
+- [ ] T027a Write unit tests verifying `propose()` never includes PII in the AI prompt — `tests/unit/pipeline/propose.test.ts`
+  - Test: constraint "John Smith has a hip replacement" → prompt contains "hip-replacement" category slug, not "John Smith"
+  - Test: constraint field with an email address or phone number → prompt omits it, uses generic category
+  - Test: pregnancy constraint → prompt says "second-trimester pregnancy" not any name/age
+  - Verify prompt builder strips or ignores any tokens matching name/contact patterns
+
 - [ ] T028 Write unit tests for rules engine — `tests/unit/pipeline/constrain.test.ts`
   - Test: Unknown pose slug in draft → dropped from sequence
   - Test: Bilateral pose appears once → both sides added

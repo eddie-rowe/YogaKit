@@ -91,9 +91,11 @@ heavy. A declarative rule DSL; unnecessary abstraction for a known fixed rule se
 ## Safety Layer Design
 
 **Decision**: Pure TypeScript module (`src/lib/pipeline/validate.ts`). Takes a
-`ConstrainedSequence` and the session's hard constraints; returns a `ValidatedSequence`
-or throws a `SafetyViolation` error. Final authority — its output is what ships to the
-client.
+`ConstrainedSequence` and the session's hard constraints; always returns a
+`ValidatedSequence`. Never throws — violations are resolved internally via
+auto-replacement (FR-015a) or gap-insertion, and recorded in `safetyNotes`. The route
+handler reads `safetyNotes` and emits `SAFETY_UNRESOLVABLE` if it cannot produce a
+teachable sequence. Final authority — its output is what ships to the client.
 
 **Checks performed:**
 1. For each pose: cross-reference `contraindications[]` against session's `hardConstraints[]`.

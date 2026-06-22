@@ -110,6 +110,8 @@ src/
 │   ├── deliver/         # Timer, progress bar, cue card
 │   └── export/          # Cue sheet print view
 ├── lib/
+│   ├── session/         # Session defaults and context resolution
+│   │   └── defaults.ts  # resolveDefaults() — fills unset dimensions with sensible values
 │   ├── pipeline/        # The three-stage pipeline
 │   │   ├── types.ts     # Shared TypeScript interfaces between stages
 │   │   ├── propose.ts   # Stage 1: AI proposal (server-side only)
