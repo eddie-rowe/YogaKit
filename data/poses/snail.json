@@ -1,0 +1,27 @@
+{
+  "slug": "snail",
+  "sanskrit": "Halasana variation",
+  "english": "Snail Pose",
+  "aliases": ["Yin Halasana", "Snail", "Karnapidasana variation"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 3, "max": 8 },
+      "cue_notes": "From a seated position, roll back bringing the knees toward the floor behind the head (like Plow/Halasana but allowing the knees to bend and the spine to fully round). Support the lower back with the hands or rest the arms alongside the body. The entire posterior spinal chain — from sacrum to occiput — receives the stretch. Only attempt if the shoulders are comfortable bearing some weight. Come out slowly by rolling the spine back down vertebra by vertebra."
+    }
+  ],
+  "body_position": "seated",
+  "meridians": ["kidney", "bladder"],
+  "element": "water",
+  "energetic_quality": ["cooling", "calming", "opening"],
+  "difficulty": "advanced",
+  "props_required": [],
+  "prop_free_variation": "caterpillar",
+  "counterposes": ["constructive-rest", "savasana"],
+  "rebound_pose": "savasana",
+  "contraindications": ["high-blood-pressure", "glaucoma", "no-inversions", "herniated-disc-cervical"],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "An advanced yin inversion that deeply stresses the posterior cervical and thoracic spine. Must be approached with caution. Kidney and bladder meridians run the entire posterior chain. The prop-free accessible alternative is Caterpillar."
+}

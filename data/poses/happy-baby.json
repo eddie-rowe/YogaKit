@@ -1,0 +1,27 @@
+{
+  "slug": "happy-baby",
+  "sanskrit": "Ananda Balasana",
+  "english": "Happy Baby",
+  "aliases": ["Dead Bug", "Ananda Balasana"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "Lie on your back, draw knees toward armpits, flex feet, and hold the outer edges of the feet (or ankles or shins). Stack ankles over knees. Allow the inner groin and sacrum to release toward the floor. Rock gently side to side to massage the sacrum if desired."
+    }
+  ],
+  "body_position": "supine",
+  "meridians": ["kidney", "bladder"],
+  "element": "water",
+  "energetic_quality": ["opening", "cooling", "calming"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["constructive-rest", "windshield-wipers"],
+  "rebound_pose": "constructive-rest",
+  "contraindications": ["no-hip-external-rotation", "recent-surgery-hip"],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Targets the inner groin, sacrum, and hip external rotators. The kidney and bladder meridians run along the inner leg and spine, making this an effective water-element pose."
+}

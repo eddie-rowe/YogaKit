@@ -1,0 +1,27 @@
+{
+  "slug": "toe-squat",
+  "sanskrit": "Prapadasana",
+  "english": "Toe Squat",
+  "aliases": ["Toes Pose", "Prapadasana", "Toe Stretch"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "From kneeling, tuck all ten toes under and sit back onto the heels. The entire plantar fascia and toe extensors receive a strong stretch. Keep the body upright — place hands on thighs or on the floor in front. If the sensation is too intense, lean forward onto the hands to reduce weight on the feet. Even 30 seconds can be sufficient for this pose."
+    }
+  ],
+  "body_position": "kneeling",
+  "meridians": ["stomach"],
+  "element": "earth",
+  "energetic_quality": ["stimulating", "opening"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["child-pose"],
+  "rebound_pose": "child-pose",
+  "contraindications": ["ankle-injury", "recent-surgery-knee"],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Targets the plantar fascia, toe extensors, and all six meridians that begin or end at the toes. The stomach meridian runs through the tops of the second toe and dorsal foot. Intense sensation is normal and typically subsides within 60–90 seconds."
+}

@@ -1,0 +1,27 @@
+{
+  "slug": "saddle",
+  "sanskrit": "Supta Virasana",
+  "english": "Saddle Pose",
+  "aliases": ["Supta Virasana", "Reclined Hero", "Full Saddle"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 3, "max": 7 },
+      "cue_notes": "Kneel with feet wider than hips and lower the hips between the feet (or onto a bolster if hips don't reach the floor). Then recline backward onto forearms or all the way down onto the floor or bolster. This creates an intense stretch of the anterior thighs and hip flexors. Ensure both knees stay on the floor if possible. If there is sharp knee pain, place a folded blanket in the back of the knee crease or come out of the pose."
+    }
+  ],
+  "body_position": "seated",
+  "meridians": ["stomach"],
+  "element": "earth",
+  "energetic_quality": ["opening", "stimulating"],
+  "difficulty": "intermediate",
+  "props_required": ["bolster"],
+  "prop_free_variation": "half-saddle",
+  "counterposes": ["child-pose", "caterpillar"],
+  "rebound_pose": "child-pose",
+  "contraindications": ["no-backbends", "knee-replacement", "herniated-disc-lumbar", "no-deep-hip-flexion"],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "One of the most intense yin poses for the anterior thigh and lumbar spine. The stomach meridian runs the entire front of the thigh. Proceed very slowly — this pose can strain the knees if approached too quickly."
+}

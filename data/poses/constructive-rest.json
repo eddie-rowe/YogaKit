@@ -1,0 +1,27 @@
+{
+  "slug": "constructive-rest",
+  "sanskrit": "Savasana variation",
+  "english": "Constructive Rest",
+  "aliases": ["Semi-Supine", "Constructive Rest Position"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "Lie on your back with knees bent, feet flat on the floor hip-width apart. Arms rest alongside the body or on the belly. Allow the natural lumbar curve to be present. Let the weight of the body fully release into the floor. This is a neutral spine position — not a stretch, but a resting integration pose."
+    }
+  ],
+  "body_position": "supine",
+  "meridians": [],
+  "element": null,
+  "energetic_quality": ["grounding", "calming"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": [],
+  "rebound_pose": null,
+  "contraindications": [],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Used as a neutral resting position between poses, especially after backbends, hip openers, or inversions. Allows the spine and connective tissues to decompress and integrate."
+}

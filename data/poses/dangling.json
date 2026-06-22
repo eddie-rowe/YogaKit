@@ -1,0 +1,27 @@
+{
+  "slug": "dangling",
+  "sanskrit": "Uttanasana",
+  "english": "Dangling",
+  "aliases": ["Yin Uttanasana", "Standing Forward Fold", "Uttanasana"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "Stand with feet hip-width apart and fold forward, bending the knees generously. Grab opposite elbows and let the head, neck, and upper body hang completely. The weight of the torso creates gentle spinal traction. Bend the knees as much as needed to release the hamstrings and low back. This is a hanging, dangling sensation rather than a straight-leg hamstring stretch."
+    }
+  ],
+  "body_position": "standing",
+  "meridians": ["kidney", "bladder"],
+  "element": "water",
+  "energetic_quality": ["cooling", "calming", "opening"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["bridge-yin", "supported-fish"],
+  "rebound_pose": "constructive-rest",
+  "contraindications": ["herniated-disc-lumbar", "no-forward-folds", "sciatica", "high-blood-pressure"],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "A standing yin forward fold emphasizing spinal decompression through gravitational hanging. Kidney and bladder meridians run the posterior chain. The mild inversion aspect requires caution for high blood pressure."
+}

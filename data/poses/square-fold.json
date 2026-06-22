@@ -1,0 +1,27 @@
+{
+  "slug": "square-fold",
+  "sanskrit": "Agnistambhasana with Uttanasana",
+  "english": "Square Fold",
+  "aliases": ["Fire Log Forward Fold", "Square with Forward Bend"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 3, "max": 7 },
+      "cue_notes": "From Square Pose (Fire Log), hinge forward from the hips and walk the hands forward between or beyond the shins. Allow the spine to round as you deepen the fold. The deep hip external rotation of Square is combined with a forward fold, dramatically increasing the load on the piriformis and lateral hip fascia. Keep some micro-bend in the knees to protect the lateral knee. Hold each side."
+    }
+  ],
+  "body_position": "seated",
+  "meridians": ["gallbladder"],
+  "element": "wood",
+  "energetic_quality": ["opening", "cooling"],
+  "difficulty": "intermediate",
+  "props_required": [],
+  "prop_free_variation": "square",
+  "counterposes": ["constructive-rest", "windshield-wipers"],
+  "rebound_pose": "constructive-rest",
+  "contraindications": ["no-hip-external-rotation", "no-forward-folds", "herniated-disc-lumbar"],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "An intensification of Square Pose by adding a forward fold. Combines deep hip external rotation with posterior spinal flexion. The gallbladder meridian along the lateral hip and thigh receives maximum load."
+}

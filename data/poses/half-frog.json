@@ -1,0 +1,27 @@
+{
+  "slug": "half-frog",
+  "sanskrit": "Ardha Mandukasana",
+  "english": "Half Frog Pose",
+  "aliases": ["Ardha Mandukasana", "Half Frog"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 3, "max": 7 },
+      "cue_notes": "Lie on the belly and prop up on one forearm (or both in a Sphinx position). Bend one knee and bring the heel toward the same-side buttock. Use the same-side hand to hold the ankle and gently draw it toward the glute, creating a quadriceps stretch. Keep the hip of the bent leg on the floor. The other leg extends straight behind. Hold each side."
+    }
+  ],
+  "body_position": "prone",
+  "meridians": ["stomach", "kidney"],
+  "element": "earth",
+  "energetic_quality": ["opening", "stimulating"],
+  "difficulty": "intermediate",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["child-pose", "caterpillar"],
+  "rebound_pose": "child-pose",
+  "contraindications": ["no-backbends", "knee-replacement"],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Targets the anterior thigh (quadriceps, rectus femoris) and hip flexors. The stomach meridian runs along the anterior thigh; kidney lines the lumbar area. A more accessible alternative before full Frog."
+}

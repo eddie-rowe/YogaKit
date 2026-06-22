@@ -1,0 +1,27 @@
+{
+  "slug": "deer",
+  "sanskrit": "Mrigasana",
+  "english": "Deer Pose",
+  "aliases": ["Mrigasana", "Sleeping Swan variation"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "Sit with one leg in front at roughly a 90-degree angle (external rotation, shin parallel to the front of the mat) and the other leg behind at a 90-degree angle (internal rotation, shin extending behind). Sit between both legs. The front hip is in external rotation; the back hip is in internal rotation. The torso can be upright, hinge over the front shin, or rotate toward the back leg. Hold each side."
+    }
+  ],
+  "body_position": "seated",
+  "meridians": ["liver", "gallbladder"],
+  "element": "wood",
+  "energetic_quality": ["opening", "cooling"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["constructive-rest", "windshield-wipers"],
+  "rebound_pose": "constructive-rest",
+  "contraindications": ["no-hip-external-rotation", "no-hip-internal-rotation"],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Uniquely targets both hip external rotation (front leg) and hip internal rotation (back leg) simultaneously. Liver and gallbladder meridians run the inner and outer aspects of the hip and thigh."
+}

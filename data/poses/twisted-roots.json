@@ -1,0 +1,27 @@
+{
+  "slug": "twisted-roots",
+  "sanskrit": "Supta Parivrttanasana variation",
+  "english": "Twisted Roots",
+  "aliases": ["Crossed-Leg Supine Twist", "Supine Twist with Crossed Legs", "Eagle Legs Supine"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "Lie on your back and cross one leg over the other (like Eagle legs or a simple cross). Guide both legs to one side with the opposite hand while extending the other arm out. The crossed legs create a compound rotation that targets the IT band and outer hip more specifically than a simple reclining twist. Hold each side."
+    }
+  ],
+  "body_position": "supine",
+  "meridians": ["gallbladder", "liver"],
+  "element": "wood",
+  "energetic_quality": ["opening", "calming"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["constructive-rest", "savasana"],
+  "rebound_pose": "constructive-rest",
+  "contraindications": ["no-spinal-rotation", "no-hip-external-rotation"],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "The leg crossing adds IT band and outer hip targeting to the basic reclining twist. Gallbladder meridian runs the lateral thigh and hip; liver the medial thigh. More targeted than standard reclining twist."
+}

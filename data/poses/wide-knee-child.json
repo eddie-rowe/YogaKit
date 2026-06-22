@@ -1,0 +1,27 @@
+{
+  "slug": "wide-knee-child",
+  "sanskrit": "Utthita Balasana",
+  "english": "Wide-Knee Child's Pose",
+  "aliases": ["Wide Child's Pose", "Utthita Balasana", "Extended Child's Pose Wide"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "From kneeling, spread the knees wide apart while keeping the big toes touching. Fold forward, bringing the belly between the thighs and the forehead toward the floor. Arms extend forward or rest alongside the body. A bolster between the chest and floor supports a more restful hold. The inner groin and hip adductors receive more stretch than in narrow Child's Pose."
+    }
+  ],
+  "body_position": "kneeling",
+  "meridians": ["kidney", "liver"],
+  "element": "water",
+  "energetic_quality": ["grounding", "calming", "opening"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": [],
+  "rebound_pose": "constructive-rest",
+  "contraindications": ["recent-surgery-hip"],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Wide knee position adds inner groin opening to the standard Child's Pose. Kidney meridian runs the inner thigh; liver meridian the medial thigh. An accessible alternative to Butterfly for students who prefer to be prone."
+}

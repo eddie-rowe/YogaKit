@@ -1,0 +1,27 @@
+{
+  "slug": "windshield-wipers",
+  "sanskrit": "Supta variation",
+  "english": "Windshield Wipers",
+  "aliases": ["Supine Spinal Twist Variation", "Knees-Side-to-Side"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "Lie on your back with knees bent, feet flat. Let both knees fall to one side, allowing a gentle spinal rotation. Hold each side. Can also be done dynamically (sweeping knees side to side) as a transition or warm-up. For yin, hold each side passively and let the weight of the legs create the rotation."
+    }
+  ],
+  "body_position": "supine",
+  "meridians": ["gallbladder"],
+  "element": "wood",
+  "energetic_quality": ["opening", "calming"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["constructive-rest"],
+  "rebound_pose": "constructive-rest",
+  "contraindications": ["no-spinal-rotation"],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "A gentle lateral spinal rotation targeting the outer hip and IT band. The gallbladder meridian runs along the lateral body. Often used as a transition pose between supine postures or after deeper hip openers."
+}

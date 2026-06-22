@@ -1,0 +1,15 @@
+{
+  "element": "water",
+  "season": "winter",
+  "meridians": [
+    { "slug": "kidney", "organ": "Kidney", "element": "water", "direction": "ascending", "peak_hours": "5pm–7pm" },
+    { "slug": "bladder", "organ": "Bladder", "element": "water", "direction": "descending", "peak_hours": "3pm–5pm" }
+  ],
+  "themes": ["stillness", "rest", "depth", "wisdom", "fear transformed to courage", "the void", "winter", "conservation"],
+  "emotions": {
+    "balanced": "courage, wisdom, will power",
+    "excess": "fear, paranoia, recklessness",
+    "deficiency": "lack of willpower, fear of change, exhaustion"
+  },
+  "body_focus": ["inner leg (kidney channel)", "back of leg (bladder channel)", "sacrum", "low back", "back of knee", "heel", "inner ankle"]
+}

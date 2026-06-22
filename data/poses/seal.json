@@ -1,0 +1,27 @@
+{
+  "slug": "seal",
+  "sanskrit": "Bhujangasana variation",
+  "english": "Seal Pose",
+  "aliases": ["Full Cobra Yin", "Seal"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 3, "max": 7 },
+      "cue_notes": "From Sphinx, straighten the arms and walk the hands forward or out to the sides until the elbows are straight (or nearly so). Allow the lumbar spine to compress more deeply than in Sphinx. Keep glutes soft. Hands may be wider than shoulder-width to reduce intensity. This is a deeper lumbar compression than Sphinx — find your edge without pain."
+    }
+  ],
+  "body_position": "prone",
+  "meridians": ["kidney", "stomach"],
+  "element": "water",
+  "energetic_quality": ["opening", "stimulating"],
+  "difficulty": "intermediate",
+  "props_required": [],
+  "prop_free_variation": "sphinx",
+  "counterposes": ["child-pose", "caterpillar"],
+  "rebound_pose": "child-pose",
+  "contraindications": ["no-backbends", "herniated-disc-lumbar", "pregnancy-second-trimester", "pregnancy-third-trimester"],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "The deeper yin backbend following Sphinx. The increased lumbar compression stresses the posterior spinal ligaments and intervertebral discs. Prop-free variation is Sphinx."
+}

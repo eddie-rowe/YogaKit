@@ -1,0 +1,27 @@
+{
+  "slug": "ankle-stretch",
+  "sanskrit": "Vajrasana variation",
+  "english": "Ankle Stretch",
+  "aliases": ["Kneeling Ankle Stretch", "Tops of Feet Stretch"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "From a kneeling position with the tops of the feet flat on the floor, sit back onto the heels. The ankles are plantar-flexed and the shins and anterior ankles receive the stretch. Keep the body upright or lean slightly back to increase the stretch. If the stretch is too intense, slide a rolled blanket under the ankles to elevate them."
+    }
+  ],
+  "body_position": "kneeling",
+  "meridians": ["stomach"],
+  "element": "earth",
+  "energetic_quality": ["opening", "grounding"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["child-pose"],
+  "rebound_pose": "child-pose",
+  "contraindications": ["ankle-injury", "recent-surgery-knee"],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Targets the anterior ankle, shin extensors, and dorsal foot fascia. The stomach meridian runs along the anterior shin and dorsal foot. Often paired with Toe Squat in sequence."
+}

@@ -1,0 +1,27 @@
+{
+  "slug": "straddle",
+  "sanskrit": "Upavistha Konasana",
+  "english": "Straddle",
+  "aliases": ["Wide-Legged Forward Fold", "Upavistha Konasana", "Seated Wide Angle"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "Sit with legs spread wide apart. Allow the spine to round forward in a C-curve and walk the hands forward between or beyond the legs. Head hangs. Feel the inner thighs, hamstrings, and posterior spine receiving the stretch. Do not force the legs wider — gravity does the work over time. Can also fold toward each leg individually to target one hamstring at a time."
+    }
+  ],
+  "body_position": "seated",
+  "meridians": ["kidney", "bladder", "liver"],
+  "element": "water",
+  "energetic_quality": ["opening", "cooling", "calming"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["bridge-yin", "supported-fish"],
+  "rebound_pose": "constructive-rest",
+  "contraindications": ["herniated-disc-lumbar", "no-forward-folds", "sciatica"],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Targets the inner thigh (adductors), hamstrings, and posterior spinal ligaments. Kidney and bladder meridians run the back line; liver meridian runs the inner thigh."
+}

@@ -1,0 +1,27 @@
+{
+  "slug": "dragon-low-lunge",
+  "sanskrit": "Anjaneyasana",
+  "english": "Dragon Low Lunge",
+  "aliases": ["Low Dragon", "Low Lunge", "Anjaneyasana"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "From all fours or standing, step one foot forward between the hands (or outside the hands for Dragon Flying Low). Lower the back knee to the floor. Sink the hips forward and down to stretch the hip flexor of the back leg. Torso can be upright or hands can remain on the floor or blocks. Do not let the front knee travel past the ankle. Hold each side."
+    }
+  ],
+  "body_position": "kneeling",
+  "meridians": ["stomach", "spleen"],
+  "element": "earth",
+  "energetic_quality": ["opening", "stimulating"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["child-pose", "constructive-rest"],
+  "rebound_pose": "constructive-rest",
+  "contraindications": ["recent-surgery-knee", "no-deep-hip-flexion"],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Targets the hip flexors and psoas of the back-leg side. Stomach meridian runs the anterior thigh; spleen meridian the medial thigh. One of the fundamental yin Dragon family of poses."
+}

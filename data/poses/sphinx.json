@@ -1,0 +1,27 @@
+{
+  "slug": "sphinx",
+  "sanskrit": "Salamba Bhujangasana",
+  "english": "Sphinx Pose",
+  "aliases": ["Supported Cobra", "Salamba Bhujangasana"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "Lie on the belly with forearms on the floor, elbows under the shoulders or slightly forward. Press the forearms gently into the ground to lift the chest. Legs extend behind, either together or hip-width apart. Allow the lumbar spine to compress gently. Do not clench the glutes — let them soften to allow sacral compression. Gaze is forward or slightly down."
+    }
+  ],
+  "body_position": "prone",
+  "meridians": ["kidney", "stomach"],
+  "element": "water",
+  "energetic_quality": ["opening", "stimulating"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["child-pose", "caterpillar"],
+  "rebound_pose": "child-pose",
+  "contraindications": ["no-backbends", "herniated-disc-lumbar", "pregnancy-second-trimester", "pregnancy-third-trimester"],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "A gentle prone backbend targeting the lumbar spine and anterior abdomen. The kidney meridian lines the spine; the stomach meridian courses the front body. Entry-level backbend before Seal."
+}

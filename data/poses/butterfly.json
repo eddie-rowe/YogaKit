@@ -1,0 +1,27 @@
+{
+  "slug": "butterfly",
+  "sanskrit": "Baddha Konasana",
+  "english": "Butterfly",
+  "aliases": ["Baddha Konasana", "Bound Angle Pose", "Cobbler's Pose"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "Sit with the soles of the feet together and allow the knees to fall open. Let the spine round forward in a C-curve — this is yin butterfly, not the upright yang version. Allow the head to hang toward the feet. Place hands on the feet or let them rest on the floor. The inner groin and back body should both be receiving the stretch."
+    }
+  ],
+  "body_position": "seated",
+  "meridians": ["kidney", "liver"],
+  "element": "water",
+  "energetic_quality": ["opening", "cooling", "calming"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["constructive-rest", "windshield-wipers"],
+  "rebound_pose": "constructive-rest",
+  "contraindications": ["no-hip-external-rotation"],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "In yin style, the spine rounds forward rather than staying upright. This stresses the posterior spinal ligaments and inner groin connective tissues. Kidney and liver meridians run the inner thigh and groin."
+}

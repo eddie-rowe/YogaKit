@@ -1,0 +1,27 @@
+{
+  "slug": "half-dragonfly",
+  "sanskrit": "Janu Sirsasana variation",
+  "english": "Half Dragonfly",
+  "aliases": ["Half Seated Straddle", "Janu Sirsasana yin"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "From a seated position, extend one leg out to the side (as in a partial straddle) while the other leg is bent with the foot resting against the inner thigh. Fold forward over the extended leg, allowing the spine to round. To target the inner hamstring, face the extended leg directly. To target the inner groin, rotate the torso toward the extended leg. Hold each side."
+    }
+  ],
+  "body_position": "seated",
+  "meridians": ["kidney"],
+  "element": "water",
+  "energetic_quality": ["opening", "cooling", "calming"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["bridge-yin", "supported-fish"],
+  "rebound_pose": "constructive-rest",
+  "contraindications": ["herniated-disc-lumbar", "sciatica"],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "A unilateral version of Dragonfly (Straddle). Targets the hamstring and inner thigh of the extended leg. The kidney meridian runs along the inner leg. More accessible than the full bilateral straddle."
+}

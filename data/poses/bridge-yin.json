@@ -1,0 +1,27 @@
+{
+  "slug": "bridge-yin",
+  "sanskrit": "Setu Bandha Sarvangasana variation",
+  "english": "Supported Bridge",
+  "aliases": ["Yin Bridge", "Supported Setu Bandha"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "Lie on your back with knees bent, feet flat on the floor. Lift the hips and slide a block or bolster under the sacrum at a comfortable height. Release the weight of the hips fully onto the prop. Arms rest alongside the body or extend overhead. Allow the chest, belly, and hip flexors to open passively. To come out, engage the core, lift the hips briefly, remove the prop, and lower slowly."
+    }
+  ],
+  "body_position": "supine",
+  "meridians": ["stomach", "kidney", "heart"],
+  "element": "earth",
+  "energetic_quality": ["opening", "stimulating"],
+  "difficulty": "accessible",
+  "props_required": ["block"],
+  "prop_free_variation": null,
+  "counterposes": ["child-pose", "caterpillar", "constructive-rest"],
+  "rebound_pose": "constructive-rest",
+  "contraindications": ["no-backbends", "herniated-disc-lumbar", "recent-surgery-shoulder"],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "The supported (passive) version of Bridge targets the anterior spine, hip flexors, and chest. Stomach meridian courses the front body; kidney lines the spine; heart and lung open through the chest expansion."
+}

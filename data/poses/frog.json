@@ -1,0 +1,27 @@
+{
+  "slug": "frog",
+  "sanskrit": "Mandukasana",
+  "english": "Frog Pose",
+  "aliases": ["Mandukasana", "Full Frog"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 3, "max": 7 },
+      "cue_notes": "Begin on all fours and slowly walk the knees apart, bringing the inner edges of the feet and knees to the floor. Thighs should be roughly perpendicular to the spine. Lower onto the forearms or a bolster. Feet flex so the soles face up or out. Allow gravity to slowly widen the hips. This is an intense inner groin stretch — move in slowly. If inner knee discomfort arises, pad under the knees or reduce the width."
+    }
+  ],
+  "body_position": "prone",
+  "meridians": ["kidney", "bladder"],
+  "element": "water",
+  "energetic_quality": ["opening", "cooling"],
+  "difficulty": "intermediate",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["child-pose", "constructive-rest"],
+  "rebound_pose": "child-pose",
+  "contraindications": ["no-hip-external-rotation", "no-deep-hip-flexion", "knee-replacement", "recent-surgery-hip"],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Targets the inner groin (adductors), hip flexors, and medial knee ligaments. The kidney and bladder meridians run along the inner and back leg. One of the most intense hip openers in yin yoga."
+}

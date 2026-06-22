@@ -1,0 +1,15 @@
+{
+  "element": "wood",
+  "season": "spring",
+  "meridians": [
+    { "slug": "liver", "organ": "Liver", "element": "wood", "direction": "ascending", "peak_hours": "1am–3am" },
+    { "slug": "gallbladder", "organ": "Gallbladder", "element": "wood", "direction": "descending", "peak_hours": "11pm–1am" }
+  ],
+  "themes": ["growth", "vision", "letting go", "flexibility", "new beginnings", "boundaries"],
+  "emotions": {
+    "balanced": "decisiveness and clear vision",
+    "excess": "anger, frustration, rigidity",
+    "deficiency": "indecision, lack of direction, timidity"
+  },
+  "body_focus": ["inner leg", "outer hip", "IT band", "side body", "liver region (right ribcage)", "lateral knee"]
+}

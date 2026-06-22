@@ -1,0 +1,27 @@
+{
+  "slug": "sleeping-swan",
+  "sanskrit": "Eka Pada Rajakapotasana (yin variation)",
+  "english": "Sleeping Swan",
+  "aliases": ["Yin Pigeon", "Swan Pose", "Sleeping Pigeon"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 3, "max": 7 },
+      "cue_notes": "From all fours, slide one knee forward toward the same-side wrist and extend the other leg straight back. The shin of the front leg is at an angle (rather than parallel to the front of the mat for most people). Fold forward over the front shin, lowering the chest toward the floor or onto a bolster. Allow the weight of the body to gradually open the outer hip. Both hips should face the floor evenly — use a blanket under the front hip if it is elevated. Hold each side."
+    }
+  ],
+  "body_position": "kneeling",
+  "meridians": ["gallbladder"],
+  "element": "wood",
+  "energetic_quality": ["opening", "cooling"],
+  "difficulty": "intermediate",
+  "props_required": [],
+  "prop_free_variation": "eye-of-needle",
+  "counterposes": ["child-pose", "constructive-rest", "windshield-wipers"],
+  "rebound_pose": "constructive-rest",
+  "contraindications": ["no-hip-external-rotation", "recent-surgery-hip", "hip-replacement"],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "The yin yoga equivalent of Pigeon Pose. Targets the piriformis and deep lateral hip rotators along the gallbladder meridian line. Eye of Needle (supine) is the accessible alternative."
+}

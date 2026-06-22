@@ -1,0 +1,27 @@
+{
+  "slug": "savasana",
+  "sanskrit": "Savasana",
+  "english": "Corpse Pose",
+  "aliases": ["Corpse Pose", "Final Rest", "Relaxation Pose"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "Lie flat on the back with legs extended and slightly apart, arms alongside the body with palms facing up. Eyes closed. Allow every muscle to release completely. Breathe naturally. The body integrates all preceding postures. Remain completely still unless there is physical discomfort."
+    }
+  ],
+  "body_position": "supine",
+  "meridians": ["liver", "gallbladder", "kidney", "bladder", "heart", "small-intestine", "lung", "large-intestine", "stomach", "spleen", "pericardium", "triple-warmer"],
+  "element": null,
+  "energetic_quality": ["grounding", "calming", "cooling"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": [],
+  "rebound_pose": null,
+  "contraindications": [],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Final integration pose. All meridians are listed as Savasana integrates the entire practice. Typically held 5–15 minutes at the end of a session."
+}

@@ -1,0 +1,27 @@
+{
+  "slug": "bananasana",
+  "sanskrit": "Bananasana",
+  "english": "Bananasana",
+  "aliases": ["Crescent Moon Pose", "Lateral Crescent"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "Lie on your back and keep the hips anchored to the floor. Walk both feet to the right and then bring both arms overhead and toward the right as well, creating a lateral crescent (banana) shape. Cross the right ankle over the left for additional side-body stretch. Hold each side. The entire lateral line — from hip to armpit — should feel the stretch."
+    }
+  ],
+  "body_position": "supine",
+  "meridians": ["liver", "gallbladder"],
+  "element": "wood",
+  "energetic_quality": ["opening", "cooling"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["constructive-rest", "savasana"],
+  "rebound_pose": "constructive-rest",
+  "contraindications": [],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Targets the lateral fascial line including the QL, intercostals, and lateral hip. Liver and gallbladder meridians run the inner and outer aspects of the lateral body."
+}

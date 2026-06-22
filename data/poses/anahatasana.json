@@ -1,0 +1,27 @@
+{
+  "slug": "anahatasana",
+  "sanskrit": "Anahatasana",
+  "english": "Anahatasana",
+  "aliases": ["Extended Puppy Pose", "Heart-to-Earth Pose", "Uttana Shishosana"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "From all fours, walk the hands forward while keeping the hips stacked over the knees. Allow the chest to descend toward the floor, chin or forehead resting on the mat. Arms fully extend forward. The thoracic spine extends as the heart center melts down. A bolster under the chest can reduce intensity. Unlike Child's Pose, the hips stay elevated over the knees."
+    }
+  ],
+  "body_position": "kneeling",
+  "meridians": ["heart", "lung"],
+  "element": "fire",
+  "energetic_quality": ["opening", "cooling"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["child-pose"],
+  "rebound_pose": "child-pose",
+  "contraindications": ["shoulder-injury", "no-backbends"],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Targets the thoracic spine, anterior shoulder, and biceps fascia. Heart and lung meridians run along the inner arm and chest. Related to Melting Heart but with the hips elevated (not sitting back onto heels)."
+}

@@ -1,0 +1,27 @@
+{
+  "slug": "reclining-twist",
+  "sanskrit": "Supta Matsyendrasana",
+  "english": "Reclining Twist",
+  "aliases": ["Supine Spinal Twist", "Jathara Parivartanasana"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "Lie on your back. Draw one knee to the chest then guide it across the body with the opposite hand while extending the same-side arm out to the side. Look away from the knee if cervical rotation is comfortable. Allow gravity to deepen the twist rather than pulling the knee down. Keep both shoulder blades in contact with the floor if possible. Hold each side."
+    }
+  ],
+  "body_position": "supine",
+  "meridians": ["gallbladder", "stomach"],
+  "element": "wood",
+  "energetic_quality": ["opening", "calming"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["constructive-rest", "savasana"],
+  "rebound_pose": "constructive-rest",
+  "contraindications": ["no-spinal-rotation", "herniated-disc-lumbar"],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Targets the thoracolumbar fascia, paraspinal muscles, and outer hip. The gallbladder meridian courses the lateral body; the stomach meridian runs along the anterior thigh and abdomen."
+}

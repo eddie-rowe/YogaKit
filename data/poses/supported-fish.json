@@ -1,0 +1,27 @@
+{
+  "slug": "supported-fish",
+  "sanskrit": "Matsyasana",
+  "english": "Supported Fish",
+  "aliases": ["Supported Matsyasana", "Passive Fish", "Yin Fish"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "Place a block (or bolster) horizontally across the shoulder blades at the level of the mid-thoracic spine. Lower onto it so the chest opens upward. A second block or rolled blanket can support the head. Arms rest at the sides or spread wide. Legs extend straight or can be in Butterfly legs for additional hip opening. Allow gravity to open the chest and throat over the support."
+    }
+  ],
+  "body_position": "supine",
+  "meridians": ["heart", "lung"],
+  "element": "fire",
+  "energetic_quality": ["opening", "stimulating"],
+  "difficulty": "accessible",
+  "props_required": ["block"],
+  "prop_free_variation": null,
+  "counterposes": ["child-pose", "caterpillar"],
+  "rebound_pose": "constructive-rest",
+  "contraindications": ["no-backbends", "shoulder-injury"],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Targets thoracic extension and anterior chest opening. Heart and lung meridians run the inner arm and chest wall. A standard counterpose after deep forward folds or inversions."
+}

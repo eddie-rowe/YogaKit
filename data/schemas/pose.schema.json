@@ -1,0 +1,109 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Pose",
+  "type": "object",
+  "required": [
+    "slug",
+    "sanskrit",
+    "english",
+    "modes",
+    "body_position",
+    "meridians",
+    "energetic_quality",
+    "difficulty",
+    "props_required",
+    "contraindications",
+    "bilateral",
+    "source"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Canonical identifier. Lowercase, hyphens only, no leading digit."
+    },
+    "sanskrit": { "type": "string", "minLength": 1 },
+    "english": { "type": "string", "minLength": 1 },
+    "aliases": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "modes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["type", "tissue_target", "hold_range"],
+        "additionalProperties": false,
+        "properties": {
+          "type": { "enum": ["yin", "yang", "both"] },
+          "tissue_target": { "enum": ["connective", "muscular", "both"] },
+          "hold_range": {
+            "type": "object",
+            "required": ["min", "max"],
+            "additionalProperties": false,
+            "properties": {
+              "min": { "type": "number", "minimum": 0 },
+              "max": { "type": "number", "minimum": 0 }
+            }
+          },
+          "cue_notes": { "type": "string", "default": "" }
+        }
+      }
+    },
+    "body_position": {
+      "enum": ["supine", "prone", "seated", "kneeling", "standing", "inverted"]
+    },
+    "meridians": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "element": {
+      "oneOf": [
+        { "enum": ["wood", "fire", "earth", "metal", "water"] },
+        { "type": "null" }
+      ]
+    },
+    "energetic_quality": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "enum": [
+          "grounding",
+          "opening",
+          "cooling",
+          "heating",
+          "calming",
+          "stimulating"
+        ]
+      }
+    },
+    "difficulty": {
+      "enum": ["accessible", "intermediate", "advanced"]
+    },
+    "props_required": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "prop_free_variation": {
+      "oneOf": [{ "type": "string" }, { "type": "null" }]
+    },
+    "counterposes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "rebound_pose": {
+      "oneOf": [{ "type": "string" }, { "type": "null" }]
+    },
+    "contraindications": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "bilateral": { "type": "boolean" },
+    "source": { "type": "string", "minLength": 1 },
+    "notes": { "type": "string", "default": "" }
+  }
+}

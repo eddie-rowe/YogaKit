@@ -1,0 +1,27 @@
+{
+  "slug": "dragon-sitting",
+  "sanskrit": "Anjaneyasana variation",
+  "english": "Sitting Dragon",
+  "aliases": ["Seated Dragon", "Dragon Sitting", "Hip Flexor Seat"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "From a low lunge, lower the back knee to the floor and bring the torso upright. Alternatively, sit with one leg extended behind and the other foot forward in a seated position. The hip flexor of the extended-back leg is the primary target. Keep the front knee stacked over the front ankle. Arms can rest on the front thigh, raise overhead, or hold the back foot for additional quad stretch. Hold each side."
+    }
+  ],
+  "body_position": "seated",
+  "meridians": ["stomach", "spleen"],
+  "element": "earth",
+  "energetic_quality": ["opening", "stimulating"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["child-pose", "constructive-rest"],
+  "rebound_pose": "constructive-rest",
+  "contraindications": [],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Targets the hip flexors (psoas, iliacus, rectus femoris) from a seated or semi-kneeling position. Stomach and spleen meridians run the anterior thigh and medial leg."
+}

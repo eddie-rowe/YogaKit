@@ -1,0 +1,27 @@
+{
+  "slug": "legs-up-the-wall",
+  "sanskrit": "Viparita Karani",
+  "english": "Legs Up the Wall",
+  "aliases": ["Viparita Karani", "Inverted Lake"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "Sit sideways close to the wall, then swing the legs up as you lower your back to the floor. Legs rest vertically against the wall, hips close to the baseboard. Arms rest comfortably at the sides or on the belly. A folded blanket under the hips elevates them slightly for a more restful inversion. Allow the hamstrings and lower back to release passively."
+    }
+  ],
+  "body_position": "supine",
+  "meridians": ["kidney", "bladder"],
+  "element": "water",
+  "energetic_quality": ["cooling", "calming", "grounding"],
+  "difficulty": "accessible",
+  "props_required": ["wall"],
+  "prop_free_variation": null,
+  "counterposes": ["constructive-rest", "savasana"],
+  "rebound_pose": "savasana",
+  "contraindications": ["high-blood-pressure", "glaucoma", "no-inversions"],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "A restorative mild inversion. Kidney and bladder meridians run along the back of the leg and spine. Promotes venous return and nervous system downregulation."
+}

@@ -1,0 +1,27 @@
+{
+  "slug": "shoelace-fold",
+  "sanskrit": "Gomukhasana with Uttanasana",
+  "english": "Shoelace with Forward Fold",
+  "aliases": ["Shoelace Fold", "Gomukhasana Forward Fold"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 3, "max": 7 },
+      "cue_notes": "From Shoelace (stacked knees), hinge forward from the hips and walk the hands forward. Allow the spine to round into the forward fold. The outer hip of both legs receives a compounded stretch. If the hips are uneven (one side higher than the other), use a block under the elevated hip. Hold each side (switching top and bottom knee)."
+    }
+  ],
+  "body_position": "seated",
+  "meridians": ["gallbladder"],
+  "element": "wood",
+  "energetic_quality": ["opening", "cooling"],
+  "difficulty": "intermediate",
+  "props_required": [],
+  "prop_free_variation": "shoelace",
+  "counterposes": ["constructive-rest", "windshield-wipers"],
+  "rebound_pose": "constructive-rest",
+  "contraindications": ["no-hip-external-rotation", "herniated-disc-lumbar"],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "An intensification of Shoelace (Gomukhasana legs) by adding a forward fold over the stacked knees. The gallbladder meridian along the outer hip and IT band receives maximum compressive and tensile stress."
+}

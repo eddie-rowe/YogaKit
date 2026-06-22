@@ -1,0 +1,27 @@
+{
+  "slug": "caterpillar",
+  "sanskrit": "Paschimottanasana",
+  "english": "Caterpillar",
+  "aliases": ["Yin Paschimottanasana", "Seated Forward Fold", "Paschimottanasana"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "Sit with both legs extended forward. Allow the spine to round into a C-curve as you fold forward over the legs — do not attempt to keep the back flat. Let the head hang, arms rest on legs or floor. The pelvis will tuck and the posterior spinal ligaments will receive the primary stress. Focus on relaxing any muscular holding and allowing gravity to deepen the pose over time."
+    }
+  ],
+  "body_position": "seated",
+  "meridians": ["kidney", "bladder"],
+  "element": "water",
+  "energetic_quality": ["cooling", "calming", "opening"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["bridge-yin", "supported-fish"],
+  "rebound_pose": "constructive-rest",
+  "contraindications": ["herniated-disc-lumbar", "no-forward-folds"],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "The yin version intentionally rounds the spine to compress the posterior discs and stretch the spinal ligaments. Kidney and bladder meridians run the entire back line from heel to occiput."
+}

@@ -1,0 +1,27 @@
+{
+  "slug": "half-saddle",
+  "sanskrit": "Ardha Supta Virasana",
+  "english": "Half Saddle",
+  "aliases": ["Ardha Supta Virasana", "One-Legged Saddle"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "From a kneeling position, extend one leg straight forward while keeping the other knee bent with the foot beside the hip. Recline backward onto forearms or the floor. A bolster under the lower back can reduce intensity. The anterior thigh and hip flexor of the bent-leg side receive the stretch. The extended leg can remain straight or bend at the knee. Hold each side."
+    }
+  ],
+  "body_position": "seated",
+  "meridians": ["stomach"],
+  "element": "earth",
+  "energetic_quality": ["opening", "stimulating"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["child-pose", "caterpillar"],
+  "rebound_pose": "child-pose",
+  "contraindications": ["knee-replacement", "no-backbends"],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "A more accessible version of Saddle targeting one side at a time. Less lumbar compression than full Saddle. The stomach meridian runs the anterior thigh of the bent-knee leg."
+}

@@ -1,0 +1,27 @@
+{
+  "slug": "eye-of-needle",
+  "sanskrit": "Sucirandhrasana",
+  "english": "Eye of the Needle",
+  "aliases": ["Sucirandhrasana", "Supine Pigeon", "Figure Four"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "Lie on your back with knees bent. Cross one ankle over the opposite thigh just above the knee, flexing the foot. Either stay here (first stage) or draw the bottom leg toward the chest by threading the hands through or around the thigh. The crossed-leg hip is in external rotation; the piriformis and lateral hip rotators receive the stretch. Hold each side."
+    }
+  ],
+  "body_position": "supine",
+  "meridians": ["gallbladder"],
+  "element": "wood",
+  "energetic_quality": ["opening", "cooling", "calming"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["constructive-rest", "windshield-wipers"],
+  "rebound_pose": "constructive-rest",
+  "contraindications": ["no-hip-external-rotation", "recent-surgery-hip"],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "The supine accessible alternative to Sleeping Swan / Yin Pigeon. Targets the piriformis and external hip rotators along the gallbladder meridian without the knee-to-floor pressure of the prone version."
+}

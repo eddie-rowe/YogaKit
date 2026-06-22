@@ -1,0 +1,27 @@
+{
+  "slug": "child-pose",
+  "sanskrit": "Balasana",
+  "english": "Child's Pose",
+  "aliases": ["Balasana", "Child Pose", "Extended Child's Pose"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 2, "max": 5 },
+      "cue_notes": "Kneel with toes together and knees together (or hip-width for more space). Sit back toward the heels and fold the torso forward, forehead to the floor or a bolster. Arms extend forward or rest alongside the body. A bolster between the thighs and chest reduces compression. Allow the sacrum to widen and the lower back to release. Breathe into the back body."
+    }
+  ],
+  "body_position": "kneeling",
+  "meridians": ["kidney"],
+  "element": "water",
+  "energetic_quality": ["grounding", "calming", "cooling"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": [],
+  "rebound_pose": "constructive-rest",
+  "contraindications": ["recent-surgery-knee", "no-forward-folds", "pregnancy-third-trimester"],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Primary counterpose after backbends and hip openers. Decompresses the lumbar spine and sacrum. Kidney meridian runs along the inner thigh and sacral area. Wide-knee variation acceptable in pregnancy."
+}

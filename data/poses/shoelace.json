@@ -1,0 +1,27 @@
+{
+  "slug": "shoelace",
+  "sanskrit": "Gomukhasana (legs)",
+  "english": "Shoelace",
+  "aliases": ["Yin Gomukhasana", "Shoelace Pose", "Gomukhasana legs"],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": { "min": 3, "max": 7 },
+      "cue_notes": "Stack the knees directly on top of each other with feet wide apart on each side. Sit between the feet if possible, or on a block if the hips are elevated. Sit upright or fold forward. The outer hip of the bottom leg and the outer hip of the top leg are both being targeted. Ensure both sitting bones are roughly level. Hold each side (switching which knee is on top). Can be combined with a forward fold for additional intensity."
+    }
+  ],
+  "body_position": "seated",
+  "meridians": ["gallbladder"],
+  "element": "wood",
+  "energetic_quality": ["opening", "cooling"],
+  "difficulty": "intermediate",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["constructive-rest", "windshield-wipers"],
+  "rebound_pose": "constructive-rest",
+  "contraindications": ["no-hip-external-rotation", "recent-surgery-hip"],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Deeply targets the outer hip, piriformis, and IT band. The gallbladder meridian runs the lateral leg and hip. One of the most effective yin poses for the deep lateral hip rotators."
+}

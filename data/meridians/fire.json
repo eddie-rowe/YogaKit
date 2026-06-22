@@ -1,0 +1,17 @@
+{
+  "element": "fire",
+  "season": "summer",
+  "meridians": [
+    { "slug": "heart", "organ": "Heart", "element": "fire", "direction": "descending", "peak_hours": "11am–1pm" },
+    { "slug": "small-intestine", "organ": "Small Intestine", "element": "fire", "direction": "ascending", "peak_hours": "1pm–3pm" },
+    { "slug": "pericardium", "organ": "Pericardium", "element": "fire", "direction": "descending", "peak_hours": "7pm–9pm" },
+    { "slug": "triple-warmer", "organ": "Triple Warmer", "element": "fire", "direction": "ascending", "peak_hours": "9pm–11pm" }
+  ],
+  "themes": ["joy", "connection", "love", "warmth", "opening the heart", "intimacy", "celebration"],
+  "emotions": {
+    "balanced": "joy, compassion, warmth",
+    "excess": "mania, overexcitement, scattered energy",
+    "deficiency": "sadness, loneliness, closed-heartedness"
+  },
+  "body_focus": ["chest", "inner arm", "upper back", "heart center", "axilla", "wrist"]
+}
