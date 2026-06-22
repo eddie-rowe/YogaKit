@@ -303,6 +303,10 @@ works with a single tap.
   "hypertension," "second-trimester pregnancy") — never with student names, ages, or
   other identifying details.
 
+- **FR-006c**: The AI layer MUST be treated as untrusted input by the rules engine and
+  safety layer. Both downstream stages MUST NOT assume AI output is valid, well-formed,
+  or safe. This is a functional constraint, not an implementation preference.
+
 - **FR-007**: Generated sequences MUST include: an ordered pose list, hold times for
   each pose, transition notes between poses, a per-pose "why," at least one alternate
   per pose, a theme statement, philosophical framing, and at least one quote attributed
@@ -342,7 +346,18 @@ works with a single tap.
 
 - **FR-015**: The safety layer MUST check, for every generated sequence: no pose
   violates any stated contraindication; no pose requires an unavailable prop without a
-  prop-free variation; the intensity curve does not exceed the stated audience level.
+  prop-free variation; the intensity curve is within the stated audience level. "Within
+  the stated audience level" means: for beginner audiences, no poses requiring
+  significant joint mobility or balance beyond accessible basics; for intermediate, no
+  poses designated advanced in the library; for advanced, no explicit ceiling.
+  The library pose record carries the difficulty level; the safety layer compares it
+  to the session's stated experience level.
+
+- **FR-015a**: When the safety layer removes a contraindicated pose, it MUST attempt to
+  substitute a replacement pose that satisfies the same safety constraints and is within
+  the same body-position family. If no valid replacement exists, the sequence MAY
+  contain a gap with a rebound/rest pose placeholder, and the teacher MUST be informed
+  of the gap and reason.
 
 - **FR-016**: When a constraint blocks the teacher's chosen theme, the system MUST
   surface the conflict with a clear plain-language explanation and propose a safe
@@ -497,4 +512,37 @@ works with a single tap.
 - **A-010**: The AI layer (LLM) will sometimes produce drafts that violate constraints
   or sequencing rules. The rules engine and safety layer are the trust boundary;
   the AI is treated as untrusted input. The spec assumes these downstream layers
-  always run and always have authority over AI output.
+  always run and always have authority over AI output. This is formalized as FR-006c.
+
+- **A-011**: Meridian data is structured as a pair of organ-meridian records linked to
+  a TCM Five-Element (Wood/Fire/Earth/Metal/Water), a season, and an energetic
+  direction. The exact schema for meridian records is defined in the plan/data-model
+  phase. For P1, the spec requires that poses tag at minimum the primary meridian
+  pair they load (e.g., Liver/Gallbladder for hip-flexor poses in Spring/Wood).
+
+- **A-012**: The following features mentioned in the original brief are explicitly
+  deferred beyond P1 and are recorded here for traceability:
+  - P2: Breath and meditation bookends (pranayama/savasana framing).
+  - P2: Soundscape/playlist suggestion matched to the session arc.
+  - P2: Lighting and temperature notes.
+  - P2: Student handout output form factor (separate from teacher cue sheet).
+  - P3: Sankey/flow visualization, intensity curve visualization, layered dimension
+    view.
+  - P3: Multi-week progressive series builder.
+  - P3: Community-contributed poses and quotes via PR workflow.
+  These are OUT OF SCOPE for P1 implementation. Their presence in this spec is for
+  traceability only.
+
+- **A-013**: Dimension allowed values for P1 (enumerated to enable consistent
+  implementation; extensible in later phases):
+  - Style: `yin | vinyasa | ashtanga | restorative`
+  - Season: `spring | summer | late-summer | autumn | winter`
+  - Dosha: `vata | pitta | kapha | vata-pitta | pitta-kapha | vata-kapha | tridoshic`
+  - Five-Element: `wood | fire | earth | metal | water`
+  - Body position family: `supine | prone | seated | kneeling | standing | inverted`
+  - Energetic quality: `grounding | opening | cooling | heating | calming | stimulating`
+  - Intensity curve: `bell | plateau | gradual-ramp | front-loaded | back-loaded`
+  - Experience level: `beginner | intermediate | advanced | mixed`
+  - Pose difficulty: `accessible | intermediate | advanced`
+  All values are lowercase slugs. New values require a schema update PR and CI
+  validation against the pose library.
