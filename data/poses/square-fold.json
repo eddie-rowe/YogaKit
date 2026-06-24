@@ -2,26 +2,136 @@
   "slug": "square-fold",
   "sanskrit": "Agnistambhasana with Uttanasana",
   "english": "Square Fold",
-  "aliases": ["Fire Log Forward Fold", "Square with Forward Bend"],
+  "aliases": [
+    "Fire Log Forward Fold",
+    "Square with Forward Bend"
+  ],
   "modes": [
     {
       "type": "yin",
       "tissue_target": "connective",
-      "hold_range": { "min": 3, "max": 7 },
+      "hold_range": {
+        "min": 3,
+        "max": 7
+      },
       "cue_notes": "From Square Pose (Fire Log), hinge forward from the hips and walk the hands forward between or beyond the shins. Allow the spine to round as you deepen the fold. The deep hip external rotation of Square is combined with a forward fold, dramatically increasing the load on the piriformis and lateral hip fascia. Keep some micro-bend in the knees to protect the lateral knee. Hold each side."
     }
   ],
   "body_position": "seated",
-  "meridians": ["gallbladder"],
+  "meridians": [
+    "gallbladder"
+  ],
   "element": "wood",
-  "energetic_quality": ["opening", "cooling"],
+  "energetic_quality": [
+    "opening",
+    "cooling"
+  ],
   "difficulty": "intermediate",
   "props_required": [],
   "prop_free_variation": "square",
-  "counterposes": ["constructive-rest", "windshield-wipers"],
+  "counterposes": [
+    "constructive-rest",
+    "windshield-wipers"
+  ],
   "rebound_pose": "constructive-rest",
-  "contraindications": ["no-hip-external-rotation", "no-forward-folds", "herniated-disc-lumbar"],
+  "contraindications": [
+    "herniated-disc",
+    "hip-injury"
+  ],
   "bilateral": true,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
-  "notes": "An intensification of Square Pose by adding a forward fold. Combines deep hip external rotation with posterior spinal flexion. The gallbladder meridian along the lateral hip and thigh receives maximum load."
+  "notes": "An intensification of Square Pose by adding a forward fold. Combines deep hip external rotation with posterior spinal flexion. The gallbladder meridian along the lateral hip and thigh receives maximum load.",
+  "type_tags": [
+    "forward-fold",
+    "hip-opener",
+    "outer-hip",
+    "groin-opener",
+    "spinal-traction",
+    "spinal-compression"
+  ],
+  "muscle_groups": [
+    "piriformis",
+    "glutes",
+    "hip-abductors",
+    "IT-band",
+    "lumbar-spine",
+    "thoracic-spine",
+    "spinal-erectors",
+    "sacroiliac-ligaments"
+  ],
+  "complexity": 6,
+  "injury_risk": 6,
+  "breathing_cues": {
+    "entering": "From Square, inhale to lengthen the spine. On a long exhale, hinge forward from the hips and walk the hands along the floor until the spine begins its natural rounding. Let the forehead release toward the shins.",
+    "holding": "Breathe into the back of the outer hips and the space between the shoulder blades. Each exhale is an invitation — release a little more of the outer hip and lower back without ever pulling or forcing.",
+    "exiting": "On an inhale, walk the hands back and press to upright. Allow a moment seated before gently releasing the legs."
+  },
+  "before_poses": [
+    "square",
+    "eye-of-needle",
+    "butterfly",
+    "constructive-rest"
+  ],
+  "after_poses": [
+    "shoelace",
+    "shoelace-fold",
+    "deer",
+    "windshield-wipers"
+  ],
+  "joint_action": [
+    "external_rotation",
+    "abduction",
+    "flexion",
+    "compression",
+    "traction"
+  ],
+  "primary_joints_involved": [
+    "hip",
+    "knee",
+    "sacroiliac",
+    "lumbar",
+    "thoracic"
+  ],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Stay Upright",
+      "description": "Remain in the upright Square Pose without adding the forward fold — this is the prop-free variation, appropriate when the outer hip is already at capacity.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Bolster in Front",
+      "description": "Place a bolster lengthwise in front of the stacked shins to rest the torso on, allowing passive surrender of the forward fold without muscular effort.",
+      "props_used": ["bolster"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Hands on Blocks",
+      "description": "Place blocks on either side of the shins so the hands rest on them rather than the floor, reducing the depth of the forward fold and protecting the lower back.",
+      "props_used": ["block"],
+      "accessibility_level": "intermediate"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "neutral",
+    "pitta": "balancing",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "frustration",
+      "tcm_organ": "gallbladder",
+      "notes": "The forward fold over the stacked hips places maximum load on the gallbladder meridian line — this intense outer hip compression is a primary site for stored frustration and blocked decision-making energy."
+    },
+    {
+      "emotion": "control",
+      "tcm_organ": "gallbladder",
+      "notes": "The deep structural nature of this pose invites a release of tight psychological control; the intensity of the outer hip can mirror internal resistance to letting go."
+    }
+  ],
+  "sequencing_position": [
+    "peak"
+  ]
 }

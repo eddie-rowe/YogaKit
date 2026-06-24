@@ -2,26 +2,137 @@
   "slug": "shoelace-fold",
   "sanskrit": "Gomukhasana with Uttanasana",
   "english": "Shoelace with Forward Fold",
-  "aliases": ["Shoelace Fold", "Gomukhasana Forward Fold"],
+  "aliases": [
+    "Shoelace Fold",
+    "Gomukhasana Forward Fold"
+  ],
   "modes": [
     {
       "type": "yin",
       "tissue_target": "connective",
-      "hold_range": { "min": 3, "max": 7 },
+      "hold_range": {
+        "min": 3,
+        "max": 7
+      },
       "cue_notes": "From Shoelace (stacked knees), hinge forward from the hips and walk the hands forward. Allow the spine to round into the forward fold. The outer hip of both legs receives a compounded stretch. If the hips are uneven (one side higher than the other), use a block under the elevated hip. Hold each side (switching top and bottom knee)."
     }
   ],
   "body_position": "seated",
-  "meridians": ["gallbladder"],
+  "meridians": [
+    "gallbladder"
+  ],
   "element": "wood",
-  "energetic_quality": ["opening", "cooling"],
+  "energetic_quality": [
+    "opening",
+    "cooling"
+  ],
   "difficulty": "intermediate",
   "props_required": [],
   "prop_free_variation": "shoelace",
-  "counterposes": ["constructive-rest", "windshield-wipers"],
+  "counterposes": [
+    "constructive-rest",
+    "windshield-wipers"
+  ],
   "rebound_pose": "constructive-rest",
-  "contraindications": ["no-hip-external-rotation", "herniated-disc-lumbar"],
+  "contraindications": [
+    "herniated-disc",
+    "hip-injury"
+  ],
   "bilateral": true,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
-  "notes": "An intensification of Shoelace (Gomukhasana legs) by adding a forward fold over the stacked knees. The gallbladder meridian along the outer hip and IT band receives maximum compressive and tensile stress."
+  "notes": "An intensification of Shoelace (Gomukhasana legs) by adding a forward fold over the stacked knees. The gallbladder meridian along the outer hip and IT band receives maximum compressive and tensile stress.",
+  "type_tags": [
+    "forward-fold",
+    "hip-opener",
+    "outer-hip",
+    "groin-opener",
+    "spinal-traction",
+    "spinal-compression"
+  ],
+  "muscle_groups": [
+    "piriformis",
+    "glutes",
+    "hip-abductors",
+    "IT-band",
+    "lumbar-spine",
+    "thoracic-spine",
+    "spinal-erectors",
+    "sacroiliac-ligaments"
+  ],
+  "complexity": 6,
+  "injury_risk": 6,
+  "breathing_cues": {
+    "entering": "From Shoelace, inhale to find length in the spine. On a slow, complete exhale, walk the hands forward and allow the torso to drape over the stacked knees, rounding the entire spine.",
+    "holding": "Breathe into the back of the outer hips. Each exhale invites the gallbladder meridian line — lateral hip, IT band, outer knee — to release incrementally. Soften the jaw, throat, and hands completely.",
+    "exiting": "On an inhale, press the palms into the floor and slowly unwind the spine to upright. Release the legs and take a brief rebound in constructive rest before switching sides."
+  },
+  "before_poses": [
+    "shoelace",
+    "square",
+    "square-fold",
+    "eye-of-needle",
+    "constructive-rest"
+  ],
+  "after_poses": [
+    "deer",
+    "windshield-wipers",
+    "constructive-rest",
+    "reclining-twist"
+  ],
+  "joint_action": [
+    "external_rotation",
+    "flexion",
+    "compression",
+    "traction",
+    "adduction"
+  ],
+  "primary_joints_involved": [
+    "hip",
+    "knee",
+    "sacroiliac",
+    "lumbar",
+    "thoracic"
+  ],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Stay Upright",
+      "description": "Remain in Shoelace without adding the forward fold — this is the prop-free variation and appropriate when the outer hip is already at capacity.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Bolster in Front",
+      "description": "Place a bolster lengthwise in front of the stacked knees and rest the torso on it, allowing the forward fold to be fully passive without any muscular effort.",
+      "props_used": ["bolster"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Hands on Floor Beside Shins",
+      "description": "Keep the hands on the floor on either side of the shins rather than walking them forward, maintaining a slight upright hinge rather than a full forward fold.",
+      "props_used": [],
+      "accessibility_level": "intermediate"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "neutral",
+    "pitta": "balancing",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "frustration",
+      "tcm_organ": "gallbladder",
+      "notes": "Maximum compressive load on the gallbladder meridian territory (outer hip, IT band) in this pose can surface deeply stored frustration or unresolved anger."
+    },
+    {
+      "emotion": "control",
+      "tcm_organ": "gallbladder",
+      "notes": "The combination of compression and forward fold asks the body to completely yield — a direct confrontation with the psychological tendency to hold on and resist release."
+    }
+  ],
+  "sequencing_position": [
+    "peak"
+  ]
 }

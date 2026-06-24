@@ -2,26 +2,141 @@
   "slug": "sphinx",
   "sanskrit": "Salamba Bhujangasana",
   "english": "Sphinx Pose",
-  "aliases": ["Supported Cobra", "Salamba Bhujangasana"],
+  "aliases": [
+    "Supported Cobra",
+    "Salamba Bhujangasana"
+  ],
   "modes": [
     {
       "type": "yin",
       "tissue_target": "connective",
-      "hold_range": { "min": 2, "max": 5 },
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
       "cue_notes": "Lie on the belly with forearms on the floor, elbows under the shoulders or slightly forward. Press the forearms gently into the ground to lift the chest. Legs extend behind, either together or hip-width apart. Allow the lumbar spine to compress gently. Do not clench the glutes — let them soften to allow sacral compression. Gaze is forward or slightly down."
     }
   ],
   "body_position": "prone",
-  "meridians": ["kidney", "stomach"],
+  "meridians": [
+    "kidney",
+    "stomach"
+  ],
   "element": "water",
-  "energetic_quality": ["opening", "stimulating"],
+  "energetic_quality": [
+    "opening",
+    "stimulating"
+  ],
   "difficulty": "accessible",
   "props_required": [],
   "prop_free_variation": null,
-  "counterposes": ["child-pose", "caterpillar"],
+  "counterposes": [
+    "child-pose",
+    "caterpillar"
+  ],
   "rebound_pose": "child-pose",
-  "contraindications": ["no-backbends", "herniated-disc-lumbar", "pregnancy-second-trimester", "pregnancy-third-trimester"],
+  "contraindications": [
+    "herniated-disc",
+    "low-back-injury",
+    "pregnancy"
+  ],
   "bilateral": false,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
-  "notes": "A gentle prone backbend targeting the lumbar spine and anterior abdomen. The kidney meridian lines the spine; the stomach meridian courses the front body. Entry-level backbend before Seal."
+  "notes": "A gentle prone backbend targeting the lumbar spine and anterior abdomen. The kidney meridian lines the spine; the stomach meridian courses the front body. Entry-level backbend before Seal.",
+  "type_tags": [
+    "backbend",
+    "spinal-compression",
+    "chest-opener",
+    "heart-opener",
+    "hip-flexor-release",
+    "sacrum-release"
+  ],
+  "muscle_groups": [
+    "lumbar-spine",
+    "thoracic-spine",
+    "spinal-erectors",
+    "psoas",
+    "hip-flexors",
+    "chest-pectorals",
+    "anterior-shoulder",
+    "sacroiliac-ligaments"
+  ],
+  "complexity": 3,
+  "injury_risk": 3,
+  "breathing_cues": {
+    "entering": "Take a full breath in before entering. As you exhale, lower onto your forearms and allow the belly and chest to settle forward and down. Let the exhale soften any initial resistance in the lumbar.",
+    "holding": "Breathe naturally and diaphragmatically. On each inhale, feel the chest gently lift and broaden; on each exhale, allow the lumbar to yield a little deeper into compression without forcing. The breath is your guide — if it shortens or tightens, ease back.",
+    "exiting": "On an inhale, press gently into the forearms to lighten the torso. Exhale as you lower the chest down and transition into your rebound pose."
+  },
+  "before_poses": [
+    "child-pose",
+    "wide-knee-child",
+    "caterpillar",
+    "constructive-rest"
+  ],
+  "after_poses": [
+    "seal",
+    "half-frog",
+    "crocodile"
+  ],
+  "joint_action": [
+    "extension",
+    "compression"
+  ],
+  "primary_joints_involved": [
+    "lumbar",
+    "thoracic",
+    "sacroiliac",
+    "shoulder",
+    "elbow",
+    "wrist"
+  ],
+  "nervous_system_effect": "neutral",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Elbows Forward",
+      "description": "Walk the elbows 10–15 cm further forward than the shoulders to reduce the arc of lumbar compression. This lowers the angle of extension and is suitable for anyone with lumbar sensitivity.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Blanket Under Hips",
+      "description": "Place a folded blanket under the fronts of the hip bones to create a subtle anterior tilt and reduce the demand on the lumbar extensors, making the pose more supportive for the sacrum.",
+      "props_used": ["blanket"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Forearms on Block",
+      "description": "Rest the forearms on a low yoga block to elevate the chest slightly without increasing lumbar compression. Useful for practitioners with wrist discomfort or who need a small reduction in torso weight bearing.",
+      "props_used": ["block"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Bolster Under Chest",
+      "description": "Place a bolster lengthwise under the chest and belly to support the torso completely, turning Sphinx into a restorative variation with minimal compressive load on the lumbar spine.",
+      "props_used": ["bolster"],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "neutral",
+    "pitta": "aggravating",
+    "kapha": "balancing"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "fear",
+      "tcm_organ": "kidney",
+      "notes": "The kidney meridian runs along the lumbar spine. Gentle compression in this region can surface latent fear or existential vulnerability, particularly when held for longer durations."
+    },
+    {
+      "emotion": "courage",
+      "tcm_organ": "heart",
+      "notes": "The passive chest opening and forward gaze embody a posture of gentle courage — meeting the world with an open heart without aggression."
+    }
+  ],
+  "sequencing_position": [
+    "building"
+  ]
 }

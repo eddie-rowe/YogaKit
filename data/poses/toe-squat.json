@@ -2,26 +2,121 @@
   "slug": "toe-squat",
   "sanskrit": "Prapadasana",
   "english": "Toe Squat",
-  "aliases": ["Toes Pose", "Prapadasana", "Toe Stretch"],
+  "aliases": [
+    "Toes Pose",
+    "Prapadasana",
+    "Toe Stretch"
+  ],
   "modes": [
     {
       "type": "yin",
       "tissue_target": "connective",
-      "hold_range": { "min": 2, "max": 5 },
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
       "cue_notes": "From kneeling, tuck all ten toes under and sit back onto the heels. The entire plantar fascia and toe extensors receive a strong stretch. Keep the body upright — place hands on thighs or on the floor in front. If the sensation is too intense, lean forward onto the hands to reduce weight on the feet. Even 30 seconds can be sufficient for this pose."
     }
   ],
   "body_position": "kneeling",
-  "meridians": ["stomach"],
+  "meridians": [
+    "stomach"
+  ],
   "element": "earth",
-  "energetic_quality": ["stimulating", "opening"],
+  "energetic_quality": [
+    "stimulating",
+    "opening"
+  ],
   "difficulty": "accessible",
   "props_required": [],
   "prop_free_variation": null,
-  "counterposes": ["child-pose"],
+  "counterposes": [
+    "child-pose"
+  ],
   "rebound_pose": "child-pose",
-  "contraindications": ["ankle-injury", "recent-surgery-knee"],
+  "contraindications": [
+    "ankle-injury",
+    "knee-injury"
+  ],
   "bilateral": false,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
-  "notes": "Targets the plantar fascia, toe extensors, and all six meridians that begin or end at the toes. The stomach meridian runs through the tops of the second toe and dorsal foot. Intense sensation is normal and typically subsides within 60–90 seconds."
+  "notes": "Targets the plantar fascia, toe extensors, and all six meridians that begin or end at the toes. The stomach meridian runs through the tops of the second toe and dorsal foot. Intense sensation is normal and typically subsides within 60–90 seconds.",
+  "type_tags": [
+    "ankle-opener",
+    "restorative"
+  ],
+  "muscle_groups": [
+    "plantar-fascia",
+    "tibialis-anterior",
+    "ankle-ligaments",
+    "achilles"
+  ],
+  "complexity": 4,
+  "injury_risk": 4,
+  "breathing_cues": {
+    "entering": "Inhale to prepare, then exhale as you slowly sit back onto the heels. Move into the shape gradually over two or three breath cycles rather than dropping back all at once.",
+    "holding": "Breathe slowly and steadily. Send the breath into the belly and chest to keep attention away from the intense foot sensation. Allow the exhale to be long and complete — this cues the nervous system to soften.",
+    "exiting": "Inhale to shift weight forward onto the hands, then exhale to carefully untuck the toes and rest the tops of the feet on the floor."
+  },
+  "before_poses": [
+    "ankle-stretch",
+    "child-pose",
+    "dragon-low-lunge",
+    "constructive-rest"
+  ],
+  "after_poses": [
+    "child-pose",
+    "ankle-stretch",
+    "dragon-low-lunge",
+    "wide-knee-child"
+  ],
+  "joint_action": [
+    "flexion",
+    "extension",
+    "compression"
+  ],
+  "primary_joints_involved": [
+    "toes",
+    "feet",
+    "ankle",
+    "knee"
+  ],
+  "nervous_system_effect": "neutral",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Hands on Blocks",
+      "description": "Place blocks in front of the body and rest the hands on them to shift some body weight forward, reducing the load through the plantar fascia and making the stretch more manageable.",
+      "props_used": ["blocks"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Lean Back Onto Heels More",
+      "description": "Sit further back so the heels bear more weight and the toe angle is slightly reduced. This distributes load differently and can provide a less acute stretch at the metatarsal heads.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Folded Blanket Under Knees",
+      "description": "Place a folded blanket under the knees before sitting back into the pose. This cushions the kneecaps and reduces joint compression for students with sensitive knee tissue.",
+      "props_used": ["blanket"],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "aggravating",
+    "pitta": "neutral",
+    "kapha": "balancing"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "groundedness",
+      "tcm_organ": "stomach",
+      "notes": "The stomach meridian ends at the second toe and runs the full dorsal foot. Stimulating this line through intense plantar loading can activate a felt sense of connection to earth and present-moment grounding."
+    }
+  ],
+  "sequencing_position": [
+    "opening",
+    "building"
+  ]
 }

@@ -2,26 +2,149 @@
   "slug": "seal",
   "sanskrit": "Bhujangasana variation",
   "english": "Seal Pose",
-  "aliases": ["Full Cobra Yin", "Seal"],
+  "aliases": [
+    "Full Cobra Yin",
+    "Seal"
+  ],
   "modes": [
     {
       "type": "yin",
       "tissue_target": "connective",
-      "hold_range": { "min": 3, "max": 7 },
+      "hold_range": {
+        "min": 3,
+        "max": 7
+      },
       "cue_notes": "From Sphinx, straighten the arms and walk the hands forward or out to the sides until the elbows are straight (or nearly so). Allow the lumbar spine to compress more deeply than in Sphinx. Keep glutes soft. Hands may be wider than shoulder-width to reduce intensity. This is a deeper lumbar compression than Sphinx — find your edge without pain."
     }
   ],
   "body_position": "prone",
-  "meridians": ["kidney", "stomach"],
+  "meridians": [
+    "kidney",
+    "stomach"
+  ],
   "element": "water",
-  "energetic_quality": ["opening", "stimulating"],
+  "energetic_quality": [
+    "opening",
+    "stimulating"
+  ],
   "difficulty": "intermediate",
   "props_required": [],
   "prop_free_variation": "sphinx",
-  "counterposes": ["child-pose", "caterpillar"],
+  "counterposes": [
+    "child-pose",
+    "caterpillar"
+  ],
   "rebound_pose": "child-pose",
-  "contraindications": ["no-backbends", "herniated-disc-lumbar", "pregnancy-second-trimester", "pregnancy-third-trimester"],
+  "contraindications": [
+    "herniated-disc",
+    "low-back-injury",
+    "pregnancy"
+  ],
   "bilateral": false,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
-  "notes": "The deeper yin backbend following Sphinx. The increased lumbar compression stresses the posterior spinal ligaments and intervertebral discs. Prop-free variation is Sphinx."
+  "notes": "The deeper yin backbend following Sphinx. The increased lumbar compression stresses the posterior spinal ligaments and intervertebral discs. Prop-free variation is Sphinx.",
+  "type_tags": [
+    "backbend",
+    "spinal-compression",
+    "chest-opener",
+    "heart-opener",
+    "hip-flexor-release",
+    "sacrum-release"
+  ],
+  "muscle_groups": [
+    "lumbar-spine",
+    "thoracic-spine",
+    "spinal-erectors",
+    "psoas",
+    "hip-flexors",
+    "chest-pectorals",
+    "anterior-shoulder",
+    "wrist-extensors",
+    "sacroiliac-ligaments"
+  ],
+  "complexity": 5,
+  "injury_risk": 6,
+  "breathing_cues": {
+    "entering": "From Sphinx, inhale to prepare. As you exhale, slowly walk the hands forward and allow the spine to drop deeper into extension — let gravity do the work rather than muscular effort. Pause at your edge before your next inhale.",
+    "holding": "Allow the breath to be natural and unhurried. Each inhale will subtly lift the chest and create a momentary decompression; each exhale invites the lumbar to yield further. If the breath becomes restricted or shallow, use the hands to press up slightly and reduce the depth.",
+    "exiting": "On an inhale, engage the arms lightly and press the floor away to walk the hands back under the shoulders. Exhale as you lower fully to the floor or move into your rebound."
+  },
+  "before_poses": [
+    "sphinx",
+    "child-pose",
+    "wide-knee-child",
+    "constructive-rest"
+  ],
+  "after_poses": [
+    "crocodile",
+    "child-pose",
+    "half-frog"
+  ],
+  "joint_action": [
+    "extension",
+    "compression",
+    "traction"
+  ],
+  "primary_joints_involved": [
+    "lumbar",
+    "thoracic",
+    "sacroiliac",
+    "shoulder",
+    "elbow",
+    "wrist"
+  ],
+  "nervous_system_effect": "sympathetic",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Sphinx Arms (Elbows Bent)",
+      "description": "Instead of straightening the arms, keep the forearms on the floor as in Sphinx. This reduces lumbar compression intensity significantly while still providing a meaningful backbend.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Folded Blanket Under Pelvis",
+      "description": "Place a folded blanket under the hip bones to reduce anterior pelvic tilt and take pressure off the lumbar facet joints. Useful for students with lumbar sensitivity or disc issues.",
+      "props_used": ["blanket"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Block Under Hands",
+      "description": "Place blocks under the hands to raise the floor level, reducing the arc of spinal extension. Allows the pose to be explored with less intensity for intermediate practitioners.",
+      "props_used": ["block"],
+      "accessibility_level": "intermediate"
+    },
+    {
+      "name": "Wider Hand Position",
+      "description": "Walk the hands wider than shoulder-width to reduce the mechanical advantage of the arms pressing into extension, thereby softening the lumbar compression for those exploring the full arm-extended position.",
+      "props_used": [],
+      "accessibility_level": "intermediate"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "neutral",
+    "pitta": "aggravating",
+    "kapha": "balancing"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "fear",
+      "tcm_organ": "kidney",
+      "notes": "Deep lumbar compression along the kidney meridian pathway can stir stored fear. The intensity of Seal — greater than Sphinx — may surface vulnerability more acutely."
+    },
+    {
+      "emotion": "courage",
+      "tcm_organ": "heart",
+      "notes": "The fully extended chest and open heart position embodies courage. Students may experience a surge of confidence or emotional exposure as the pericardium meridian is stretched."
+    },
+    {
+      "emotion": "tension_and_control",
+      "tcm_organ": "liver",
+      "notes": "The intensity of the pose can activate the liver's tendency toward holding and controlling. Practitioners with pitta constitution may feel frustration or resistance here."
+    }
+  ],
+  "sequencing_position": [
+    "building",
+    "peak"
+  ]
 }

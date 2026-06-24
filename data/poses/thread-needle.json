@@ -2,26 +2,133 @@
   "slug": "thread-needle",
   "sanskrit": "Parsva Balasana",
   "english": "Thread the Needle",
-  "aliases": ["Parsva Balasana", "Threading the Needle", "Supine Twist from Kneeling"],
+  "aliases": [
+    "Parsva Balasana",
+    "Threading the Needle",
+    "Supine Twist from Kneeling"
+  ],
   "modes": [
     {
       "type": "yin",
       "tissue_target": "connective",
-      "hold_range": { "min": 2, "max": 5 },
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
       "cue_notes": "From all fours, slide one arm under the other arm and through to the opposite side, lowering the shoulder and cheek to the floor. The hips remain elevated over the knees. The arm extending underneath creates the spinal rotation in the thoracic spine. The opposite arm can extend forward or press into the floor. Hold each side."
     }
   ],
   "body_position": "kneeling",
-  "meridians": ["gallbladder", "small-intestine"],
+  "meridians": [
+    "gallbladder",
+    "small-intestine"
+  ],
   "element": "wood",
-  "energetic_quality": ["opening", "calming"],
+  "energetic_quality": [
+    "opening",
+    "calming"
+  ],
   "difficulty": "accessible",
   "props_required": [],
   "prop_free_variation": null,
-  "counterposes": ["child-pose", "constructive-rest"],
+  "counterposes": [
+    "child-pose",
+    "constructive-rest"
+  ],
   "rebound_pose": "child-pose",
-  "contraindications": ["shoulder-injury", "no-spinal-rotation"],
+  "contraindications": [
+    "sacroiliac-joint",
+    "shoulder-injury"
+  ],
   "bilateral": true,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
-  "notes": "Targets the thoracic rotational fascia and posterior shoulder. Gallbladder meridian runs the lateral body; small intestine meridian runs the outer arm and shoulder blade region."
+  "notes": "Targets the thoracic rotational fascia and posterior shoulder. Gallbladder meridian runs the lateral body; small intestine meridian runs the outer arm and shoulder blade region.",
+  "type_tags": [
+    "twist",
+    "shoulder-opener",
+    "lateral-stretch",
+    "neck-release",
+    "restorative"
+  ],
+  "muscle_groups": [
+    "thoracic-spine",
+    "posterior-shoulder",
+    "rhomboids",
+    "trapezius",
+    "cervical-spine",
+    "lats",
+    "obliques"
+  ],
+  "complexity": 3,
+  "injury_risk": 3,
+  "breathing_cues": {
+    "entering": "Exhale as you thread the arm through, letting the shoulder and cheek soften toward the floor with the outgoing breath rather than pressing down with effort.",
+    "holding": "Allow the breath to move into the upper back and the back of the ribs on the side that is rotated upward. Each inhale creates a gentle internal expansion that deepens the twist; each exhale releases any residual holding in the neck and shoulder.",
+    "exiting": "Inhale to fill the lungs, then press lightly through the threaded hand and unwind the spine back to all-fours on the exhale."
+  },
+  "before_poses": [
+    "child-pose",
+    "wide-knee-child",
+    "anahatasana",
+    "melting-heart"
+  ],
+  "after_poses": [
+    "child-pose",
+    "anahatasana",
+    "reclining-twist",
+    "constructive-rest"
+  ],
+  "joint_action": [
+    "internal_rotation",
+    "lateral_flexion",
+    "traction"
+  ],
+  "primary_joints_involved": [
+    "thoracic",
+    "shoulder",
+    "cervical",
+    "lumbar"
+  ],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "intermediate",
+  "modifications": [
+    {
+      "name": "Forearm Variation",
+      "description": "Rather than threading the full arm through, rest the upper arm's forearm on the floor with elbow bent, reducing the range of shoulder internal rotation and making the pose accessible for sensitive shoulders.",
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Pillow or Blanket Under Shoulder",
+      "description": "Place a folded blanket or small pillow under the lowered shoulder to reduce the depth of the rotational stretch, appropriate for those with posterior shoulder tightness or impingement.",
+      "props_used": ["blanket"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Top Arm on Block",
+      "description": "Rest the top arm's hand on a block instead of extending it forward, reducing thoracic rotation demand and providing a sense of support and stability.",
+      "props_used": ["blocks"],
+      "accessibility_level": "intermediate"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "balancing",
+    "pitta": "balancing",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "frustration and burden",
+      "tcm_organ": "small-intestine",
+      "notes": "The posterior shoulder is where many people unconsciously carry chronic tension from stress and burden. The small intestine meridian's role in discernment — separating the pure from the impure — makes this pose useful for releasing what no longer serves."
+    },
+    {
+      "emotion": "release of holding",
+      "tcm_organ": "gallbladder",
+      "notes": "The gallbladder meridian's quality of decision-making and releasing frustration is accessed through the lateral body rotation; long holds here can invite a letting go of the need to control."
+    }
+  ],
+  "sequencing_position": [
+    "building",
+    "cooldown"
+  ]
 }

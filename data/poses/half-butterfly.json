@@ -2,26 +2,141 @@
   "slug": "half-butterfly",
   "sanskrit": "Ardha Baddha Konasana",
   "english": "Half Butterfly",
-  "aliases": ["Half Baddha Konasana", "One-Legged Forward Fold"],
+  "aliases": [
+    "Half Baddha Konasana",
+    "One-Legged Forward Fold"
+  ],
   "modes": [
     {
       "type": "yin",
       "tissue_target": "connective",
-      "hold_range": { "min": 2, "max": 5 },
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
       "cue_notes": "Sit with one leg extended and the other foot drawn in toward the inner thigh of the extended leg (like a half butterfly or Janu Sirsasana position). Round forward over the extended leg, allowing the spine to flex. Head hangs, hands rest wherever comfortable. Shift the torso slightly toward the extended leg to target the lateral hamstring. Hold each side."
     }
   ],
   "body_position": "seated",
-  "meridians": ["kidney", "liver"],
+  "meridians": [
+    "kidney",
+    "liver"
+  ],
   "element": "water",
-  "energetic_quality": ["opening", "calming", "cooling"],
+  "energetic_quality": [
+    "opening",
+    "calming",
+    "cooling"
+  ],
   "difficulty": "accessible",
   "props_required": [],
   "prop_free_variation": null,
-  "counterposes": ["constructive-rest", "windshield-wipers"],
+  "counterposes": [
+    "constructive-rest",
+    "windshield-wipers"
+  ],
   "rebound_pose": "constructive-rest",
-  "contraindications": ["herniated-disc-lumbar", "no-forward-folds"],
+  "contraindications": [
+    "herniated-disc"
+  ],
   "bilateral": true,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
-  "notes": "Isolates the hamstring and posterior hip of one side at a time. The kidney and bladder meridians run along the back of the extended leg. More accessible than full Caterpillar for tight hamstrings."
+  "notes": "Isolates the hamstring and posterior hip of one side at a time. The kidney and bladder meridians run along the back of the extended leg. More accessible than full Caterpillar for tight hamstrings.",
+  "type_tags": [
+    "forward-fold",
+    "hip-opener",
+    "groin-opener",
+    "hamstring-stretch",
+    "spinal-traction",
+    "restorative"
+  ],
+  "muscle_groups": [
+    "hamstrings",
+    "hip-adductors",
+    "lumbar-spine",
+    "thoracic-spine",
+    "spinal-erectors",
+    "sacroiliac-ligaments"
+  ],
+  "complexity": 3,
+  "injury_risk": 3,
+  "breathing_cues": {
+    "entering": "Inhale to sit tall, then exhale and fold forward over the extended leg, releasing the spine into a C-curve without forcing. Let the bent leg remain heavy and passive.",
+    "holding": "Allow the breath to be easy and unhurried. On each exhale, feel the back of the extended leg soften a little more. There is no rush — the connective tissue responds to time, not effort.",
+    "exiting": "On an inhale, walk the hands back toward the hips and slowly unwind the spine to upright before switching sides."
+  },
+  "before_poses": [
+    "butterfly",
+    "constructive-rest",
+    "child-pose",
+    "supta-baddha-konasana"
+  ],
+  "after_poses": [
+    "caterpillar",
+    "half-dragonfly",
+    "straddle",
+    "deer"
+  ],
+  "joint_action": [
+    "flexion",
+    "abduction",
+    "external_rotation",
+    "traction"
+  ],
+  "primary_joints_involved": [
+    "hip",
+    "knee",
+    "sacroiliac",
+    "lumbar",
+    "thoracic"
+  ],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Bolster Under Bent Knee",
+      "description": "Place a bolster or folded blanket under the bent knee to reduce adductor tension and prevent the hip from straining in its open position.",
+      "props_used": ["bolster", "blanket"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Sit on Blanket Edge",
+      "description": "Elevate the hips on a folded blanket to reduce posterior pelvic tilt and allow the forward fold to initiate from the hip crease rather than the lumbar spine.",
+      "props_used": ["blanket"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Strap Around Extended Foot",
+      "description": "Loop a strap around the foot of the extended leg so the hands can hold the strap without rounding the upper back excessively — useful when hamstrings are very tight.",
+      "props_used": ["strap"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Lateral Torso Rotation",
+      "description": "Rotate the torso slightly toward the extended leg to emphasize the lateral hamstring line and access the kidney meridian more directly along the posterior outer leg.",
+      "props_used": [],
+      "accessibility_level": "intermediate"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "balancing",
+    "pitta": "neutral",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "fear",
+      "tcm_organ": "kidney",
+      "notes": "The kidney meridian runs along the inner leg; asymmetric release can reveal one-sided fear or insecurity patterns held in the body."
+    },
+    {
+      "emotion": "grief",
+      "tcm_organ": "liver",
+      "notes": "One-sided holding in the inner thigh or groin crease may reflect unprocessed grief stored asymmetrically in the body's tissue memory."
+    }
+  ],
+  "sequencing_position": [
+    "opening",
+    "building"
+  ]
 }

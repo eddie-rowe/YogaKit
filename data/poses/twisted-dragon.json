@@ -2,26 +2,141 @@
   "slug": "twisted-dragon",
   "sanskrit": "Parivrtta Anjaneyasana variation",
   "english": "Twisted Dragon",
-  "aliases": ["Dragon with Twist", "Revolved Dragon"],
+  "aliases": [
+    "Dragon with Twist",
+    "Revolved Dragon"
+  ],
   "modes": [
     {
       "type": "yin",
       "tissue_target": "connective",
-      "hold_range": { "min": 3, "max": 7 },
+      "hold_range": {
+        "min": 3,
+        "max": 7
+      },
       "cue_notes": "From a low lunge with the right foot forward, rotate the torso to the right, bringing the right arm back or the left elbow to the outside of the right knee. Allow the spinal rotation to happen passively — do not force it. The hip flexor stretch of the back leg continues alongside the rotational stress to the thoracolumbar fascia. Hold each side."
     }
   ],
   "body_position": "kneeling",
-  "meridians": ["gallbladder", "stomach"],
+  "meridians": [
+    "gallbladder",
+    "stomach"
+  ],
   "element": "wood",
-  "energetic_quality": ["opening", "stimulating"],
+  "energetic_quality": [
+    "opening",
+    "stimulating"
+  ],
   "difficulty": "intermediate",
   "props_required": [],
   "prop_free_variation": "dragon-low-lunge",
-  "counterposes": ["child-pose", "constructive-rest"],
+  "counterposes": [
+    "child-pose",
+    "constructive-rest"
+  ],
   "rebound_pose": "constructive-rest",
-  "contraindications": ["no-spinal-rotation", "no-deep-hip-flexion"],
+  "contraindications": [
+    "hip-injury",
+    "sacroiliac-joint"
+  ],
   "bilateral": true,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
-  "notes": "Combines hip flexor opening (Dragon) with thoracolumbar fascial stress (rotation). Gallbladder meridian along the lateral body; stomach along the anterior thigh."
+  "notes": "Combines hip flexor opening (Dragon) with thoracolumbar fascial stress (rotation). Gallbladder meridian along the lateral body; stomach along the anterior thigh.",
+  "type_tags": [
+    "twist",
+    "hip-flexor-release",
+    "hip-opener",
+    "groin-opener",
+    "spinal-compression",
+    "lateral-stretch"
+  ],
+  "muscle_groups": [
+    "psoas",
+    "iliacus",
+    "hip-flexors",
+    "quadriceps",
+    "obliques",
+    "thoracic-spine",
+    "lumbar-spine",
+    "spinal-erectors",
+    "sacroiliac-ligaments"
+  ],
+  "complexity": 6,
+  "injury_risk": 5,
+  "breathing_cues": {
+    "entering": "From low lunge, inhale to lengthen the spine upright, then exhale to begin the rotation — letting the ribcage turn without forcing the shoulder. Move only as far as the breath allows.",
+    "holding": "With each inhale, grow a little taller through the crown of the head; with each exhale, allow the rotation to deepen passively. Do not use muscular effort to push the twist further — let gravity and breath do the work.",
+    "exiting": "Inhale to unwind the torso back to center, then exhale to return to a neutral low lunge before stepping back."
+  },
+  "before_poses": [
+    "dragon-low-lunge",
+    "dragon-high-lunge",
+    "child-pose",
+    "windshield-wipers",
+    "constructive-rest"
+  ],
+  "after_poses": [
+    "sleeping-swan",
+    "child-pose",
+    "reclining-twist",
+    "constructive-rest",
+    "windshield-wipers"
+  ],
+  "joint_action": [
+    "extension",
+    "flexion",
+    "compression",
+    "internal_rotation",
+    "lateral_flexion"
+  ],
+  "primary_joints_involved": [
+    "hip",
+    "knee",
+    "lumbar",
+    "thoracic",
+    "sacroiliac",
+    "shoulder"
+  ],
+  "nervous_system_effect": "neutral",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Twist Toward Front Leg",
+      "description": "Rotate toward the side of the front leg (open twist) rather than the closed twist. This emphasizes the gallbladder meridian along the lateral body and is often more accessible for students with limited thoracic rotation.",
+      "props_used": [],
+      "accessibility_level": "intermediate"
+    },
+    {
+      "name": "Hand on Block",
+      "description": "Place the lower hand on a block at its highest setting to maintain a longer spine during the twist. This prevents collapsing through the lumbar and allows cleaner rotational loading of the thoracic fascia.",
+      "props_used": ["block"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Reduced Rotation Depth",
+      "description": "Rather than taking the arm fully behind the body, simply bring the hand to the sacrum or keep both hands on the floor with a minimal spinal rotation. This reduces load on the sacroiliac joint.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "neutral",
+    "pitta": "balancing",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "frustration",
+      "tcm_organ": "liver",
+      "notes": "Rotational tension through the lateral body loads the gallbladder and liver meridian lines. Suppressed frustration or the stuck quality of stagnant liver qi can surface with sustained twisting compression."
+    },
+    {
+      "emotion": "conflict",
+      "tcm_organ": "gallbladder",
+      "notes": "The simultaneous forward-reaching (stomach meridian) and lateral-turning (gallbladder meridian) quality of this pose can mirror internal experiences of moving in two directions at once — integrating opposing forces."
+    }
+  ],
+  "sequencing_position": [
+    "peak"
+  ]
 }

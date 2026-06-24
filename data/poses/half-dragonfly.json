@@ -2,26 +2,135 @@
   "slug": "half-dragonfly",
   "sanskrit": "Janu Sirsasana variation",
   "english": "Half Dragonfly",
-  "aliases": ["Half Seated Straddle", "Janu Sirsasana yin"],
+  "aliases": [
+    "Half Seated Straddle",
+    "Janu Sirsasana yin"
+  ],
   "modes": [
     {
       "type": "yin",
       "tissue_target": "connective",
-      "hold_range": { "min": 2, "max": 5 },
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
       "cue_notes": "From a seated position, extend one leg out to the side (as in a partial straddle) while the other leg is bent with the foot resting against the inner thigh. Fold forward over the extended leg, allowing the spine to round. To target the inner hamstring, face the extended leg directly. To target the inner groin, rotate the torso toward the extended leg. Hold each side."
     }
   ],
   "body_position": "seated",
-  "meridians": ["kidney"],
+  "meridians": [
+    "kidney"
+  ],
   "element": "water",
-  "energetic_quality": ["opening", "cooling", "calming"],
+  "energetic_quality": [
+    "opening",
+    "cooling",
+    "calming"
+  ],
   "difficulty": "accessible",
   "props_required": [],
   "prop_free_variation": null,
-  "counterposes": ["bridge-yin", "supported-fish"],
+  "counterposes": [
+    "bridge-yin",
+    "supported-fish"
+  ],
   "rebound_pose": "constructive-rest",
-  "contraindications": ["herniated-disc-lumbar", "sciatica"],
+  "contraindications": [
+    "herniated-disc",
+    "sciatica"
+  ],
   "bilateral": true,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
-  "notes": "A unilateral version of Dragonfly (Straddle). Targets the hamstring and inner thigh of the extended leg. The kidney meridian runs along the inner leg. More accessible than the full bilateral straddle."
+  "notes": "A unilateral version of Dragonfly (Straddle). Targets the hamstring and inner thigh of the extended leg. The kidney meridian runs along the inner leg. More accessible than the full bilateral straddle.",
+  "type_tags": [
+    "forward-fold",
+    "hamstring-stretch",
+    "groin-opener",
+    "lateral-stretch",
+    "hip-opener",
+    "spinal-traction"
+  ],
+  "muscle_groups": [
+    "hamstrings",
+    "hip-adductors",
+    "lumbar-spine",
+    "thoracic-spine",
+    "spinal-erectors",
+    "sacroiliac-ligaments",
+    "calves"
+  ],
+  "complexity": 4,
+  "injury_risk": 4,
+  "breathing_cues": {
+    "entering": "Inhale to sit tall, then exhale and rotate the torso over the extended leg. On the next exhale, allow the spine to round and the torso to drape forward, softening any tension in the inner thigh and hamstring.",
+    "holding": "Breathe slowly and evenly. On each exhale, invite the extended leg's hamstring and the inner thigh of the bent leg to release a little more. Allow time — these are dense connective tissues that respond to patience.",
+    "exiting": "On an inhale, press the hands into the floor and slowly roll the spine upright before drawing the extended leg back to center. Pause in a neutral seated position before switching sides."
+  },
+  "before_poses": [
+    "butterfly",
+    "half-butterfly",
+    "straddle",
+    "constructive-rest"
+  ],
+  "after_poses": [
+    "straddle",
+    "caterpillar",
+    "square",
+    "deer"
+  ],
+  "joint_action": [
+    "abduction",
+    "flexion",
+    "traction",
+    "lateral_flexion"
+  ],
+  "primary_joints_involved": [
+    "hip",
+    "sacroiliac",
+    "lumbar",
+    "thoracic",
+    "knee"
+  ],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Blanket Under Raised Sit Bone",
+      "description": "If the pelvis tilts toward the extended leg side, place a folded blanket under the raised sitting bone to level the pelvis and reduce sacroiliac strain.",
+      "props_used": ["blanket"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Reduce Forward Lean",
+      "description": "Stay more upright rather than folding deeply forward, allowing the inner thigh connective tissues to receive a gentle load without stressing the posterior spine.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Bolster Under Extended Knee",
+      "description": "Place a bolster or rolled blanket under the knee of the extended leg to protect the posterior knee joint and reduce hamstring tendon strain at the ischial attachment.",
+      "props_used": ["bolster", "blanket"],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "neutral",
+    "pitta": "balancing",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "fear",
+      "tcm_organ": "kidney",
+      "notes": "The kidney meridian runs along the inner leg; asymmetric one-sided work can reveal stored fear or anxiety held more strongly on one side of the body."
+    },
+    {
+      "emotion": "tension",
+      "tcm_organ": "liver",
+      "notes": "The liver meridian traces the inner thigh; unilateral release may highlight suppressed frustration or tension stored asymmetrically in the fascial system."
+    }
+  ],
+  "sequencing_position": [
+    "building"
+  ]
 }

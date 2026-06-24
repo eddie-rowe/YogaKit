@@ -2,26 +2,108 @@
   "slug": "happy-baby",
   "sanskrit": "Ananda Balasana",
   "english": "Happy Baby",
-  "aliases": ["Dead Bug", "Ananda Balasana"],
+  "aliases": [
+    "Dead Bug",
+    "Ananda Balasana"
+  ],
   "modes": [
     {
       "type": "yin",
       "tissue_target": "connective",
-      "hold_range": { "min": 2, "max": 5 },
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
       "cue_notes": "Lie on your back, draw knees toward armpits, flex feet, and hold the outer edges of the feet (or ankles or shins). Stack ankles over knees. Allow the inner groin and sacrum to release toward the floor. Rock gently side to side to massage the sacrum if desired."
     }
   ],
   "body_position": "supine",
-  "meridians": ["kidney", "bladder"],
+  "meridians": [
+    "kidney",
+    "bladder"
+  ],
   "element": "water",
-  "energetic_quality": ["opening", "cooling", "calming"],
+  "energetic_quality": [
+    "opening",
+    "cooling",
+    "calming"
+  ],
   "difficulty": "accessible",
   "props_required": [],
   "prop_free_variation": null,
-  "counterposes": ["constructive-rest", "windshield-wipers"],
+  "counterposes": [
+    "constructive-rest",
+    "windshield-wipers"
+  ],
   "rebound_pose": "constructive-rest",
-  "contraindications": ["no-hip-external-rotation", "recent-surgery-hip"],
+  "contraindications": [
+    "hip-injury"
+  ],
   "bilateral": false,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
-  "notes": "Targets the inner groin, sacrum, and hip external rotators. The kidney and bladder meridians run along the inner leg and spine, making this an effective water-element pose."
+  "notes": "Targets the inner groin, sacrum, and hip external rotators. The kidney and bladder meridians run along the inner leg and spine, making this an effective water-element pose.",
+  "type_tags": ["hip-opener", "groin-opener", "sacrum-release", "restorative"],
+  "muscle_groups": ["hip-adductors", "piriformis", "glutes", "sacroiliac-ligaments", "lumbar-spine", "hamstrings", "hip-abductors"],
+  "complexity": 2,
+  "injury_risk": 2,
+  "breathing_cues": {
+    "entering": "As you draw the knees toward the armpits, exhale and let the tailbone release toward the floor — avoid gripping the hip flexors to pull the legs in.",
+    "holding": "Direct each inhale into the lower belly and inner groin; on the exhale, allow the sacrum to get heavier and wider against the mat. If rocking side to side, coordinate the movement with the breath.",
+    "exiting": "On an exhale, release the feet and let the legs extend slowly back toward the floor, pausing in constructive rest."
+  },
+  "before_poses": ["constructive-rest", "supta-baddha-konasana", "windshield-wipers", "reclining-twist"],
+  "after_poses": ["windshield-wipers", "reclining-twist", "twisted-roots", "savasana"],
+  "joint_action": ["flexion", "external_rotation", "abduction", "traction"],
+  "primary_joints_involved": ["sacroiliac", "hip", "knee", "lumbar"],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Hold shins instead of feet",
+      "description": "For students with tight hips or limited shoulder mobility, hold the shins rather than the outer edges of the feet, reducing the range of hip flexion required.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Strap around feet",
+      "description": "Loop a strap around each foot so arms do not have to reach as far, making the pose accessible for students with limited flexibility.",
+      "props_used": ["strap"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "One leg extended",
+      "description": "Extend one leg along the floor while drawing only the opposite knee to the armpit, creating a half happy baby that reduces total hip demand and is more manageable for asymmetrical hip restrictions.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Block under sacrum",
+      "description": "Place a block under the sacrum for a supported inversion variation that adds gentle traction and reduces effort needed to keep the hips grounded.",
+      "props_used": ["block"],
+      "accessibility_level": "intermediate"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "balancing",
+    "pitta": "neutral",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "fear",
+      "tcm_organ": "kidney",
+      "notes": "The kidney meridian runs the inner leg; deep hip flexion and inner groin opening can surface primal fear held in the psoas and hip flexor complex. Playful quality of the pose (childlike shape) can paradoxically ease access to this vulnerability."
+    },
+    {
+      "emotion": "vulnerability",
+      "tcm_organ": "kidney",
+      "notes": "The exposed belly-up position is inherently vulnerable. Some students experience emotional openness or a need for containment. Offer eye pillows and slow breath cues."
+    },
+    {
+      "emotion": "joy",
+      "tcm_organ": "heart",
+      "notes": "The playful, childlike shape often evokes levity and spontaneous joy. The slight chest opening as shoulders broaden adds heart energy to the pose."
+    }
+  ],
+  "sequencing_position": ["opening", "cooldown"]
 }

@@ -135,6 +135,13 @@ export function rankAlternatesForPose(
         targetPose.energetic_quality.includes(eq)
       ).length
       score += eqOverlap
+      // Same tissue depth (similar structural demand makes a good alternate)
+      if (pose.tissue_depth && pose.tissue_depth === targetPose.tissue_depth) score += 1
+      // Same NS effect (alternate should feel similar in the sequence)
+      if (pose.nervous_system_effect && pose.nervous_system_effect === targetPose.nervous_system_effect) score += 1
+      // Shared type tags (functional similarity = good alternate)
+      const typeTagOverlap = pose.type_tags.filter(t => targetPose.type_tags.includes(t)).length
+      score += Math.min(typeTagOverlap, 3)
       return { pose, score }
     })
     .sort((a, b) => b.score - a.score)

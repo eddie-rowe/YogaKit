@@ -23,5 +23,104 @@
   "contraindications": ["shoulder-injury"],
   "bilateral": false,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
-  "notes": "Targets the thoracic spine extension and anterior shoulder. Heart and lung meridians run the inner arm and chest wall. Counterpose is Child's Pose to neutralize the thoracic extension."
+  "notes": "Targets the thoracic spine extension and anterior shoulder. Heart and lung meridians run the inner arm and chest wall. Counterpose is Child's Pose to neutralize the thoracic extension.",
+  "type_tags": [
+    "backbend",
+    "heart-opener",
+    "chest-opener",
+    "shoulder-opener",
+    "spinal-traction"
+  ],
+  "muscle_groups": [
+    "thoracic-spine",
+    "chest-pectorals",
+    "anterior-shoulder",
+    "lats",
+    "intercostals",
+    "rhomboids",
+    "cervical-spine"
+  ],
+  "complexity": 5,
+  "injury_risk": 5,
+  "breathing_cues": {
+    "entering": "Walk the hands forward on an exhale, allowing the sternum to descend toward the earth with the outgoing breath. Move only as far as the shoulder joints allow without any pinching or sharp sensation.",
+    "holding": "Breathe broadly across the collarbones and into the front ribs, letting each inhale lift the heart space subtly and each exhale deepen the thoracic extension. If the shoulders feel strained, walk the hands slightly back.",
+    "exiting": "On an inhale, engage the core gently and walk the hands back, pressing through the palms to return the spine to a neutral table-top position."
+  },
+  "before_poses": [
+    "child-pose",
+    "wide-knee-child",
+    "anahatasana",
+    "thread-needle"
+  ],
+  "after_poses": [
+    "child-pose",
+    "thread-needle",
+    "sphinx",
+    "constructive-rest"
+  ],
+  "joint_action": [
+    "extension",
+    "traction",
+    "external_rotation",
+    "compression"
+  ],
+  "primary_joints_involved": [
+    "thoracic",
+    "shoulder",
+    "lumbar",
+    "cervical"
+  ],
+  "nervous_system_effect": "neutral",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Forearms on Floor",
+      "description": "Rather than extending the arms fully forward, lower onto the forearms. This reduces shoulder flexion and anterior shoulder capsule stretch, making the pose accessible for those with shoulder injuries.",
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Bolster Under Chest",
+      "description": "Place a bolster under the chest to support the sternum and reduce the degree of thoracic extension, shifting the pose from active stress to a more restorative opening.",
+      "props_used": ["bolster"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Props Under Hips",
+      "description": "Place a blanket or folded blocks under the hips (between hips and heels) to reduce the lumbar extension component, useful for those with lumbar sensitivity.",
+      "props_used": ["blanket", "blocks"],
+      "accessibility_level": "intermediate"
+    },
+    {
+      "name": "Child's Pose as Entry Point",
+      "description": "Begin in child's pose and gradually walk the hands forward until the chest begins to open, finding the appropriate degree of heart opening without committing to the full shape.",
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "neutral",
+    "pitta": "aggravating",
+    "kapha": "balancing"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "grief",
+      "tcm_organ": "lung",
+      "notes": "The lung meridian and the anterior shoulder region are primary sites for stored grief; melting heart's deeper anterior shoulder opening (compared to anahatasana) can surface more pronounced grief responses."
+    },
+    {
+      "emotion": "vulnerability",
+      "tcm_organ": "heart",
+      "notes": "The complete surrender of the chest toward the earth in this shape is one of the most physically vulnerable positions in yin yoga, mirroring emotional states of openness and trust."
+    },
+    {
+      "emotion": "courage",
+      "tcm_organ": "heart",
+      "notes": "Staying in a pose that demands emotional and physical openness builds heart-quality courage — the willingness to be seen and to feel fully."
+    }
+  ],
+  "sequencing_position": [
+    "building",
+    "peak"
+  ]
 }

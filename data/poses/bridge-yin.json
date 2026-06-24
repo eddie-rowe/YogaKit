@@ -2,26 +2,154 @@
   "slug": "bridge-yin",
   "sanskrit": "Setu Bandha Sarvangasana variation",
   "english": "Supported Bridge",
-  "aliases": ["Yin Bridge", "Supported Setu Bandha"],
+  "aliases": [
+    "Yin Bridge",
+    "Supported Setu Bandha"
+  ],
   "modes": [
     {
       "type": "yin",
       "tissue_target": "connective",
-      "hold_range": { "min": 2, "max": 5 },
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
       "cue_notes": "Lie on your back with knees bent, feet flat on the floor. Lift the hips and slide a block or bolster under the sacrum at a comfortable height. Release the weight of the hips fully onto the prop. Arms rest alongside the body or extend overhead. Allow the chest, belly, and hip flexors to open passively. To come out, engage the core, lift the hips briefly, remove the prop, and lower slowly."
     }
   ],
   "body_position": "supine",
-  "meridians": ["stomach", "kidney", "heart"],
+  "meridians": [
+    "stomach",
+    "kidney",
+    "heart"
+  ],
   "element": "earth",
-  "energetic_quality": ["opening", "stimulating"],
+  "energetic_quality": [
+    "opening",
+    "stimulating"
+  ],
   "difficulty": "accessible",
-  "props_required": ["block"],
+  "props_required": [
+    "block"
+  ],
   "prop_free_variation": null,
-  "counterposes": ["child-pose", "caterpillar", "constructive-rest"],
+  "counterposes": [
+    "child-pose",
+    "caterpillar",
+    "constructive-rest"
+  ],
   "rebound_pose": "constructive-rest",
-  "contraindications": ["no-backbends", "herniated-disc-lumbar", "recent-surgery-shoulder"],
+  "contraindications": [
+    "herniated-disc",
+    "low-back-injury",
+    "shoulder-injury"
+  ],
   "bilateral": false,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
-  "notes": "The supported (passive) version of Bridge targets the anterior spine, hip flexors, and chest. Stomach meridian courses the front body; kidney lines the spine; heart and lung open through the chest expansion."
+  "notes": "The supported (passive) version of Bridge targets the anterior spine, hip flexors, and chest. Stomach meridian courses the front body; kidney lines the spine; heart and lung open through the chest expansion.",
+  "type_tags": [
+    "backbend",
+    "hip-flexor-release",
+    "chest-opener",
+    "heart-opener",
+    "spinal-compression",
+    "sacrum-release",
+    "restorative"
+  ],
+  "muscle_groups": [
+    "psoas",
+    "hip-flexors",
+    "lumbar-spine",
+    "thoracic-spine",
+    "spinal-erectors",
+    "chest-pectorals",
+    "anterior-shoulder",
+    "sacroiliac-ligaments",
+    "intercostals"
+  ],
+  "complexity": 3,
+  "injury_risk": 3,
+  "breathing_cues": {
+    "entering": "Lie on your back with knees bent. On an inhale, gently press the feet and lift the hips just enough to slide the prop under the sacrum. Exhale as you release the full weight of the pelvis onto the block or bolster — ensure the prop is supporting bone, not soft tissue.",
+    "holding": "Allow the breath to be full and expansive. Each inhale naturally lifts the sternum and broadens the collarbones; each exhale melts the belly down toward the spine. If the arms are extended overhead, feel the breath widen the chest and armpits. There is nothing to do here — simply breathe and receive.",
+    "exiting": "On an inhale, engage the deep abdominals lightly and press the feet into the floor to lift the hips slightly. Slide the prop free with one hand, then exhale as you lower the spine slowly, vertebra by vertebra, to the floor."
+  },
+  "before_poses": [
+    "constructive-rest",
+    "supta-baddha-konasana",
+    "happy-baby",
+    "reclining-twist"
+  ],
+  "after_poses": [
+    "constructive-rest",
+    "reclining-twist",
+    "caterpillar",
+    "legs-up-the-wall"
+  ],
+  "joint_action": [
+    "extension",
+    "compression",
+    "abduction"
+  ],
+  "primary_joints_involved": [
+    "lumbar",
+    "thoracic",
+    "sacroiliac",
+    "hip",
+    "shoulder"
+  ],
+  "nervous_system_effect": "neutral",
+  "tissue_depth": "intermediate",
+  "modifications": [
+    {
+      "name": "Block Under Sacrum (Low Height)",
+      "description": "Use the block at its lowest flat height to provide a mild, accessible backbend. This is the standard supported bridge entry point and is suitable for most practitioners including those with mild lumbar sensitivity.",
+      "props_used": ["block"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Bolster Under Sacrum",
+      "description": "Replace the block with a bolster for a softer, more diffuse support that spreads weight across the sacrum more evenly. This is gentler on the sacroiliac joint and more restorative in quality.",
+      "props_used": ["bolster"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Feet Wider Than Hips",
+      "description": "Walk the feet slightly wider than hip-width and allow the knees to fall outward. This reduces the demand on the inner thighs and allows the sacrum to release more broadly onto the prop.",
+      "props_used": ["block"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Arms Extended Overhead",
+      "description": "Extend the arms overhead along the floor to deepen the chest and anterior shoulder opening. This engages the stomach and lung meridians more fully and increases the sense of full-body extension.",
+      "props_used": ["block"],
+      "accessibility_level": "intermediate"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "balancing",
+    "pitta": "neutral",
+    "kapha": "balancing"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "openness",
+      "tcm_organ": "heart",
+      "notes": "The passive chest and heart opening of supported bridge invites emotional openness and receptivity. The heart meridian is gently stretched across the chest, supporting release of guarded or contracted emotional holding."
+    },
+    {
+      "emotion": "fear",
+      "tcm_organ": "kidney",
+      "notes": "The psoas — the muscle most associated with the fear response and the freeze state — is passively lengthened in this pose. Long holds may release stored fear held chronically in the hip flexors."
+    },
+    {
+      "emotion": "courage",
+      "tcm_organ": "heart",
+      "notes": "The upward orientation of the sternum and the passive opening of the chest embodies quiet courage — a willingness to be seen and to receive without defenses."
+    }
+  ],
+  "sequencing_position": [
+    "building",
+    "cooldown"
+  ]
 }

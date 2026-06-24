@@ -2,26 +2,140 @@
   "slug": "dragon-low-lunge",
   "sanskrit": "Anjaneyasana",
   "english": "Dragon Low Lunge",
-  "aliases": ["Low Dragon", "Low Lunge", "Anjaneyasana"],
+  "aliases": [
+    "Low Dragon",
+    "Low Lunge",
+    "Anjaneyasana"
+  ],
   "modes": [
     {
       "type": "yin",
       "tissue_target": "connective",
-      "hold_range": { "min": 2, "max": 5 },
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
       "cue_notes": "From all fours or standing, step one foot forward between the hands (or outside the hands for Dragon Flying Low). Lower the back knee to the floor. Sink the hips forward and down to stretch the hip flexor of the back leg. Torso can be upright or hands can remain on the floor or blocks. Do not let the front knee travel past the ankle. Hold each side."
     }
   ],
   "body_position": "kneeling",
-  "meridians": ["stomach", "spleen"],
+  "meridians": [
+    "stomach",
+    "spleen"
+  ],
   "element": "earth",
-  "energetic_quality": ["opening", "stimulating"],
+  "energetic_quality": [
+    "opening",
+    "stimulating"
+  ],
   "difficulty": "accessible",
   "props_required": [],
   "prop_free_variation": null,
-  "counterposes": ["child-pose", "constructive-rest"],
+  "counterposes": [
+    "child-pose",
+    "constructive-rest"
+  ],
   "rebound_pose": "constructive-rest",
-  "contraindications": ["recent-surgery-knee", "no-deep-hip-flexion"],
+  "contraindications": [
+    "hip-injury",
+    "knee-injury"
+  ],
   "bilateral": true,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
-  "notes": "Targets the hip flexors and psoas of the back-leg side. Stomach meridian runs the anterior thigh; spleen meridian the medial thigh. One of the fundamental yin Dragon family of poses."
+  "notes": "Targets the hip flexors and psoas of the back-leg side. Stomach meridian runs the anterior thigh; spleen meridian the medial thigh. One of the fundamental yin Dragon family of poses.",
+  "type_tags": [
+    "hip-flexor-release",
+    "hip-opener",
+    "groin-opener",
+    "quad-stretch"
+  ],
+  "muscle_groups": [
+    "psoas",
+    "iliacus",
+    "hip-flexors",
+    "quadriceps",
+    "hip-adductors",
+    "sacroiliac-ligaments"
+  ],
+  "complexity": 4,
+  "injury_risk": 4,
+  "breathing_cues": {
+    "entering": "Step the foot forward on an exhale and lower the back knee on the next exhale. Let the breath guide the hips gently downward rather than pushing.",
+    "holding": "Direct the breath into the front of the hip and the crease of the groin on the back-leg side. Each exhale is an invitation for the psoas to release its grip — the inhale creates space, the exhale releases tension.",
+    "exiting": "Inhale to firm the front foot into the floor and float the torso upright. Step back to all fours or to standing on the exhale."
+  },
+  "before_poses": [
+    "child-pose",
+    "toe-squat",
+    "ankle-stretch",
+    "constructive-rest",
+    "windshield-wipers"
+  ],
+  "after_poses": [
+    "dragon-high-lunge",
+    "twisted-dragon",
+    "sleeping-swan",
+    "child-pose",
+    "constructive-rest"
+  ],
+  "joint_action": [
+    "extension",
+    "flexion",
+    "compression"
+  ],
+  "primary_joints_involved": [
+    "hip",
+    "knee",
+    "ankle",
+    "lumbar",
+    "sacroiliac"
+  ],
+  "nervous_system_effect": "neutral",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Blanket Under Back Knee",
+      "description": "Fold a blanket under the back knee to cushion the patella and reduce pressure on the back knee's skin and underlying tissue, making extended holds more sustainable.",
+      "props_used": ["blanket"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Blocks Under Hands",
+      "description": "Place yoga blocks under both hands at the highest height to reduce the load on the hip flexors and allow students with tight hips to maintain a long spine without collapsing.",
+      "props_used": ["blocks"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Shallower Hip Drop",
+      "description": "Rather than sinking the hips fully toward the floor, maintain the back knee higher and keep the front shin more vertical. This reduces the intensity at the anterior hip capsule and psoas.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Dragon Flying Low (Foot Outside Hand)",
+      "description": "Step the front foot to the outside of the same-side hand, widening the stance. This shifts load into the inner groin and adductors and is useful for students with restricted hip flexors.",
+      "props_used": [],
+      "accessibility_level": "intermediate"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "balancing",
+    "pitta": "neutral",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "fear",
+      "tcm_organ": "kidney",
+      "notes": "The psoas is known in somatic traditions as the 'fight-or-flight muscle.' It connects the lumbar spine to the femur and is the primary muscle of survival response. Sustained release in this pose can surface primal fear or anxiety stored in the deep anterior hip."
+    },
+    {
+      "emotion": "trust",
+      "tcm_organ": "kidney",
+      "notes": "As the psoas gradually yields, many students experience a shift from guardedness to groundedness — the somatic correlate of kidney-water moving from fear toward trust and willingness."
+    }
+  ],
+  "sequencing_position": [
+    "building"
+  ]
 }

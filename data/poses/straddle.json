@@ -2,26 +2,144 @@
   "slug": "straddle",
   "sanskrit": "Upavistha Konasana",
   "english": "Straddle",
-  "aliases": ["Wide-Legged Forward Fold", "Upavistha Konasana", "Seated Wide Angle"],
+  "aliases": [
+    "Wide-Legged Forward Fold",
+    "Upavistha Konasana",
+    "Seated Wide Angle"
+  ],
   "modes": [
     {
       "type": "yin",
       "tissue_target": "connective",
-      "hold_range": { "min": 2, "max": 5 },
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
       "cue_notes": "Sit with legs spread wide apart. Allow the spine to round forward in a C-curve and walk the hands forward between or beyond the legs. Head hangs. Feel the inner thighs, hamstrings, and posterior spine receiving the stretch. Do not force the legs wider — gravity does the work over time. Can also fold toward each leg individually to target one hamstring at a time."
     }
   ],
   "body_position": "seated",
-  "meridians": ["kidney", "bladder", "liver"],
+  "meridians": [
+    "kidney",
+    "bladder",
+    "liver"
+  ],
   "element": "water",
-  "energetic_quality": ["opening", "cooling", "calming"],
+  "energetic_quality": [
+    "opening",
+    "cooling",
+    "calming"
+  ],
   "difficulty": "accessible",
   "props_required": [],
   "prop_free_variation": null,
-  "counterposes": ["bridge-yin", "supported-fish"],
+  "counterposes": [
+    "bridge-yin",
+    "supported-fish"
+  ],
   "rebound_pose": "constructive-rest",
-  "contraindications": ["herniated-disc-lumbar", "no-forward-folds", "sciatica"],
+  "contraindications": [
+    "herniated-disc",
+    "sciatica"
+  ],
   "bilateral": false,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
-  "notes": "Targets the inner thigh (adductors), hamstrings, and posterior spinal ligaments. Kidney and bladder meridians run the back line; liver meridian runs the inner thigh."
+  "notes": "Targets the inner thigh (adductors), hamstrings, and posterior spinal ligaments. Kidney and bladder meridians run the back line; liver meridian runs the inner thigh.",
+  "type_tags": [
+    "forward-fold",
+    "groin-opener",
+    "hamstring-stretch",
+    "lateral-stretch",
+    "hip-opener",
+    "spinal-traction"
+  ],
+  "muscle_groups": [
+    "hip-adductors",
+    "hamstrings",
+    "lumbar-spine",
+    "thoracic-spine",
+    "spinal-erectors",
+    "sacroiliac-ligaments",
+    "calves"
+  ],
+  "complexity": 4,
+  "injury_risk": 4,
+  "breathing_cues": {
+    "entering": "Inhale to sit tall with legs wide, then on a slow exhale walk the hands forward and allow the spine to drape forward in a long C-curve. Let the inner thighs and posterior spine receive the weight of the torso.",
+    "holding": "Breathe easily. With each exhale, release any gripping in the inner thighs and lower back. Visualize the adductor fascia softening and lengthening without any muscular effort pulling the legs apart.",
+    "exiting": "On an inhale, walk the hands back toward the pelvis and press up to sitting, then bring the legs slowly together — one at a time — to avoid strain on the sacroiliac joints."
+  },
+  "before_poses": [
+    "butterfly",
+    "half-butterfly",
+    "caterpillar",
+    "constructive-rest"
+  ],
+  "after_poses": [
+    "half-dragonfly",
+    "caterpillar",
+    "square",
+    "deer"
+  ],
+  "joint_action": [
+    "abduction",
+    "flexion",
+    "traction"
+  ],
+  "primary_joints_involved": [
+    "hip",
+    "sacroiliac",
+    "lumbar",
+    "thoracic",
+    "knee"
+  ],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Legs Less Wide",
+      "description": "Reduce the angle between the legs to a comfortable range — 60 to 90 degrees — so the inner thigh and hamstring receive a therapeutic load without overstretching the adductor attachments at the ischium.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Bolster in Front",
+      "description": "Place a bolster lengthwise between the legs and rest the torso on it, allowing the body to fully surrender without muscular effort to hold the fold.",
+      "props_used": ["bolster"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Sit on Blanket",
+      "description": "Elevate the sitting bones on a folded blanket to reduce posterior pelvic tilt and allow the pelvis to tip forward, making the forward fold more accessible.",
+      "props_used": ["blanket"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Unilateral Side Fold",
+      "description": "Walk the hands toward one leg to fold over that side's hamstring and inner thigh, effectively turning the bilateral straddle into a half-dragonfly variation for targeted one-sided work.",
+      "props_used": [],
+      "accessibility_level": "intermediate"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "neutral",
+    "pitta": "balancing",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "vulnerability",
+      "tcm_organ": "liver",
+      "notes": "The wide-legged position exposes the inner groin — an area associated with vulnerability, intimacy, and boundaries; the liver meridian runs this line."
+    },
+    {
+      "emotion": "confidence",
+      "tcm_organ": "kidney",
+      "notes": "Releasing held tension in the inner thighs and groin (kidney meridian territory) can dissolve stored fear and cultivate a sense of grounded confidence."
+    }
+  ],
+  "sequencing_position": [
+    "building",
+    "peak"
+  ]
 }

@@ -2,26 +2,104 @@
   "slug": "twisted-roots",
   "sanskrit": "Supta Parivrttanasana variation",
   "english": "Twisted Roots",
-  "aliases": ["Crossed-Leg Supine Twist", "Supine Twist with Crossed Legs", "Eagle Legs Supine"],
+  "aliases": [
+    "Crossed-Leg Supine Twist",
+    "Supine Twist with Crossed Legs",
+    "Eagle Legs Supine"
+  ],
   "modes": [
     {
       "type": "yin",
       "tissue_target": "connective",
-      "hold_range": { "min": 2, "max": 5 },
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
       "cue_notes": "Lie on your back and cross one leg over the other (like Eagle legs or a simple cross). Guide both legs to one side with the opposite hand while extending the other arm out. The crossed legs create a compound rotation that targets the IT band and outer hip more specifically than a simple reclining twist. Hold each side."
     }
   ],
   "body_position": "supine",
-  "meridians": ["gallbladder", "liver"],
+  "meridians": [
+    "gallbladder",
+    "liver"
+  ],
   "element": "wood",
-  "energetic_quality": ["opening", "calming"],
+  "energetic_quality": [
+    "opening",
+    "calming"
+  ],
   "difficulty": "accessible",
   "props_required": [],
   "prop_free_variation": null,
-  "counterposes": ["constructive-rest", "savasana"],
+  "counterposes": [
+    "constructive-rest",
+    "savasana"
+  ],
   "rebound_pose": "constructive-rest",
-  "contraindications": ["no-spinal-rotation", "no-hip-external-rotation"],
+  "contraindications": [
+    "hip-injury",
+    "sacroiliac-joint"
+  ],
   "bilateral": true,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
-  "notes": "The leg crossing adds IT band and outer hip targeting to the basic reclining twist. Gallbladder meridian runs the lateral thigh and hip; liver the medial thigh. More targeted than standard reclining twist."
+  "notes": "The leg crossing adds IT band and outer hip targeting to the basic reclining twist. Gallbladder meridian runs the lateral thigh and hip; liver the medial thigh. More targeted than standard reclining twist.",
+  "type_tags": ["twist", "outer-hip", "lateral-stretch", "sacrum-release", "restorative"],
+  "muscle_groups": ["IT-band", "glutes", "piriformis", "hip-abductors", "obliques", "lumbar-spine", "thoracic-spine", "sacroiliac-ligaments", "spinal-erectors", "hip-adductors"],
+  "complexity": 3,
+  "injury_risk": 3,
+  "breathing_cues": {
+    "entering": "Cross the legs before guiding them to the side — exhale as you allow the weight of the crossed legs to carry the rotation, rather than pulling them down with the hand.",
+    "holding": "On each inhale, feel the spine lengthen and notice which part of the outer hip is the most intense zone. On each exhale, invite that area to soften without forcing — the crossed legs intensify the IT band and piriformis zone compared to a simple twist.",
+    "exiting": "Use an inhale to lift the legs back to center, uncross them, and pause in constructive rest before setting up the second side."
+  },
+  "before_poses": ["windshield-wipers", "reclining-twist", "happy-baby", "constructive-rest"],
+  "after_poses": ["constructive-rest", "savasana", "windshield-wipers", "legs-up-the-wall"],
+  "joint_action": ["internal_rotation", "external_rotation", "lateral_flexion"],
+  "primary_joints_involved": ["sacroiliac", "lumbar", "hip", "knee"],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "intermediate",
+  "modifications": [
+    {
+      "name": "Blanket between knees",
+      "description": "Place a folded blanket between the crossed knees to reduce the compound compression and rotation through the outer hip, making the pose more accessible for sensitive hips or SI joints.",
+      "props_used": ["blanket"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Reduce cross-over distance",
+      "description": "Instead of bringing the legs all the way to the floor, allow them to drop only partway, supporting the top knee with the hand to control depth.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Bolster under top knee",
+      "description": "Support the top crossed knee with a bolster to relieve the weight of the legs from the SI joint while still achieving the rotational benefit.",
+      "props_used": ["bolster"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Simple cross instead of eagle wrap",
+      "description": "Use a simple ankle cross (right ankle over left shin) rather than a full eagle leg wrap to reduce hip demand while keeping the compound rotation effect.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "balancing",
+    "pitta": "neutral",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "frustration",
+      "tcm_organ": "gallbladder",
+      "notes": "The compound lateral hip rotation with crossed legs targets the gallbladder meridian more specifically than a simple twist; chronic frustration and indecision stored in the lateral hip and IT band may surface during longer holds."
+    },
+    {
+      "emotion": "control",
+      "tcm_organ": "liver",
+      "notes": "Similar to reclining twist but with added cross-leg intensity — the need to control or manage the depth may be palpable. Invite students to completely yield the weight of the crossed legs to gravity rather than guiding with the hand."
+    }
+  ],
+  "sequencing_position": ["cooldown", "integration"]
 }

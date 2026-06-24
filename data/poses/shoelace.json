@@ -2,26 +2,139 @@
   "slug": "shoelace",
   "sanskrit": "Gomukhasana (legs)",
   "english": "Shoelace",
-  "aliases": ["Yin Gomukhasana", "Shoelace Pose", "Gomukhasana legs"],
+  "aliases": [
+    "Yin Gomukhasana",
+    "Shoelace Pose",
+    "Gomukhasana legs"
+  ],
   "modes": [
     {
       "type": "yin",
       "tissue_target": "connective",
-      "hold_range": { "min": 3, "max": 7 },
+      "hold_range": {
+        "min": 3,
+        "max": 7
+      },
       "cue_notes": "Stack the knees directly on top of each other with feet wide apart on each side. Sit between the feet if possible, or on a block if the hips are elevated. Sit upright or fold forward. The outer hip of the bottom leg and the outer hip of the top leg are both being targeted. Ensure both sitting bones are roughly level. Hold each side (switching which knee is on top). Can be combined with a forward fold for additional intensity."
     }
   ],
   "body_position": "seated",
-  "meridians": ["gallbladder"],
+  "meridians": [
+    "gallbladder"
+  ],
   "element": "wood",
-  "energetic_quality": ["opening", "cooling"],
+  "energetic_quality": [
+    "opening",
+    "cooling"
+  ],
   "difficulty": "intermediate",
   "props_required": [],
   "prop_free_variation": null,
-  "counterposes": ["constructive-rest", "windshield-wipers"],
+  "counterposes": [
+    "constructive-rest",
+    "windshield-wipers"
+  ],
   "rebound_pose": "constructive-rest",
-  "contraindications": ["no-hip-external-rotation", "recent-surgery-hip"],
+  "contraindications": [
+    "hip-injury"
+  ],
   "bilateral": true,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
-  "notes": "Deeply targets the outer hip, piriformis, and IT band. The gallbladder meridian runs the lateral leg and hip. One of the most effective yin poses for the deep lateral hip rotators."
+  "notes": "Deeply targets the outer hip, piriformis, and IT band. The gallbladder meridian runs the lateral leg and hip. One of the most effective yin poses for the deep lateral hip rotators.",
+  "type_tags": [
+    "hip-opener",
+    "outer-hip",
+    "groin-opener",
+    "restorative"
+  ],
+  "muscle_groups": [
+    "piriformis",
+    "glutes",
+    "hip-abductors",
+    "IT-band",
+    "sacroiliac-ligaments",
+    "hip-adductors"
+  ],
+  "complexity": 5,
+  "injury_risk": 5,
+  "breathing_cues": {
+    "entering": "Inhale to sit tall over the stacked knees, finding an even weight through both sitting bones. On the exhale, allow the hips to settle and the outer hip tissues to receive the load passively.",
+    "holding": "Breathe slowly into the belly and lateral hips. On each exhale, let the piriformis and outer hip fascial layers soften. If the intensity is high, make the exhale longer than the inhale to calm the nervous system.",
+    "exiting": "On an inhale, press the hands into the floor and gently lift the top knee to release the stacking. Extend both legs forward briefly before switching sides."
+  },
+  "before_poses": [
+    "square",
+    "eye-of-needle",
+    "butterfly",
+    "deer",
+    "constructive-rest"
+  ],
+  "after_poses": [
+    "shoelace-fold",
+    "square-fold",
+    "deer",
+    "windshield-wipers"
+  ],
+  "joint_action": [
+    "external_rotation",
+    "abduction",
+    "flexion",
+    "compression",
+    "adduction"
+  ],
+  "primary_joints_involved": [
+    "hip",
+    "knee",
+    "sacroiliac",
+    "lumbar"
+  ],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "One Leg Extended",
+      "description": "Keep the bottom leg extended straight forward rather than stacking, creating a half-shoelace that reduces the intensity on the lower hip while still targeting the upper hip.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Blanket Under Top Knee",
+      "description": "Place a folded blanket under the top knee if it floats high above the bottom knee, reducing the load on the lateral knee ligament and outer hip.",
+      "props_used": ["blanket"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Blocks Under Both Knees",
+      "description": "Use blocks under each knee to create a more neutral position for students with very tight lateral hip rotators or those recovering from hip or knee issues.",
+      "props_used": ["block"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Block Under Sitting Bones",
+      "description": "Sit on a block if the hips are elevated off the floor in the stacked position, reducing spinal compensation and creating a more even pelvic foundation.",
+      "props_used": ["block"],
+      "accessibility_level": "intermediate"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "neutral",
+    "pitta": "balancing",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "frustration",
+      "tcm_organ": "gallbladder",
+      "notes": "The IT band and outer hip are primary sites for gallbladder meridian stagnation — frustration, anger, and the inability to move forward can manifest as tightness here."
+    },
+    {
+      "emotion": "grief",
+      "tcm_organ": "liver",
+      "notes": "When the lower leg is dominant in the posture, the liver meridian of the inner leg may be accessed, surfacing unexpressed grief or sadness held in the lower body."
+    }
+  ],
+  "sequencing_position": [
+    "building",
+    "peak"
+  ]
 }

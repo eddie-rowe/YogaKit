@@ -23,5 +23,69 @@
   "contraindications": [],
   "bilateral": false,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
-  "notes": "Final integration pose. All meridians are listed as Savasana integrates the entire practice. Typically held 5–15 minutes at the end of a session."
+  "notes": "Final integration pose. All meridians are listed as Savasana integrates the entire practice. Typically held 5–15 minutes at the end of a session.",
+  "type_tags": ["restorative", "integration"],
+  "muscle_groups": ["psoas", "iliacus", "hip-flexors", "hamstrings", "glutes", "lumbar-spine", "thoracic-spine", "cervical-spine", "spinal-erectors", "diaphragm"],
+  "complexity": 1,
+  "injury_risk": 1,
+  "breathing_cues": {
+    "entering": "As you lower onto the floor, exhale completely and let the breath settle into its natural rhythm without manipulation.",
+    "holding": "Allow the breath to become effortless and involuntary. Notice the belly softening on each inhale, the chest widening, and the whole body gently sinking heavier on each exhale. No controlling — just observing.",
+    "exiting": "Before moving, take one slow, deliberate inhale and let the exhale carry you into gentle awareness of your fingertips and toes."
+  },
+  "before_poses": ["reclining-twist", "windshield-wipers", "constructive-rest", "supported-fish"],
+  "after_poses": ["constructive-rest"],
+  "joint_action": ["traction"],
+  "primary_joints_involved": ["lumbar", "thoracic", "cervical", "hip", "knee", "ankle"],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "superficial",
+  "modifications": [
+    {
+      "name": "Blanket under knees",
+      "description": "Place a folded blanket or bolster under the knees to reduce lumbar strain. Especially helpful for students with lower back tension or lordosis.",
+      "props_used": ["blanket"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Bolster under knees",
+      "description": "Use a full bolster under the knees for a more elevated support that completely releases the psoas and lumbar region.",
+      "props_used": ["bolster"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Eye pillow",
+      "description": "Place a lightly weighted eye pillow over the eyes to promote sensory withdrawal (pratyahara) and deepen the parasympathetic response.",
+      "props_used": ["eye-pillow"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Blanket roll under cervical spine",
+      "description": "Roll a small blanket and place it under the neck curve to support students with cervical lordosis or neck discomfort.",
+      "props_used": ["blanket"],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "balancing",
+    "pitta": "balancing",
+    "kapha": "balancing"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "fear",
+      "tcm_organ": "kidney",
+      "notes": "Surrendering to stillness can surface deep fear of dissolution or loss of control. The kidney-bladder axis governs primal fear; holding space for whatever arises in Savasana is essential teacher awareness."
+    },
+    {
+      "emotion": "anxiety",
+      "tcm_organ": "kidney",
+      "notes": "Chronic sympathetic activation may make stillness uncomfortable initially. Students may experience a brief restless window before the nervous system fully downshifts."
+    },
+    {
+      "emotion": "grief",
+      "tcm_organ": "lung",
+      "notes": "Full-body release can open grief held in the chest and intercostals. Lung governs letting go; Savasana is the ultimate practice of non-attachment."
+    }
+  ],
+  "sequencing_position": ["integration"]
 }

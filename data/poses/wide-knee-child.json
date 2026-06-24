@@ -2,26 +2,138 @@
   "slug": "wide-knee-child",
   "sanskrit": "Utthita Balasana",
   "english": "Wide-Knee Child's Pose",
-  "aliases": ["Wide Child's Pose", "Utthita Balasana", "Extended Child's Pose Wide"],
+  "aliases": [
+    "Wide Child's Pose",
+    "Utthita Balasana",
+    "Extended Child's Pose Wide"
+  ],
   "modes": [
     {
       "type": "yin",
       "tissue_target": "connective",
-      "hold_range": { "min": 2, "max": 5 },
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
       "cue_notes": "From kneeling, spread the knees wide apart while keeping the big toes touching. Fold forward, bringing the belly between the thighs and the forehead toward the floor. Arms extend forward or rest alongside the body. A bolster between the chest and floor supports a more restful hold. The inner groin and hip adductors receive more stretch than in narrow Child's Pose."
     }
   ],
   "body_position": "kneeling",
-  "meridians": ["kidney", "liver"],
+  "meridians": [
+    "kidney",
+    "liver"
+  ],
   "element": "water",
-  "energetic_quality": ["grounding", "calming", "opening"],
+  "energetic_quality": [
+    "grounding",
+    "calming",
+    "opening"
+  ],
   "difficulty": "accessible",
   "props_required": [],
   "prop_free_variation": null,
   "counterposes": [],
   "rebound_pose": "constructive-rest",
-  "contraindications": ["recent-surgery-hip"],
+  "contraindications": [
+    "hip-injury"
+  ],
   "bilateral": false,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
-  "notes": "Wide knee position adds inner groin opening to the standard Child's Pose. Kidney meridian runs the inner thigh; liver meridian the medial thigh. An accessible alternative to Butterfly for students who prefer to be prone."
+  "notes": "Wide knee position adds inner groin opening to the standard Child's Pose. Kidney meridian runs the inner thigh; liver meridian the medial thigh. An accessible alternative to Butterfly for students who prefer to be prone.",
+  "type_tags": [
+    "forward-fold",
+    "groin-opener",
+    "hip-opener",
+    "spinal-traction",
+    "restorative",
+    "integration",
+    "sacrum-release"
+  ],
+  "muscle_groups": [
+    "hip-adductors",
+    "lumbar-spine",
+    "sacroiliac-ligaments",
+    "spinal-erectors",
+    "glutes",
+    "thoracic-spine",
+    "hip-flexors"
+  ],
+  "complexity": 2,
+  "injury_risk": 2,
+  "breathing_cues": {
+    "entering": "Exhale to walk the hands forward and lower the forehead toward the floor as the knees spread wide. Let the inner groins release downward with each exhale.",
+    "holding": "Send the breath into the back body and the sides of the ribcage. On each exhale, allow the inner thighs to melt a little closer to the floor without pushing the knees wider.",
+    "exiting": "Inhale to walk the hands back and slowly bring the knees together before rising."
+  },
+  "before_poses": [
+    "sleeping-swan",
+    "frog",
+    "butterfly",
+    "dragon-low-lunge",
+    "half-butterfly"
+  ],
+  "after_poses": [
+    "child-pose",
+    "constructive-rest",
+    "reclining-twist",
+    "thread-needle",
+    "savasana"
+  ],
+  "joint_action": [
+    "flexion",
+    "traction",
+    "abduction",
+    "compression"
+  ],
+  "primary_joints_involved": [
+    "hip",
+    "knee",
+    "ankle",
+    "lumbar",
+    "thoracic",
+    "sacroiliac"
+  ],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "intermediate",
+  "modifications": [
+    {
+      "name": "Bolster Under Chest",
+      "description": "Place a bolster lengthwise under the chest and belly so the torso rests fully supported. This removes any effortful holding and allows complete muscular release in the inner groin and low back.",
+      "props_used": ["bolster"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Blanket Under Knees",
+      "description": "Place a folded blanket under both knees to cushion the joint and reduce knee compression. Especially useful for students with sensitive knee tissue or hard floors.",
+      "props_used": ["blanket"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Arms Alongside Body",
+      "description": "Rest arms alongside the torso with palms up rather than reaching forward. This removes all shoulder engagement and creates a more inward, restful quality.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "balancing",
+    "pitta": "balancing",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "safety",
+      "tcm_organ": "kidney",
+      "notes": "Like narrow Child's Pose, the forward-folded position activates a primal sense of shelter. The wide knee variation adds a quality of openness within safety."
+    },
+    {
+      "emotion": "vulnerability",
+      "tcm_organ": "liver",
+      "notes": "The wider exposure of the inner groin — which is rarely presented to the world — can evoke vulnerability. The liver meridian runs the inner thigh, and releasing here may connect to emotional experiences of trust and self-protection."
+    }
+  ],
+  "sequencing_position": [
+    "opening",
+    "cooldown"
+  ]
 }

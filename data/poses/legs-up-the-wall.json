@@ -23,5 +23,64 @@
   "contraindications": ["high-blood-pressure", "glaucoma", "no-inversions"],
   "bilateral": false,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
-  "notes": "A restorative mild inversion. Kidney and bladder meridians run along the back of the leg and spine. Promotes venous return and nervous system downregulation."
+  "notes": "A restorative mild inversion. Kidney and bladder meridians run along the back of the leg and spine. Promotes venous return and nervous system downregulation.",
+  "type_tags": ["inversion", "hamstring-stretch", "restorative", "sacrum-release"],
+  "muscle_groups": ["hamstrings", "calves", "achilles", "lumbar-spine", "sacroiliac-ligaments", "spinal-erectors", "diaphragm"],
+  "complexity": 2,
+  "injury_risk": 2,
+  "breathing_cues": {
+    "entering": "As you swing the legs up, exhale fully and allow the lower back to soften into the floor before finding stillness.",
+    "holding": "Notice how the breath becomes noticeably fuller — the diaphragm meets less compression in this mild inversion. Let the belly rise freely on each inhale and feel a wave of release down the backs of the legs on each exhale.",
+    "exiting": "On an exhale, gently slide the legs down the wall or bend the knees toward the chest before rolling to one side."
+  },
+  "before_poses": ["constructive-rest", "savasana", "happy-baby", "supta-baddha-konasana"],
+  "after_poses": ["savasana", "constructive-rest", "reclining-twist", "windshield-wipers"],
+  "joint_action": ["flexion", "traction", "inversion"],
+  "primary_joints_involved": ["lumbar", "sacroiliac", "hip", "knee", "ankle"],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "intermediate",
+  "modifications": [
+    {
+      "name": "Blanket under hips",
+      "description": "Place a folded blanket or bolster under the hips to elevate the pelvis and create a gentler inversion angle, improving lymphatic drainage and reducing hamstring tension.",
+      "props_used": ["blanket"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Feet wide on wall",
+      "description": "Allow feet to separate wider on the wall into a V-shape, reducing hamstring intensity and adding a gentle inner groin stretch.",
+      "props_used": ["wall"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Bent knees on wall",
+      "description": "For students with very tight hamstrings, scoot the hips back from the wall so the knees can be slightly bent while the legs still rest on the wall.",
+      "props_used": ["wall"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Supported butterfly legs",
+      "description": "Bring the soles of the feet together against the wall in a butterfly shape, combining the inversion with a gentle inner groin and hip opener. Use blocks under thighs for support.",
+      "props_used": ["wall", "block"],
+      "accessibility_level": "intermediate"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "balancing",
+    "pitta": "balancing",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "surrender",
+      "tcm_organ": "kidney",
+      "notes": "The inversion and complete passivity invite a letting-go quality associated with kidney energy. Students may experience a subtle emotional softening as venous return and nervous system tone shift toward deep rest."
+    },
+    {
+      "emotion": "exhaustion-grief",
+      "tcm_organ": "kidney",
+      "notes": "This pose is traditionally used in restorative sequences for burnout and adrenal fatigue. Emotional exhaustion associated with depletion of kidney jing may surface as tears or quiet emotion."
+    }
+  ],
+  "sequencing_position": ["cooldown", "integration"]
 }

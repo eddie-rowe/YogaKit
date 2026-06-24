@@ -2,26 +2,126 @@
   "slug": "crocodile",
   "sanskrit": "Makarasana",
   "english": "Crocodile Pose",
-  "aliases": ["Makarasana", "Prone Relaxation"],
+  "aliases": [
+    "Makarasana",
+    "Prone Relaxation"
+  ],
   "modes": [
     {
       "type": "yin",
       "tissue_target": "connective",
-      "hold_range": { "min": 2, "max": 5 },
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
       "cue_notes": "Lie on the belly with arms folded under the forehead or chin resting on the hands. Legs extend behind, feet falling naturally outward. Allow the entire front of the body to melt into the floor. Breathe into the back of the body — feel the belly against the floor. This is a resting pose, not an active stretch."
     }
   ],
   "body_position": "prone",
-  "meridians": ["stomach"],
+  "meridians": [
+    "stomach"
+  ],
   "element": "earth",
-  "energetic_quality": ["grounding", "calming"],
+  "energetic_quality": [
+    "grounding",
+    "calming"
+  ],
   "difficulty": "accessible",
   "props_required": [],
   "prop_free_variation": null,
   "counterposes": [],
   "rebound_pose": "savasana",
-  "contraindications": ["pregnancy-second-trimester", "pregnancy-third-trimester"],
+  "contraindications": [
+    "pregnancy"
+  ],
   "bilateral": false,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
-  "notes": "A neutral prone resting pose. No significant stretch is created. Used as a transition or recovery pose between prone postures. The stomach meridian is gently activated through ground contact with the belly."
+  "notes": "A neutral prone resting pose. No significant stretch is created. Used as a transition or recovery pose between prone postures. The stomach meridian is gently activated through ground contact with the belly.",
+  "type_tags": [
+    "restorative",
+    "integration"
+  ],
+  "muscle_groups": [
+    "lumbar-spine",
+    "diaphragm",
+    "spinal-erectors"
+  ],
+  "complexity": 1,
+  "injury_risk": 1,
+  "breathing_cues": {
+    "entering": "Lower the entire body to the floor on an exhale, allowing the belly, chest, and forehead to release downward. Let the exhale be complete before the next inhale arrives.",
+    "holding": "Direct the breath into the back of the body — feel the ribcage expand laterally and the back body rise on each inhale, and the belly press gently into the floor. This three-dimensional breathing promotes natural decompression of the spine. Let each exhale lengthen and soften.",
+    "exiting": "On an inhale, press the palms into the floor and gently lift the chest, transitioning smoothly to the next pose."
+  },
+  "before_poses": [
+    "sphinx",
+    "seal",
+    "half-frog",
+    "frog"
+  ],
+  "after_poses": [
+    "sphinx",
+    "half-frog",
+    "child-pose",
+    "savasana"
+  ],
+  "joint_action": [
+    "extension",
+    "traction"
+  ],
+  "primary_joints_involved": [
+    "lumbar",
+    "thoracic",
+    "shoulder"
+  ],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "superficial",
+  "modifications": [
+    {
+      "name": "Arms to Sides (Savasana Arms)",
+      "description": "Instead of folding the arms under the forehead, extend the arms alongside the body with palms facing up. This removes any shoulder tension from the arm position and deepens the sense of surrender.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Forehead on Stacked Hands",
+      "description": "Stack both hands one atop the other and rest the forehead on top. Creates a mild chin tuck that decompresses the cervical spine, suitable for those with neck sensitivity.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Bolster Under Chest",
+      "description": "Place a bolster crosswise under the chest and arms for students with shoulder discomfort, pregnancy (early stages only), or anyone who finds the full prone position uncomfortable.",
+      "props_used": ["bolster"],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Blanket Under Forehead",
+      "description": "Place a thin folded blanket under the forehead to prevent neck strain and provide a softer surface for the face, particularly useful during longer holds.",
+      "props_used": ["blanket"],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "balancing",
+    "pitta": "neutral",
+    "kapha": "aggravating"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "surrender",
+      "tcm_organ": "stomach",
+      "notes": "Lying face-down on the earth is a primal posture of surrender and safety. The stomach meridian's activation through belly contact can support letting go of worry and overthinking."
+    },
+    {
+      "emotion": "safety",
+      "tcm_organ": "kidney",
+      "notes": "The full contact of the front body with the ground creates a felt sense of containment and safety, which may allow the nervous system to downregulate stored survival energy."
+    }
+  ],
+  "sequencing_position": [
+    "opening",
+    "cooldown",
+    "integration"
+  ]
 }
