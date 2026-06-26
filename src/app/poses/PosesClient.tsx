@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import { ArrowLeft } from 'lucide-react'
 import type { Pose, PoseTypeTag, MuscleGroup, FiveElement, NervousSystemEffect, SequencingPosition } from '@/lib/pipeline/types'
 import PoseCard from './PoseCard'
 
@@ -138,50 +139,53 @@ export default function PosesClient({ poses }: Props) {
     filterComplexityMax < 10 || filterRiskMax < 10
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-[#f4f1ed]">
       {/* Header */}
-      <header className="bg-white border-b border-stone-200 px-4 py-4 sticky top-0 z-10">
+      <header className="bg-white/90 backdrop-blur-md border-b border-[#e2dbd4] px-4 py-4 sticky top-14 z-10">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <h1 className="text-2xl font-semibold text-stone-900">Pose Library</h1>
+              <h1 className="font-serif text-2xl font-semibold text-stone-900">Pose Library</h1>
               <p className="text-sm text-stone-500">{filtered.length} of {poses.length} poses</p>
             </div>
-            <a href="/dimensions" className="text-sm text-stone-500 hover:text-stone-900 transition-colors">
-              ← New session
+            <a href="/dimensions" className="flex items-center gap-1.5 text-sm text-stone-500 hover:text-stone-900 transition-colors">
+              <ArrowLeft size={14} />
+              New session
             </a>
           </div>
 
           {/* Search + sort row */}
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <input
               type="search"
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search by English, Sanskrit, or alias..."
-              className="flex-1 px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-400 bg-white"
+              className="w-full sm:flex-1 px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-400 bg-white"
             />
-            <select
-              value={sortBy}
-              onChange={e => setSortBy(e.target.value as SortKey)}
-              className="px-3 py-2 text-sm border border-stone-200 rounded-lg bg-white focus:outline-none"
-            >
-              <option value="alpha">A–Z</option>
-              <option value="complexity-asc">Complexity ↑</option>
-              <option value="complexity-desc">Complexity ↓</option>
-              <option value="risk-asc">Risk ↑</option>
-              <option value="risk-desc">Risk ↓</option>
-            </select>
-            <button
-              onClick={() => setShowFilters(f => !f)}
-              className={`px-3 py-2 text-sm border rounded-lg transition-colors ${
-                hasActiveFilters
-                  ? 'border-stone-900 bg-stone-900 text-white'
-                  : 'border-stone-200 bg-white text-stone-700 hover:border-stone-400'
-              }`}
-            >
-              Filters {hasActiveFilters ? `(active)` : ''}
-            </button>
+            <div className="flex gap-2">
+              <select
+                value={sortBy}
+                onChange={e => setSortBy(e.target.value as SortKey)}
+                className="flex-1 sm:flex-none px-3 py-2 text-sm border border-stone-200 rounded-lg bg-white focus:outline-none"
+              >
+                <option value="alpha">A–Z</option>
+                <option value="complexity-asc">Complexity ↑</option>
+                <option value="complexity-desc">Complexity ↓</option>
+                <option value="risk-asc">Risk ↑</option>
+                <option value="risk-desc">Risk ↓</option>
+              </select>
+              <button
+                onClick={() => setShowFilters(f => !f)}
+                className={`px-3 py-2 text-sm border rounded-lg transition-colors ${
+                  hasActiveFilters
+                    ? 'border-[#3d3530] bg-[#3d3530] text-white'
+                    : 'border-stone-200 bg-white text-stone-700 hover:border-stone-400'
+                }`}
+              >
+                Filters {hasActiveFilters ? `(active)` : ''}
+              </button>
+            </div>
           </div>
 
           {/* Filter panel */}
@@ -194,7 +198,7 @@ export default function PosesClient({ poses }: Props) {
                   <div className="flex gap-1">
                     <button
                       onClick={() => setFilterElement('')}
-                      className={`px-2 py-1 text-xs rounded border ${!filterElement ? 'bg-stone-900 text-white border-stone-900' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
+                      className={`px-2 py-1 text-xs rounded border ${!filterElement ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
                     >
                       All
                     </button>
@@ -219,7 +223,7 @@ export default function PosesClient({ poses }: Props) {
                   <div className="flex flex-wrap gap-1">
                     <button
                       onClick={() => setFilterPosition('')}
-                      className={`px-2 py-1 text-xs rounded border ${!filterPosition ? 'bg-stone-900 text-white border-stone-900' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
+                      className={`px-2 py-1 text-xs rounded border ${!filterPosition ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
                     >
                       All
                     </button>
@@ -227,7 +231,7 @@ export default function PosesClient({ poses }: Props) {
                       <button
                         key={pos}
                         onClick={() => setFilterPosition(prev => prev === pos ? '' : pos)}
-                        className={`px-2 py-1 text-xs rounded border capitalize ${filterPosition === pos ? 'bg-stone-900 text-white border-stone-900' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
+                        className={`px-2 py-1 text-xs rounded border capitalize ${filterPosition === pos ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
                       >
                         {pos}
                       </button>
@@ -243,7 +247,7 @@ export default function PosesClient({ poses }: Props) {
                   <div className="flex gap-1">
                     <button
                       onClick={() => setFilterNS('')}
-                      className={`px-2 py-1 text-xs rounded border ${!filterNS ? 'bg-stone-900 text-white border-stone-900' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
+                      className={`px-2 py-1 text-xs rounded border ${!filterNS ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
                     >
                       All
                     </button>
@@ -264,7 +268,7 @@ export default function PosesClient({ poses }: Props) {
                   <div className="flex flex-wrap gap-1">
                     <button
                       onClick={() => setFilterSeqPosition('')}
-                      className={`px-2 py-1 text-xs rounded border ${!filterSeqPosition ? 'bg-stone-900 text-white border-stone-900' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
+                      className={`px-2 py-1 text-xs rounded border ${!filterSeqPosition ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
                     >
                       All
                     </button>
@@ -272,7 +276,7 @@ export default function PosesClient({ poses }: Props) {
                       <button
                         key={pos}
                         onClick={() => setFilterSeqPosition(prev => prev === pos ? '' : pos)}
-                        className={`px-2 py-1 text-xs rounded border capitalize ${filterSeqPosition === pos ? 'bg-stone-900 text-white border-stone-900' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
+                        className={`px-2 py-1 text-xs rounded border capitalize ${filterSeqPosition === pos ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
                       >
                         {pos}
                       </button>
@@ -313,7 +317,7 @@ export default function PosesClient({ poses }: Props) {
                     <button
                       key={tag}
                       onClick={() => toggleTypeTag(tag)}
-                      className={`px-2 py-0.5 text-xs rounded border ${filterTypeTags.includes(tag) ? 'bg-stone-900 text-white border-stone-900' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
+                      className={`px-2 py-0.5 text-xs rounded border ${filterTypeTags.includes(tag) ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
                     >
                       {tag}
                     </button>
@@ -329,7 +333,7 @@ export default function PosesClient({ poses }: Props) {
                     <button
                       key={m}
                       onClick={() => toggleMuscleGroup(m)}
-                      className={`px-2 py-0.5 text-xs rounded border ${filterMuscleGroups.includes(m) ? 'bg-indigo-700 text-white border-indigo-700' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
+                      className={`px-2 py-0.5 text-xs rounded border ${filterMuscleGroups.includes(m) ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
                     >
                       {m}
                     </button>

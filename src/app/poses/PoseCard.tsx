@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+import { ChevronDown, ChevronUp } from 'lucide-react'
 import type { Pose, FiveElement } from '@/lib/pipeline/types'
 
 interface Props {
@@ -63,7 +65,7 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
   const yinMode = pose.modes.find(m => m.type === 'yin') ?? pose.modes[0]
 
   return (
-    <article className="bg-white border border-stone-200 rounded-xl overflow-hidden hover:border-stone-300 transition-colors">
+    <article className="bg-white border border-[#e2dbd4] rounded-xl overflow-hidden hover:border-[#c9b9a8] hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.06)] transition-all duration-200">
       {/* Card header — always visible */}
       <button
         onClick={onToggle}
@@ -72,32 +74,34 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
       >
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <h2 className="font-semibold text-stone-900 truncate">{pose.english}</h2>
+            <h2 className="font-serif font-semibold text-stone-900 truncate">{pose.english}</h2>
             <p className="text-xs text-stone-400 italic truncate">{pose.sanskrit}</p>
           </div>
           <div className="flex-shrink-0 flex gap-1 items-center">
             {pose.element && (
-              <span className={`text-xs px-1.5 py-0.5 rounded capitalize ${ELEMENT_COLORS[pose.element]}`}>
+              <span className={`text-xs px-2 py-0.5 rounded-full capitalize ${ELEMENT_COLORS[pose.element]}`}>
                 {pose.element}
               </span>
             )}
-            <span className={`text-xs px-1.5 py-0.5 rounded capitalize ${DIFFICULTY_COLORS[pose.difficulty]}`}>
+            <span className={`text-xs px-2 py-0.5 rounded-full capitalize ${DIFFICULTY_COLORS[pose.difficulty]}`}>
               {pose.difficulty}
             </span>
-            <span className="text-stone-400 text-sm ml-1">{expanded ? '▲' : '▼'}</span>
+            <span className="text-stone-400 ml-1">
+              {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            </span>
           </div>
         </div>
 
         {/* Complexity/risk bars — always visible */}
         <div className="mt-3 space-y-1.5">
-          <ComplexityBar value={pose.complexity} label="Complexity" color="bg-indigo-400" />
+          <ComplexityBar value={pose.complexity} label="Complexity" color="bg-stone-400" />
           <ComplexityBar value={pose.injury_risk} label="Injury risk" color="bg-rose-400" />
         </div>
 
         {/* Type tags row */}
         <div className="flex flex-wrap gap-1 mt-2">
           {pose.type_tags.slice(0, expanded ? undefined : 4).map(tag => (
-            <span key={tag} className="text-xs px-1.5 py-0.5 bg-stone-100 text-stone-600 rounded">
+            <span key={tag} className="text-xs px-2 py-0.5 bg-stone-100 text-stone-600 rounded-full">
               {tag}
             </span>
           ))}
@@ -108,7 +112,7 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
       </button>
 
       {/* Expanded detail */}
-      {expanded && (
+      <div className={`expandable-content ${expanded ? 'open' : ''}`}>
         <div className="px-4 pb-4 border-t border-stone-100 mt-1 pt-3 space-y-4 text-sm">
 
           {/* Hold range + body position + NS effect + tissue depth + sequencing position */}
@@ -154,7 +158,7 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
             <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1">Muscle groups</h3>
             <div className="flex flex-wrap gap-1">
               {pose.muscle_groups.map(m => (
-                <span key={m} className="text-xs px-1.5 py-0.5 bg-indigo-50 text-indigo-700 rounded">{m}</span>
+                <span key={m} className="text-xs px-1.5 py-0.5 bg-stone-100 text-stone-600 rounded">{m}</span>
               ))}
             </div>
           </div>
@@ -309,8 +313,17 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
 
           {/* Source */}
           <p className="text-xs text-stone-400 pt-1 border-t border-stone-50">{pose.source}</p>
+
+          {/* Detail link */}
+          <Link
+            href={`/poses/${pose.slug}`}
+            className="inline-flex items-center gap-1 text-xs text-[#3d3530] hover:text-[#1c1714] font-medium transition-colors"
+            onClick={e => e.stopPropagation()}
+          >
+            View anatomy diagram →
+          </Link>
         </div>
-      )}
+      </div>
     </article>
   )
 }

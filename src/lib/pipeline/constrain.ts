@@ -148,7 +148,7 @@ function buildFallbackSequence(ctx: SessionContext): { poses: SequenceItem[]; to
     pose,
     modeType: resolveModeType(pose, modeFilter),
     holdMinutes: targetHold,
-    why: 'Selected by rules engine fallback.',
+    why: `Grounds the ${style} practice; supports ${pose.body_position} exploration.`,
     transitionFromPrev: i === 0 ? '' : 'Gently transition into the next pose.',
     transitionToNext: '',
     alternates: rankAlternatesForPose(pose, meridians, ctx.elementFocus, [...allSlugs, ...contraindicatedSlugs]),
@@ -171,7 +171,7 @@ export function constrain(draft: PipelineDraft, ctx: SessionContext): Constraine
   let resolvedItems: SequenceItem[] = []
   const usedSlugs: string[] = []
 
-  if (!draft.generationSkipped && draft.poses.length > 0) {
+  if (draft.poses.length > 0) {
     for (let i = 0; i < draft.poses.length; i++) {
       const entry = draft.poses[i]
       const pose = getPoseBySlug(entry.poseSlug)
@@ -251,6 +251,5 @@ export function constrain(draft: PipelineDraft, ctx: SessionContext): Constraine
     quote: draft.quote,
     items: expanded,
     totalHoldMinutes,
-    generationProvenance: (draft.generationSkipped || !aiProducedItems) ? 'rules-only' : 'ai-assisted',
   }
 }

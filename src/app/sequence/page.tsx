@@ -2,8 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import type { ValidatedSequence, SequenceItem } from '@/lib/pipeline/types'
+import { AlertTriangle } from 'lucide-react'
+import type { ValidatedSequence, SequenceItem, Pose } from '@/lib/pipeline/types'
+
+function slugToTitle(slug: string): string {
+  return slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+}
 
 function modeBadge(mode: SequenceItem['modeType']) {
   if (mode === 'yin') return 'bg-indigo-100 text-indigo-800'
@@ -23,7 +27,13 @@ function sideLabel(side: SequenceItem['side']) {
   return null
 }
 
-function AlternatesDisclosure({ alternates }: { alternates: SequenceItem['alternates'] }) {
+function AlternatesDisclosure({
+  alternates,
+  onSwap,
+}: {
+  alternates: SequenceItem['alternates']
+  onSwap?: (alt: Pose) => void
+}) {
   const [open, setOpen] = useState(false)
   const shown = alternates.slice(0, 3)
 
@@ -40,11 +50,20 @@ function AlternatesDisclosure({ alternates }: { alternates: SequenceItem['altern
       {open && (
         <ul className="mt-1 pl-4 space-y-0.5">
           {shown.map(alt => (
-            <li key={alt.slug} className="text-xs text-stone-600">
-              {alt.english}
-              {alt.sanskrit ? (
-                <span className="italic text-stone-400 ml-1">· {alt.sanskrit}</span>
-              ) : null}
+            <li key={alt.slug} className="text-xs text-stone-600 flex items-center gap-2">
+              <span>
+                {alt.english}
+                {alt.sanskrit ? (
+                  <span className="italic text-stone-400 ml-1">· {alt.sanskrit}</span>
+                ) : null}
+              </span>
+              <button
+                type="button"
+                onClick={() => onSwap?.(alt)}
+                className="ml-auto text-xs text-[#3d3530] hover:underline shrink-0"
+              >
+                Swap in
+              </button>
             </li>
           ))}
         </ul>
@@ -53,45 +72,59 @@ function AlternatesDisclosure({ alternates }: { alternates: SequenceItem['altern
   )
 }
 
+function NoSequenceFound() {
+  return (
+    <div className="min-h-screen bg-stone-50 flex items-center justify-center">
+      <div className="text-center space-y-4">
+        <p className="text-stone-500 text-lg">No sequence found.</p>
+        <Link
+          href="/dimensions"
+          className="inline-block text-sm text-stone-700 underline underline-offset-2 hover:text-stone-900"
+        >
+          ← Back to dimensions
+        </Link>
+      </div>
+    </div>
+  )
+}
+
 export default function SequencePage() {
-  const router = useRouter()
   const [sequence, setSequence] = useState<ValidatedSequence | null>(null)
-  const [error, setError] = useState(false)
+  const [loaded, setLoaded] = useState(false)
+  const [items, setItems] = useState<SequenceItem[]>([])
+  const [modified, setModified] = useState(false)
 
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem('krama_sequence')
-      if (!raw) {
-        setError(true)
-        return
+      if (raw) {
+        const parsed = JSON.parse(raw) as ValidatedSequence
+        setSequence(parsed)
+        setItems(parsed.items)
       }
-      const parsed = JSON.parse(raw) as ValidatedSequence
-      setSequence(parsed)
     } catch {
-      setError(true)
+      // sequence stays null
     }
+    setLoaded(true)
   }, [])
 
-  if (error || (!sequence && typeof window !== 'undefined')) {
-    return (
-      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <p className="text-stone-500 text-lg">No sequence found.</p>
-          <Link
-            href="/dimensions"
-            className="inline-block text-sm text-stone-700 underline underline-offset-2 hover:text-stone-900"
-          >
-            ← Back to dimensions
-          </Link>
-        </div>
-      </div>
-    )
-  }
-
-  if (!sequence) return null
+  if (!loaded) return null
+  if (!sequence) return <NoSequenceFound />
 
   const ctx = sequence.sessionContext
   const totalMinutes = sequence.totalHoldMinutes
+
+  // Build a slug→name lookup from all items (and their alternates) for safety note display
+  const poseNameBySlug: Record<string, string> = {}
+  for (const item of sequence.items) {
+    poseNameBySlug[item.pose.slug] = item.pose.english
+    for (const alt of item.alternates) {
+      poseNameBySlug[alt.slug] = alt.english
+    }
+  }
+  function resolvePoseName(slug: string): string {
+    return poseNameBySlug[slug] ?? slugToTitle(slug)
+  }
 
   return (
     <div className="min-h-screen bg-stone-50 py-8 px-4">
@@ -103,9 +136,10 @@ export default function SequencePage() {
             className="flex items-center gap-1 text-sm text-stone-600 hover:text-stone-900"
           >
             <span>←</span>
-            <span>New sequence</span>
+            <span className="hidden sm:inline">New sequence</span>
+            <span className="sm:hidden">Back</span>
           </Link>
-          <h1 className="text-xl font-semibold text-stone-800 tracking-tight">
+          <h1 className="text-base sm:text-xl font-semibold text-stone-800 tracking-tight">
             Sequence Review
           </h1>
           <Link
@@ -121,15 +155,6 @@ export default function SequencePage() {
             <h2 className="text-sm font-semibold text-stone-700 uppercase tracking-wide">
               Session Summary
             </h2>
-            <span
-              className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                sequence.generationProvenance === 'ai-assisted'
-                  ? 'bg-violet-100 text-violet-800'
-                  : 'bg-stone-100 text-stone-700'
-              }`}
-            >
-              {sequence.generationProvenance === 'ai-assisted' ? 'AI-assisted' : 'Rules-only'}
-            </span>
           </div>
           <dl className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-3 text-sm">
             {ctx.style && (
@@ -202,7 +227,9 @@ export default function SequencePage() {
                     <span className="mt-0.5 w-2 h-2 rounded-full bg-amber-400 shrink-0" />
                     <div className="space-y-0.5">
                       <p>
-                        <span className="font-medium text-amber-900">{note.poseSlug}</span>
+                        <span className="font-medium text-amber-900">
+                          {resolvePoseName(note.poseSlug)}
+                        </span>
                         <span className="text-amber-700 ml-2">{note.issue}</span>
                       </p>
                       <p className="text-amber-600 text-xs">
@@ -211,7 +238,7 @@ export default function SequencePage() {
                           {note.action.replace('-', ' ')}
                         </span>
                         {note.replacedWith && (
-                          <span> → <span className="font-medium">{note.replacedWith}</span></span>
+                          <span> → <span className="font-medium">{resolvePoseName(note.replacedWith)}</span></span>
                         )}
                       </p>
                     </div>
@@ -224,10 +251,10 @@ export default function SequencePage() {
 
         <div className="space-y-3">
           <h2 className="text-sm font-semibold text-stone-700 uppercase tracking-wide px-1">
-            Sequence ({sequence.items.length} poses)
+            Sequence ({items.length} poses)
           </h2>
           <ol className="space-y-3">
-            {sequence.items.map((item, index) => (
+            {items.map((item, index) => (
               <li
                 key={`${item.pose.slug}-${index}`}
                 className="bg-white border border-stone-100 hover:border-stone-300 rounded-lg shadow-sm p-4 flex gap-4 transition-colors"
@@ -273,7 +300,17 @@ export default function SequencePage() {
                     </p>
                   )}
                   {item.alternates.length > 0 && (
-                    <AlternatesDisclosure alternates={item.alternates} />
+                    <AlternatesDisclosure
+                      alternates={item.alternates}
+                      onSwap={(alt) => {
+                        setItems(prev => prev.map((it, idx) =>
+                          idx === index
+                            ? { ...it, pose: alt, alternates: it.alternates.filter(a => a.slug !== alt.slug) }
+                            : it
+                        ))
+                        setModified(true)
+                      }}
+                    />
                   )}
                 </div>
               </li>
@@ -282,8 +319,8 @@ export default function SequencePage() {
         </div>
 
         <footer className="bg-white border border-stone-100 rounded-lg shadow-sm px-5 py-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4 text-sm text-stone-600">
-            <span>
+          <div className="flex items-center gap-4 text-sm text-stone-600 flex-wrap">
+            <span className="whitespace-nowrap">
               Total hold time:{' '}
               <span className="font-semibold text-stone-800">{totalMinutes} min</span>
             </span>
@@ -300,6 +337,12 @@ export default function SequencePage() {
                 </>
               )}
             </span>
+            {modified && (
+              <span className="text-xs text-amber-700 flex items-center gap-1">
+                <AlertTriangle size={12} />
+                Modified — re-validate before teaching
+              </span>
+            )}
           </div>
           <Link
             href="/sequence/export"

@@ -1,5 +1,7 @@
 'use client'
 
+import { AlertTriangle } from 'lucide-react'
+
 interface ConflictNoticeProps {
   theme: string
   conflictingConstraints: string[]
@@ -20,9 +22,7 @@ export function ConflictNotice({
   return (
     <div className="rounded-lg border border-amber-300 bg-amber-50 p-5">
       <div className="flex items-start gap-3">
-        <span className="mt-0.5 text-amber-600" aria-hidden="true">
-          ⚠
-        </span>
+        <AlertTriangle size={16} className="mt-0.5 shrink-0 text-amber-600" aria-hidden="true" />
         <div className="flex-1">
           <h3 className="text-sm font-semibold text-amber-900">
             Theme conflict detected

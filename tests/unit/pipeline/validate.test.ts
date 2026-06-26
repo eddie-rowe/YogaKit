@@ -83,7 +83,6 @@ function makeConstrained(items: SequenceItem[], ctxOverrides: Partial<SessionCon
     quote: { text: 'Test quote', attribution: 'Test' },
     items,
     totalHoldMinutes: items.reduce((s, i) => s + i.holdMinutes, 0),
-    generationProvenance: 'ai-assisted',
   }
 }
 

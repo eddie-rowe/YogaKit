@@ -58,7 +58,7 @@ export default function ExportPage() {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center gap-4 p-8">
         <p className="text-lg text-gray-600">Nothing to export.</p>
-        <Link href="/sequence" className="text-indigo-600 underline underline-offset-2 hover:text-indigo-800">
+        <Link href="/sequence" className="text-[#3d3530] underline underline-offset-2 hover:text-stone-900">
           ← Back to sequence builder
         </Link>
       </main>
@@ -74,13 +74,13 @@ export default function ExportPage() {
       <div className="no-print mb-6 flex items-center justify-between">
         <Link
           href="/sequence"
-          className="text-indigo-600 underline underline-offset-2 hover:text-indigo-800 text-sm"
+          className="text-[#3d3530] underline underline-offset-2 hover:text-stone-900 text-sm"
         >
           ← Back to sequence
         </Link>
         <button
           onClick={() => window.print()}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-sans font-medium px-4 py-2 rounded-md transition-colors"
+          className="bg-[#3d3530] hover:bg-[#2e2822] text-white text-sm font-sans font-medium px-4 py-2 rounded-md transition-colors"
         >
           Print cue sheet
         </button>

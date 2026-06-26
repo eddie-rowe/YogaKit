@@ -315,6 +315,14 @@
     },
     "bilateral": { "type": "boolean" },
     "source": { "type": "string", "minLength": 1 },
-    "notes": { "type": "string", "default": "" }
+    "notes": { "type": "string", "default": "" },
+    "chakras": {
+      "type": "array",
+      "items": {
+        "enum": ["root", "sacral", "solar-plexus", "heart", "throat", "third-eye", "crown"]
+      },
+      "default": [],
+      "description": "Primary chakras activated in this pose. Standard 7-chakra system. Optional — populated progressively."
+    }
   }
 }

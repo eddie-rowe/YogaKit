@@ -60,8 +60,6 @@ function makeDraft(poses: DraftPoseEntry[] = [], overrides: Partial<PipelineDraf
     philosophicalFraming: 'Test framing',
     quote: { text: 'Quote', attribution: 'Source' },
     poses,
-    aiModelUsed: 'test',
-    generationSkipped: false,
     ...overrides,
   }
 }
@@ -104,7 +102,6 @@ describe('constrain()', () => {
     const result = constrain(draft, makeCtx())
     expect(result.items.length).toBeGreaterThan(0)
     expect(result.items[0].pose.slug).toBe('sphinx')
-    expect(result.generationProvenance).toBe('ai-assisted')
   })
 
   it('skips AI poses with unknown slugs (hallucination guard)', () => {
@@ -125,7 +122,6 @@ describe('constrain()', () => {
     const result = constrain(draft, makeCtx())
     // Should fall back to rules-only since no valid poses remain
     expect(result.items.every(i => i.pose.slug !== 'hallucinated-pose')).toBe(true)
-    expect(result.generationProvenance).toBe('rules-only')
   })
 
   it('strips contraindicated poses from AI draft', () => {
@@ -194,13 +190,12 @@ describe('constrain()', () => {
     expect(sides).toContain('left')
   })
 
-  it('falls back to rules-only sequence when AI draft is empty', () => {
+  it('falls back to rules-only sequence when draft has no poses', () => {
     const fallbackPose = makePose({ slug: 'fallback-pose' })
     vi.mocked(filterPoses).mockReturnValue([fallbackPose])
 
-    const draft = makeDraft([], { generationSkipped: true })
+    const draft = makeDraft([])
     const result = constrain(draft, makeCtx())
-    expect(result.generationProvenance).toBe('rules-only')
     expect(result.items.length).toBeGreaterThan(0)
   })
 
@@ -222,7 +217,6 @@ describe('constrain()', () => {
     const draft = makeDraft([], {
       themeStatement: 'Winter is a time to rest.',
       quote: { text: 'Rest', attribution: 'Someone' },
-      generationSkipped: true,
     })
     const result = constrain(draft, makeCtx())
     expect(result.themeStatement).toBe('Winter is a time to rest.')

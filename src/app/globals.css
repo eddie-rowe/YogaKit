@@ -1,8 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f4f1ed;
+  --surface: #fefcfb;
+  --foreground: #1c1714;
+  --border: #e2dbd4;
+  --muted: #8a7d73;
 }
 
 @theme inline {
@@ -10,17 +13,49 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-cormorant);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #1a1612;
+    --surface: #242018;
+    --foreground: #f5ede3;
+    --border: #3d342c;
+    --muted: #8a7d73;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Smooth height animation for expandable cards */
+.expandable-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 220ms ease;
+}
+.expandable-content.open {
+  grid-template-rows: 1fr;
+}
+.expandable-content > div {
+  overflow: hidden;
+  min-height: 0;
+}
+
+input[type=range] {
+  accent-color: #3d3530;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

@@ -53,11 +53,13 @@ function detectThemeConflict(
 export const maxDuration = 30
 
 // POST /api/generate — SSE streaming endpoint for sequence generation
-// Pipeline order (immutable): AI propose → rules engine constrain → safety validate (RULE-H1)
+// Pipeline order (immutable): Propose → rules engine constrain → safety validate (RULE-H1)
 export async function POST(req: NextRequest) {
   let ctx: SessionContext
+  let skipDurationCheck = false
   try {
     const body = await req.json()
+    skipDurationCheck = Boolean(body.skipDurationCheck)
     ctx = resolveDefaults(body as Partial<SessionContext>)
   } catch {
     return new Response(JSON.stringify({ error: 'Invalid request body' }), {
@@ -91,26 +93,28 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        // Stage 1: AI proposal
-        controller.enqueue(sseEvent('progress', { stage: 'propose', message: 'Generating sequence with AI…' }))
+        // Stage 1: Propose
+        controller.enqueue(sseEvent('progress', { stage: 'propose', message: 'Building your sequence…' }))
         const draft = await propose(ctx)
 
         // Stage 2: Rules engine constraint
         controller.enqueue(sseEvent('progress', { stage: 'constrain', message: 'Applying sequencing rules…' }))
         const constrained = constrain(draft, ctx)
 
-        // Check for duration conflict
-        const targetHold = (ctx.durationMinutes ?? 75) * 0.8
-        const holdDiff = Math.abs(constrained.totalHoldMinutes - targetHold)
-        if (holdDiff > targetHold * 0.3) {
-          controller.enqueue(sseEvent('error', {
-            code: 'DURATION_CONFLICT',
-            message: `Sequence hold time (${constrained.totalHoldMinutes} min) deviates significantly from target.`,
-            totalHoldMinutes: constrained.totalHoldMinutes,
-            targetMinutes: ctx.durationMinutes,
-          }))
-          controller.close()
-          return
+        // Check for duration conflict (skip if teacher already accepted compressed sequence)
+        if (!skipDurationCheck) {
+          const targetHold = (ctx.durationMinutes ?? 75) * 0.8
+          const holdDiff = Math.abs(constrained.totalHoldMinutes - targetHold)
+          if (holdDiff > targetHold * 0.3) {
+            controller.enqueue(sseEvent('error', {
+              code: 'DURATION_CONFLICT',
+              message: `Sequence hold time (${constrained.totalHoldMinutes} min) deviates significantly from target.`,
+              totalHoldMinutes: constrained.totalHoldMinutes,
+              targetMinutes: ctx.durationMinutes,
+            }))
+            controller.close()
+            return
+          }
         }
 
         // Stage 3: Safety validation
@@ -147,7 +151,7 @@ export async function POST(req: NextRequest) {
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Unknown error'
         controller.enqueue(sseEvent('error', {
-          code: 'AI_ERROR',
+          code: 'PIPELINE_ERROR',
           message,
         }))
         controller.close()

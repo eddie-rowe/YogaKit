@@ -98,6 +98,10 @@ export interface PoseModification {
 
 export type SequencingPosition = 'opening' | 'building' | 'peak' | 'cooldown' | 'integration'
 
+export type ChakraName =
+  | 'root' | 'sacral' | 'solar-plexus' | 'heart'
+  | 'throat' | 'third-eye' | 'crown'
+
 // ─── Pose Library Types ──────────────────────────────────────────────────────
 
 export interface HoldRange {
@@ -148,6 +152,7 @@ export interface Pose {
   sequencing_position: SequencingPosition[]
   before_poses?: string[]
   after_poses?: string[]
+  chakras?: ChakraName[]
 }
 
 // ─── Meridian Data Types ─────────────────────────────────────────────────────
@@ -223,8 +228,6 @@ export interface PipelineDraft {
     attribution: string
   }
   poses: DraftPoseEntry[]
-  aiModelUsed: string
-  generationSkipped: boolean
 }
 
 // ─── Pipeline Stage 2 → 3: ConstrainedSequence ───────────────────────────────
@@ -247,7 +250,6 @@ export interface ConstrainedSequence {
   quote: { text: string; attribution: string }
   items: SequenceItem[]
   totalHoldMinutes: number
-  generationProvenance: 'ai-assisted' | 'rules-only'
 }
 
 // ─── Pipeline Stage 3 output: ValidatedSequence (final) ──────────────────────

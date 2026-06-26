@@ -26,8 +26,6 @@ function makeEmptyDraft(): PipelineDraft {
     philosophicalFraming: 'Test framing.',
     quote: { text: 'Test', attribution: 'Test' },
     poses: [],
-    aiModelUsed: 'none',
-    generationSkipped: true,
   }
 }
 

@@ -32,7 +32,7 @@ const INITIAL_FORM: FormState = {
   style: 'yin',
   durationMinutes: 75,
   elementFocus: '',
-  season: 'spring',
+  season: currentSeason() as Season,
   experienceLevel: 'mixed',
   timeOfDay: '',
   intensityCurve: 'bell',
@@ -40,6 +40,14 @@ const INITIAL_FORM: FormState = {
   goal: '',
   contraindications: new Set(),
   propsAvailable: new Set(),
+}
+
+function currentSeason(): string {
+  const month = new Date().getMonth() // 0=Jan
+  if (month <= 1 || month === 11) return 'winter'
+  if (month <= 4) return 'spring'
+  if (month <= 7) return 'summer'
+  return 'autumn'
 }
 
 function toggleSetItem(prev: Set<string>, value: string): Set<string> {
