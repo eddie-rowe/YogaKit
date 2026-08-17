@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
+import { DatadogRum } from "@/components/DatadogRum";
 import AppHeader from "@/components/layout/AppHeader";
 import "./globals.css";
 
@@ -39,6 +40,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <ServiceWorkerRegistration />
+        <DatadogRum />
         <AppHeader />
         {children}
       </body>
