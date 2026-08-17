@@ -11,7 +11,9 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],
-      include: ['src/lib/pipeline/constrain.ts', 'src/lib/pipeline/validate.ts'],
+      // Coverage mandate transferred from the (now parked) rules engine + safety layer
+      // to the friction engine + validator-lite — constitution v2.0.0, RULE-S3.
+      include: ['src/lib/friction/index.ts', 'src/lib/validator/lite.ts'],
       thresholds: {
         lines: 100,
         functions: 100,
