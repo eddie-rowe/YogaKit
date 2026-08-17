@@ -98,13 +98,13 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
           {/* Complexity/risk bars */}
           <div className="space-y-1.5">
             <ComplexityBar value={pose.complexity} label="Complexity" color="bg-stone-400" />
-            <ComplexityBar value={pose.injury_risk} label="Injury risk" color="bg-rose-400" />
+            <ComplexityBar value={pose.injury_risk ?? 0} label="Injury risk" color="bg-rose-400" />
           </div>
 
           {/* Type tags row */}
-          {pose.type_tags.length > 0 && (
+          {(pose.type_tags?.length ?? 0) > 0 && (
             <div className="flex flex-wrap gap-1">
-              {pose.type_tags.map(tag => (
+              {pose.type_tags!.map(tag => (
                 <span key={tag} className="text-xs px-2 py-0.5 bg-stone-100 text-stone-600 rounded-full">
                   {tag}
                 </span>
@@ -139,11 +139,11 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
           </div>
 
           {/* Meridians */}
-          {pose.meridians.length > 0 && (
+          {(pose.meridians?.length ?? 0) > 0 && (
             <div>
               <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1">Meridians</h3>
               <div className="flex flex-wrap gap-1">
-                {pose.meridians.map(m => (
+                {pose.meridians!.map(m => (
                   <span key={m} className="text-xs px-1.5 py-0.5 bg-teal-50 text-teal-700 rounded capitalize">{m}</span>
                 ))}
               </div>
@@ -154,7 +154,7 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
           <div>
             <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1">Muscle groups</h3>
             <div className="flex flex-wrap gap-1">
-              {pose.muscle_groups.map(m => (
+              {(pose.muscle_groups ?? []).map(m => (
                 <span key={m} className="text-xs px-1.5 py-0.5 bg-stone-100 text-stone-600 rounded">{m}</span>
               ))}
             </div>
@@ -198,17 +198,17 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
           )}
 
           {/* Joint actions + joints involved */}
-          {pose.joint_action?.length > 0 && (
+          {(pose.joint_action?.length ?? 0) > 0 && (
             <div>
               <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1">Joint actions</h3>
               <div className="flex flex-wrap gap-1">
-                {pose.joint_action.map(j => (
+                {pose.joint_action!.map(j => (
                   <span key={j} className="text-xs px-1.5 py-0.5 bg-slate-50 text-slate-600 rounded">{j.replace(/_/g, ' ')}</span>
                 ))}
               </div>
-              {pose.primary_joints_involved?.length > 0 && (
+              {(pose.primary_joints_involved?.length ?? 0) > 0 && (
                 <div className="flex flex-wrap gap-1 mt-1">
-                  {pose.primary_joints_involved.map(j => (
+                  {pose.primary_joints_involved!.map(j => (
                     <span key={j} className="text-xs px-1.5 py-0.5 bg-slate-100 text-slate-700 rounded font-medium">{j}</span>
                   ))}
                 </div>
@@ -224,8 +224,8 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
                 {(['vata', 'pitta', 'kapha'] as const).map(d => (
                   <div key={d} className="flex flex-col items-center">
                     <span className="text-stone-400 capitalize mb-0.5">{d}</span>
-                    <span className={`font-medium capitalize ${DOSHA_EFFECT_COLORS[pose.dosha_affinity[d]]}`}>
-                      {pose.dosha_affinity[d]}
+                    <span className={`font-medium capitalize ${DOSHA_EFFECT_COLORS[pose.dosha_affinity![d]]}`}>
+                      {pose.dosha_affinity![d]}
                     </span>
                   </div>
                 ))}
@@ -234,11 +234,11 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
           )}
 
           {/* Emotional release potential */}
-          {pose.emotional_release_potential?.length > 0 && (
+          {(pose.emotional_release_potential?.length ?? 0) > 0 && (
             <div>
               <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1">Emotional territory</h3>
               <div className="space-y-1.5">
-                {pose.emotional_release_potential.map((e, i) => (
+                {pose.emotional_release_potential!.map((e, i) => (
                   <div key={i} className="flex gap-2 items-start">
                     <span className="text-xs px-1.5 py-0.5 bg-rose-50 text-rose-700 rounded capitalize whitespace-nowrap">{e.emotion}</span>
                     <span className="text-xs text-stone-400">({e.tcm_organ})</span>
@@ -250,11 +250,11 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
           )}
 
           {/* Modifications */}
-          {pose.modifications?.length > 0 && (
+          {(pose.modifications?.length ?? 0) > 0 && (
             <div>
               <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1">Modifications</h3>
               <div className="space-y-2">
-                {pose.modifications.map((mod, i) => (
+                {pose.modifications!.map((mod, i) => (
                   <div key={i} className="border border-stone-100 rounded-lg px-2.5 py-2">
                     <div className="flex items-center gap-2 mb-0.5">
                       <span className="text-xs font-medium text-stone-700">{mod.name}</span>

@@ -90,11 +90,11 @@ export default function PosesClient({ poses }: Props) {
     }
 
     if (filterTypeTags.length > 0) {
-      list = list.filter(p => filterTypeTags.every(t => p.type_tags.includes(t)))
+      list = list.filter(p => filterTypeTags.every(t => (p.type_tags ?? []).includes(t)))
     }
 
     if (filterMuscleGroups.length > 0) {
-      list = list.filter(p => filterMuscleGroups.every(m => p.muscle_groups.includes(m)))
+      list = list.filter(p => filterMuscleGroups.every(m => (p.muscle_groups ?? []).includes(m)))
     }
 
     if (filterNS) {
@@ -105,13 +105,13 @@ export default function PosesClient({ poses }: Props) {
       list = list.filter(p => p.sequencing_position?.includes(filterSeqPosition))
     }
 
-    list = list.filter(p => p.complexity <= filterComplexityMax && p.injury_risk <= filterRiskMax)
+    list = list.filter(p => p.complexity <= filterComplexityMax && (p.injury_risk ?? 0) <= filterRiskMax)
 
     switch (sortBy) {
       case 'complexity-asc':  return [...list].sort((a, b) => a.complexity - b.complexity)
       case 'complexity-desc': return [...list].sort((a, b) => b.complexity - a.complexity)
-      case 'risk-asc':        return [...list].sort((a, b) => a.injury_risk - b.injury_risk)
-      case 'risk-desc':       return [...list].sort((a, b) => b.injury_risk - a.injury_risk)
+      case 'risk-asc':        return [...list].sort((a, b) => (a.injury_risk ?? 0) - (b.injury_risk ?? 0))
+      case 'risk-desc':       return [...list].sort((a, b) => (b.injury_risk ?? 0) - (a.injury_risk ?? 0))
       default:                return [...list].sort((a, b) => a.english.localeCompare(b.english))
     }
   }, [poses, search, filterElement, filterPosition, filterTypeTags, filterMuscleGroups, filterNS, filterSeqPosition, filterComplexityMax, filterRiskMax, sortBy])

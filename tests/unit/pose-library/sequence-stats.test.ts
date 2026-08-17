@@ -23,6 +23,7 @@ function makePose(overrides: Partial<Pose> = {}): Pose {
     nervous_system_effect: 'neutral', tissue_depth: 'superficial',
     modifications: [], dosha_affinity: { vata: 'neutral', pitta: 'neutral', kapha: 'neutral' },
     emotional_release_potential: [], sequencing_position: [],
+    base_of_support: ['sitbones'], orientation: 'upright', cog_height: 'low', spinal_action: 'neutral', plane: 'sagittal', level: 'low', zone: 'near', energetic_direction: 'langhana', intensity: 2, default_measure: { seconds: 120 },
     ...overrides,
   }
 }

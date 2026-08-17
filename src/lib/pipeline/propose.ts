@@ -64,7 +64,7 @@ function scorePose(
   else if (pose.element === null) score += 0  // neutral — no penalty
 
   // Meridian overlap
-  const overlap = pose.meridians.filter(m => meridianSlugs.includes(m)).length
+  const overlap = (pose.meridians ?? []).filter(m => meridianSlugs.includes(m)).length
   score += overlap * 2
 
   // Experience level fitness
@@ -111,7 +111,7 @@ function buildWhyText(
 ): string {
   const parts: string[] = []
 
-  const overlapping = pose.meridians.filter(m => meridianSlugs.includes(m))
+  const overlapping = (pose.meridians ?? []).filter(m => meridianSlugs.includes(m))
   if (overlapping.length > 0) {
     const names = overlapping.slice(0, 2).join(' and ')
     parts.push(`Targets the ${names} meridian${overlapping.length !== 1 ? 's' : ''}`)
@@ -121,8 +121,8 @@ function buildWhyText(
     parts.push(`directly supporting ${pose.element} element work this ${ctx.season ?? 'season'}`)
   }
 
-  if (pose.muscle_groups.length > 0) {
-    const groups = pose.muscle_groups.slice(0, 2).map(g => g.replace(/-/g, ' ')).join(' and ')
+  if ((pose.muscle_groups?.length ?? 0) > 0) {
+    const groups = pose.muscle_groups!.slice(0, 2).map(g => g.replace(/-/g, ' ')).join(' and ')
     parts.push(`releasing through the ${groups}`)
   }
 
@@ -175,8 +175,8 @@ function pickAlternates(
       p.modes.some(m => m.type === modeFilter || m.type === 'both'),
     )
     .sort((a, b) => {
-      const aOverlap = a.meridians.filter(m => meridianSlugs.includes(m)).length
-      const bOverlap = b.meridians.filter(m => meridianSlugs.includes(m)).length
+      const aOverlap = (a.meridians ?? []).filter(m => meridianSlugs.includes(m)).length
+      const bOverlap = (b.meridians ?? []).filter(m => meridianSlugs.includes(m)).length
       return bOverlap - aOverlap
     })
     .slice(0, 3)

@@ -45,6 +45,7 @@ function makePose(overrides: Partial<Pose> = {}): Pose {
     dosha_affinity: { vata: 'balancing', pitta: 'neutral', kapha: 'neutral' },
     emotional_release_potential: [],
     sequencing_position: ['cooldown'],
+    base_of_support: ['sitbones'], orientation: 'upright', cog_height: 'low', spinal_action: 'neutral', plane: 'sagittal', level: 'low', zone: 'near', energetic_direction: 'langhana', intensity: 2, default_measure: { seconds: 120 },
     ...overrides,
   }
 }

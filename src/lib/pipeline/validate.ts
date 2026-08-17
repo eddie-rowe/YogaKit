@@ -36,7 +36,7 @@ function findSafeReplacement(
   excludeSlugs: string[]
 ): Pose | null {
   // Try alternates on the pose first
-  for (const slug of violatingPose.counterposes) {
+  for (const slug of violatingPose.counterposes ?? []) {
     if (excludeSlugs.includes(slug)) continue
     const candidate = getPoseBySlug(slug)
     if (

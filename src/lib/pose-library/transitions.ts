@@ -96,10 +96,10 @@ function scoreCandidate(
   const reasons: string[] = []
 
   // 1. Meridian overlap — shared meridian lines feel connected
-  const meridianOverlap = candidate.meridians.filter(m => target.meridians.includes(m)).length
+  const meridianOverlap = (candidate.meridians ?? []).filter(m => (target.meridians ?? []).includes(m)).length
   if (meridianOverlap > 0) {
     score += meridianOverlap * 2
-    reasons.push(`shared meridian${meridianOverlap > 1 ? 's' : ''}: ${candidate.meridians.filter(m => target.meridians.includes(m)).join(', ')}`)
+    reasons.push(`shared meridian${meridianOverlap > 1 ? 's' : ''}: ${(candidate.meridians ?? []).filter(m => (target.meridians ?? []).includes(m)).join(', ')}`)
   }
 
   // 2. Element continuity — same TCM element deepens thematic coherence
@@ -128,9 +128,9 @@ function scoreCandidate(
   const affinityMap = direction === 'after' ? AFTER_AFFINITIES : BEFORE_AFFINITIES
   let tagScore = 0
   const matchedAffinities: string[] = []
-  for (const tag of target.type_tags) {
+  for (const tag of target.type_tags ?? []) {
     const affinities = affinityMap[tag] ?? []
-    const matched = candidate.type_tags.filter(ct => affinities.includes(ct))
+    const matched = (candidate.type_tags ?? []).filter(ct => affinities.includes(ct))
     tagScore += matched.length
     matchedAffinities.push(...matched)
   }
@@ -141,7 +141,7 @@ function scoreCandidate(
   }
 
   // 5. Muscle group overlap — continuity in the same fascial chain
-  const muscleOverlap = candidate.muscle_groups.filter(m => target.muscle_groups.includes(m)).length
+  const muscleOverlap = (candidate.muscle_groups ?? []).filter(m => (target.muscle_groups ?? []).includes(m)).length
   if (muscleOverlap > 2) {
     score += 2
     reasons.push(`same fascial line (${muscleOverlap} shared muscle groups)`)
@@ -154,7 +154,7 @@ function scoreCandidate(
   score += compScore
 
   // 7. Injury risk — penalise jumping from low-risk to high-risk without preparation
-  if (direction === 'after' && candidate.injury_risk - target.injury_risk > 3) {
+  if (direction === 'after' && (candidate.injury_risk ?? 0) - (target.injury_risk ?? 0) > 3) {
     score -= 2
     reasons.push(`injury risk jump flagged`)
   }

@@ -73,11 +73,11 @@ export default function PoseDetailClient({ pose }: Props) {
           {/* Left: body diagram */}
           <div className="md:sticky md:top-6 md:self-start">
             <BodyDiagram
-              muscleGroups={pose.muscle_groups}
-              meridians={pose.meridians}
-              jointsInvolved={pose.primary_joints_involved}
+              muscleGroups={pose.muscle_groups ?? []}
+              meridians={pose.meridians ?? []}
+              jointsInvolved={pose.primary_joints_involved ?? []}
               chakras={pose.chakras}
-              element={pose.element}
+              element={pose.element ?? null}
               bilateral={pose.bilateral}
             />
           </div>
@@ -109,9 +109,9 @@ export default function PoseDetailClient({ pose }: Props) {
             </div>
 
             {/* Type tags */}
-            {pose.type_tags.length > 0 && (
+            {(pose.type_tags?.length ?? 0) > 0 && (
               <div className="flex flex-wrap gap-1">
-                {pose.type_tags.map(tag => (
+                {pose.type_tags!.map(tag => (
                   <span key={tag} className="text-xs px-2 py-0.5 bg-stone-100 text-stone-600 rounded-full">{tag}</span>
                 ))}
               </div>
@@ -158,11 +158,11 @@ export default function PoseDetailClient({ pose }: Props) {
             )}
 
             {/* Emotional territory */}
-            {pose.emotional_release_potential?.length > 0 && (
+            {(pose.emotional_release_potential?.length ?? 0) > 0 && (
               <div>
                 <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-widest mb-2">Emotional territory</h2>
                 <div className="space-y-2">
-                  {pose.emotional_release_potential.map((e, i) => (
+                  {pose.emotional_release_potential!.map((e, i) => (
                     <div key={i} className="flex flex-wrap gap-2 items-start">
                       <span className="text-xs px-2 py-0.5 bg-rose-50 text-rose-700 rounded-full capitalize whitespace-nowrap">{e.emotion}</span>
                       <span className="text-xs text-stone-400">({e.tcm_organ})</span>
@@ -181,8 +181,8 @@ export default function PoseDetailClient({ pose }: Props) {
                   {(['vata', 'pitta', 'kapha'] as const).map(d => (
                     <div key={d} className="flex flex-col items-center gap-0.5">
                       <span className="text-xs text-stone-400 capitalize">{d}</span>
-                      <span className={`text-sm font-medium capitalize ${DOSHA_EFFECT_COLORS[pose.dosha_affinity[d]]}`}>
-                        {pose.dosha_affinity[d]}
+                      <span className={`text-sm font-medium capitalize ${DOSHA_EFFECT_COLORS[pose.dosha_affinity![d]]}`}>
+                        {pose.dosha_affinity![d]}
                       </span>
                     </div>
                   ))}
@@ -191,11 +191,11 @@ export default function PoseDetailClient({ pose }: Props) {
             )}
 
             {/* Modifications */}
-            {pose.modifications?.length > 0 && (
+            {(pose.modifications?.length ?? 0) > 0 && (
               <div>
                 <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-widest mb-2">Modifications</h2>
                 <div className="space-y-2">
-                  {pose.modifications.map((mod, i) => (
+                  {pose.modifications!.map((mod, i) => (
                     <div key={i} className="border border-stone-100 rounded-xl px-3 py-2.5">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-medium text-stone-700">{mod.name}</span>

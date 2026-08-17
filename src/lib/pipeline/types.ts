@@ -98,6 +98,25 @@ export interface PoseModification {
 
 export type SequencingPosition = 'opening' | 'building' | 'peak' | 'cooldown' | 'integration'
 
+// Tier-1 geometry fields (2026-08-17) — feed the friction engine. See
+// specs/001-krama-mvp-spec/data-model.md and docs/krama-atlas.md.
+export type ContactPoint =
+  | 'hands' | 'feet' | 'sitbones' | 'forearms' | 'knees' | 'back' | 'shoulders'
+export type Orientation = 'prone' | 'supine' | 'upright' | 'inverted'
+export type CogHeight = 'floor' | 'low' | 'mid' | 'high'
+export type SpinalAction = 'flexion' | 'extension' | 'neutral' | 'lateral' | 'rotation'
+export type Plane = 'sagittal' | 'coronal' | 'transverse' | 'multi'
+export type KinesphereLevel = 'high' | 'middle' | 'low'
+export type KinesphereZone = 'near' | 'mid-reach' | 'far'
+export type EnergeticDirection = 'brahmana' | 'langhana' | 'samana'
+
+export interface DefaultMeasure {
+  breaths?: number
+  seconds?: number
+  // Exactly one of breaths/seconds is set. Compose surface's default hold entry —
+  // distinct from PoseMode.hold_range, which stays a minutes-based yin-style range.
+}
+
 export type ChakraName =
   | 'root' | 'sacral' | 'solar-plexus' | 'heart'
   | 'throat' | 'third-eye' | 'crown'
@@ -116,44 +135,60 @@ export interface PoseMode {
   cue_notes: string
 }
 
+// Tier-1 fields are required for every pose before the Sept 30 gate; Tier-2 fields are
+// backfilled opportunistically and never block CI. See docs/krama-atlas.md.
 export interface Pose {
+  // Tier 1 — identity
   slug: string
   sanskrit: string
   english: string
   aliases: string[]
+
+  // Tier 1 — modes & body
   modes: PoseMode[]
   body_position: BodyPosition
-  meridians: string[]
-  element: FiveElement | null
   energetic_quality: EnergeticQ[]
   difficulty: PoseDifficulty
+  complexity: number // 1–10, existing scale, unchanged
+  breathing_cues: BreathingCues
+  bilateral: boolean
+  contraindications: string[] // slugs from data/schemas/contraindications.json
   props_required: string[]
   prop_free_variation: string | null
-  counterposes: string[]
-  rebound_pose: string | null
-  contraindications: string[]
-  bilateral: boolean
   source: string
-  notes: string
-  // Enriched fields (added in v0.2)
-  type_tags: PoseTypeTag[]
-  muscle_groups: MuscleGroup[]
-  complexity: number
-  injury_risk: number
-  breathing_cues: BreathingCues
-  // Enriched fields (added in v0.3)
-  joint_action: JointAction[]
-  primary_joints_involved: JointName[]
-  nervous_system_effect: NervousSystemEffect
-  tissue_depth: TissueDepth
-  modifications: PoseModification[]
-  dosha_affinity: DoshaAffinity
-  emotional_release_potential: EmotionalRelease[]
-  sequencing_position: SequencingPosition[]
+
+  // Tier 1 — geometry fields (2026-08-17, feed the friction engine)
+  base_of_support: ContactPoint[]
+  orientation: Orientation
+  cog_height: CogHeight
+  spinal_action: SpinalAction
+  plane: Plane
+  level: KinesphereLevel
+  zone: KinesphereZone
+  energetic_direction: EnergeticDirection
+  intensity: number // 1–5, distinct from complexity (1–10)
+  default_measure: DefaultMeasure
+
+  // Tier 2 — backfilled opportunistically, never blocks CI
+  meridians?: string[]
+  element?: FiveElement | null
+  counterposes?: string[]
+  rebound_pose?: string | null
+  notes?: string
+  type_tags?: PoseTypeTag[]
+  muscle_groups?: MuscleGroup[]
+  injury_risk?: number
+  joint_action?: JointAction[]
+  primary_joints_involved?: JointName[]
+  nervous_system_effect?: NervousSystemEffect
+  tissue_depth?: TissueDepth
+  modifications?: PoseModification[]
+  dosha_affinity?: DoshaAffinity
+  emotional_release_potential?: EmotionalRelease[]
+  sequencing_position?: SequencingPosition[]
   before_poses?: string[]
   after_poses?: string[]
   chakras?: ChakraName[]
-  // Multi-tradition naming (added in v0.4)
   tradition_names?: Partial<Record<Style, string>>
 }
 

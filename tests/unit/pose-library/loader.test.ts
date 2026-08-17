@@ -47,14 +47,14 @@ describe('filterPoses()', () => {
 
   it('filters by meridian overlap', () => {
     const results = filterPoses({ meridians: ['gallbladder'] })
-    expect(results.every(p => p.meridians.includes('gallbladder'))).toBe(true)
+    expect(results.every(p => (p.meridians ?? []).includes('gallbladder'))).toBe(true)
     expect(results.length).toBeGreaterThan(0)
   })
 
   it('filters by element', () => {
     const results = filterPoses({ elements: ['wood' as FiveElement] })
-    // Poses with null element pass the filter (element filter only excludes non-matching non-null)
-    expect(results.every(p => p.element === 'wood' || p.element === null)).toBe(true)
+    // Poses with no element pass the filter (element filter only excludes non-matching non-null)
+    expect(results.every(p => p.element === 'wood' || p.element == null)).toBe(true)
     expect(results.length).toBeGreaterThan(0)
   })
 
@@ -106,6 +106,6 @@ describe('rankAlternatesForPose()', () => {
     const target = getPoseBySlug('sphinx')! // meridians: kidney, bladder (water)
     const results = rankAlternatesForPose(target, ['kidney', 'bladder'], 'water', [])
     // At least one result should share kidney or bladder
-    expect(results.some(p => p.meridians.some(m => ['kidney', 'bladder'].includes(m)))).toBe(true)
+    expect(results.some(p => (p.meridians ?? []).some(m => ['kidney', 'bladder'].includes(m)))).toBe(true)
   })
 })

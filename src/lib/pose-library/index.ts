@@ -69,7 +69,7 @@ export function filterPoses(filter: PoseFilter): Pose[] {
 
     // Filter by meridian overlap
     if (filter.meridians?.length) {
-      const hasOverlap = pose.meridians.some(m => filter.meridians!.includes(m))
+      const hasOverlap = (pose.meridians ?? []).some(m => filter.meridians!.includes(m))
       if (!hasOverlap) return false
     }
 
@@ -122,7 +122,7 @@ export function rankAlternatesForPose(
     .map(pose => {
       let score = 0
       // Meridian overlap
-      const meridianOverlap = pose.meridians.filter(m => sessionMeridians.includes(m)).length
+      const meridianOverlap = (pose.meridians ?? []).filter(m => sessionMeridians.includes(m)).length
       score += meridianOverlap * 3
       // Same element
       if (pose.element && pose.element === sessionElement) score += 2
@@ -140,7 +140,7 @@ export function rankAlternatesForPose(
       // Same NS effect (alternate should feel similar in the sequence)
       if (pose.nervous_system_effect && pose.nervous_system_effect === targetPose.nervous_system_effect) score += 1
       // Shared type tags (functional similarity = good alternate)
-      const typeTagOverlap = pose.type_tags.filter(t => targetPose.type_tags.includes(t)).length
+      const typeTagOverlap = (pose.type_tags ?? []).filter(t => (targetPose.type_tags ?? []).includes(t)).length
       score += Math.min(typeTagOverlap, 3)
       return { pose, score }
     })
