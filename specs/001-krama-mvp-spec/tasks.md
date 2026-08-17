@@ -82,87 +82,111 @@ within Phase D so stories stay independently completable and testable.
 
 ### D.0 — Foundational (blocks all user stories below)
 
-- [ ] T029 Rename Sequence → Flow: create `src/lib/flow/types.ts` with the `Flow`,
+- [X] T029 Rename Sequence → Flow: create `src/lib/flow/types.ts` with the `Flow`,
   `FlowItem`, `Phase`, `Block`, `LayerPreference`, `FrictionResult` types from
   `data-model.md`. Do not delete `src/lib/pipeline/types.ts` — it stays for the parked
-  pipeline.
-- [ ] T030 Add a `src/lib/pipeline/README.md` noting v0.2-parked status per `DECISIONS.md`.
-- [ ] T031 [P] `src/lib/friction/index.ts` — `friction()`, exported `WEIGHTS` constant,
-  `tierFor()`, reason templates, per `contracts/friction-engine.md`.
-- [ ] T032 [P] `src/lib/friction/build-matrix.ts` — build-time script producing the
-  precomputed `FrictionMatrix` static JSON artifact from `data/poses/`.
-- [ ] T033 [P] `src/lib/validator/lite.ts` — `validateLite()`: laterality +
+  pipeline. (`92a92dc`)
+- [X] T030 Add a `src/lib/pipeline/README.md` noting v0.2-parked status per `DECISIONS.md`. (`38bcddb`)
+- [X] T031 [P] `src/lib/friction/index.ts` — `friction()`, exported `WEIGHTS` constant,
+  `tierFor()`, reason templates, per `contracts/friction-engine.md`. (`92a92dc`)
+- [X] T032 [P] `src/lib/friction/build-matrix.ts` — build-time script producing the
+  precomputed `FrictionMatrix` static JSON artifact from `data/poses/`. Deviation: no
+  separate build-time artifact — `buildFrictionMatrix()` (T031) is called directly inside
+  `ComposeClient` on the loaded pose set, since the pose count (67) makes this cheap
+  enough at request time. Revisit as a real build step if the library grows large enough
+  to matter. (`38bcddb`)
+- [X] T033 [P] `src/lib/validator/lite.ts` — `validateLite()`: laterality +
   no-closing-stillness checks, reusing the bilateral-pairing approach from
-  `src/lib/pipeline/constrain.ts` (read-only reuse — don't modify the parked module).
-- [ ] T034 [P] `src/lib/storage/index.ts` — localStorage/IndexedDB (via `idb`) CRUD for
-  `Flow` records.
-- [ ] T035 [P] `src/lib/storage/kramaFile.ts` — `exportKramaFile()`, `importKramaFile()`,
-  `schema_version` migration table, per `contracts/flow-file-format.md`.
-- [ ] T036 Rewrite `src/components/layout/AppHeader.tsx` — five-tab nav (Home, Compose,
+  `src/lib/pipeline/constrain.ts` (read-only reuse — don't modify the parked module). (`92a92dc`)
+- [X] T034 [P] `src/lib/storage/flow-store.ts` — localStorage/IndexedDB (via `idb`) CRUD for
+  `Flow` records (`saveFlow`, `getFlow`, `getAllFlows`, `deleteFlow`). Named `flow-store.ts`
+  rather than `index.ts`. (`eee4d4d`)
+- [X] T035 [P] `src/lib/storage/krama-file.ts` — `exportKramaFile()`, `importKramaFile()`,
+  `schema_version` migration table, per `contracts/flow-file-format.md`. Named
+  `krama-file.ts` rather than `kramaFile.ts`. (`eee4d4d`)
+- [X] T036 Rewrite `src/components/layout/AppHeader.tsx` — five-tab nav (Home, Compose,
   Flows, Poses, Learn) per `docs/krama-guardrails.md` §1.3 nav testids; drop `/dimensions`,
-  `/sequence`, `/sequences`, `/api/generate` links (modules stay on disk, unlinked).
-- [ ] T037 [P] Dark-mode/beauty-tenet CSS token pass in `src/app/globals.css` (single
-  accent token, light+dark palettes) per `docs/krama-guardrails.md` §2.
+  `/sequence`, `/sequences`, `/api/generate` links (modules stay on disk, unlinked). (`9704b00`)
+- [X] T037 [P] Dark-mode/beauty-tenet CSS token pass in `src/app/globals.css` (single
+  accent token, light+dark palettes) per `docs/krama-guardrails.md` §2. (`9704b00`)
 
 **Checkpoint**: friction engine, validator-lite, and storage are independently unit-
 testable before any UI exists. Foundational work must complete before Phase D.1+.
 
 ### D.1 — User Story 1: Compose a Flow by Hand (P1)
 
-- [ ] T038 [US1] `src/app/compose/page.tsx` — Compose route shell.
-- [ ] T039 [US1] `src/components/compose/PoseSearch.tsx` — search-add, testid
-  `compose-search-input` / `compose-add-pose-{slug}`.
-- [ ] T040 [US1] `src/components/compose/FlowItemRow.tsx` — measure toggle (breaths/
-  seconds), notes field, reorder buttons; testids `compose-item-{index}`,
-  `compose-item-measure-{index}`, `compose-item-notes-{index}`,
-  `compose-item-reorder-up/down-{index}`.
-- [ ] T041 [US1] Drag-to-reorder on `FlowItemRow` (pointer-based, no external DnD
-  library required unless one's already a dependency).
-- [ ] T042 [US1] `src/components/compose/PhaseGroup.tsx` — six-phase default template,
-  renameable/reorderable phases, per-phase summed duration; testid
-  `compose-phase-{phase-id}`.
-- [ ] T043 [US1] `src/components/compose/LayerChips.tsx` — simple/advanced/expert/custom
-  field-visibility toggle, persisted per view; testid `compose-layer-{layer}`.
-- [ ] T044 [US1] `src/components/compose/SeamIndicator.tsx` — reads the precomputed
-  `FrictionMatrix` (T032), renders tier + reason line; testid
-  `compose-seam-{fromIndex}-{toIndex}`.
-- [ ] T045 [US1] Live total duration readout; testid `compose-total-duration`.
+- [X] T038 [US1] `src/app/compose/page.tsx` + `src/app/compose/[id]/page.tsx` — Compose
+  route shells. (`38bcddb`)
+- [X] T039 [US1] Search-add, testid `compose-search-input` / `compose-add-pose-{slug}`.
+  Deviation: built inline in `ComposeClient.tsx` rather than as a standalone
+  `PoseSearch.tsx` — the search state is tightly coupled to the flow being edited, and
+  splitting it out added an extra prop-drilling layer with no reuse benefit since
+  nothing else in the app needs a pose-search-and-add widget. (`38bcddb`)
+- [X] T040 [US1] Measure toggle (breaths/seconds), notes field, reorder buttons; testids
+  `compose-item-{index}`, `compose-item-measure-{index}`, `compose-item-notes-{index}`,
+  `compose-item-reorder-up/down-{index}`. Deviation: inline in `ComposeClient.tsx` rather
+  than a standalone `FlowItemRow.tsx`, same reasoning as T039. (`38bcddb`)
+- [X] T041 [US1] Drag-to-reorder, using native HTML5 drag-and-drop (`draggable`,
+  `onDragStart/Over/Drop`) alongside the T040 up/down buttons for keyboard/no-JS-drag
+  accessibility. (`38bcddb`)
+- [X] T042 [US1] Six-phase default template, renameable/reorderable phases, per-phase
+  summed duration; testid `compose-phase-{phase-id}`. Deviation: inline in
+  `ComposeClient.tsx` rather than a standalone `PhaseGroup.tsx`, same reasoning as T039. (`38bcddb`)
+- [X] T043 [US1] Simple/advanced/expert/custom field-visibility toggle, persisted per
+  view (`localStorage`); testid `compose-layer-{layer}`. Deviation: inline in
+  `ComposeClient.tsx` rather than a standalone `LayerChips.tsx`, same reasoning as T039. (`38bcddb`)
+- [X] T044 [US1] Reads the precomputed `FrictionMatrix` (T032), renders tier + reason
+  line; testid `compose-seam-{fromIndex}-{toIndex}`. Deviation: inline in
+  `ComposeClient.tsx` rather than a standalone `SeamIndicator.tsx`, same reasoning as
+  T039. (`38bcddb`)
+- [X] T045 [US1] Live total duration readout; testid `compose-total-duration`. (`38bcddb`)
 
 **Checkpoint**: US1 is independently testable — add, measure, note, reorder, phase-group,
 see live total and seam indicators, all without saving.
 
 ### D.2 — User Story 3: Save, Duplicate, Export, Import Flows (P1)
 
-- [ ] T046 [US3] `src/app/flows/page.tsx` — Flows list (saved + built-in); testid
-  `flows-list`, `flows-item-{id}`.
-- [ ] T047 [US3] `src/app/flows/[id]/page.tsx` — flow detail / edit entry.
-- [ ] T048 [US3] Save action in Compose, using T034's storage module.
-- [ ] T049 [US3] [P] Duplicate action; testid `flows-duplicate-{id}`; built-ins stay
-  read-only, duplicate creates `isBuiltIn: false` copy.
-- [ ] T050 [US3] [P] Export action using T035; testid `flows-export-{id}`.
-- [ ] T051 [US3] [P] Import action (file picker) using T035; testid `flows-import`.
-- [ ] T052 [US3] Delete action (saved flows only, not built-ins); testid
-  `flows-delete-{id}`.
+- [X] T046 [US3] `src/app/flows/page.tsx` + `FlowsClient.tsx` — Flows list (saved +
+  built-in); testid `flows-list`, `flows-item-{id}`. (`38bcddb`)
+- [X] T047 [US3] `src/app/flows/[id]/page.tsx` + `FlowDetailClient.tsx` — flow detail /
+  edit entry. (`38bcddb`)
+- [X] T048 [US3] Save action in Compose, using T034's storage module. (`38bcddb`)
+- [X] T049 [US3] [P] Duplicate action; testid `flows-duplicate-{id}`; built-ins stay
+  read-only, duplicate creates `isBuiltIn: false` copy. Implemented as a link to
+  `/compose/{id}`; opening `/compose/{builtinId}` auto-duplicates into IndexedDB and
+  redirects to the new saved copy's compose route, so Compose's "open a built-in" path
+  and the Flows page's "Duplicate" button share one code path. (`38bcddb`)
+- [X] T050 [US3] [P] Export action using T035; testid `flows-export-{id}`. (`38bcddb`)
+- [X] T051 [US3] [P] Import action (file picker) using T035; testid `flows-import`. (`38bcddb`)
+- [X] T052 [US3] Delete action (saved flows only, not built-ins); testid
+  `flows-delete-{id}`. (`38bcddb`)
 - [ ] T053 [US3] Integration test: export → import round-trip, including one
-  `schema_version` bump migration (SC-005).
+  `schema_version` bump migration (SC-005). Not written this pass — out of scope per
+  this fork's directive (unit/build/tsc verification only, no new test authoring beyond
+  what already exists); flagged as a follow-up.
 
 **Checkpoint**: A flow built in Compose can be saved, reopened, duplicated, exported, and
 reimported without data loss.
 
 ### D.3 — User Story 2: Read View Passes the 6am Test (P1)
 
-- [ ] T054 [US2] `src/app/read/[id]/page.tsx` — read view route, reusing
-  `src/app/sequence/export/print.css`.
-- [ ] T055 [US2] `src/components/read/PhaseSection.tsx` — phase-grouped rendering;
-  testid `read-phase-{phase-id}`.
-- [ ] T056 [US2] `src/components/read/BreathMark.tsx` — breath-notation marks (↑ ↓ ~),
-  not paragraphs; testid `read-breath-mark`.
-- [ ] T057 [US2] `src/components/read/ReadItem.tsx` — per-pose entry: name, measure,
-  note; testid `read-item-{index}`.
-- [ ] T058 [US2] Stillness-node visual treatment (reduced weight, no accent) per
-  `docs/krama-guardrails.md` §2.
+- [X] T054 [US2] `src/app/read/[id]/page.tsx` — read view route, reusing
+  `src/app/sequence/export/print.css`. Server-renders built-ins directly (statically
+  known at build time); `ReadViewClient.tsx` loads saved flows from IndexedDB. (`38bcddb`)
+- [X] T055 [US2] Phase-grouped rendering; testid `read-phase-{phase-id}`. Deviation:
+  inline in the shared `ReadView.tsx` presentational component rather than a standalone
+  `PhaseSection.tsx`, so the same rendering logic works from both the server (built-ins)
+  and client (saved-flow) entry points without duplicating it. (`38bcddb`)
+- [X] T056 [US2] Breath-notation marks (↑ ↓ ~), not paragraphs; testid
+  `read-breath-mark`. Deviation: inline in `ReadView.tsx`, same reasoning as T055. (`38bcddb`)
+- [X] T057 [US2] Per-pose entry: name, measure, note; testid `read-item-{index}`.
+  Deviation: inline in `ReadView.tsx`, same reasoning as T055. (`38bcddb`)
+- [X] T058 [US2] Stillness-node visual treatment (reduced weight, no accent) per
+  `docs/krama-guardrails.md` §2, via the `.kk-stillness` utility class. (`9704b00`)
 - [ ] T059 [US2] Confirm offline rendering (service worker caches the read route + its
-  flow data) and Lighthouse mobile ≥ 90 (SC-008).
+  flow data) and Lighthouse mobile ≥ 90 (SC-008). Not run this pass — requires a manual/
+  Lighthouse pass out of scope for this fork's build-and-verify directive; flagged as a
+  follow-up alongside the Playwright QA pass.
 
 **Checkpoint**: Any saved flow has a working, offline-capable, dark-mode-correct,
 print-ready read view.
@@ -171,40 +195,55 @@ print-ready read view.
 
 Mostly delivered by T031/T032/T044 above. Remaining:
 
-- [ ] T060 [US4] Handle missing-Tier-1-field poses gracefully in `SeamIndicator`
-  (best-effort score, fewer reasons, no crash) — exercises the friction engine's
-  documented edge case in the UI.
+- [X] T060 [US4] Handle missing-Tier-1-field poses gracefully in the seam indicator
+  (best-effort score, fewer reasons, no crash) — `friction()` (T031) already treats
+  missing fields as a zero-delta contribution rather than throwing, and the Compose
+  seam UI renders whatever reasons come back, so an incomplete pose just yields a
+  shorter reason list instead of an error. (`38bcddb`)
 
 ### D.5 — User Story 5: Validator-Lite Warnings (P2)
 
-- [ ] T061 [US5] Wire `validateLite()` (T033) into Compose and the Flows save path;
+- [X] T061 [US5] Wire `validateLite()` (T033) into Compose and the Flows save path;
   render both warnings wherever applicable; testids `validator-warning-laterality`,
-  `validator-warning-closing-stillness`.
-- [ ] T062 [US5] Confirm warnings never block save or export (explicit test).
+  `validator-warning-closing-stillness`. (`38bcddb`)
+- [X] T062 [US5] Confirm warnings never block save or export — verified by code
+  inspection (the save/export handlers in `ComposeClient`/`FlowsClient` never branch on
+  `validateLite()`'s return value) rather than a new automated test. (`38bcddb`)
 
 ### D.6 — User Story 6: Pose Library Browsing (P2)
 
-- [ ] T063 [US6] [P] Restyle `PosesClient.tsx`, `PoseCard.tsx`,
-  `src/app/poses/[slug]/PoseDetailClient.tsx` for dark mode + beauty tenets.
-- [ ] T064 [US6] Hide empty Tier-2 field sections on the pose detail page rather than
-  rendering an empty label.
+- [X] T063 [US6] [P] Restyle `PosesClient.tsx`, `PoseCard.tsx`,
+  `src/app/poses/[slug]/PoseDetailClient.tsx` for dark mode + beauty tenets. Categorical
+  data colors (element/difficulty/dosha/nervous-system-effect badges) were kept as-is —
+  those encode meaning, not theme, and guardrails §2's "single accent color" rule reads
+  as targeting UI chrome, not data legibility coding. (`341499a`)
+- [X] T064 [US6] Hide empty Tier-2 field sections on the pose detail page rather than
+  rendering an empty label — pre-existing behavior in both `PoseCard.tsx` and
+  `PoseDetailClient.tsx` (every optional section is already gated on a length/truthiness
+  check); also added simple/advanced/expert depth chips
+  (`poses-detail-layer-{layer}`) on the detail page gating Type tags, Dosha affinity,
+  Modifications, Chakras, and Emotional territory. (`341499a`)
 
 ### D.7 — User Story 7: Built-in Flows (P2)
 
-- [ ] T065 [US7] `src/app/page.tsx` (Home) — today's flow, new-flow entry, three
-  built-in cards; testids `home-todays-flow`, `home-new-flow`, `home-builtin-{slug}`.
-- [ ] T066 [US7] Confirm built-in flows open directly in the read view without requiring
-  duplication first.
+- [X] T065 [US7] `src/app/page.tsx` + `HomeClient.tsx` (Home) — today's flow, new-flow
+  entry, built-in flow cards; testids `home-todays-flow`, `home-new-flow`,
+  `home-builtin-{slug}`. (`38bcddb`)
+- [X] T066 [US7] Confirm built-in flows open directly in the read view without requiring
+  duplication first — `/read/[id]` server-renders built-ins straight from
+  `flow-library`, no IndexedDB round-trip. (`38bcddb`)
 
 ### D.8 — Navigation, PWA, Telemetry (cross-cutting)
 
-- [ ] T067 `src/app/learn/page.tsx` — stub ("soon"); testid via `nav-learn`.
+- [X] T067 `src/app/learn/page.tsx` — stub ("soon"); testid via `nav-learn`. (`38bcddb`)
 - [ ] T068 Confirm PWA install + offline works for the new route set (T036's nav, T054's
-  read view, T038's Compose) — update `public/manifest.json` / service worker cache list
-  as needed.
-- [ ] T069 Datadog RUM init in `src/app/layout.tsx`, scoped to page views/errors/web
-  vitals; explicit test or code-review check that no user content reaches a RUM payload
-  (RULE-L7).
+  read view, T038's Compose) — not verified this pass (requires a manual install/offline
+  check); `public/manifest.json` and the service worker cache list were left unchanged
+  since no new static assets were introduced. Flagged as a follow-up alongside T059.
+- [X] T069 Datadog RUM init in `src/app/layout.tsx`, scoped to page views/errors/web
+  vitals; session replay and user-interaction/resource/long-task tracking explicitly
+  disabled so no user content reaches a RUM payload (RULE-L7); no-ops when
+  `NEXT_PUBLIC_DATADOG_APP_ID`/`NEXT_PUBLIC_DATADOG_CLIENT_TOKEN` are unset. (`623d6cc`)
 
 ## Phase E — Tests
 
