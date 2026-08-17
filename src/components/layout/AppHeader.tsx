@@ -3,40 +3,48 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
+// v0.1 five-tab nav (docs/krama-guardrails.md §1.3, spec §3). /dimensions, /sequence,
+// /sequences and /api/generate are parked for v0.2 — unlinked here, not deleted.
 const NAV_LINKS = [
-  { href: '/dimensions', label: 'Build' },
-  { href: '/sequences', label: 'Sequences' },
-  { href: '/poses', label: 'Poses' },
+  { href: '/', label: 'Home', testId: 'nav-home' },
+  { href: '/compose', label: 'Compose', testId: 'nav-compose' },
+  { href: '/flows', label: 'Flows', testId: 'nav-flows' },
+  { href: '/poses', label: 'Poses', testId: 'nav-poses' },
+  { href: '/learn', label: 'Learn', testId: 'nav-learn' },
 ]
 
 export default function AppHeader() {
   const pathname = usePathname()
 
-  // Print-only export page — no chrome needed
-  if (pathname === '/sequence/export') return null
+  // Print-only views — no chrome needed
+  if (pathname === '/sequence/export' || pathname.startsWith('/read/')) return null
 
   return (
-    <header className="sticky top-0 z-20 bg-white/90 backdrop-blur-md border-b border-[#e2dbd4] px-4 h-14 flex items-center justify-between">
+    <header
+      className="sticky top-0 z-20 backdrop-blur-md border-b px-4 h-14 flex items-center justify-between"
+      style={{ background: 'color-mix(in srgb, var(--surface) 90%, transparent)', borderColor: 'var(--border)' }}
+    >
       <Link
-        href="/dimensions"
-        className="font-serif text-lg font-medium tracking-tight text-[#1c1714] hover:opacity-70 transition-opacity"
+        href="/"
+        className="font-serif text-lg font-medium tracking-tight hover:opacity-70 transition-opacity"
+        style={{ color: 'var(--foreground)' }}
       >
-        Yoga Kit
+        Krama
       </Link>
       <nav className="flex items-center gap-1">
-        {NAV_LINKS.map(({ href, label }) => {
-          const active = pathname === href
-            || (href === '/sequences' && pathname.startsWith('/sequences'))
-            || (href === '/poses' && pathname.startsWith('/poses'))
+        {NAV_LINKS.map(({ href, label, testId }) => {
+          const active = pathname === href || (href !== '/' && pathname.startsWith(href))
           return (
             <Link
               key={href}
               href={href}
-              className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+              data-testid={testId}
+              className="px-3 py-1.5 text-sm rounded-md transition-colors duration-150"
+              style={
                 active
-                  ? 'text-[#1c1714] font-medium bg-[#1c1714]/8'
-                  : 'text-[#8a7d73] hover:text-[#1c1714] hover:bg-[#1c1714]/5'
-              }`}
+                  ? { color: 'var(--accent-foreground)', background: 'var(--accent)', fontWeight: 500 }
+                  : { color: 'var(--muted)' }
+              }
             >
               {label}
             </Link>
