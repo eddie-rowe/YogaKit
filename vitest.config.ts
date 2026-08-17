@@ -7,7 +7,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    exclude: ['**/node_modules/**', '**/.claude/worktrees/**'],
+    exclude: ['**/node_modules/**', '**/.claude/worktrees/**', 'tests/e2e/**', 'tests/e2e-qa/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],

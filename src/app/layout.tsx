@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 import { DatadogRum } from "@/components/DatadogRum";
-import AppHeader from "@/components/layout/AppHeader";
+import AppHeader, { MobileNavSpacer } from "@/components/layout/AppHeader";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -43,6 +43,7 @@ export default function RootLayout({
         <DatadogRum />
         <AppHeader />
         {children}
+        <MobileNavSpacer />
       </body>
     </html>
   );

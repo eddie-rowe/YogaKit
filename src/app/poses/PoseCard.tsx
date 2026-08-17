@@ -66,7 +66,7 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
   const yinMode = pose.modes.find(m => m.type === 'yin') ?? pose.modes[0]
 
   return (
-    <article className="kk-card overflow-hidden">
+    <article className="kk-card overflow-hidden" data-testid={`poses-card-${pose.slug}`}>
       {/* Card header — always visible */}
       <button
         onClick={onToggle}

@@ -142,7 +142,7 @@ export interface Pose {
   slug: string
   sanskrit: string
   english: string
-  aliases: string[]
+  aliases?: string[]
 
   // Tier 1 — modes & body
   modes: PoseMode[]

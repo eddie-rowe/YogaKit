@@ -24,7 +24,7 @@ export function allSearchableNames(pose: Pose): string[] {
   return [
     pose.english,
     pose.sanskrit,
-    ...pose.aliases,
+    ...(pose.aliases ?? []),
     ...Object.values(pose.tradition_names ?? {}),
   ]
 }

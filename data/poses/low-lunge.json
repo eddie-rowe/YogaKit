@@ -2,16 +2,23 @@
   "slug": "low-lunge",
   "sanskrit": "Anjaneyasana",
   "english": "Low Lunge",
+  "aliases": [],
   "modes": [
     {
       "type": "yang",
       "tissue_target": "muscular",
-      "hold_range": {"min": 3, "max": 8},
+      "hold_range": {
+        "min": 3,
+        "max": 8
+      },
       "cue_notes": "Lower the back knee to the floor while keeping the front knee stacked over the front ankle. Untuck the back toes and let the top of the back foot rest on the mat. Lengthen the spine and lift through the chest, arms reaching overhead or hands resting on the front thigh."
     }
   ],
   "body_position": "kneeling",
-  "energetic_quality": ["heating", "opening"],
+  "energetic_quality": [
+    "heating",
+    "opening"
+  ],
   "difficulty": "accessible",
   "complexity": 3,
   "breathing_cues": {
@@ -20,11 +27,17 @@
     "exiting": "Exhale to lift the back knee and step forward, or shift back toward downward-facing shapes."
   },
   "bilateral": false,
-  "contraindications": ["knee-injury", "hip-injury"],
+  "contraindications": [
+    "knee-injury",
+    "hip-injury"
+  ],
   "props_required": [],
   "prop_free_variation": null,
   "source": "Traditional hatha/vinyasa yoga",
-  "base_of_support": ["feet", "knees"],
+  "base_of_support": [
+    "feet",
+    "knees"
+  ],
   "orientation": "upright",
   "cog_height": "low",
   "spinal_action": "extension",
@@ -33,11 +46,22 @@
   "zone": "mid-reach",
   "energetic_direction": "brahmana",
   "intensity": 3,
-  "default_measure": {"breaths": 5},
-  "type_tags": ["hip-flexor-release", "quad-stretch"],
-  "muscle_groups": ["hip-flexors", "psoas", "quadriceps"],
+  "default_measure": {
+    "breaths": 5
+  },
+  "type_tags": [
+    "hip-flexor-release",
+    "quad-stretch"
+  ],
+  "muscle_groups": [
+    "hip-flexors",
+    "psoas",
+    "quadriceps"
+  ],
   "injury_risk": 2,
   "notes": "Gentler alternative to high lunge; a fold blanket under the back knee eases sensitive joints. Practiced on both sides.",
-  "counterposes": ["high-lunge"],
+  "counterposes": [
+    "high-lunge"
+  ],
   "rebound_pose": "child-pose"
 }

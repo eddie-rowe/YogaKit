@@ -168,6 +168,7 @@ export default function PosesClient({ poses }: Props) {
           {/* Search bar */}
           <input
             type="search"
+            data-testid="poses-search-input"
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search poses by name, Sanskrit, or alias…"
@@ -175,7 +176,7 @@ export default function PosesClient({ poses }: Props) {
           />
 
           {/* Body position chips */}
-          <div className="flex flex-wrap gap-1 mt-2">
+          <div className="flex flex-wrap gap-1 mt-2" data-testid="poses-category-filter">
             <button onClick={() => setFilterPosition('')} data-active={!filterPosition} className="kk-chip px-3 py-1 text-xs">
               All
             </button>
