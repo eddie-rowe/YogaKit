@@ -1,0 +1,60 @@
+{
+  "slug": "up-dog",
+  "sanskrit": "Urdhva Mukha Svanasana",
+  "english": "Upward-Facing Dog",
+  "aliases": ["Up Dog"],
+  "modes": [
+    {
+      "type": "yang",
+      "tissue_target": "muscular",
+      "hold_range": { "min": 1, "max": 5 },
+      "cue_notes": "Press firmly through the hands and roll over the toes so the tops of the feet find the mat, straightening the arms and lifting the thighs off the floor. Draw the shoulders down and back, chest broad and open, and lengthen the tailbone toward the heels to protect the low back from over-compressing. Only the hands and tops of the feet stay in contact with the mat."
+    }
+  ],
+  "body_position": "prone",
+  "energetic_quality": ["heating", "opening", "stimulating"],
+  "difficulty": "intermediate",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["child-pose"],
+  "rebound_pose": "child-pose",
+  "contraindications": ["wrist-injury", "low-back-injury", "shoulder-injury", "pregnancy", "carpal-tunnel"],
+  "bilateral": true,
+  "source": "Traditional hatha/vinyasa yoga",
+  "notes": "A deeper backbend than cobra, with the thighs lifted and only hands/feet in contact. Common vinyasa transition point following chaturanga, preceding downward dog.",
+  "type_tags": ["backbend", "chest-opener"],
+  "muscle_groups": ["spinal-erectors", "lumbar-spine", "chest-pectorals", "anterior-shoulder", "quadriceps"],
+  "complexity": 5,
+  "injury_risk": 5,
+  "breathing_cues": {
+    "entering": "Inhale to press forward and roll over the toes, straightening the arms and lifting the chest and thighs.",
+    "holding": "Breathe into the front of the chest and shoulders, keeping the neck long rather than crunching it back.",
+    "exiting": "Exhale to roll back over the toes and lift the hips into downward-facing dog, or lower back to the mat."
+  },
+  "before_poses": ["chaturanga"],
+  "after_poses": ["cat-cow"],
+  "joint_action": ["extension"],
+  "primary_joints_involved": ["lumbar", "thoracic", "shoulder", "wrist"],
+  "nervous_system_effect": "sympathetic",
+  "tissue_depth": "intermediate",
+  "modifications": [
+    {
+      "name": "Cobra Instead",
+      "description": "Keep the thighs grounded and stay in cobra's smaller backbend for a lower-intensity version of this transition.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": { "vata": "aggravating", "pitta": "neutral", "kapha": "balancing" },
+  "sequencing_position": ["building", "peak"],
+  "base_of_support": ["hands", "feet"],
+  "orientation": "prone",
+  "cog_height": "low",
+  "spinal_action": "extension",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "far",
+  "energetic_direction": "brahmana",
+  "intensity": 3,
+  "default_measure": { "breaths": 1 }
+}

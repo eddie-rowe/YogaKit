@@ -1,0 +1,44 @@
+{
+  "slug": "chair",
+  "sanskrit": "Utkatasana",
+  "english": "Chair Pose",
+  "aliases": ["Fierce Pose"],
+  "modes": [
+    {
+      "type": "yang",
+      "tissue_target": "muscular",
+      "hold_range": {"min": 3, "max": 8},
+      "cue_notes": "Bend the knees deeply as if sitting into an invisible chair, weight sinking toward the heels. Arms reach overhead or press together at heart center. Keep the chest lifted and the low back long rather than collapsing forward."
+    }
+  ],
+  "body_position": "standing",
+  "energetic_quality": ["heating", "stimulating"],
+  "difficulty": "intermediate",
+  "complexity": 4,
+  "breathing_cues": {
+    "entering": "Exhale as you bend the knees and sink the hips low, reaching the arms overhead.",
+    "holding": "Breathe steadily and powerfully, drawing energy up through the legs and spine.",
+    "exiting": "Inhale to straighten the legs and rise back to standing."
+  },
+  "bilateral": true,
+  "contraindications": ["knee-injury", "ankle-injury", "low-blood-pressure"],
+  "props_required": [],
+  "prop_free_variation": null,
+  "source": "Traditional hatha/vinyasa yoga",
+  "base_of_support": ["feet"],
+  "orientation": "upright",
+  "cog_height": "mid",
+  "spinal_action": "extension",
+  "plane": "sagittal",
+  "level": "middle",
+  "zone": "mid-reach",
+  "energetic_direction": "brahmana",
+  "intensity": 4,
+  "default_measure": {"breaths": 5},
+  "type_tags": ["quad-stretch", "integration"],
+  "muscle_groups": ["quadriceps", "glutes", "anterior-shoulder"],
+  "injury_risk": 3,
+  "notes": "Strong heat-building standing pose; commonly linked with mountain and forward fold in sun-salutation-style flows.",
+  "counterposes": ["standing-forward-fold"],
+  "rebound_pose": "mountain"
+}

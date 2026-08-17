@@ -1,0 +1,43 @@
+{
+  "slug": "rebound-supine",
+  "sanskrit": "Viparita Karani (adapted)",
+  "english": "Rebound Rest",
+  "aliases": ["Settle"],
+  "modes": [
+    {
+      "type": "both",
+      "tissue_target": "both",
+      "hold_range": {"min": 1, "max": 3},
+      "cue_notes": "Lie flat on the back with arms and legs relaxed, palms facing up. A brief, simple settling point used to absorb intensity between active poses before continuing the flow."
+    }
+  ],
+  "body_position": "supine",
+  "energetic_quality": ["calming", "cooling"],
+  "difficulty": "accessible",
+  "complexity": 1,
+  "breathing_cues": {
+    "entering": "Exhale as you lower the whole body down onto the floor, releasing all effort.",
+    "holding": "Let the breath return to its own natural rhythm without adjustment.",
+    "exiting": "Inhale as you gently begin to bring movement back into fingers and toes."
+  },
+  "bilateral": true,
+  "contraindications": ["pregnancy"],
+  "props_required": [],
+  "prop_free_variation": null,
+  "source": "Traditional hatha/vinyasa yoga",
+  "base_of_support": ["back"],
+  "orientation": "supine",
+  "cog_height": "floor",
+  "spinal_action": "neutral",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "near",
+  "energetic_direction": "langhana",
+  "intensity": 1,
+  "default_measure": {"seconds": 60},
+  "type_tags": ["restorative", "integration"],
+  "injury_risk": 1,
+  "notes": "Minimal-geometry rebound node; used to give the nervous system a brief reset after intense standing or backbend work before resuming the sequence.",
+  "counterposes": [],
+  "rebound_pose": null
+}

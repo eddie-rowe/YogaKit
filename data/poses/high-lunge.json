@@ -1,0 +1,44 @@
+{
+  "slug": "high-lunge",
+  "sanskrit": "Ashta Chandrasana",
+  "english": "High Lunge",
+  "aliases": ["Crescent Lunge"],
+  "modes": [
+    {
+      "type": "yang",
+      "tissue_target": "muscular",
+      "hold_range": {"min": 3, "max": 8},
+      "cue_notes": "Step one foot back, keeping the back knee lifted off the floor and the back heel high. Stack the front knee over the front ankle. Square the hips forward and lengthen the spine, arms reaching overhead or hands framing the front foot."
+    }
+  ],
+  "body_position": "standing",
+  "energetic_quality": ["heating", "stimulating"],
+  "difficulty": "intermediate",
+  "complexity": 5,
+  "breathing_cues": {
+    "entering": "Inhale as you step back into the lunge, lifting through the chest and arms.",
+    "holding": "Breathe steadily, grounding through the front foot while lengthening through the back leg.",
+    "exiting": "Exhale to step the back foot forward or step back into a plank or downward-facing shape."
+  },
+  "bilateral": false,
+  "contraindications": ["knee-injury", "hip-injury", "sacroiliac-joint"],
+  "props_required": [],
+  "prop_free_variation": null,
+  "source": "Traditional vinyasa yoga",
+  "base_of_support": ["feet"],
+  "orientation": "upright",
+  "cog_height": "mid",
+  "spinal_action": "extension",
+  "plane": "sagittal",
+  "level": "middle",
+  "zone": "mid-reach",
+  "energetic_direction": "brahmana",
+  "intensity": 4,
+  "default_measure": {"breaths": 5},
+  "type_tags": ["hip-flexor-release", "quad-stretch", "backbend"],
+  "muscle_groups": ["hip-flexors", "psoas", "quadriceps", "glutes"],
+  "injury_risk": 4,
+  "notes": "Strengthens legs and opens hip flexors; practiced on both sides. Often bridges between low lunge and standing balances.",
+  "counterposes": ["low-lunge"],
+  "rebound_pose": "standing-forward-fold"
+}

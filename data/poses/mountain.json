@@ -1,0 +1,44 @@
+{
+  "slug": "mountain",
+  "sanskrit": "Tadasana",
+  "english": "Mountain Pose",
+  "aliases": ["Samasthiti"],
+  "modes": [
+    {
+      "type": "yang",
+      "tissue_target": "muscular",
+      "hold_range": {"min": 3, "max": 8},
+      "cue_notes": "Stand with feet hip-width or together, weight balanced evenly across all four corners of both feet. Engage quadriceps gently, draw the tailbone toward the floor, lengthen through the crown of the head. Used as the neutral starting and returning point for standing sequences."
+    }
+  ],
+  "body_position": "standing",
+  "energetic_quality": ["grounding", "calming"],
+  "difficulty": "accessible",
+  "complexity": 1,
+  "breathing_cues": {
+    "entering": "Inhale as you rise up through the spine, stacking joints from ankles to ears.",
+    "holding": "Breathe steadily and evenly, feeling the feet root down as the crown lifts.",
+    "exiting": "Exhale to soften the shoulders before transitioning to the next shape."
+  },
+  "bilateral": true,
+  "contraindications": [],
+  "props_required": [],
+  "prop_free_variation": null,
+  "source": "Traditional hatha/vinyasa yoga",
+  "base_of_support": ["feet"],
+  "orientation": "upright",
+  "cog_height": "high",
+  "spinal_action": "neutral",
+  "plane": "sagittal",
+  "level": "high",
+  "zone": "near",
+  "energetic_direction": "samana",
+  "intensity": 1,
+  "default_measure": {"breaths": 5},
+  "type_tags": ["integration"],
+  "muscle_groups": ["quadriceps", "spinal-erectors"],
+  "injury_risk": 1,
+  "notes": "Foundational alignment pose; anchors body awareness before and between standing sequences.",
+  "counterposes": [],
+  "rebound_pose": null
+}

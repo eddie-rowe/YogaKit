@@ -1,0 +1,44 @@
+{
+  "slug": "halfway-lift",
+  "sanskrit": "Ardha Uttanasana",
+  "english": "Halfway Lift",
+  "aliases": ["Flat Back"],
+  "modes": [
+    {
+      "type": "yang",
+      "tissue_target": "muscular",
+      "hold_range": {"min": 3, "max": 5},
+      "cue_notes": "From a forward fold, inhale to lift the torso to a flat back, spine parallel to the floor. Hands may land on shins, thighs, or blocks. Draw the shoulder blades toward each other and gaze slightly forward to lengthen the neck."
+    }
+  ],
+  "body_position": "standing",
+  "energetic_quality": ["heating", "stimulating"],
+  "difficulty": "accessible",
+  "complexity": 3,
+  "breathing_cues": {
+    "entering": "Inhale as you lift the chest and lengthen the spine to a flat back.",
+    "holding": "Hold the breath briefly or breathe evenly while reaching the crown forward and tailbone back.",
+    "exiting": "Exhale to fold forward again, or inhale to rise into a standing position."
+  },
+  "bilateral": true,
+  "contraindications": ["low-back-injury", "herniated-disc"],
+  "props_required": [],
+  "prop_free_variation": null,
+  "source": "Traditional vinyasa yoga",
+  "base_of_support": ["feet"],
+  "orientation": "upright",
+  "cog_height": "mid",
+  "spinal_action": "extension",
+  "plane": "sagittal",
+  "level": "middle",
+  "zone": "mid-reach",
+  "energetic_direction": "brahmana",
+  "intensity": 2,
+  "default_measure": {"breaths": 3},
+  "type_tags": ["spinal-traction", "integration"],
+  "muscle_groups": ["spinal-erectors", "hamstrings"],
+  "injury_risk": 2,
+  "notes": "Common vinyasa transition point linking forward fold and upward stances; reinforces spinal lengthening before folding or rising.",
+  "counterposes": [],
+  "rebound_pose": null
+}

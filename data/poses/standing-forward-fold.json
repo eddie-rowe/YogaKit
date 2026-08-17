@@ -1,0 +1,43 @@
+{
+  "slug": "standing-forward-fold",
+  "sanskrit": "Uttanasana",
+  "english": "Standing Forward Fold",
+  "modes": [
+    {
+      "type": "yang",
+      "tissue_target": "muscular",
+      "hold_range": {"min": 3, "max": 8},
+      "cue_notes": "Hinge from the hips with a soft bend in the knees, folding the torso over the legs. Let the head hang heavy and the neck release. Hands may rest on the floor, blocks, or shins."
+    }
+  ],
+  "body_position": "standing",
+  "energetic_quality": ["cooling", "calming"],
+  "difficulty": "accessible",
+  "complexity": 2,
+  "breathing_cues": {
+    "entering": "Exhale as you hinge at the hips and fold forward over the legs.",
+    "holding": "Inhale to lengthen the spine slightly, exhale to soften deeper into the fold.",
+    "exiting": "Inhale as you bend the knees and roll up slowly through the spine, stacking one vertebra at a time."
+  },
+  "bilateral": true,
+  "contraindications": ["low-back-injury", "herniated-disc", "sciatica", "low-blood-pressure"],
+  "props_required": [],
+  "prop_free_variation": null,
+  "source": "Traditional hatha/vinyasa yoga",
+  "base_of_support": ["feet"],
+  "orientation": "upright",
+  "cog_height": "mid",
+  "spinal_action": "flexion",
+  "plane": "sagittal",
+  "level": "middle",
+  "zone": "near",
+  "energetic_direction": "langhana",
+  "intensity": 2,
+  "default_measure": {"breaths": 5},
+  "type_tags": ["forward-fold", "hamstring-stretch"],
+  "muscle_groups": ["hamstrings", "calves", "lumbar-spine"],
+  "injury_risk": 3,
+  "notes": "Calming forward fold; bend knees generously if hamstrings are tight to protect the low back.",
+  "counterposes": ["mountain"],
+  "rebound_pose": "mountain"
+}

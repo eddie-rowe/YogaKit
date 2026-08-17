@@ -1,0 +1,66 @@
+{
+  "slug": "locust",
+  "sanskrit": "Salabhasana",
+  "english": "Locust Pose",
+  "aliases": [],
+  "modes": [
+    {
+      "type": "yang",
+      "tissue_target": "muscular",
+      "hold_range": { "min": 3, "max": 8 },
+      "cue_notes": "Lying prone with arms alongside the body, palms down or interlaced behind the back, inhale to lift the chest, arms, and legs simultaneously away from the mat. Reach actively back through the toes and forward through the crown, engaging the entire posterior chain rather than gripping the glutes alone. Keep the neck long and gaze slightly forward or down."
+    }
+  ],
+  "body_position": "prone",
+  "energetic_quality": ["heating", "stimulating"],
+  "difficulty": "intermediate",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["child-pose"],
+  "rebound_pose": "child-pose",
+  "contraindications": ["low-back-injury", "pregnancy", "herniated-disc", "sacroiliac-joint"],
+  "bilateral": true,
+  "source": "Traditional hatha/vinyasa yoga",
+  "notes": "No hand or foot contact with the floor once lifted; the torso, hips, and thighs bear the weight. Strengthens the full posterior chain and is often used to build the strength needed for deeper backbends like camel or upward dog.",
+  "type_tags": ["backbend", "integration"],
+  "muscle_groups": ["spinal-erectors", "lumbar-spine", "glutes", "hamstrings", "posterior-shoulder"],
+  "complexity": 4,
+  "injury_risk": 4,
+  "breathing_cues": {
+    "entering": "Inhale to lift the chest, arms, and legs all at once, keeping the lift generated from the back body rather than straining the neck.",
+    "holding": "Keep breathing steadily; resist clenching the breath with the effort. Reach long through fingers and toes on each inhale.",
+    "exiting": "Exhale to lower everything back down to the mat with control, turning the head to one side to rest."
+  },
+  "before_poses": ["cobra"],
+  "after_poses": ["child-pose", "camel"],
+  "joint_action": ["extension"],
+  "primary_joints_involved": ["lumbar", "hip", "shoulder"],
+  "nervous_system_effect": "sympathetic",
+  "tissue_depth": "intermediate",
+  "modifications": [
+    {
+      "name": "Arms Only or Legs Only",
+      "description": "Lift only the upper body or only the legs rather than both simultaneously to reduce the load on the low back while building strength.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Arms Alongside Body",
+      "description": "Keep the arms alongside the torso, palms down, pressing lightly into the mat for extra support rather than interlacing behind the back.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": { "vata": "aggravating", "pitta": "neutral", "kapha": "balancing" },
+  "sequencing_position": ["building", "peak"],
+  "base_of_support": ["back"],
+  "orientation": "prone",
+  "cog_height": "floor",
+  "spinal_action": "extension",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "near",
+  "energetic_direction": "brahmana",
+  "intensity": 3,
+  "default_measure": { "breaths": 5 }
+}
