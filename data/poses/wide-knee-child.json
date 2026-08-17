@@ -19,6 +19,16 @@
     }
   ],
   "body_position": "kneeling",
+  "base_of_support": ["knees", "hands"],
+  "orientation": "upright",
+  "cog_height": "low",
+  "spinal_action": "flexion",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "near",
+  "energetic_direction": "langhana",
+  "intensity": 1,
+  "default_measure": { "seconds": 120 },
   "meridians": [
     "kidney",
     "liver"

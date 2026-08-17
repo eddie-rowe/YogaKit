@@ -127,5 +127,15 @@
   ],
   "chakras": [
     "root"
-  ]
+  ],
+  "base_of_support": ["knees", "feet"],
+  "orientation": "upright",
+  "cog_height": "mid",
+  "spinal_action": "neutral",
+  "plane": "sagittal",
+  "level": "middle",
+  "zone": "near",
+  "energetic_direction": "langhana",
+  "intensity": 2,
+  "default_measure": { "seconds": 120 }
 }

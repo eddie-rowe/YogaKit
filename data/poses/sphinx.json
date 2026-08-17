@@ -148,5 +148,15 @@
   "chakras": [
     "heart",
     "solar-plexus"
-  ]
+  ],
+  "base_of_support": ["forearms", "feet"],
+  "orientation": "prone",
+  "cog_height": "floor",
+  "spinal_action": "extension",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "near",
+  "energetic_direction": "brahmana",
+  "intensity": 2,
+  "default_measure": { "seconds": 120 }
 }

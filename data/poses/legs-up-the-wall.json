@@ -153,5 +153,15 @@
   "chakras": [
     "throat",
     "third-eye"
-  ]
+  ],
+  "base_of_support": ["back"],
+  "orientation": "supine",
+  "cog_height": "floor",
+  "spinal_action": "neutral",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "far",
+  "energetic_direction": "langhana",
+  "intensity": 1,
+  "default_measure": { "seconds": 120 }
 }

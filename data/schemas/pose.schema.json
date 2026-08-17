@@ -8,18 +8,30 @@
     "english",
     "modes",
     "body_position",
-    "meridians",
     "energetic_quality",
     "difficulty",
-    "props_required",
-    "contraindications",
+    "complexity",
+    "breathing_cues",
     "bilateral",
+    "contraindications",
+    "props_required",
+    "prop_free_variation",
     "source",
+    "base_of_support",
+    "orientation",
+    "cog_height",
+    "spinal_action",
+    "plane",
+    "level",
+    "zone",
+    "energetic_direction",
+    "intensity",
+    "default_measure"
+  ],
+  "x-tier2-properties": [
     "type_tags",
     "muscle_groups",
-    "complexity",
     "injury_risk",
-    "breathing_cues",
     "joint_action",
     "primary_joints_involved",
     "nervous_system_effect",
@@ -27,7 +39,16 @@
     "modifications",
     "dosha_affinity",
     "emotional_release_potential",
-    "sequencing_position"
+    "sequencing_position",
+    "before_poses",
+    "after_poses",
+    "chakras",
+    "tradition_names",
+    "element",
+    "meridians",
+    "counterposes",
+    "rebound_pose",
+    "notes"
   ],
   "additionalProperties": false,
   "properties": {
@@ -330,6 +351,64 @@
       },
       "default": [],
       "description": "Primary chakras activated in this pose. Standard 7-chakra system. Optional — populated progressively."
+    },
+    "base_of_support": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "enum": ["hands", "feet", "sitbones", "forearms", "knees", "back", "shoulders"]
+      },
+      "description": "Contact points touching the ground. Feeds the friction engine's contact term (35% weight)."
+    },
+    "orientation": {
+      "enum": ["prone", "supine", "upright", "inverted"],
+      "description": "Feeds the friction engine's orientation term (25% weight, combined with level)."
+    },
+    "cog_height": {
+      "enum": ["floor", "low", "mid", "high"],
+      "description": "Center-of-gravity height. Feeds the friction engine's cog term (20% weight)."
+    },
+    "spinal_action": {
+      "enum": ["flexion", "extension", "neutral", "lateral", "rotation"],
+      "description": "Feeds the friction engine's spine term (10% weight)."
+    },
+    "plane": {
+      "enum": ["sagittal", "coronal", "transverse", "multi"],
+      "description": "Feeds the friction engine's plane term (10% weight)."
+    },
+    "level": {
+      "enum": ["high", "middle", "low"],
+      "description": "Kinesphere level; combines with orientation for the orientation term."
+    },
+    "zone": {
+      "enum": ["near", "mid-reach", "far"],
+      "description": "Kinesphere zone; informative in v0.1, not yet weighted in the friction formula."
+    },
+    "energetic_direction": {
+      "enum": ["brahmana", "langhana", "samana"],
+      "description": "Heating/cooling/neutral energetic direction; drives the six-phase template's default intent tags."
+    },
+    "intensity": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "How much this pose asks of the nervous system/tissue. Distinct from complexity (1-10, how hard to enter/hold)."
+    },
+    "default_measure": {
+      "type": "object",
+      "oneOf": [
+        {
+          "required": ["breaths"],
+          "properties": { "breaths": { "type": "integer", "minimum": 1 } },
+          "additionalProperties": false
+        },
+        {
+          "required": ["seconds"],
+          "properties": { "seconds": { "type": "integer", "minimum": 1 } },
+          "additionalProperties": false
+        }
+      ],
+      "description": "The Compose surface's default hold entry. Distinct from modes[].hold_range, which stays a minutes-based yin-style range."
     }
   }
 }

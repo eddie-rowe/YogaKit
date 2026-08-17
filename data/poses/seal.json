@@ -154,5 +154,15 @@
   "chakras": [
     "heart",
     "throat"
-  ]
+  ],
+  "base_of_support": ["hands"],
+  "orientation": "prone",
+  "cog_height": "floor",
+  "spinal_action": "extension",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "far",
+  "energetic_direction": "brahmana",
+  "intensity": 3,
+  "default_measure": { "seconds": 180 }
 }

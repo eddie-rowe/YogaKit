@@ -146,5 +146,15 @@
   "chakras": [
     "sacral",
     "root"
-  ]
+  ],
+  "base_of_support": ["sitbones"],
+  "orientation": "upright",
+  "cog_height": "mid",
+  "spinal_action": "neutral",
+  "plane": "multi",
+  "level": "middle",
+  "zone": "near",
+  "energetic_direction": "langhana",
+  "intensity": 3,
+  "default_measure": { "seconds": 180 }
 }

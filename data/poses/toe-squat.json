@@ -19,6 +19,16 @@
     }
   ],
   "body_position": "kneeling",
+  "base_of_support": ["feet", "knees"],
+  "orientation": "upright",
+  "cog_height": "mid",
+  "spinal_action": "neutral",
+  "plane": "sagittal",
+  "level": "middle",
+  "zone": "near",
+  "energetic_direction": "brahmana",
+  "intensity": 3,
+  "default_measure": { "seconds": 120 },
   "meridians": [
     "stomach",
     "spleen",

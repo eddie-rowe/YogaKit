@@ -133,5 +133,15 @@
   "chakras": [
     "root",
     "sacral"
-  ]
+  ],
+  "base_of_support": ["back", "feet"],
+  "orientation": "supine",
+  "cog_height": "floor",
+  "spinal_action": "neutral",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "near",
+  "energetic_direction": "langhana",
+  "intensity": 1,
+  "default_measure": { "seconds": 120 }
 }

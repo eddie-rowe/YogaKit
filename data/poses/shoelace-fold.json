@@ -141,5 +141,15 @@
     "sacral",
     "root",
     "third-eye"
-  ]
+  ],
+  "base_of_support": ["sitbones", "hands"],
+  "orientation": "upright",
+  "cog_height": "low",
+  "spinal_action": "flexion",
+  "plane": "multi",
+  "level": "low",
+  "zone": "mid-reach",
+  "energetic_direction": "langhana",
+  "intensity": 3,
+  "default_measure": { "seconds": 180 }
 }

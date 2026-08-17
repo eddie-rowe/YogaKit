@@ -161,5 +161,15 @@
   "tradition_names": {
     "yin": "Sleeping Swan",
     "vinyasa": "Pigeon Prep"
-  }
+  },
+  "base_of_support": ["knees", "feet", "hands"],
+  "orientation": "upright",
+  "cog_height": "low",
+  "spinal_action": "flexion",
+  "plane": "multi",
+  "level": "low",
+  "zone": "mid-reach",
+  "energetic_direction": "langhana",
+  "intensity": 3,
+  "default_measure": { "seconds": 180 }
 }

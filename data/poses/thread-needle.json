@@ -19,6 +19,16 @@
     }
   ],
   "body_position": "kneeling",
+  "base_of_support": ["knees", "shoulders", "hands"],
+  "orientation": "upright",
+  "cog_height": "low",
+  "spinal_action": "rotation",
+  "plane": "transverse",
+  "level": "low",
+  "zone": "near",
+  "energetic_direction": "langhana",
+  "intensity": 2,
+  "default_measure": { "seconds": 120 },
   "meridians": [
     "gallbladder",
     "small-intestine"

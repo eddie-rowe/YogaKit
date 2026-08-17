@@ -149,5 +149,15 @@
   "chakras": [
     "sacral",
     "root"
-  ]
+  ],
+  "base_of_support": ["forearms"],
+  "orientation": "prone",
+  "cog_height": "floor",
+  "spinal_action": "extension",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "mid-reach",
+  "energetic_direction": "brahmana",
+  "intensity": 3,
+  "default_measure": { "seconds": 180 }
 }

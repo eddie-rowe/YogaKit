@@ -158,5 +158,15 @@
     "sacral",
     "heart",
     "throat"
-  ]
+  ],
+  "base_of_support": ["knees", "sitbones", "forearms"],
+  "orientation": "upright",
+  "cog_height": "low",
+  "spinal_action": "extension",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "far",
+  "energetic_direction": "brahmana",
+  "intensity": 4,
+  "default_measure": { "seconds": 180 }
 }

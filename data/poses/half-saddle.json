@@ -146,5 +146,15 @@
   "chakras": [
     "sacral",
     "heart"
-  ]
+  ],
+  "base_of_support": ["sitbones", "forearms"],
+  "orientation": "upright",
+  "cog_height": "low",
+  "spinal_action": "extension",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "mid-reach",
+  "energetic_direction": "brahmana",
+  "intensity": 3,
+  "default_measure": { "seconds": 120 }
 }

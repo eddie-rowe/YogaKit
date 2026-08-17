@@ -151,5 +151,15 @@
   "chakras": [
     "third-eye",
     "root"
-  ]
+  ],
+  "base_of_support": ["sitbones", "feet"],
+  "orientation": "upright",
+  "cog_height": "low",
+  "spinal_action": "flexion",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "far",
+  "energetic_direction": "langhana",
+  "intensity": 3,
+  "default_measure": { "seconds": 120 }
 }

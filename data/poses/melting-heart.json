@@ -149,5 +149,15 @@
   "chakras": [
     "heart",
     "throat"
-  ]
+  ],
+  "base_of_support": ["knees", "hands"],
+  "orientation": "upright",
+  "cog_height": "low",
+  "spinal_action": "extension",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "far",
+  "energetic_direction": "langhana",
+  "intensity": 3,
+  "default_measure": { "seconds": 120 }
 }

@@ -19,6 +19,16 @@
     }
   ],
   "body_position": "supine",
+  "base_of_support": ["back"],
+  "orientation": "supine",
+  "cog_height": "floor",
+  "spinal_action": "rotation",
+  "plane": "transverse",
+  "level": "low",
+  "zone": "mid-reach",
+  "energetic_direction": "langhana",
+  "intensity": 2,
+  "default_measure": { "seconds": 120 },
   "meridians": [
     "gallbladder",
     "liver"
