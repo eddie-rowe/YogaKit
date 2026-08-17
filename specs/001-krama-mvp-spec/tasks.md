@@ -40,7 +40,7 @@ within Phase D so stories stay independently completable and testable.
 - [X] T015 Amend `research.md` — friction engine + validator-lite decisions; mark AI sections deferred
 - [X] T016 Annotate `checklists/requirements.md`, `checklists/spec-quality.md` as historical
 - [X] T017 Regenerate `tasks.md` (this file)
-- [ ] T018 Commit Phase B as a documentation-only commit
+- [X] T018 Commit Phase B as a documentation-only commit (`23bd33a`)
 
 ## Phase C — Schema and data
 
