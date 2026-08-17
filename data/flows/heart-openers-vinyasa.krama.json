@@ -1,0 +1,411 @@
+{
+  "schema_version": "0.1.0",
+  "exported_at": "2026-08-17T00:00:00.000Z",
+  "flow": {
+    "id": "b79a753d-fc7c-42e7-8abc-10181fabdb12",
+    "title": "Heart Openers Vinyasa",
+    "items": [
+      {
+        "id": "7935b491-a93d-4e7e-a414-90c8215c8f25",
+        "poseSlug": "easy-seat",
+        "mode": "yang",
+        "measure": {
+          "breaths": 5
+        },
+        "note": "Arrive. A few rounds of easy breath before moving.",
+        "phaseId": "ade3bb5d-b9e0-4cbb-af90-17f587f597e4",
+        "order": 0
+      },
+      {
+        "id": "be424b6d-c56f-4965-9079-b2209cb9dcbd",
+        "poseSlug": "cat-cow",
+        "mode": "yang",
+        "measure": {
+          "breaths": 8
+        },
+        "phaseId": "ade3bb5d-b9e0-4cbb-af90-17f587f597e4",
+        "order": 1
+      },
+      {
+        "id": "007af601-65f6-4e9f-a585-c1135e571da4",
+        "poseSlug": "mountain",
+        "mode": "yang",
+        "measure": {
+          "breaths": 1
+        },
+        "note": "Sun Salutation A — round 1",
+        "phaseId": "d0dc0110-6030-48a8-a804-98cb804e2154",
+        "order": 2
+      },
+      {
+        "id": "a9152ee2-2d69-456f-9426-e1e105d51806",
+        "poseSlug": "standing-forward-fold",
+        "mode": "yang",
+        "measure": {
+          "breaths": 1
+        },
+        "phaseId": "d0dc0110-6030-48a8-a804-98cb804e2154",
+        "order": 3
+      },
+      {
+        "id": "da075fd7-2ced-481f-91cf-4d144c8746f9",
+        "poseSlug": "halfway-lift",
+        "mode": "yang",
+        "measure": {
+          "breaths": 1
+        },
+        "phaseId": "d0dc0110-6030-48a8-a804-98cb804e2154",
+        "order": 4
+      },
+      {
+        "id": "f961bb1d-5a5f-4c16-8fac-00e5f900e9c2",
+        "poseSlug": "plank",
+        "mode": "yang",
+        "measure": {
+          "breaths": 1
+        },
+        "phaseId": "d0dc0110-6030-48a8-a804-98cb804e2154",
+        "order": 5
+      },
+      {
+        "id": "9b9507ef-f8bd-41e0-b3f4-bac147bf1b10",
+        "poseSlug": "chaturanga",
+        "mode": "yang",
+        "measure": {
+          "breaths": 1
+        },
+        "phaseId": "d0dc0110-6030-48a8-a804-98cb804e2154",
+        "order": 6
+      },
+      {
+        "id": "4313ed14-b8ff-4943-a404-aad13a31e7e6",
+        "poseSlug": "up-dog",
+        "mode": "yang",
+        "measure": {
+          "breaths": 1
+        },
+        "phaseId": "d0dc0110-6030-48a8-a804-98cb804e2154",
+        "order": 7
+      },
+      {
+        "id": "883fb144-d8d8-4fd1-985c-11ef653265f3",
+        "poseSlug": "down-dog",
+        "mode": "yang",
+        "measure": {
+          "breaths": 5
+        },
+        "phaseId": "d0dc0110-6030-48a8-a804-98cb804e2154",
+        "order": 8
+      },
+      {
+        "id": "1cbc2c44-8856-42bc-af1e-20520845ecb8",
+        "poseSlug": "halfway-lift",
+        "mode": "yang",
+        "measure": {
+          "breaths": 1
+        },
+        "phaseId": "d0dc0110-6030-48a8-a804-98cb804e2154",
+        "order": 9
+      },
+      {
+        "id": "a60ac880-be6f-4113-ab1d-8f0858f61f1f",
+        "poseSlug": "standing-forward-fold",
+        "mode": "yang",
+        "measure": {
+          "breaths": 1
+        },
+        "phaseId": "d0dc0110-6030-48a8-a804-98cb804e2154",
+        "order": 10
+      },
+      {
+        "id": "10ea9e5b-809d-445d-9a41-43a5fba2b14b",
+        "poseSlug": "mountain",
+        "mode": "yang",
+        "measure": {
+          "breaths": 1
+        },
+        "note": "Sun Salutation A — round 2 begins here; repeat the same shapes.",
+        "phaseId": "d0dc0110-6030-48a8-a804-98cb804e2154",
+        "order": 11
+      },
+      {
+        "id": "b06f4246-f663-4844-a056-5ceff05d000f",
+        "poseSlug": "standing-forward-fold",
+        "mode": "yang",
+        "measure": {
+          "breaths": 1
+        },
+        "phaseId": "d0dc0110-6030-48a8-a804-98cb804e2154",
+        "order": 12
+      },
+      {
+        "id": "849343f8-b567-4ee7-b50c-5b34657cddc9",
+        "poseSlug": "halfway-lift",
+        "mode": "yang",
+        "measure": {
+          "breaths": 1
+        },
+        "phaseId": "d0dc0110-6030-48a8-a804-98cb804e2154",
+        "order": 13
+      },
+      {
+        "id": "1c9d83a0-bf22-4d0d-8214-5910a81a9f37",
+        "poseSlug": "plank",
+        "mode": "yang",
+        "measure": {
+          "breaths": 1
+        },
+        "phaseId": "d0dc0110-6030-48a8-a804-98cb804e2154",
+        "order": 14
+      },
+      {
+        "id": "70f15620-96f5-430d-a306-9a1ea19fa8ca",
+        "poseSlug": "chaturanga",
+        "mode": "yang",
+        "measure": {
+          "breaths": 1
+        },
+        "phaseId": "d0dc0110-6030-48a8-a804-98cb804e2154",
+        "order": 15
+      },
+      {
+        "id": "4a7880c6-3e25-4a9a-a1cd-c996950238b8",
+        "poseSlug": "up-dog",
+        "mode": "yang",
+        "measure": {
+          "breaths": 1
+        },
+        "phaseId": "d0dc0110-6030-48a8-a804-98cb804e2154",
+        "order": 16
+      },
+      {
+        "id": "92e59006-931d-472a-a339-28c6ef276e4f",
+        "poseSlug": "down-dog",
+        "mode": "yang",
+        "measure": {
+          "breaths": 5
+        },
+        "phaseId": "d0dc0110-6030-48a8-a804-98cb804e2154",
+        "order": 17
+      },
+      {
+        "id": "56cbeb34-e3a6-4f66-bb4e-9614b2ea98a8",
+        "poseSlug": "warrior-1",
+        "mode": "yang",
+        "measure": {
+          "breaths": 5
+        },
+        "note": "Both sides. Reach the heart forward and up.",
+        "phaseId": "e51f7323-491f-453a-a0a7-4711dc67a382",
+        "order": 18
+      },
+      {
+        "id": "cee46025-ba98-4d8e-8e88-854cccc2b985",
+        "poseSlug": "warrior-2",
+        "mode": "yang",
+        "measure": {
+          "breaths": 5
+        },
+        "note": "Both sides.",
+        "phaseId": "e51f7323-491f-453a-a0a7-4711dc67a382",
+        "order": 19
+      },
+      {
+        "id": "c460591e-5694-408c-8a7c-c4364701279e",
+        "poseSlug": "reverse-warrior",
+        "mode": "yang",
+        "measure": {
+          "breaths": 3
+        },
+        "note": "Both sides. Side body opens, chest lifts.",
+        "phaseId": "e51f7323-491f-453a-a0a7-4711dc67a382",
+        "order": 20
+      },
+      {
+        "id": "5bbf4c70-f698-4216-9634-895cdf9d7dad",
+        "poseSlug": "extended-side-angle",
+        "mode": "yang",
+        "measure": {
+          "breaths": 5
+        },
+        "note": "Both sides.",
+        "phaseId": "e51f7323-491f-453a-a0a7-4711dc67a382",
+        "order": 21
+      },
+      {
+        "id": "9c39ff50-54d2-41f3-a59b-a9dd0e0ab38f",
+        "poseSlug": "triangle",
+        "mode": "yang",
+        "measure": {
+          "breaths": 5
+        },
+        "note": "Both sides. Stack the chest open toward the sky.",
+        "phaseId": "e51f7323-491f-453a-a0a7-4711dc67a382",
+        "order": 22
+      },
+      {
+        "id": "7057203e-4bb5-4e7b-8f5e-0354cc23955d",
+        "poseSlug": "half-moon",
+        "mode": "yang",
+        "measure": {
+          "breaths": 5
+        },
+        "note": "Both sides.",
+        "phaseId": "e51f7323-491f-453a-a0a7-4711dc67a382",
+        "order": 23
+      },
+      {
+        "id": "9fc4b3bd-8f11-42d4-aeb2-5c532f57e87d",
+        "poseSlug": "down-dog",
+        "mode": "yang",
+        "measure": {
+          "breaths": 3
+        },
+        "note": "Reset between standing sides.",
+        "phaseId": "e51f7323-491f-453a-a0a7-4711dc67a382",
+        "order": 24
+      },
+      {
+        "id": "053b87bd-8d18-4c01-8785-0cb9915942a4",
+        "poseSlug": "cobra",
+        "mode": "yang",
+        "measure": {
+          "breaths": 3
+        },
+        "note": "Warm the low back before Camel.",
+        "phaseId": "a8f7b633-a331-481a-87a4-b376e02a6c96",
+        "order": 25
+      },
+      {
+        "id": "2f3d3ccb-2525-40e8-a8d7-6a2149f02039",
+        "poseSlug": "camel",
+        "mode": "yang",
+        "measure": {
+          "breaths": 5
+        },
+        "note": "The peak chest opener. Offer hands-on-low-back as the accessible variation.",
+        "phaseId": "a8f7b633-a331-481a-87a4-b376e02a6c96",
+        "order": 26
+      },
+      {
+        "id": "8572d389-e59a-4858-8fc7-94db0fe9c646",
+        "poseSlug": "child-pose",
+        "mode": "yin",
+        "measure": {
+          "seconds": 60
+        },
+        "note": "Neutralize the spine after Camel.",
+        "phaseId": "a8f7b633-a331-481a-87a4-b376e02a6c96",
+        "order": 27
+      },
+      {
+        "id": "b1ae7249-4b36-4391-b748-af451b25780a",
+        "poseSlug": "anahatasana",
+        "mode": "yin",
+        "measure": {
+          "seconds": 240
+        },
+        "note": "Heart melts toward the earth, hips stacked over knees.",
+        "phaseId": "fe8f18ef-7607-4491-893a-1df281066cdd",
+        "order": 28
+      },
+      {
+        "id": "6761069d-356a-4418-aa09-fbf74030794b",
+        "poseSlug": "melting-heart",
+        "mode": "yin",
+        "measure": {
+          "seconds": 240
+        },
+        "note": "Hips slide back for deeper chest contact.",
+        "phaseId": "fe8f18ef-7607-4491-893a-1df281066cdd",
+        "order": 29
+      },
+      {
+        "id": "4dfe763a-f4fa-4e60-99f8-575064025cd8",
+        "poseSlug": "supported-fish",
+        "mode": "yin",
+        "measure": {
+          "seconds": 300
+        },
+        "note": "Bolster under the thoracic spine.",
+        "phaseId": "fe8f18ef-7607-4491-893a-1df281066cdd",
+        "order": 30
+      },
+      {
+        "id": "03134121-5b08-4bf0-acdc-8b4a116b56b8",
+        "poseSlug": "bridge-yin",
+        "mode": "yin",
+        "measure": {
+          "seconds": 240
+        },
+        "note": "Passive backbend, no gluteal engagement.",
+        "phaseId": "fe8f18ef-7607-4491-893a-1df281066cdd",
+        "order": 31
+      },
+      {
+        "id": "27b709d3-8e4d-4e56-8cd2-4ffc5340e8bc",
+        "poseSlug": "thread-needle",
+        "mode": "yin",
+        "measure": {
+          "seconds": 240
+        },
+        "note": "Both sides. Supine shoulder release.",
+        "phaseId": "fe8f18ef-7607-4491-893a-1df281066cdd",
+        "order": 32
+      },
+      {
+        "id": "ebc52ef5-b878-4004-bf23-3ac7be78e2d7",
+        "poseSlug": "savasana",
+        "mode": "yin",
+        "measure": {
+          "seconds": 420
+        },
+        "note": "Allow at least 7 minutes. The practice integrates here.",
+        "phaseId": "38c8d87c-9990-4252-878a-e998aabf4f05",
+        "order": 33
+      }
+    ],
+    "phases": [
+      {
+        "id": "ade3bb5d-b9e0-4cbb-af90-17f587f597e4",
+        "name": "Opening",
+        "intentTag": "samana",
+        "order": 0
+      },
+      {
+        "id": "d0dc0110-6030-48a8-a804-98cb804e2154",
+        "name": "Warm-up",
+        "intentTag": "brahmana",
+        "order": 1
+      },
+      {
+        "id": "e51f7323-491f-453a-a0a7-4711dc67a382",
+        "name": "Standing",
+        "intentTag": "brahmana",
+        "order": 2
+      },
+      {
+        "id": "a8f7b633-a331-481a-87a4-b376e02a6c96",
+        "name": "Peak",
+        "intentTag": "brahmana",
+        "order": 3
+      },
+      {
+        "id": "fe8f18ef-7607-4491-893a-1df281066cdd",
+        "name": "Cooldown",
+        "intentTag": "langhana",
+        "order": 4
+      },
+      {
+        "id": "38c8d87c-9990-4252-878a-e998aabf4f05",
+        "name": "Integration",
+        "intentTag": "langhana",
+        "order": 5
+      }
+    ],
+    "createdAt": "2026-08-17T00:00:00.000Z",
+    "updatedAt": "2026-08-17T00:00:00.000Z",
+    "isBuiltIn": true,
+    "schema_version": "0.1.0"
+  }
+}

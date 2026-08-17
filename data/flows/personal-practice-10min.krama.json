@@ -1,0 +1,184 @@
+{
+  "schema_version": "0.1.0",
+  "exported_at": "2026-08-17T00:00:00.000Z",
+  "flow": {
+    "id": "bffbec9a-5c2c-4cce-9e14-d5ea768fb142",
+    "title": "10-Minute Personal Practice",
+    "items": [
+      {
+        "id": "30a90996-c773-4279-a8ba-060a8728b0ad",
+        "poseSlug": "easy-seat",
+        "mode": "yang",
+        "measure": {
+          "breaths": 5
+        },
+        "note": "Settle in, scan the breath before moving.",
+        "phaseId": "6ea07db5-1c83-4421-9097-49220445f27d",
+        "order": 0
+      },
+      {
+        "id": "86ebb15b-fb72-488c-a275-bc958da88671",
+        "poseSlug": "cat-cow",
+        "mode": "yang",
+        "measure": {
+          "breaths": 6
+        },
+        "note": "Warm the spine, one breath per shape.",
+        "phaseId": "6ea07db5-1c83-4421-9097-49220445f27d",
+        "order": 1
+      },
+      {
+        "id": "e0d8e872-59cf-4839-8fe4-22d8c30bb2d8",
+        "poseSlug": "mountain",
+        "mode": "yang",
+        "measure": {
+          "breaths": 3
+        },
+        "phaseId": "36e082c5-67c5-4504-ae41-b098467c9319",
+        "order": 2
+      },
+      {
+        "id": "d454475e-4e2a-4ca8-b7b0-6777d2028c6b",
+        "poseSlug": "standing-forward-fold",
+        "mode": "yang",
+        "measure": {
+          "breaths": 3
+        },
+        "phaseId": "36e082c5-67c5-4504-ae41-b098467c9319",
+        "order": 3
+      },
+      {
+        "id": "f23a46fb-0cd6-415d-adc3-6f371fd9dfec",
+        "poseSlug": "halfway-lift",
+        "mode": "yang",
+        "measure": {
+          "breaths": 1
+        },
+        "phaseId": "36e082c5-67c5-4504-ae41-b098467c9319",
+        "order": 4
+      },
+      {
+        "id": "994691eb-69b7-490f-832c-7b5e1d7ab597",
+        "poseSlug": "plank",
+        "mode": "yang",
+        "measure": {
+          "breaths": 1
+        },
+        "phaseId": "36e082c5-67c5-4504-ae41-b098467c9319",
+        "order": 5
+      },
+      {
+        "id": "a04449bd-9979-4cd8-a6ce-f5336b5734f1",
+        "poseSlug": "chaturanga",
+        "mode": "yang",
+        "measure": {
+          "breaths": 1
+        },
+        "phaseId": "36e082c5-67c5-4504-ae41-b098467c9319",
+        "order": 6
+      },
+      {
+        "id": "17695219-b655-42c0-b7cf-339c969d5e3e",
+        "poseSlug": "up-dog",
+        "mode": "yang",
+        "measure": {
+          "breaths": 1
+        },
+        "phaseId": "36e082c5-67c5-4504-ae41-b098467c9319",
+        "order": 7
+      },
+      {
+        "id": "f414d41a-ff53-4d70-b1cd-e66bdbc68a1e",
+        "poseSlug": "down-dog",
+        "mode": "yang",
+        "measure": {
+          "breaths": 5
+        },
+        "phaseId": "36e082c5-67c5-4504-ae41-b098467c9319",
+        "order": 8
+      },
+      {
+        "id": "ba0b7da4-5158-45f7-ae06-f7f506cd8b17",
+        "poseSlug": "halfway-lift",
+        "mode": "yang",
+        "measure": {
+          "breaths": 1
+        },
+        "phaseId": "36e082c5-67c5-4504-ae41-b098467c9319",
+        "order": 9
+      },
+      {
+        "id": "5f3dc247-3895-416c-bca2-eb8523376e54",
+        "poseSlug": "standing-forward-fold",
+        "mode": "yang",
+        "measure": {
+          "breaths": 1
+        },
+        "phaseId": "36e082c5-67c5-4504-ae41-b098467c9319",
+        "order": 10
+      },
+      {
+        "id": "c6d6adf4-e48d-4a43-9cd8-82f2800593b3",
+        "poseSlug": "mountain",
+        "mode": "yang",
+        "measure": {
+          "breaths": 1
+        },
+        "phaseId": "36e082c5-67c5-4504-ae41-b098467c9319",
+        "order": 11
+      },
+      {
+        "id": "98fac48d-f63f-4f38-89d8-5191b53c8e4a",
+        "poseSlug": "tree",
+        "mode": "yang",
+        "measure": {
+          "breaths": 5
+        },
+        "note": "Both sides — find one drishti point per side.",
+        "phaseId": "da4acf4a-ac4a-4b1b-9683-d3f1e9c49d80",
+        "order": 12
+      },
+      {
+        "id": "2a0c9090-51c1-4444-bc73-39a6fcddb784",
+        "poseSlug": "seated-stillness",
+        "mode": "both",
+        "measure": {
+          "seconds": 60
+        },
+        "note": "Let the breath return to baseline before standing back up.",
+        "phaseId": "cf4d026c-934c-4ea5-ba48-f9778bbe0ca4",
+        "order": 13
+      }
+    ],
+    "phases": [
+      {
+        "id": "6ea07db5-1c83-4421-9097-49220445f27d",
+        "name": "Opening",
+        "intentTag": "samana",
+        "order": 0
+      },
+      {
+        "id": "36e082c5-67c5-4504-ae41-b098467c9319",
+        "name": "Building",
+        "intentTag": "brahmana",
+        "order": 1
+      },
+      {
+        "id": "da4acf4a-ac4a-4b1b-9683-d3f1e9c49d80",
+        "name": "Peak",
+        "intentTag": "brahmana",
+        "order": 2
+      },
+      {
+        "id": "cf4d026c-934c-4ea5-ba48-f9778bbe0ca4",
+        "name": "Integration",
+        "intentTag": "langhana",
+        "order": 3
+      }
+    ],
+    "createdAt": "2026-08-17T00:00:00.000Z",
+    "updatedAt": "2026-08-17T00:00:00.000Z",
+    "isBuiltIn": true,
+    "schema_version": "0.1.0"
+  }
+}

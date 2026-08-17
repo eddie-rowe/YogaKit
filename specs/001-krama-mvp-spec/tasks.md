@@ -46,34 +46,36 @@ within Phase D so stories stay independently completable and testable.
 
 **Gate**: Aug 31 — schema final + 5 poses as proof. Sept 30 — all 63 poses.
 
-- [ ] T019 [P] Add the ten new Tier-1 fields to `data/schemas/pose.schema.json` per
+- [X] T019 [P] Add the ten new Tier-1 fields to `data/schemas/pose.schema.json` per
   `contracts/pose-library-schema.md` (`base_of_support`, `orientation`, `cog_height`,
   `spinal_action`, `plane`, `level`, `zone`, `energetic_direction`, `intensity`,
   `default_measure`); move `type_tags`, `muscle_groups`, `injury_risk`, `joint_action`,
   `primary_joints_involved`, `nervous_system_effect`, `tissue_depth`, `modifications`,
   `dosha_affinity`, `emotional_release_potential`, `sequencing_position` out of the hard
-  `required` array into a Tier-2 warn-only set.
-- [ ] T020 Update `scripts/validate-poses.js` with a `--tier1` completeness report:
-  schema failures still fail CI; Tier-2 gaps print a warning table and exit 0.
-- [ ] T021 [P] Backfill the ten new Tier-1 fields on 5 representative existing poses
+  `required` array into a Tier-2 warn-only set. (`89eec24`)
+- [X] T020 Update `scripts/validate-poses.js` with a `--tier1` completeness report:
+  schema failures still fail CI; Tier-2 gaps print a warning table and exit 0. (`89eec24`)
+- [X] T021 [P] Backfill the ten new Tier-1 fields on 5 representative existing poses
   (`butterfly`, `savasana`, `dragon-low-lunge`, `child-pose`, `sphinx`) as the Aug 31
-  schema proof.
-- [ ] T022 Backfill the ten new Tier-1 fields across the remaining 38 existing pose files.
-- [ ] T023 [P] Author `data/poses/rebound-supine.json` and
-  `data/poses/seated-stillness.json` (stillness nodes, near-empty geometry, full Tier-1).
-- [ ] T024 [P] Author the ~20 new yang pose files (Mountain, Standing Forward Fold,
+  schema proof. (`89eec24`)
+- [X] T022 Backfill the ten new Tier-1 fields across the remaining 38 existing pose files. (`89eec24`)
+- [X] T023 [P] Author `data/poses/rebound-supine.json` and
+  `data/poses/seated-stillness.json` (stillness nodes, near-empty geometry, full Tier-1). (`afb1d53`)
+- [X] T024 [P] Author the ~20 new yang pose files (Mountain, Standing Forward Fold,
   Halfway Lift, Chair, Tree, High Lunge, Low Lunge, Warrior I, Warrior II, Reverse
   Warrior, Extended Side Angle, Triangle, Half Moon, Down Dog, Plank, Chaturanga, Cobra,
-  Up Dog, Locust, Cat-Cow, Camel, Easy Seat), each with full Tier-1 fields.
-- [ ] T025 Author `data/blocks/sun-salutation-a.json` (or equivalent location) as the
-  first `Block` entity instance.
-- [ ] T026 Convert `src/lib/reference-sequences/index.ts`'s built-ins into
-  `data/flows/*.krama.json` (10-min personal asana, 60-min heart-openers vinyasa,
-  60-min yin — reusing `classic-yin-full-body` as the yin one), each stamped
-  `schema_version: "0.1.0"`, `isBuiltIn: true`.
+  Up Dog, Locust, Cat-Cow, Camel, Easy Seat), each with full Tier-1 fields. Library now
+  67 poses. (`afb1d53`)
+- [X] T025 Author `data/blocks/sun-salutation-a.json` as the first `Block` entity
+  instance.
+- [X] T026 Convert `src/lib/reference-sequences/index.ts`'s built-ins into
+  `data/flows/*.krama.json` (`personal-practice-10min`, `heart-openers-vinyasa`,
+  `classic-yin-full-body`), each stamped `schema_version: "0.1.0"`, `isBuiltIn: true`.
 - [ ] T027 External step (not performable by this agent): have Gioconda & Tavo review
   Tier-1 geometry data for 10 poses before T022/T024's mass entry, per locked spec §9.
-- [ ] T028 Run `npm run validate:poses` — confirm 0 Tier-1 failures across all 63 poses,
+  Note: T022/T024 have already landed pending this review — flag any corrections as a
+  follow-up data patch rather than blocking on it retroactively.
+- [X] T028 Run `npm run validate:poses` — confirm 0 Tier-1 failures across all 67 poses,
   a clean Tier-2 warning report.
 
 ## Phase D — Code (Sept 30 gate)

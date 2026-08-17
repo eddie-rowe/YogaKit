@@ -1,0 +1,145 @@
+{
+  "schema_version": "0.1.0",
+  "exported_at": "2026-08-17T00:00:00.000Z",
+  "flow": {
+    "id": "91d035b8-519f-4b1c-a2f6-9541df9b8b65",
+    "title": "Classic Full Body Yin",
+    "items": [
+      {
+        "id": "1faaf4ae-5c26-4ddc-8291-1fbd0b2b484a",
+        "poseSlug": "butterfly",
+        "mode": "yin",
+        "measure": {
+          "seconds": 240
+        },
+        "note": "Feet together, spine rounds naturally forward. A perfect opening survey of the hips and inner groin.",
+        "phaseId": "e6ca6853-5ddb-430a-a9ac-5f707a03bfb2",
+        "order": 0
+      },
+      {
+        "id": "f65b89f0-e01d-42c3-8ec4-7289a438b8eb",
+        "poseSlug": "wide-knee-child",
+        "mode": "yin",
+        "measure": {
+          "seconds": 180
+        },
+        "note": "Brief reset between halves. Knees wide to decompress the sacrum.",
+        "phaseId": "e6ca6853-5ddb-430a-a9ac-5f707a03bfb2",
+        "order": 1
+      },
+      {
+        "id": "ba0a7258-0bfe-4148-9888-89ef5f4b9493",
+        "poseSlug": "dragon-low-lunge",
+        "mode": "yin",
+        "measure": {
+          "seconds": 240
+        },
+        "note": "Both sides. Front knee tracks over ankle. Hip flexor and hip joint compression, one side at a time.",
+        "phaseId": "c647e567-d374-410f-a251-545584f4046f",
+        "order": 2
+      },
+      {
+        "id": "3d96b0ce-1c05-4e35-929d-c2344a6a3036",
+        "poseSlug": "half-saddle",
+        "mode": "yin",
+        "measure": {
+          "seconds": 240
+        },
+        "note": "Both sides. One leg bent back in Saddle position, other extended. Targets the quad and psoas of the bent-leg side.",
+        "phaseId": "c647e567-d374-410f-a251-545584f4046f",
+        "order": 3
+      },
+      {
+        "id": "6a805b20-50c8-4ca5-8461-7ded19f767cf",
+        "poseSlug": "saddle",
+        "mode": "yin",
+        "measure": {
+          "seconds": 240
+        },
+        "note": "Both knees bent back. The peak compression of the lumbar and sacral area. Offer bolster support.",
+        "phaseId": "4d68ee88-4ff8-4102-aa3d-80f52600e968",
+        "order": 4
+      },
+      {
+        "id": "8beeff8e-e6a7-481b-83f1-befe05a826f8",
+        "poseSlug": "sphinx",
+        "mode": "yin",
+        "measure": {
+          "seconds": 240
+        },
+        "note": "Forearms grounded. Gentle extension of the lumbar after the Saddle compression.",
+        "phaseId": "4d68ee88-4ff8-4102-aa3d-80f52600e968",
+        "order": 5
+      },
+      {
+        "id": "de90c9c4-e5fb-4ed4-abc6-26dec27e3e91",
+        "poseSlug": "reclining-twist",
+        "mode": "yin",
+        "measure": {
+          "seconds": 180
+        },
+        "note": "Both sides. Supine twist neutralises the spine after prone backbends.",
+        "phaseId": "f52df2be-a6db-4b84-ad02-32df5741464b",
+        "order": 6
+      },
+      {
+        "id": "ba654132-666f-4a1f-b007-63865c606919",
+        "poseSlug": "constructive-rest",
+        "mode": "yin",
+        "measure": {
+          "seconds": 180
+        },
+        "note": "Knees bent, feet flat. Psoas fully released. A transition toward stillness.",
+        "phaseId": "f52df2be-a6db-4b84-ad02-32df5741464b",
+        "order": 7
+      },
+      {
+        "id": "1f0dc415-8907-4da5-9449-8c3d95919dde",
+        "poseSlug": "savasana",
+        "mode": "yin",
+        "measure": {
+          "seconds": 420
+        },
+        "note": "Allow 5-10 minutes minimum. The practice integrates here.",
+        "phaseId": "99d15325-1db9-4bc8-9c08-f4358152a8df",
+        "order": 8
+      }
+    ],
+    "phases": [
+      {
+        "id": "e6ca6853-5ddb-430a-a9ac-5f707a03bfb2",
+        "name": "Opening",
+        "intentTag": "samana",
+        "order": 0
+      },
+      {
+        "id": "c647e567-d374-410f-a251-545584f4046f",
+        "name": "Building",
+        "intentTag": "brahmana",
+        "order": 1
+      },
+      {
+        "id": "4d68ee88-4ff8-4102-aa3d-80f52600e968",
+        "name": "Peak",
+        "intentTag": "brahmana",
+        "order": 2
+      },
+      {
+        "id": "f52df2be-a6db-4b84-ad02-32df5741464b",
+        "name": "Cooldown",
+        "intentTag": "langhana",
+        "order": 3
+      },
+      {
+        "id": "99d15325-1db9-4bc8-9c08-f4358152a8df",
+        "name": "Integration",
+        "intentTag": "langhana",
+        "order": 4
+      }
+    ],
+    "createdAt": "2026-08-17T00:00:00.000Z",
+    "updatedAt": "2026-08-17T00:00:00.000Z",
+    "isBuiltIn": true,
+    "schema_version": "0.1.0"
+  }
+}
