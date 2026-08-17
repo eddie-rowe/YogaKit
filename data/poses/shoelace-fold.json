@@ -105,7 +105,9 @@
     {
       "name": "Bolster in Front",
       "description": "Place a bolster lengthwise in front of the stacked knees and rest the torso on it, allowing the forward fold to be fully passive without any muscular effort.",
-      "props_used": ["bolster"],
+      "props_used": [
+        "bolster"
+      ],
       "accessibility_level": "accessible"
     },
     {
@@ -134,5 +136,10 @@
   ],
   "sequencing_position": [
     "peak"
+  ],
+  "chakras": [
+    "sacral",
+    "root",
+    "third-eye"
   ]
 }

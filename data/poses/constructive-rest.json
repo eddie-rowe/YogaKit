@@ -1,20 +1,29 @@
 {
   "slug": "constructive-rest",
-  "sanskrit": "Savasana variation",
+  "sanskrit": "Savasana",
   "english": "Constructive Rest",
-  "aliases": ["Semi-Supine", "Constructive Rest Position"],
+  "aliases": [
+    "Semi-Supine",
+    "Constructive Rest Position"
+  ],
   "modes": [
     {
       "type": "yin",
       "tissue_target": "connective",
-      "hold_range": { "min": 2, "max": 5 },
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
       "cue_notes": "Lie on your back with knees bent, feet flat on the floor hip-width apart. Arms rest alongside the body or on the belly. Allow the natural lumbar curve to be present. Let the weight of the body fully release into the floor. This is a neutral spine position — not a stretch, but a resting integration pose."
     }
   ],
   "body_position": "supine",
   "meridians": [],
   "element": null,
-  "energetic_quality": ["grounding", "calming"],
+  "energetic_quality": [
+    "grounding",
+    "calming"
+  ],
   "difficulty": "accessible",
   "props_required": [],
   "prop_free_variation": null,
@@ -24,8 +33,20 @@
   "bilateral": false,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
   "notes": "Used as a neutral resting position between poses, especially after backbends, hip openers, or inversions. Allows the spine and connective tissues to decompress and integrate.",
-  "type_tags": ["restorative", "integration", "sacrum-release"],
-  "muscle_groups": ["psoas", "iliacus", "hip-flexors", "lumbar-spine", "spinal-erectors", "sacroiliac-ligaments", "diaphragm"],
+  "type_tags": [
+    "restorative",
+    "integration",
+    "sacrum-release"
+  ],
+  "muscle_groups": [
+    "psoas",
+    "iliacus",
+    "hip-flexors",
+    "lumbar-spine",
+    "spinal-erectors",
+    "sacroiliac-ligaments",
+    "diaphragm"
+  ],
   "complexity": 1,
   "injury_risk": 1,
   "breathing_cues": {
@@ -33,10 +54,29 @@
     "holding": "Let the breath drop into the belly rather than the chest — feel the lower back gently pressing into the floor on each inhale and softening away on each exhale. The psoas begins to melt with each breath cycle.",
     "exiting": "Take one full inhale before you move, and let the exhale initiate the transition so you stay connected to ease."
   },
-  "before_poses": ["reclining-twist", "windshield-wipers", "twisted-roots", "supported-fish", "bananasana"],
-  "after_poses": ["savasana", "windshield-wipers", "reclining-twist", "happy-baby"],
-  "joint_action": ["flexion", "traction"],
-  "primary_joints_involved": ["lumbar", "sacroiliac", "hip", "knee"],
+  "before_poses": [
+    "reclining-twist",
+    "windshield-wipers",
+    "twisted-roots",
+    "supported-fish",
+    "bananasana"
+  ],
+  "after_poses": [
+    "savasana",
+    "windshield-wipers",
+    "reclining-twist",
+    "happy-baby"
+  ],
+  "joint_action": [
+    "flexion",
+    "traction"
+  ],
+  "primary_joints_involved": [
+    "lumbar",
+    "sacroiliac",
+    "hip",
+    "knee"
+  ],
   "nervous_system_effect": "parasympathetic",
   "tissue_depth": "intermediate",
   "modifications": [
@@ -55,13 +95,17 @@
     {
       "name": "Blanket under sacrum",
       "description": "Place a thin folded blanket under the sacrum to provide a mild supported tilt for students with significant lumbar tension.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Eyes covered",
       "description": "Use an eye pillow or fold of blanket over the eyes to reduce visual stimulation and encourage a deeper inward parasympathetic shift.",
-      "props_used": ["eye-pillow"],
+      "props_used": [
+        "eye-pillow"
+      ],
       "accessibility_level": "accessible"
     }
   ],
@@ -82,5 +126,12 @@
       "notes": "This pose directly deactivates the fight-flight posture. Students with trauma histories may find the supported neutrality of this shape profoundly disarming — allow extra time and spacious cueing."
     }
   ],
-  "sequencing_position": ["opening", "integration"]
+  "sequencing_position": [
+    "opening",
+    "integration"
+  ],
+  "chakras": [
+    "root",
+    "sacral"
+  ]
 }

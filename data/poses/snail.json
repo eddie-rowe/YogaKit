@@ -1,6 +1,6 @@
 {
   "slug": "snail",
-  "sanskrit": "Halasana variation",
+  "sanskrit": "Halasana",
   "english": "Snail Pose",
   "aliases": [
     "Yin Halasana",
@@ -18,7 +18,7 @@
       "cue_notes": "From a seated position, roll back bringing the knees toward the floor behind the head (like Plow/Halasana but allowing the knees to bend and the spine to fully round). Support the lower back with the hands or rest the arms alongside the body. The entire posterior spinal chain — from sacrum to occiput — receives the stretch. Only attempt if the shoulders are comfortable bearing some weight. Come out slowly by rolling the spine back down vertebra by vertebra."
     }
   ],
-  "body_position": "seated",
+  "body_position": "inverted",
   "meridians": [
     "kidney",
     "bladder"
@@ -120,7 +120,9 @@
     {
       "name": "Blanket Under Shoulders",
       "description": "Place a folded blanket under the shoulders (not the neck) to create a slight elevation that reduces compression at the cervical-thoracic junction.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "intermediate"
     }
   ],
@@ -148,5 +150,9 @@
   ],
   "sequencing_position": [
     "peak"
+  ],
+  "chakras": [
+    "throat",
+    "third-eye"
   ]
 }

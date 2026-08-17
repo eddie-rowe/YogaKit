@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { AlertTriangle } from 'lucide-react'
 import type { ValidatedSequence, SequenceItem, Pose } from '@/lib/pipeline/types'
+import SequenceAnalytics from '@/components/sequence/SequenceAnalytics'
+import { effectiveMinutes } from '@/lib/pose-library/sequence-stats'
+import { resolveDisplayName } from '@/lib/pose-library/display-name'
 
 function slugToTitle(slug: string): string {
   return slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
@@ -117,9 +120,9 @@ export default function SequencePage() {
   // Build a slug→name lookup from all items (and their alternates) for safety note display
   const poseNameBySlug: Record<string, string> = {}
   for (const item of sequence.items) {
-    poseNameBySlug[item.pose.slug] = item.pose.english
+    poseNameBySlug[item.pose.slug] = resolveDisplayName(item.pose, ctx.style)
     for (const alt of item.alternates) {
-      poseNameBySlug[alt.slug] = alt.english
+      poseNameBySlug[alt.slug] = resolveDisplayName(alt, ctx.style)
     }
   }
   function resolvePoseName(slug: string): string {
@@ -193,8 +196,28 @@ export default function SequencePage() {
                 <dd className="text-stone-800">{sequence.themeStatement}</dd>
               </div>
             )}
+            {sequence.transitionMinutes !== undefined && (
+              <div className="col-span-2 sm:col-span-3">
+                <dt className="text-stone-400 text-xs uppercase tracking-wide">Timing</dt>
+                <dd className="text-stone-800">
+                  {sequence.totalHoldMinutes} min hold + {sequence.transitionMinutes} min transitions ≈ {sequence.totalSessionMinutes} min
+                </dd>
+              </div>
+            )}
           </dl>
         </div>
+
+        {/* Session analytics */}
+        {items.length > 0 && (
+          <div className="bg-white border border-stone-100 rounded-lg shadow-sm p-5">
+            <SequenceAnalytics
+              poses={items.map(item => ({
+                pose: item.pose,
+                minutes: effectiveMinutes(item.holdMinutes, item.pose, item.side),
+              }))}
+            />
+          </div>
+        )}
 
         {sequence.philosophicalFraming && (
           <div className="bg-white border border-stone-100 rounded-lg shadow-sm p-5 space-y-3">
@@ -210,6 +233,13 @@ export default function SequencePage() {
                 {sequence.quote.attribution && (
                   <p className="text-stone-400 text-xs mt-1">— {sequence.quote.attribution}</p>
                 )}
+              </div>
+            )}
+            {sequence.sutra?.text && (
+              <div className="pt-2 border-t border-stone-100 mt-2">
+                <p className="text-xs font-semibold text-stone-400 uppercase tracking-wide mb-1">Yoga Sutra</p>
+                <p className="text-stone-600 text-sm italic">"{sequence.sutra.text}"</p>
+                <p className="text-stone-400 text-xs mt-1">— {sequence.sutra.attribution}</p>
               </div>
             )}
           </div>
@@ -265,7 +295,7 @@ export default function SequencePage() {
                 <div className="flex-1 min-w-0 space-y-1.5">
                   <div className="flex items-start justify-between gap-2 flex-wrap">
                     <div>
-                      <span className="font-semibold text-stone-800">{item.pose.english}</span>
+                      <span className="font-semibold text-stone-800">{resolveDisplayName(item.pose, ctx.style)}</span>
                       {item.pose.sanskrit && (
                         <span className="italic text-stone-400 text-sm ml-2">
                           {item.pose.sanskrit}

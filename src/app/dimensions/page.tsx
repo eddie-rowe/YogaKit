@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useRef, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { CONTRAINDICATION_OPTIONS, ALL_PROPS } from '@/lib/contraindications'
 import type {
   SessionContext,
@@ -32,7 +32,7 @@ const INITIAL_FORM: FormState = {
   style: 'yin',
   durationMinutes: 75,
   elementFocus: '',
-  season: currentSeason() as Season,
+  season: 'spring',
   experienceLevel: 'mixed',
   timeOfDay: '',
   intensityCurve: 'bell',
@@ -40,14 +40,6 @@ const INITIAL_FORM: FormState = {
   goal: '',
   contraindications: new Set(),
   propsAvailable: new Set(),
-}
-
-function currentSeason(): string {
-  const month = new Date().getMonth() // 0=Jan
-  if (month <= 1 || month === 11) return 'winter'
-  if (month <= 4) return 'spring'
-  if (month <= 7) return 'summer'
-  return 'autumn'
 }
 
 function toggleSetItem(prev: Set<string>, value: string): Set<string> {
@@ -61,12 +53,37 @@ function toggleSetItem(prev: Set<string>, value: string): Set<string> {
 }
 
 export default function DimensionsPage() {
+  return (
+    <Suspense>
+      <DimensionsForm />
+    </Suspense>
+  )
+}
+
+function DimensionsForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [form, setForm] = useState<FormState>(INITIAL_FORM)
   const [loading, setLoading] = useState(false)
   const [stage, setStage] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [showMore, setShowMore] = useState(false)
   const bufferRef = useRef('')
+
+  // Pre-fill from ?style=yin&duration=60&element=water (e.g. from reference sequences)
+  useEffect(() => {
+    const style = searchParams.get('style') as Style | null
+    const duration = searchParams.get('duration')
+    const element = searchParams.get('element') as FiveElement | null
+    if (style || duration || element) {
+      setForm(prev => ({
+        ...prev,
+        ...(style ? { style } : {}),
+        ...(duration ? { durationMinutes: parseInt(duration, 10) } : {}),
+        ...(element ? { elementFocus: element } : {}),
+      }))
+    }
+  }, [searchParams])
 
   function setField<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }))
@@ -196,6 +213,8 @@ export default function DimensionsPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-8">
+            {/* Zone 1 — Primary (always visible) */}
+
             {/* Row: Style + Duration */}
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -217,65 +236,25 @@ export default function DimensionsPage() {
               </div>
               <div>
                 <label htmlFor="duration" className={sectionLabel}>
-                  Duration (min)
+                  Duration
                 </label>
-                <input
+                <select
                   id="duration"
-                  type="number"
-                  min={30}
-                  max={120}
                   value={form.durationMinutes}
-                  onChange={(e) =>
-                    setField('durationMinutes', Math.min(120, Math.max(30, Number(e.target.value))))
-                  }
-                  disabled={loading}
-                  className={inputBase}
-                />
-              </div>
-            </div>
-
-            {/* Row: Element focus + Season */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="elementFocus" className={sectionLabel}>
-                  Element Focus
-                </label>
-                <select
-                  id="elementFocus"
-                  value={form.elementFocus}
-                  onChange={(e) => setField('elementFocus', e.target.value as FiveElement | '')}
+                  onChange={(e) => setField('durationMinutes', Number(e.target.value))}
                   disabled={loading}
                   className={inputBase}
                 >
-                  <option value="">None</option>
-                  <option value="wood">Wood</option>
-                  <option value="fire">Fire</option>
-                  <option value="earth">Earth</option>
-                  <option value="metal">Metal</option>
-                  <option value="water">Water</option>
-                </select>
-              </div>
-              <div>
-                <label htmlFor="season" className={sectionLabel}>
-                  Season
-                </label>
-                <select
-                  id="season"
-                  value={form.season}
-                  onChange={(e) => setField('season', e.target.value as Season)}
-                  disabled={loading}
-                  className={inputBase}
-                >
-                  <option value="spring">Spring</option>
-                  <option value="summer">Summer</option>
-                  <option value="late-summer">Late Summer</option>
-                  <option value="autumn">Autumn</option>
-                  <option value="winter">Winter</option>
+                  <option value={30}>30 min</option>
+                  <option value={45}>45 min</option>
+                  <option value={60}>60 min</option>
+                  <option value={75}>75 min</option>
+                  <option value={90}>90 min</option>
                 </select>
               </div>
             </div>
 
-            {/* Row: Experience level + Time of day */}
+            {/* Row: Experience Level + Intensity Curve */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label htmlFor="experienceLevel" className={sectionLabel}>
@@ -297,135 +276,28 @@ export default function DimensionsPage() {
                 </select>
               </div>
               <div>
-                <label htmlFor="timeOfDay" className={sectionLabel}>
-                  Time of Day{' '}
-                  <span className="normal-case font-normal text-stone-400">(optional)</span>
+                <label htmlFor="intensityCurve" className={sectionLabel}>
+                  Intensity Curve
                 </label>
                 <select
-                  id="timeOfDay"
-                  value={form.timeOfDay}
-                  onChange={(e) => setField('timeOfDay', e.target.value as TimeOfDay | '')}
+                  id="intensityCurve"
+                  value={form.intensityCurve}
+                  onChange={(e) =>
+                    setField('intensityCurve', e.target.value as IntensityCurve)
+                  }
                   disabled={loading}
                   className={inputBase}
                 >
-                  <option value="">—</option>
-                  <option value="morning">Morning</option>
-                  <option value="midday">Midday</option>
-                  <option value="afternoon">Afternoon</option>
-                  <option value="evening">Evening</option>
-                  <option value="night">Night</option>
+                  <option value="bell">Bell (warm up → peak → cool down)</option>
+                  <option value="plateau">Plateau (steady state throughout)</option>
+                  <option value="gradual-ramp">Gradual Ramp (slowly builds)</option>
+                  <option value="front-loaded">Front-Loaded (peak early)</option>
+                  <option value="back-loaded">Back-Loaded (peak late)</option>
                 </select>
               </div>
             </div>
 
-            {/* Intensity curve */}
-            <div>
-              <label htmlFor="intensityCurve" className={sectionLabel}>
-                Intensity Curve
-              </label>
-              <select
-                id="intensityCurve"
-                value={form.intensityCurve}
-                onChange={(e) =>
-                  setField('intensityCurve', e.target.value as IntensityCurve)
-                }
-                disabled={loading}
-                className={inputBase}
-              >
-                <option value="bell">Bell (warm up → peak → cool down)</option>
-                <option value="plateau">Plateau (steady state throughout)</option>
-                <option value="gradual-ramp">Gradual Ramp (slowly builds)</option>
-                <option value="front-loaded">Front-Loaded (peak early)</option>
-                <option value="back-loaded">Back-Loaded (peak late)</option>
-              </select>
-            </div>
-
-            {/* Theme + Goal */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="theme" className={sectionLabel}>
-                  Theme{' '}
-                  <span className="normal-case font-normal text-stone-400">(optional)</span>
-                </label>
-                <input
-                  id="theme"
-                  type="text"
-                  value={form.theme}
-                  onChange={(e) => setField('theme', e.target.value)}
-                  disabled={loading}
-                  placeholder="e.g. 'Letting go' or 'Rooting into earth'"
-                  className={inputBase}
-                />
-              </div>
-              <div>
-                <label htmlFor="goal" className={sectionLabel}>
-                  Goal{' '}
-                  <span className="normal-case font-normal text-stone-400">(optional)</span>
-                </label>
-                <input
-                  id="goal"
-                  type="text"
-                  value={form.goal}
-                  onChange={(e) => setField('goal', e.target.value)}
-                  disabled={loading}
-                  placeholder="e.g. 'Hip opening', 'Stress relief'"
-                  className={inputBase}
-                />
-              </div>
-            </div>
-
-            {/* Contraindications */}
-            <div>
-              <span className={sectionLabel}>Contraindications</span>
-              <div className="h-48 overflow-y-auto rounded-md border border-stone-200 p-3 space-y-1">
-                {CONTRAINDICATION_OPTIONS.map(({ slug, label }) => (
-                  <label
-                    key={slug}
-                    className="flex items-center gap-2.5 cursor-pointer select-none"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={form.contraindications.has(slug)}
-                      onChange={() =>
-                        setField(
-                          'contraindications',
-                          toggleSetItem(form.contraindications, slug),
-                        )
-                      }
-                      disabled={loading}
-                      className="h-4 w-4 rounded border-stone-300 text-stone-700 focus:ring-stone-400 disabled:opacity-50"
-                    />
-                    <span className="text-sm text-stone-700">{label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Props available */}
-            <div>
-              <span className={sectionLabel}>Props Available</span>
-              <div className="flex flex-wrap gap-x-5 gap-y-2 pt-0.5">
-                {ALL_PROPS.map((prop) => (
-                  <label
-                    key={prop}
-                    className="flex items-center gap-2 cursor-pointer select-none"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={form.propsAvailable.has(prop)}
-                      onChange={() =>
-                        setField('propsAvailable', toggleSetItem(form.propsAvailable, prop))
-                      }
-                      disabled={loading}
-                      className="h-4 w-4 rounded border-stone-300 text-stone-700 focus:ring-stone-400 disabled:opacity-50"
-                    />
-                    <span className="text-sm text-stone-700 capitalize">{prop}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Submit */}
+            {/* Submit — Zone 1 */}
             <button
               type="submit"
               disabled={loading}
@@ -443,6 +315,170 @@ export default function DimensionsPage() {
                 'Generate Sequence'
               )}
             </button>
+
+            {/* More options toggle */}
+            <button
+              type="button"
+              onClick={() => setShowMore((v) => !v)}
+              className="w-full text-sm text-stone-500 hover:text-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-300 rounded-md py-1 transition-colors"
+            >
+              {showMore ? 'Fewer options ▴' : 'More options ▾'}
+            </button>
+
+            {/* Zone 2 — More options (collapsible) */}
+            {showMore && (
+              <>
+                {/* Row: Element Focus + Season */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="elementFocus" className={sectionLabel}>
+                      Element Focus
+                    </label>
+                    <select
+                      id="elementFocus"
+                      value={form.elementFocus}
+                      onChange={(e) => setField('elementFocus', e.target.value as FiveElement | '')}
+                      disabled={loading}
+                      className={inputBase}
+                    >
+                      <option value="">None</option>
+                      <option value="wood">Wood</option>
+                      <option value="fire">Fire</option>
+                      <option value="earth">Earth</option>
+                      <option value="metal">Metal</option>
+                      <option value="water">Water</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="season" className={sectionLabel}>
+                      Season
+                    </label>
+                    <select
+                      id="season"
+                      value={form.season}
+                      onChange={(e) => setField('season', e.target.value as Season)}
+                      disabled={loading}
+                      className={inputBase}
+                    >
+                      <option value="spring">Spring</option>
+                      <option value="summer">Summer</option>
+                      <option value="late-summer">Late Summer</option>
+                      <option value="autumn">Autumn</option>
+                      <option value="winter">Winter</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Row: Time of Day */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="timeOfDay" className={sectionLabel}>
+                      Time of Day{' '}
+                      <span className="normal-case font-normal text-stone-400">(optional)</span>
+                    </label>
+                    <select
+                      id="timeOfDay"
+                      value={form.timeOfDay}
+                      onChange={(e) => setField('timeOfDay', e.target.value as TimeOfDay | '')}
+                      disabled={loading}
+                      className={inputBase}
+                    >
+                      <option value="">—</option>
+                      <option value="morning">Morning</option>
+                      <option value="midday">Midday</option>
+                      <option value="afternoon">Afternoon</option>
+                      <option value="evening">Evening</option>
+                      <option value="night">Night</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Theme + Goal */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="theme" className={sectionLabel}>
+                      Theme{' '}
+                      <span className="normal-case font-normal text-stone-400">(optional)</span>
+                    </label>
+                    <input
+                      id="theme"
+                      type="text"
+                      value={form.theme}
+                      onChange={(e) => setField('theme', e.target.value)}
+                      disabled={loading}
+                      placeholder="e.g. 'Letting go' or 'Rooting into earth'"
+                      className={inputBase}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="goal" className={sectionLabel}>
+                      Goal{' '}
+                      <span className="normal-case font-normal text-stone-400">(optional)</span>
+                    </label>
+                    <input
+                      id="goal"
+                      type="text"
+                      value={form.goal}
+                      onChange={(e) => setField('goal', e.target.value)}
+                      disabled={loading}
+                      placeholder="e.g. 'Hip opening', 'Stress relief'"
+                      className={inputBase}
+                    />
+                  </div>
+                </div>
+
+                {/* Contraindications */}
+                <div>
+                  <span className={sectionLabel}>Contraindications</span>
+                  <div className="h-48 overflow-y-auto rounded-md border border-stone-200 p-3 space-y-1">
+                    {CONTRAINDICATION_OPTIONS.map(({ slug, label }) => (
+                      <label
+                        key={slug}
+                        className="flex items-center gap-2.5 cursor-pointer select-none"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={form.contraindications.has(slug)}
+                          onChange={() =>
+                            setField(
+                              'contraindications',
+                              toggleSetItem(form.contraindications, slug),
+                            )
+                          }
+                          disabled={loading}
+                          className="h-4 w-4 rounded border-stone-300 text-stone-700 focus:ring-stone-400 disabled:opacity-50"
+                        />
+                        <span className="text-sm text-stone-700">{label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Props available */}
+                <div>
+                  <span className={sectionLabel}>Props Available</span>
+                  <div className="flex flex-wrap gap-x-5 gap-y-2 pt-0.5">
+                    {ALL_PROPS.map((prop) => (
+                      <label
+                        key={prop}
+                        className="flex items-center gap-2 cursor-pointer select-none"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={form.propsAvailable.has(prop)}
+                          onChange={() =>
+                            setField('propsAvailable', toggleSetItem(form.propsAvailable, prop))
+                          }
+                          disabled={loading}
+                          className="h-4 w-4 rounded border-stone-300 text-stone-700 focus:ring-stone-400 disabled:opacity-50"
+                        />
+                        <span className="text-sm text-stone-700 capitalize">{prop}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </form>
         </div>
       </div>

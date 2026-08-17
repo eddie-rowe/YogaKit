@@ -13,6 +13,12 @@ import { getAllPoses, filterPoses } from '@/lib/pose-library'
 import { getMeridianSlugsForElement } from '@/lib/meridians'
 import { pickContent } from './content'
 
+// ─── Buffer time helper ───────────────────────────────────────────────────────
+
+export function bufferMinutesPerPose(style: string | undefined): number {
+  return style === 'yin' || style === 'restorative' ? 3 : 1.5
+}
+
 // ─── Phase distribution by intensity curve ────────────────────────────────────
 
 type PhaseSlots = Record<SequencingPosition, number>
@@ -185,7 +191,8 @@ function buildPoseSequence(ctx: SessionContext): DraftPoseEntry[] {
   const modeFilter: ModeType = isMeditative ? 'yin' : 'yang'
   const duration = ctx.durationMinutes ?? 75
   const avgHold = isMeditative ? 5 : 1
-  const targetCount = Math.max(4, Math.min(20, Math.floor((duration * 0.80) / avgHold)))
+  const buffer = bufferMinutesPerPose(style)
+  const targetCount = Math.max(4, Math.min(20, Math.floor(duration / (avgHold + buffer))))
   const curve = ctx.intensityCurve ?? 'bell'
 
   const contraindications = ctx.hardConstraints.contraindications
@@ -332,6 +339,7 @@ export async function propose(ctx: SessionContext): Promise<PipelineDraft> {
     themeStatement: content.themeStatement,
     philosophicalFraming: content.philosophicalFraming,
     quote: content.quote,
+    sutra: content.sutra,
     poses,
   }
 }

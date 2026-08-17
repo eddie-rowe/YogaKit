@@ -45,7 +45,6 @@
     "forward-fold",
     "hip-opener",
     "outer-hip",
-    "groin-opener",
     "spinal-traction",
     "spinal-compression"
   ],
@@ -104,13 +103,17 @@
     {
       "name": "Bolster in Front",
       "description": "Place a bolster lengthwise in front of the stacked shins to rest the torso on, allowing passive surrender of the forward fold without muscular effort.",
-      "props_used": ["bolster"],
+      "props_used": [
+        "bolster"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Hands on Blocks",
       "description": "Place blocks on either side of the shins so the hands rest on them rather than the floor, reducing the depth of the forward fold and protecting the lower back.",
-      "props_used": ["block"],
+      "props_used": [
+        "block"
+      ],
       "accessibility_level": "intermediate"
     }
   ],
@@ -133,5 +136,10 @@
   ],
   "sequencing_position": [
     "peak"
+  ],
+  "chakras": [
+    "sacral",
+    "root",
+    "third-eye"
   ]
 }

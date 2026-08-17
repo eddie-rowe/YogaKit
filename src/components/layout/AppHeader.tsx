@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 
 const NAV_LINKS = [
   { href: '/dimensions', label: 'Build' },
+  { href: '/sequences', label: 'Sequences' },
   { href: '/poses', label: 'Poses' },
 ]
 
@@ -20,11 +21,13 @@ export default function AppHeader() {
         href="/dimensions"
         className="font-serif text-lg font-medium tracking-tight text-[#1c1714] hover:opacity-70 transition-opacity"
       >
-        Krama
+        Yoga Kit
       </Link>
       <nav className="flex items-center gap-1">
         {NAV_LINKS.map(({ href, label }) => {
-          const active = pathname === href || (href === '/sequence' && pathname.startsWith('/sequence'))
+          const active = pathname === href
+            || (href === '/sequences' && pathname.startsWith('/sequences'))
+            || (href === '/poses' && pathname.startsWith('/poses'))
           return (
             <Link
               key={href}

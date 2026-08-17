@@ -1,6 +1,6 @@
 {
   "slug": "bridge-yin",
-  "sanskrit": "Setu Bandha Sarvangasana variation",
+  "sanskrit": "Setu Bandha Sarvangasana",
   "english": "Supported Bridge",
   "aliases": [
     "Yin Bridge",
@@ -104,25 +104,33 @@
     {
       "name": "Block Under Sacrum (Low Height)",
       "description": "Use the block at its lowest flat height to provide a mild, accessible backbend. This is the standard supported bridge entry point and is suitable for most practitioners including those with mild lumbar sensitivity.",
-      "props_used": ["block"],
+      "props_used": [
+        "block"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Bolster Under Sacrum",
       "description": "Replace the block with a bolster for a softer, more diffuse support that spreads weight across the sacrum more evenly. This is gentler on the sacroiliac joint and more restorative in quality.",
-      "props_used": ["bolster"],
+      "props_used": [
+        "bolster"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Feet Wider Than Hips",
       "description": "Walk the feet slightly wider than hip-width and allow the knees to fall outward. This reduces the demand on the inner thighs and allows the sacrum to release more broadly onto the prop.",
-      "props_used": ["block"],
+      "props_used": [
+        "block"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Arms Extended Overhead",
       "description": "Extend the arms overhead along the floor to deepen the chest and anterior shoulder opening. This engages the stomach and lung meridians more fully and increases the sense of full-body extension.",
-      "props_used": ["block"],
+      "props_used": [
+        "block"
+      ],
       "accessibility_level": "intermediate"
     }
   ],
@@ -151,5 +159,10 @@
   "sequencing_position": [
     "building",
     "cooldown"
+  ],
+  "chakras": [
+    "heart",
+    "throat",
+    "sacral"
   ]
 }

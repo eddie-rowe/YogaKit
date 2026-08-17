@@ -25,6 +25,7 @@ function makeEmptyDraft(): PipelineDraft {
     themeStatement: 'Integration test sequence',
     philosophicalFraming: 'Test framing.',
     quote: { text: 'Test', attribution: 'Test' },
+    sutra: { text: 'Test sutra', attribution: 'Test sutra source' },
     poses: [],
   }
 }

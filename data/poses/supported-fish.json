@@ -45,8 +45,25 @@
   "bilateral": false,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
   "notes": "Targets thoracic extension and anterior chest opening. Heart and lung meridians run the inner arm and chest wall. A standard counterpose after deep forward folds or inversions.",
-  "type_tags": ["backbend", "heart-opener", "chest-opener", "shoulder-opener", "spinal-traction", "restorative"],
-  "muscle_groups": ["chest-pectorals", "anterior-shoulder", "intercostals", "thoracic-spine", "cervical-spine", "lats", "rhomboids", "diaphragm", "lumbar-spine"],
+  "type_tags": [
+    "backbend",
+    "heart-opener",
+    "chest-opener",
+    "shoulder-opener",
+    "spinal-traction",
+    "restorative"
+  ],
+  "muscle_groups": [
+    "chest-pectorals",
+    "anterior-shoulder",
+    "intercostals",
+    "thoracic-spine",
+    "cervical-spine",
+    "lats",
+    "rhomboids",
+    "diaphragm",
+    "lumbar-spine"
+  ],
   "complexity": 2,
   "injury_risk": 3,
   "breathing_cues": {
@@ -54,23 +71,46 @@
     "holding": "With every inhale, allow the chest to dome upward and the collarbones to widen — the breath itself does the work of opening the anterior chest and intercostals. On the exhale, the sternum softens without collapsing and the upper back yields a little deeper into extension.",
     "exiting": "Press the palms into the floor on an inhale to lift the chest slightly off the prop, then exhale as you slide the block away and lower the spine segment by segment to the floor."
   },
-  "before_poses": ["constructive-rest", "caterpillar", "child-pose", "supta-baddha-konasana"],
-  "after_poses": ["constructive-rest", "child-pose", "caterpillar", "savasana"],
-  "joint_action": ["extension", "traction", "external_rotation"],
-  "primary_joints_involved": ["thoracic", "cervical", "shoulder", "lumbar"],
+  "before_poses": [
+    "constructive-rest",
+    "caterpillar",
+    "child-pose",
+    "supta-baddha-konasana"
+  ],
+  "after_poses": [
+    "constructive-rest",
+    "child-pose",
+    "caterpillar",
+    "savasana"
+  ],
+  "joint_action": [
+    "extension",
+    "traction",
+    "external_rotation"
+  ],
+  "primary_joints_involved": [
+    "thoracic",
+    "cervical",
+    "shoulder",
+    "lumbar"
+  ],
   "nervous_system_effect": "parasympathetic",
   "tissue_depth": "deep",
   "modifications": [
     {
       "name": "Lower block height",
       "description": "Use a block on its lowest setting or a folded blanket instead of a full-height block to reduce the depth of thoracic extension, appropriate for students with kyphosis or thoracic stiffness.",
-      "props_used": ["block"],
+      "props_used": [
+        "block"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Blanket support under head",
       "description": "Place a folded blanket or second block under the head to prevent cervical hyperextension, especially important for students with neck issues or significant thoracic kyphosis.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
@@ -82,7 +122,10 @@
     {
       "name": "Butterfly legs",
       "description": "Bring soles of feet together in butterfly legs while over the support to add a simultaneous inner groin opening, deepening the overall effect for students comfortable in the thoracic opening.",
-      "props_used": ["block", "blanket"],
+      "props_used": [
+        "block",
+        "blanket"
+      ],
       "accessibility_level": "intermediate"
     }
   ],
@@ -108,5 +151,12 @@
       "notes": "Opening the heart space in a vulnerable supine position is an act of courage. Heart meridian work supports authentic emotional expression and willingness to receive love and connection."
     }
   ],
-  "sequencing_position": ["building", "cooldown"]
+  "sequencing_position": [
+    "building",
+    "cooldown"
+  ],
+  "chakras": [
+    "heart",
+    "throat"
+  ]
 }

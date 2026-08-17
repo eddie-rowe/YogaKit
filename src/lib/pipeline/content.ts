@@ -4,6 +4,7 @@ export interface SequenceContent {
   themeStatement: string
   philosophicalFraming: string
   quote: { text: string; attribution: string }
+  sutra: { text: string; attribution: string }
 }
 
 type ElementKey = FiveElement | 'none'
@@ -41,26 +42,46 @@ const QUOTES: Record<ElementKey, Array<{ text: string; attribution: string }>> =
     { text: 'The tree that does not bend with the wind will break.', attribution: 'Tibetan proverb' },
     { text: 'Between bud and blossom, the tree neither grips nor strains.', attribution: 'Traditional' },
     { text: 'In the spring, at the end of the day, you should smell like dirt.', attribution: 'Margaret Atwood' },
+    { text: 'Out of your vulnerabilities will come your strength.', attribution: 'Sigmund Freud' },
+    { text: 'The only way to make sense out of change is to plunge into it, move with it, and join the dance.', attribution: 'Alan Watts' },
+    { text: 'Growth demands a temporary surrender of security.', attribution: 'Gail Sheehy' },
+    { text: 'What fire does not destroy, it hardens.', attribution: 'Rumi' },
   ],
   fire: [
     { text: 'The most precious gift we can offer anyone is our full attention.', attribution: 'Thich Nhat Hanh' },
     { text: 'Set your life on fire. Seek those who fan your flames.', attribution: 'Rumi' },
     { text: 'Joy is not in things; it is in us.', attribution: 'Richard Wagner' },
+    { text: 'The heart is like a garden: it can grow compassion or fear, resentment or love.', attribution: 'Jack Kornfield' },
+    { text: 'Out beyond ideas of wrongdoing and rightdoing, there is a field. I will meet you there.', attribution: 'Rumi' },
+    { text: 'Love is the bridge between you and everything.', attribution: 'Rumi' },
+    { text: 'When you do things from your soul, you feel a river moving in you, a joy.', attribution: 'Rumi' },
   ],
   earth: [
     { text: 'Adopt the pace of nature: her secret is patience.', attribution: 'Ralph Waldo Emerson' },
     { text: 'To be rooted is perhaps the most important and least recognized need of the human soul.', attribution: 'Simone Weil' },
     { text: 'In stillness, the world is restored.', attribution: 'Lao Tzu' },
+    { text: 'The present moment always will have been.', attribution: 'Thich Nhat Hanh' },
+    { text: 'Peace is every step.', attribution: 'Thich Nhat Hanh' },
+    { text: 'Yoga is a light, which once lit will never dim. The better your practice, the brighter the flame.', attribution: 'B.K.S. Iyengar' },
+    { text: 'The flower that blooms in adversity is the most rare and beautiful of all.', attribution: 'Buddha' },
   ],
   metal: [
     { text: 'Let go, or be dragged.', attribution: 'Zen proverb' },
     { text: 'For everything there is a season, and a time for every matter under heaven.', attribution: 'Ecclesiastes 3:1' },
     { text: 'Inhale, and God approaches you. Hold the inhalation, and God remains with you. Exhale, and you approach God.', attribution: 'Krishnamacharya' },
+    { text: 'When we are no longer able to change a situation, we are challenged to change ourselves.', attribution: 'Viktor Frankl' },
+    { text: 'Things falling apart is a kind of testing and also a kind of healing.', attribution: 'Pema Chödrön' },
+    { text: 'You are the sky. Everything else is just the weather.', attribution: 'Pema Chödrön' },
+    { text: 'Yoga teaches us to cure what need not be endured and endure what cannot be cured.', attribution: 'B.K.S. Iyengar' },
   ],
   water: [
     { text: 'Water is fluid, soft, and yielding. But water will wear away rock, which is rigid and cannot yield.', attribution: 'Lao Tzu' },
     { text: 'In the depth of winter, I finally learned that within me lay an invincible summer.', attribution: 'Albert Camus' },
     { text: 'The quieter you become, the more you are able to hear.', attribution: 'Baba Ram Dass' },
+    { text: 'We are like islands in the sea, separate on the surface but connected in the deep.', attribution: 'William James' },
+    { text: 'The mind that is still is like a clear mirror — it reflects everything without distortion.', attribution: 'Thich Nhat Hanh' },
+    { text: 'Still water knows no fear.', attribution: 'Pema Chödrön' },
+    { text: 'It is not impermanence that makes us suffer. What makes us suffer is wanting things to be permanent when they are not.', attribution: 'Thich Nhat Hanh' },
   ],
   none: [
     { text: 'Yoga is the journey of the self, through the self, to the self.', attribution: 'The Bhagavad Gita' },
@@ -68,8 +89,23 @@ const QUOTES: Record<ElementKey, Array<{ text: string; attribution: string }>> =
     { text: 'The present moment is the only moment available to us, and it is the door to all moments.', attribution: 'Thich Nhat Hanh' },
     { text: 'The body is your temple. Keep it pure and clean for the soul to reside in.', attribution: 'B.K.S. Iyengar' },
     { text: 'Stillness is where creativity and solutions to problems are found.', attribution: 'Eckhart Tolle' },
+    { text: 'Yoga is not about touching your toes, it is about what you learn on the way down.', attribution: 'Jigar Gor' },
+    { text: 'The nature of yoga is to shine the light of awareness into the darkest corners of the body.', attribution: 'Jason Crandell' },
   ],
 }
+
+const SUTRAS: Array<{ text: string; attribution: string }> = [
+  { text: 'Yoga is the stilling of the fluctuations of the mind.', attribution: 'Yoga Sutras of Patanjali, I.2' },
+  { text: 'Then the seer abides in its own nature.', attribution: 'Yoga Sutras of Patanjali, I.3' },
+  { text: 'Practice becomes firmly grounded when it is pursued for a long time, without interruption and with full devotion.', attribution: 'Yoga Sutras of Patanjali, I.14' },
+  { text: 'Undisturbed calmness of mind is attained by cultivating friendliness toward the happy, compassion for the unhappy, delight in the virtuous, and indifference toward the wicked.', attribution: 'Yoga Sutras of Patanjali, I.33' },
+  { text: 'The mind becomes clear and serene when the qualities of the heart are cultivated: friendliness, compassion, gladness, equanimity.', attribution: 'Yoga Sutras of Patanjali, I.33' },
+  { text: 'Suffering is the consequence of ignoring the distinction between the permanent and the impermanent.', attribution: 'Yoga Sutras of Patanjali, II.15' },
+  { text: 'Non-violence, truthfulness, non-stealing, continence, and non-possessiveness are the great vows.', attribution: 'Yoga Sutras of Patanjali, II.30' },
+  { text: 'The posture of yoga is steady and comfortable.', attribution: 'Yoga Sutras of Patanjali, II.46' },
+  { text: 'Mastery of the posture is achieved when effort becomes effortless and the infinite within is reached.', attribution: 'Yoga Sutras of Patanjali, II.47' },
+  { text: 'When breath is still, the mind is still; when breath is active, the mind is active.', attribution: 'Yoga Sutras of Patanjali, II.49' },
+]
 
 const ELEMENT_THEMES: Record<FiveElement, string[]> = {
   wood:  ['growth and renewal', 'flexibility and vision', 'the rising energy of spring', 'bending without breaking'],
@@ -104,6 +140,7 @@ export function pickContent(ctx: ContentContext): SequenceContent {
 
   const philosophicalFraming = pickFrom(FRAMINGS[element], idx)
   const quote = pickFrom(QUOTES[element], idx + 1)
+  const sutra = pickFrom(SUTRAS, idx + 2)
 
   let themeStatement: string
   if (ctx.theme) {
@@ -117,5 +154,5 @@ export function pickContent(ctx: ContentContext): SequenceContent {
     themeStatement = `A ${style} practice for ${season}.`
   }
 
-  return { themeStatement, philosophicalFraming, quote }
+  return { themeStatement, philosophicalFraming, quote, sutra }
 }

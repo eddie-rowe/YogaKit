@@ -1,6 +1,6 @@
 {
   "slug": "sleeping-swan",
-  "sanskrit": "Eka Pada Rajakapotasana (yin variation)",
+  "sanskrit": "Eka Pada Rajakapotasana",
   "english": "Sleeping Swan",
   "aliases": [
     "Yin Pigeon",
@@ -99,19 +99,26 @@
     {
       "name": "Bolster Under Front Hip",
       "description": "Place a folded blanket or bolster under the front hip if it does not reach the floor. This prevents the pelvis from tilting and distributes load more evenly across both hip joints.",
-      "props_used": ["bolster", "blanket"],
+      "props_used": [
+        "bolster",
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Blanket Under Front Shin",
       "description": "Slide a folded blanket under the front shin and knee to cushion the joint and reduce pressure on the knee ligaments, especially when the shin is at a more acute angle.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Supported Forward Fold on Bolster",
       "description": "Place a bolster lengthwise over the front shin and rest the torso fully on it. This allows complete muscular release and makes long holds more sustainable for sensitive hips.",
-      "props_used": ["bolster"],
+      "props_used": [
+        "bolster"
+      ],
       "accessibility_level": "intermediate"
     },
     {
@@ -146,5 +153,13 @@
   "sequencing_position": [
     "building",
     "peak"
-  ]
+  ],
+  "chakras": [
+    "sacral",
+    "root"
+  ],
+  "tradition_names": {
+    "yin": "Sleeping Swan",
+    "vinyasa": "Pigeon Prep"
+  }
 }

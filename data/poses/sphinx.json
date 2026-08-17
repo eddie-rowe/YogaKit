@@ -103,19 +103,25 @@
     {
       "name": "Blanket Under Hips",
       "description": "Place a folded blanket under the fronts of the hip bones to create a subtle anterior tilt and reduce the demand on the lumbar extensors, making the pose more supportive for the sacrum.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Forearms on Block",
       "description": "Rest the forearms on a low yoga block to elevate the chest slightly without increasing lumbar compression. Useful for practitioners with wrist discomfort or who need a small reduction in torso weight bearing.",
-      "props_used": ["block"],
+      "props_used": [
+        "block"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Bolster Under Chest",
       "description": "Place a bolster lengthwise under the chest and belly to support the torso completely, turning Sphinx into a restorative variation with minimal compressive load on the lumbar spine.",
-      "props_used": ["bolster"],
+      "props_used": [
+        "bolster"
+      ],
       "accessibility_level": "accessible"
     }
   ],
@@ -138,5 +144,9 @@
   ],
   "sequencing_position": [
     "building"
+  ],
+  "chakras": [
+    "heart",
+    "solar-plexus"
   ]
 }

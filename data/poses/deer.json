@@ -99,7 +99,9 @@
     {
       "name": "Blanket Under Raised Sit Bone",
       "description": "If one sitting bone lifts off the floor, place a folded blanket under it to level the pelvis and reduce asymmetric sacroiliac strain.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
@@ -111,13 +113,17 @@
     {
       "name": "Hands on Blocks",
       "description": "Place blocks on either side of the front shin to support the hands and reduce the depth of the forward hinge, useful for students with sacroiliac sensitivity.",
-      "props_used": ["block"],
+      "props_used": [
+        "block"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Back Leg on Bolster",
       "description": "Place a bolster under the back thigh to reduce the degree of hip internal rotation on that side, making the pose more accessible for students with limited internal rotation range.",
-      "props_used": ["bolster"],
+      "props_used": [
+        "bolster"
+      ],
       "accessibility_level": "intermediate"
     }
   ],
@@ -141,5 +147,9 @@
   "sequencing_position": [
     "building",
     "peak"
+  ],
+  "chakras": [
+    "sacral",
+    "solar-plexus"
   ]
 }

@@ -23,7 +23,8 @@ export interface MeridianPath {
 
 export interface ChakraDot {
   name: ChakraName
-  label: string
+  label: string    // Sanskrit
+  english: string  // English
   cx: number
   cy: number
   color: string
@@ -132,13 +133,13 @@ export const MERIDIAN_PATH_MAP: Record<string, MeridianPath[]> = {
 }
 
 export const CHAKRA_DOTS: ChakraDot[] = [
-  { name: 'root',         label: 'Mūlādhāra',    cx: 100, cy: 222, color: '#dc2626' },
-  { name: 'sacral',       label: 'Svādhiṣṭhāna', cx: 100, cy: 200, color: '#ea580c' },
-  { name: 'solar-plexus', label: 'Maṇipūra',     cx: 100, cy: 175, color: '#ca8a04' },
-  { name: 'heart',        label: 'Anāhata',       cx: 100, cy: 148, color: '#16a34a' },
-  { name: 'throat',       label: 'Viśuddha',      cx: 100, cy: 100, color: '#2563eb' },
-  { name: 'third-eye',    label: 'Ājñā',          cx: 100, cy: 68,  color: '#7c3aed' },
-  { name: 'crown',        label: 'Sahasrāra',     cx: 100, cy: 20,  color: '#9333ea' },
+  { name: 'root',         label: 'Mūlādhāra',    english: 'Root',         cx: 100, cy: 222, color: '#dc2626' },
+  { name: 'sacral',       label: 'Svādhiṣṭhāna', english: 'Sacral',       cx: 100, cy: 200, color: '#ea580c' },
+  { name: 'solar-plexus', label: 'Maṇipūra',     english: 'Solar Plexus', cx: 100, cy: 175, color: '#ca8a04' },
+  { name: 'heart',        label: 'Anāhata',       english: 'Heart',        cx: 100, cy: 148, color: '#16a34a' },
+  { name: 'throat',       label: 'Viśuddha',      english: 'Throat',       cx: 100, cy: 100, color: '#2563eb' },
+  { name: 'third-eye',    label: 'Ājñā',          english: 'Third Eye',    cx: 100, cy: 68,  color: '#7c3aed' },
+  { name: 'crown',        label: 'Sahasrāra',     english: 'Crown',        cx: 100, cy: 20,  color: '#9333ea' },
 ]
 
 export const ELEMENT_COLORS: Record<FiveElement, string> = {

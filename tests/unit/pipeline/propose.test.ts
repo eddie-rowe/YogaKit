@@ -15,6 +15,7 @@ vi.mock('@/lib/pipeline/content', () => ({
     themeStatement: 'A yin practice for winter — stillness and depth.',
     philosophicalFraming: 'Water flows to the lowest place.',
     quote: { text: 'Test quote', attribution: 'Test source' },
+    sutra: { text: 'Test sutra', attribution: 'Test sutra source' },
   })),
 }))
 

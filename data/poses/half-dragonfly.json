@@ -1,6 +1,6 @@
 {
   "slug": "half-dragonfly",
-  "sanskrit": "Janu Sirsasana variation",
+  "sanskrit": "Janu Sirsasana",
   "english": "Half Dragonfly",
   "aliases": [
     "Half Seated Straddle",
@@ -97,7 +97,9 @@
     {
       "name": "Blanket Under Raised Sit Bone",
       "description": "If the pelvis tilts toward the extended leg side, place a folded blanket under the raised sitting bone to level the pelvis and reduce sacroiliac strain.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
@@ -109,7 +111,10 @@
     {
       "name": "Bolster Under Extended Knee",
       "description": "Place a bolster or rolled blanket under the knee of the extended leg to protect the posterior knee joint and reduce hamstring tendon strain at the ischial attachment.",
-      "props_used": ["bolster", "blanket"],
+      "props_used": [
+        "bolster",
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     }
   ],
@@ -125,12 +130,17 @@
       "notes": "The kidney meridian runs along the inner leg; asymmetric one-sided work can reveal stored fear or anxiety held more strongly on one side of the body."
     },
     {
-      "emotion": "tension",
+      "emotion": "anger",
       "tcm_organ": "liver",
-      "notes": "The liver meridian traces the inner thigh; unilateral release may highlight suppressed frustration or tension stored asymmetrically in the fascial system."
+      "notes": "The liver meridian traces the inner thigh; unilateral release may highlight suppressed anger or frustration stored asymmetrically in the fascial system."
     }
   ],
   "sequencing_position": [
     "building"
+  ],
+  "chakras": [
+    "sacral",
+    "root",
+    "third-eye"
   ]
 }

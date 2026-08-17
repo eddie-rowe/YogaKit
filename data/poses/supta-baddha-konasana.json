@@ -44,8 +44,24 @@
   "bilateral": false,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
   "notes": "The supine version of Butterfly. The bolster under the spine creates a simultaneous chest opener. Kidney and liver meridians course along the inner thigh and groin.",
-  "type_tags": ["groin-opener", "hip-opener", "heart-opener", "chest-opener", "restorative"],
-  "muscle_groups": ["hip-adductors", "piriformis", "glutes", "psoas", "iliacus", "chest-pectorals", "anterior-shoulder", "intercostals", "diaphragm"],
+  "type_tags": [
+    "groin-opener",
+    "hip-opener",
+    "heart-opener",
+    "chest-opener",
+    "restorative"
+  ],
+  "muscle_groups": [
+    "hip-adductors",
+    "piriformis",
+    "glutes",
+    "psoas",
+    "iliacus",
+    "chest-pectorals",
+    "anterior-shoulder",
+    "intercostals",
+    "diaphragm"
+  ],
   "complexity": 2,
   "injury_risk": 2,
   "breathing_cues": {
@@ -53,35 +69,63 @@
     "holding": "With each inhale, feel the chest lift and expand over the bolster; with each exhale, the inner groin softens and the knees yield a little further toward the floor by their own weight. The breath oscillates between opening the front body and releasing the inner thighs.",
     "exiting": "On an inhale, use the hands to guide the knees back together, protecting the inner groin before rolling to one side off the bolster."
   },
-  "before_poses": ["constructive-rest", "windshield-wipers", "happy-baby", "legs-up-the-wall"],
-  "after_poses": ["windshield-wipers", "happy-baby", "reclining-twist", "savasana"],
-  "joint_action": ["external_rotation", "abduction", "extension"],
-  "primary_joints_involved": ["hip", "knee", "sacroiliac", "thoracic", "shoulder"],
+  "before_poses": [
+    "constructive-rest",
+    "windshield-wipers",
+    "happy-baby",
+    "legs-up-the-wall"
+  ],
+  "after_poses": [
+    "windshield-wipers",
+    "happy-baby",
+    "reclining-twist",
+    "savasana"
+  ],
+  "joint_action": [
+    "external_rotation",
+    "abduction",
+    "extension"
+  ],
+  "primary_joints_involved": [
+    "hip",
+    "knee",
+    "sacroiliac",
+    "thoracic",
+    "shoulder"
+  ],
   "nervous_system_effect": "parasympathetic",
   "tissue_depth": "deep",
   "modifications": [
     {
       "name": "Blocks under outer thighs",
       "description": "Place blocks under the outer thighs near the knees to reduce the depth of hip external rotation for students with tight groins or hip sensitivity.",
-      "props_used": ["block"],
+      "props_used": [
+        "block"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Blanket under outer thighs",
       "description": "Use folded blankets instead of blocks under the thighs for a softer, more yielding support that invites the hips to melt progressively over time.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Lower bolster height",
       "description": "Fold a blanket instead of using a full bolster to reduce the thoracic extension component for students with cervical or thoracic issues.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Arms overhead on bolster",
       "description": "Extend arms overhead along the bolster or floor to intensify the anterior shoulder and chest stretch for students ready for more depth.",
-      "props_used": ["bolster"],
+      "props_used": [
+        "bolster"
+      ],
       "accessibility_level": "intermediate"
     }
   ],
@@ -107,5 +151,13 @@
       "notes": "The open-hearted shape — chest lifted, arms wide, pelvis open — is anatomically and energetically a posture of trust. Students with difficulty receiving care may find this emotionally challenging or profoundly nourishing."
     }
   ],
-  "sequencing_position": ["opening", "cooldown", "integration"]
+  "sequencing_position": [
+    "opening",
+    "cooldown",
+    "integration"
+  ],
+  "chakras": [
+    "sacral",
+    "heart"
+  ]
 }

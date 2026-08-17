@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import type { Pose, FiveElement } from '@/lib/pipeline/types'
 import BodyDiagram from '@/components/poses/BodyDiagram'
+import { CHAKRA_DOTS } from '@/lib/pose-library/body-map'
+import { resolveDisplayName } from '@/lib/pose-library/display-name'
 
 interface Props {
   pose: Pose
@@ -52,7 +54,7 @@ export default function PoseDetailClient({ pose }: Props) {
         {/* Pose header */}
         <div className="mb-6">
           <div className="flex items-start gap-3 flex-wrap">
-            <h1 className="text-2xl font-semibold text-stone-900">{pose.english}</h1>
+            <h1 className="text-2xl font-semibold text-stone-900">{resolveDisplayName(pose)}</h1>
             {pose.element && (
               <span className={`text-sm px-2 py-0.5 rounded capitalize mt-1 ${ELEMENT_COLORS[pose.element]}`}>
                 {pose.element}
@@ -112,6 +114,28 @@ export default function PoseDetailClient({ pose }: Props) {
                 {pose.type_tags.map(tag => (
                   <span key={tag} className="text-xs px-2 py-0.5 bg-stone-100 text-stone-600 rounded-full">{tag}</span>
                 ))}
+              </div>
+            )}
+
+            {/* Chakras */}
+            {pose.chakras && pose.chakras.length > 0 && (
+              <div>
+                <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-widest mb-2">Chakras</h2>
+                <div className="flex flex-wrap gap-2">
+                  {pose.chakras.map(chakraName => {
+                    const dot = CHAKRA_DOTS.find(d => d.name === chakraName)
+                    if (!dot) return null
+                    return (
+                      <span
+                        key={chakraName}
+                        className="text-xs px-2.5 py-1 rounded-full font-medium text-white"
+                        style={{ backgroundColor: dot.color }}
+                      >
+                        {dot.english}
+                      </span>
+                    )
+                  })}
+                </div>
               </div>
             )}
 

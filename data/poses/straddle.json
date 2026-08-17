@@ -105,13 +105,17 @@
     {
       "name": "Bolster in Front",
       "description": "Place a bolster lengthwise between the legs and rest the torso on it, allowing the body to fully surrender without muscular effort to hold the fold.",
-      "props_used": ["bolster"],
+      "props_used": [
+        "bolster"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Sit on Blanket",
       "description": "Elevate the sitting bones on a folded blanket to reduce posterior pelvic tilt and allow the pelvis to tip forward, making the forward fold more accessible.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
@@ -141,5 +145,10 @@
   "sequencing_position": [
     "building",
     "peak"
+  ],
+  "chakras": [
+    "sacral",
+    "root",
+    "third-eye"
   ]
 }

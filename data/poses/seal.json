@@ -1,6 +1,6 @@
 {
   "slug": "seal",
-  "sanskrit": "Bhujangasana variation",
+  "sanskrit": "Bhujangasana",
   "english": "Seal Pose",
   "aliases": [
     "Full Cobra Yin",
@@ -105,13 +105,17 @@
     {
       "name": "Folded Blanket Under Pelvis",
       "description": "Place a folded blanket under the hip bones to reduce anterior pelvic tilt and take pressure off the lumbar facet joints. Useful for students with lumbar sensitivity or disc issues.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Block Under Hands",
       "description": "Place blocks under the hands to raise the floor level, reducing the arc of spinal extension. Allows the pose to be explored with less intensity for intermediate practitioners.",
-      "props_used": ["block"],
+      "props_used": [
+        "block"
+      ],
       "accessibility_level": "intermediate"
     },
     {
@@ -146,5 +150,9 @@
   "sequencing_position": [
     "building",
     "peak"
+  ],
+  "chakras": [
+    "heart",
+    "throat"
   ]
 }

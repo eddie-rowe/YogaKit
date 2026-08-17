@@ -59,6 +59,7 @@ function makeDraft(poses: DraftPoseEntry[] = [], overrides: Partial<PipelineDraf
     themeStatement: 'Test theme',
     philosophicalFraming: 'Test framing',
     quote: { text: 'Quote', attribution: 'Source' },
+    sutra: { text: 'Test sutra', attribution: 'Test sutra source' },
     poses,
     ...overrides,
   }

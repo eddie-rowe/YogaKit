@@ -97,13 +97,19 @@
     {
       "name": "Bolster Under Knees",
       "description": "Place a bolster or folded blanket under each knee to reduce the load on the inner groin and hip joint, allowing the adductor tendons to release without strain.",
-      "props_used": ["bolster", "blanket"],
+      "props_used": [
+        "bolster",
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Sit on Folded Blanket",
       "description": "Elevate the hips by sitting on a folded blanket or block to reduce posterior pelvic tilt and make the forward fold more accessible for those with tight hamstrings or lower back sensitivity.",
-      "props_used": ["blanket", "block"],
+      "props_used": [
+        "blanket",
+        "block"
+      ],
       "accessibility_level": "accessible"
     },
     {
@@ -115,7 +121,10 @@
     {
       "name": "Supported Head Rest",
       "description": "Place a bolster or block under the forehead to support the head and reduce neck strain, allowing the cervical spine to decompress passively.",
-      "props_used": ["bolster", "block"],
+      "props_used": [
+        "bolster",
+        "block"
+      ],
       "accessibility_level": "accessible"
     }
   ],
@@ -144,5 +153,9 @@
   "sequencing_position": [
     "opening",
     "building"
+  ],
+  "chakras": [
+    "root",
+    "sacral"
   ]
 }

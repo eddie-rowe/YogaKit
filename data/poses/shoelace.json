@@ -1,6 +1,6 @@
 {
   "slug": "shoelace",
-  "sanskrit": "Gomukhasana (legs)",
+  "sanskrit": "Gomukhasana",
   "english": "Shoelace",
   "aliases": [
     "Yin Gomukhasana",
@@ -100,19 +100,25 @@
     {
       "name": "Blanket Under Top Knee",
       "description": "Place a folded blanket under the top knee if it floats high above the bottom knee, reducing the load on the lateral knee ligament and outer hip.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Blocks Under Both Knees",
       "description": "Use blocks under each knee to create a more neutral position for students with very tight lateral hip rotators or those recovering from hip or knee issues.",
-      "props_used": ["block"],
+      "props_used": [
+        "block"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Block Under Sitting Bones",
       "description": "Sit on a block if the hips are elevated off the floor in the stacked position, reducing spinal compensation and creating a more even pelvic foundation.",
-      "props_used": ["block"],
+      "props_used": [
+        "block"
+      ],
       "accessibility_level": "intermediate"
     }
   ],
@@ -136,5 +142,9 @@
   "sequencing_position": [
     "building",
     "peak"
+  ],
+  "chakras": [
+    "sacral",
+    "root"
   ]
 }

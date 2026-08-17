@@ -94,25 +94,34 @@
     {
       "name": "Reduced Knee Flexion",
       "description": "Rather than drawing the heel fully toward the glute, stop at whatever angle is comfortable for the knee. Use a strap around the ankle instead of the hand to avoid over-pulling.",
-      "props_used": ["strap"],
+      "props_used": [
+        "strap"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Bolster Under Hip",
       "description": "Place a bolster or folded blanket under the hip of the bent-leg side to prevent the pelvis from tilting and rotating, keeping the stretch more symmetrical and reducing lumbar strain.",
-      "props_used": ["bolster"],
+      "props_used": [
+        "bolster"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Prop Under Ankle",
       "description": "Place a block or rolled blanket under the ankle of the bent leg to reduce the angle of dorsiflexion and relieve pressure on the ankle joint, suitable for ankle sensitivity.",
-      "props_used": ["block", "blanket"],
+      "props_used": [
+        "block",
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Double Forearm Support",
       "description": "Instead of using one hand to hold the ankle, prop up on both forearms (Sphinx position) and use a strap around the ankle so both arms are free for balanced support, reducing torso rotation.",
-      "props_used": ["strap"],
+      "props_used": [
+        "strap"
+      ],
       "accessibility_level": "intermediate"
     }
   ],
@@ -136,5 +145,9 @@
   "sequencing_position": [
     "building",
     "peak"
+  ],
+  "chakras": [
+    "sacral",
+    "root"
   ]
 }

@@ -13,7 +13,7 @@ Templates reviewed:
 Deferred TODOs: none
 -->
 
-# Krama Constitution
+# Yoga Kit Constitution
 
 ## Core Principles
 
@@ -110,7 +110,7 @@ violates this principle, even if it passes safety validation.
 
 ### V. Free, Open, and Contributable
 
-Krama is free to use with no paywall, ever. The pose library, meridian/element
+Yoga Kit is free to use with no paywall, ever. The pose library, meridian/element
 mappings, and quote collection live in the open-source repository as version-controlled
 data, structured so the community can extend them via pull requests. All content MUST
 be properly attributed; copyrighted translations MUST NOT be reproduced without license.

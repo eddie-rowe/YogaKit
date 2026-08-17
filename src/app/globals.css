@@ -37,6 +37,7 @@ body {
   display: grid;
   grid-template-rows: 0fr;
   transition: grid-template-rows 220ms ease;
+  overflow: hidden;
 }
 .expandable-content.open {
   grid-template-rows: 1fr;

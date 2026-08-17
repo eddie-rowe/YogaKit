@@ -96,13 +96,17 @@
     {
       "name": "Blanket Under Back Knee",
       "description": "Fold a blanket under the back knee to cushion the patella and reduce pressure on the back knee's skin and underlying tissue, making extended holds more sustainable.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Blocks Under Hands",
       "description": "Place yoga blocks under both hands at the highest height to reduce the load on the hip flexors and allow students with tight hips to maintain a long spine without collapsing.",
-      "props_used": ["blocks"],
+      "props_used": [
+        "blocks"
+      ],
       "accessibility_level": "accessible"
     },
     {
@@ -137,5 +141,9 @@
   ],
   "sequencing_position": [
     "building"
+  ],
+  "chakras": [
+    "root",
+    "sacral"
   ]
 }

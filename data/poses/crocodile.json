@@ -92,13 +92,17 @@
     {
       "name": "Bolster Under Chest",
       "description": "Place a bolster crosswise under the chest and arms for students with shoulder discomfort, pregnancy (early stages only), or anyone who finds the full prone position uncomfortable.",
-      "props_used": ["bolster"],
+      "props_used": [
+        "bolster"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Blanket Under Forehead",
       "description": "Place a thin folded blanket under the forehead to prevent neck strain and provide a softer surface for the face, particularly useful during longer holds.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     }
   ],
@@ -123,5 +127,9 @@
     "opening",
     "cooldown",
     "integration"
+  ],
+  "chakras": [
+    "solar-plexus",
+    "root"
   ]
 }

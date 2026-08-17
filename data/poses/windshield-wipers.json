@@ -1,6 +1,6 @@
 {
   "slug": "windshield-wipers",
-  "sanskrit": "Supta variation",
+  "sanskrit": "Supta",
   "english": "Windshield Wipers",
   "aliases": [
     "Supine Spinal Twist Variation",
@@ -39,8 +39,23 @@
   "bilateral": true,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
   "notes": "A gentle lateral spinal rotation targeting the outer hip and IT band. The gallbladder meridian runs along the lateral body. Often used as a transition pose between supine postures or after deeper hip openers.",
-  "type_tags": ["twist", "outer-hip", "sacrum-release", "restorative"],
-  "muscle_groups": ["IT-band", "glutes", "piriformis", "hip-abductors", "obliques", "lumbar-spine", "thoracic-spine", "sacroiliac-ligaments", "spinal-erectors"],
+  "type_tags": [
+    "twist",
+    "outer-hip",
+    "sacrum-release",
+    "restorative"
+  ],
+  "muscle_groups": [
+    "IT-band",
+    "glutes",
+    "piriformis",
+    "hip-abductors",
+    "obliques",
+    "lumbar-spine",
+    "thoracic-spine",
+    "sacroiliac-ligaments",
+    "spinal-erectors"
+  ],
   "complexity": 3,
   "injury_risk": 2,
   "breathing_cues": {
@@ -48,10 +63,29 @@
     "holding": "Each inhale gently lifts the ribs and creates a small counter-rotation in the thorax; each exhale allows the lumbar and sacral region to soften deeper into the twist. Notice the space between each vertebra opening.",
     "exiting": "Inhale the knees back to center on the breath — use the core rather than momentum — then exhale and allow them to fall to the opposite side."
   },
-  "before_poses": ["constructive-rest", "happy-baby", "supta-baddha-konasana", "legs-up-the-wall"],
-  "after_poses": ["reclining-twist", "twisted-roots", "constructive-rest", "savasana"],
-  "joint_action": ["internal_rotation", "external_rotation", "lateral_flexion"],
-  "primary_joints_involved": ["sacroiliac", "lumbar", "hip", "knee"],
+  "before_poses": [
+    "constructive-rest",
+    "happy-baby",
+    "supta-baddha-konasana",
+    "legs-up-the-wall"
+  ],
+  "after_poses": [
+    "reclining-twist",
+    "twisted-roots",
+    "constructive-rest",
+    "savasana"
+  ],
+  "joint_action": [
+    "internal_rotation",
+    "external_rotation",
+    "lateral_flexion"
+  ],
+  "primary_joints_involved": [
+    "sacroiliac",
+    "lumbar",
+    "hip",
+    "knee"
+  ],
   "nervous_system_effect": "parasympathetic",
   "tissue_depth": "intermediate",
   "modifications": [
@@ -64,7 +98,9 @@
     {
       "name": "Bolster between knees",
       "description": "Place a bolster or folded blanket between the thighs before dropping to one side, creating a supported version that reduces the range of lumbar rotation.",
-      "props_used": ["bolster"],
+      "props_used": [
+        "bolster"
+      ],
       "accessibility_level": "accessible"
     },
     {
@@ -97,5 +133,12 @@
       "notes": "The fluid, yielding quality of this pose — letting the legs drop by their own weight — teaches the nervous system to trust surrender over control, a key theme of wood-element work."
     }
   ],
-  "sequencing_position": ["opening", "cooldown"]
+  "sequencing_position": [
+    "opening",
+    "cooldown"
+  ],
+  "chakras": [
+    "sacral",
+    "root"
+  ]
 }

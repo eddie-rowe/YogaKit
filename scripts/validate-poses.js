@@ -37,6 +37,12 @@ for (const file of files) {
   } else {
     console.log(`✅ ${file}`);
   }
+
+  // Non-failing warning: overloaded sanskrit strings carry tradition semantics that
+  // belong in `tradition_names` or `modes[]`. Clean up by stripping parentheticals.
+  if (data.sanskrit && (data.sanskrit.includes('(') || /\bvariation\b/i.test(data.sanskrit))) {
+    console.warn(`⚠️  ${file}: sanskrit "${data.sanskrit}" contains a parenthetical or "variation" — consider moving that semantic to tradition_names or modes[].`);
+  }
 }
 
 if (errors > 0) {

@@ -205,11 +205,13 @@ export function validate(constrained: ConstrainedSequence): ValidatedSequence {
 
   // Pass 4: Timing check
   const totalHold = items.reduce((sum, it) => sum + it.holdMinutes, 0)
+  const transitionMinutes = constrained.transitionMinutes
+  const effectiveTotal = totalHold + transitionMinutes
   const targetDuration = constrained.sessionContext.durationMinutes ?? 75
   let timingSumWarning: string | undefined
 
-  if (Math.abs(totalHold - targetDuration * 0.8) > targetDuration * 0.25) {
-    timingSumWarning = `Hold time sum (${totalHold} min) deviates significantly from expected ${Math.round(targetDuration * 0.8)} min.`
+  if (Math.abs(effectiveTotal - targetDuration) > targetDuration * 0.25) {
+    timingSumWarning = `Session total (${effectiveTotal} min: ${totalHold} hold + ${transitionMinutes} transitions) deviates from target ${targetDuration} min.`
   }
 
   // Determine if any unresolvable violations remain
@@ -221,6 +223,7 @@ export function validate(constrained: ConstrainedSequence): ValidatedSequence {
     ...constrained,
     items,
     totalHoldMinutes: totalHold,
+    totalSessionMinutes: totalHold + transitionMinutes,
     safetyNotes,
     passedValidation: !hasUnresolvable,
     timingSumWarning,

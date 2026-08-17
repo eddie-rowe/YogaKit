@@ -99,13 +99,17 @@
     {
       "name": "Bolster Under Chest",
       "description": "Place a bolster lengthwise under the chest and belly so the torso rests fully supported. This removes any effortful holding and allows complete muscular release in the inner groin and low back.",
-      "props_used": ["bolster"],
+      "props_used": [
+        "bolster"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Blanket Under Knees",
       "description": "Place a folded blanket under both knees to cushion the joint and reduce knee compression. Especially useful for students with sensitive knee tissue or hard floors.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
@@ -135,5 +139,9 @@
   "sequencing_position": [
     "opening",
     "cooldown"
+  ],
+  "chakras": [
+    "root",
+    "third-eye"
   ]
 }

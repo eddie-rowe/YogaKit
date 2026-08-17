@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import type { Pose, FiveElement } from '@/lib/pipeline/types'
+import { resolveDisplayName } from '@/lib/pose-library/display-name'
 
 interface Props {
   pose: Pose
@@ -10,12 +11,12 @@ interface Props {
   onToggle: () => void
 }
 
-const ELEMENT_COLORS: Record<FiveElement, string> = {
-  wood:  'bg-green-100 text-green-800',
-  fire:  'bg-red-100 text-red-800',
-  earth: 'bg-yellow-100 text-yellow-800',
-  metal: 'bg-gray-100 text-gray-800',
-  water: 'bg-blue-100 text-blue-800',
+const ELEMENT_DOT_COLORS: Record<FiveElement, string> = {
+  wood:  'bg-green-500',
+  fire:  'bg-red-500',
+  earth: 'bg-yellow-500',
+  metal: 'bg-gray-400',
+  water: 'bg-blue-500',
 }
 
 const DIFFICULTY_COLORS: Record<string, string> = {
@@ -74,46 +75,42 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
       >
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <h2 className="font-serif font-semibold text-stone-900 truncate">{pose.english}</h2>
-            <p className="text-xs text-stone-400 italic truncate">{pose.sanskrit}</p>
+            <div className="flex items-center gap-1.5">
+              {pose.element && (
+                <span className={`inline-block w-2 h-2 rounded-full flex-shrink-0 ${ELEMENT_DOT_COLORS[pose.element]}`} />
+              )}
+              <h2 className="font-serif font-semibold text-stone-900 truncate">{resolveDisplayName(pose)}</h2>
+            </div>
+            <p className="text-xs text-stone-400 italic truncate mt-0.5">{pose.sanskrit}</p>
+            <p className="text-xs text-stone-400 mt-0.5 capitalize">{pose.body_position} · {pose.difficulty}</p>
           </div>
-          <div className="flex-shrink-0 flex gap-1 items-center">
-            {pose.element && (
-              <span className={`text-xs px-2 py-0.5 rounded-full capitalize ${ELEMENT_COLORS[pose.element]}`}>
-                {pose.element}
-              </span>
-            )}
-            <span className={`text-xs px-2 py-0.5 rounded-full capitalize ${DIFFICULTY_COLORS[pose.difficulty]}`}>
-              {pose.difficulty}
-            </span>
-            <span className="text-stone-400 ml-1">
-              {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-            </span>
-          </div>
-        </div>
-
-        {/* Complexity/risk bars — always visible */}
-        <div className="mt-3 space-y-1.5">
-          <ComplexityBar value={pose.complexity} label="Complexity" color="bg-stone-400" />
-          <ComplexityBar value={pose.injury_risk} label="Injury risk" color="bg-rose-400" />
-        </div>
-
-        {/* Type tags row */}
-        <div className="flex flex-wrap gap-1 mt-2">
-          {pose.type_tags.slice(0, expanded ? undefined : 4).map(tag => (
-            <span key={tag} className="text-xs px-2 py-0.5 bg-stone-100 text-stone-600 rounded-full">
-              {tag}
-            </span>
-          ))}
-          {!expanded && pose.type_tags.length > 4 && (
-            <span className="text-xs text-stone-400">+{pose.type_tags.length - 4} more</span>
-          )}
+          <span className="flex-shrink-0 text-stone-400 ml-1 mt-0.5">
+            {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+          </span>
         </div>
       </button>
 
       {/* Expanded detail */}
       <div className={`expandable-content ${expanded ? 'open' : ''}`}>
+        <div>
         <div className="px-4 pb-4 border-t border-stone-100 mt-1 pt-3 space-y-4 text-sm">
+
+          {/* Complexity/risk bars */}
+          <div className="space-y-1.5">
+            <ComplexityBar value={pose.complexity} label="Complexity" color="bg-stone-400" />
+            <ComplexityBar value={pose.injury_risk} label="Injury risk" color="bg-rose-400" />
+          </div>
+
+          {/* Type tags row */}
+          {pose.type_tags.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {pose.type_tags.map(tag => (
+                <span key={tag} className="text-xs px-2 py-0.5 bg-stone-100 text-stone-600 rounded-full">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
 
           {/* Hold range + body position + NS effect + tissue depth + sequencing position */}
           <div className="flex flex-wrap gap-1.5 text-xs">
@@ -322,6 +319,7 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
           >
             View anatomy diagram →
           </Link>
+        </div>
         </div>
       </div>
     </article>

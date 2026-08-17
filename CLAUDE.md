@@ -1,4 +1,4 @@
-# Krama — Development Guide
+# Yoga Kit — Development Guide
 
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,

@@ -99,7 +99,9 @@
     {
       "name": "Bolster Across Thighs",
       "description": "Lay a bolster across the thighs and rest the torso on it, allowing complete passive surrender of the back body without any active holding.",
-      "props_used": ["bolster"],
+      "props_used": [
+        "bolster"
+      ],
       "accessibility_level": "accessible"
     },
     {
@@ -111,13 +113,17 @@
     {
       "name": "Arms Supported on Blocks",
       "description": "Place blocks beside the calves or ankles so the hands rest on them, reducing the sensation for students with very tight hamstrings while maintaining the spinal curve.",
-      "props_used": ["block"],
+      "props_used": [
+        "block"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Strap Around Feet",
       "description": "Loop a strap around the soles of the feet and hold the ends, allowing a gentle forward pull without collapsing the chest or straining the wrists.",
-      "props_used": ["strap"],
+      "props_used": [
+        "strap"
+      ],
       "accessibility_level": "intermediate"
     }
   ],
@@ -141,5 +147,9 @@
   "sequencing_position": [
     "building",
     "cooldown"
+  ],
+  "chakras": [
+    "third-eye",
+    "root"
   ]
 }

@@ -2,19 +2,43 @@
   "slug": "savasana",
   "sanskrit": "Savasana",
   "english": "Corpse Pose",
-  "aliases": ["Corpse Pose", "Final Rest", "Relaxation Pose"],
+  "aliases": [
+    "Corpse Pose",
+    "Final Rest",
+    "Relaxation Pose"
+  ],
   "modes": [
     {
       "type": "yin",
       "tissue_target": "connective",
-      "hold_range": { "min": 2, "max": 5 },
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
       "cue_notes": "Lie flat on the back with legs extended and slightly apart, arms alongside the body with palms facing up. Eyes closed. Allow every muscle to release completely. Breathe naturally. The body integrates all preceding postures. Remain completely still unless there is physical discomfort."
     }
   ],
   "body_position": "supine",
-  "meridians": ["liver", "gallbladder", "kidney", "bladder", "heart", "small-intestine", "lung", "large-intestine", "stomach", "spleen", "pericardium", "triple-warmer"],
+  "meridians": [
+    "liver",
+    "gallbladder",
+    "kidney",
+    "bladder",
+    "heart",
+    "small-intestine",
+    "lung",
+    "large-intestine",
+    "stomach",
+    "spleen",
+    "pericardium",
+    "triple-warmer"
+  ],
   "element": null,
-  "energetic_quality": ["grounding", "calming", "cooling"],
+  "energetic_quality": [
+    "grounding",
+    "calming",
+    "cooling"
+  ],
   "difficulty": "accessible",
   "props_required": [],
   "prop_free_variation": null,
@@ -24,8 +48,22 @@
   "bilateral": false,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
   "notes": "Final integration pose. All meridians are listed as Savasana integrates the entire practice. Typically held 5–15 minutes at the end of a session.",
-  "type_tags": ["restorative", "integration"],
-  "muscle_groups": ["psoas", "iliacus", "hip-flexors", "hamstrings", "glutes", "lumbar-spine", "thoracic-spine", "cervical-spine", "spinal-erectors", "diaphragm"],
+  "type_tags": [
+    "restorative",
+    "integration"
+  ],
+  "muscle_groups": [
+    "psoas",
+    "iliacus",
+    "hip-flexors",
+    "hamstrings",
+    "glutes",
+    "lumbar-spine",
+    "thoracic-spine",
+    "cervical-spine",
+    "spinal-erectors",
+    "diaphragm"
+  ],
   "complexity": 1,
   "injury_risk": 1,
   "breathing_cues": {
@@ -33,35 +71,59 @@
     "holding": "Allow the breath to become effortless and involuntary. Notice the belly softening on each inhale, the chest widening, and the whole body gently sinking heavier on each exhale. No controlling — just observing.",
     "exiting": "Before moving, take one slow, deliberate inhale and let the exhale carry you into gentle awareness of your fingertips and toes."
   },
-  "before_poses": ["reclining-twist", "windshield-wipers", "constructive-rest", "supported-fish"],
-  "after_poses": ["constructive-rest"],
-  "joint_action": ["traction"],
-  "primary_joints_involved": ["lumbar", "thoracic", "cervical", "hip", "knee", "ankle"],
+  "before_poses": [
+    "reclining-twist",
+    "windshield-wipers",
+    "constructive-rest",
+    "supported-fish"
+  ],
+  "after_poses": [
+    "constructive-rest"
+  ],
+  "joint_action": [
+    "traction"
+  ],
+  "primary_joints_involved": [
+    "lumbar",
+    "thoracic",
+    "cervical",
+    "hip",
+    "knee",
+    "ankle"
+  ],
   "nervous_system_effect": "parasympathetic",
   "tissue_depth": "superficial",
   "modifications": [
     {
       "name": "Blanket under knees",
       "description": "Place a folded blanket or bolster under the knees to reduce lumbar strain. Especially helpful for students with lower back tension or lordosis.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Bolster under knees",
       "description": "Use a full bolster under the knees for a more elevated support that completely releases the psoas and lumbar region.",
-      "props_used": ["bolster"],
+      "props_used": [
+        "bolster"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Eye pillow",
       "description": "Place a lightly weighted eye pillow over the eyes to promote sensory withdrawal (pratyahara) and deepen the parasympathetic response.",
-      "props_used": ["eye-pillow"],
+      "props_used": [
+        "eye-pillow"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Blanket roll under cervical spine",
       "description": "Roll a small blanket and place it under the neck curve to support students with cervical lordosis or neck discomfort.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     }
   ],
@@ -87,5 +149,11 @@
       "notes": "Full-body release can open grief held in the chest and intercostals. Lung governs letting go; Savasana is the ultimate practice of non-attachment."
     }
   ],
-  "sequencing_position": ["integration"]
+  "sequencing_position": [
+    "integration"
+  ],
+  "chakras": [
+    "crown",
+    "third-eye"
+  ]
 }

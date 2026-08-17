@@ -19,8 +19,8 @@
   ],
   "body_position": "seated",
   "meridians": [
-    "kidney",
-    "liver"
+    "bladder",
+    "kidney"
   ],
   "element": "water",
   "energetic_quality": [
@@ -96,19 +96,26 @@
     {
       "name": "Bolster Under Bent Knee",
       "description": "Place a bolster or folded blanket under the bent knee to reduce adductor tension and prevent the hip from straining in its open position.",
-      "props_used": ["bolster", "blanket"],
+      "props_used": [
+        "bolster",
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Sit on Blanket Edge",
       "description": "Elevate the hips on a folded blanket to reduce posterior pelvic tilt and allow the forward fold to initiate from the hip crease rather than the lumbar spine.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Strap Around Extended Foot",
       "description": "Loop a strap around the foot of the extended leg so the hands can hold the strap without rounding the upper back excessively — useful when hamstrings are very tight.",
-      "props_used": ["strap"],
+      "props_used": [
+        "strap"
+      ],
       "accessibility_level": "accessible"
     },
     {
@@ -130,13 +137,17 @@
       "notes": "The kidney meridian runs along the inner leg; asymmetric release can reveal one-sided fear or insecurity patterns held in the body."
     },
     {
-      "emotion": "grief",
+      "emotion": "anger",
       "tcm_organ": "liver",
-      "notes": "One-sided holding in the inner thigh or groin crease may reflect unprocessed grief stored asymmetrically in the body's tissue memory."
+      "notes": "One-sided tension in the inner thigh or groin crease may reflect suppressed anger or frustration stored asymmetrically in the fascial system — the liver's primary emotional domain in TCM."
     }
   ],
   "sequencing_position": [
     "opening",
     "building"
+  ],
+  "chakras": [
+    "sacral",
+    "third-eye"
   ]
 }

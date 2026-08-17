@@ -1,6 +1,6 @@
-# Contributing to Krama
+# Contributing to Yoga Kit
 
-Krama is a free, open-source yoga sequencing PWA for teachers. Contributions welcome — especially pose library expansions and accessibility improvements.
+Yoga Kit is a free, open-source yoga sequencing PWA for teachers. Contributions welcome — especially pose library expansions and accessibility improvements.
 
 ## Quick start
 

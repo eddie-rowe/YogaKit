@@ -107,19 +107,25 @@
     {
       "name": "Bolster Between Legs or Under Sit Bones",
       "description": "Place a bolster lengthwise between the legs or under the sit bones so the hips rest on support rather than descending fully to the floor, significantly reducing knee and lumbar compression.",
-      "props_used": ["bolster"],
+      "props_used": [
+        "bolster"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Reclining on a Bolster",
       "description": "Rather than lying flat on the floor, recline backward onto a bolster placed lengthwise along the spine. This reduces the degree of lumbar extension and anterior thigh stretch.",
-      "props_used": ["bolster"],
+      "props_used": [
+        "bolster"
+      ],
       "accessibility_level": "intermediate"
     },
     {
       "name": "Blanket Under Ankles",
       "description": "Fold a blanket and place it under the ankles to reduce plantar flexion stress and protect the ankle ligaments and tops of the feet.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     }
   ],
@@ -147,5 +153,10 @@
   ],
   "sequencing_position": [
     "peak"
+  ],
+  "chakras": [
+    "sacral",
+    "heart",
+    "throat"
   ]
 }

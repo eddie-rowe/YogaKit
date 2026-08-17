@@ -95,13 +95,17 @@
     {
       "name": "Bolster Beside Hip",
       "description": "Place a bolster alongside the bent-knee hip so the pelvis can rest on it rather than descending fully to the floor, reducing knee and lumbar compression.",
-      "props_used": ["bolster"],
+      "props_used": [
+        "bolster"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Folded Blanket Under Knee",
       "description": "Tuck a folded blanket into the back of the bent knee crease to relieve pressure on the joint capsule and meniscus.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
@@ -112,7 +116,9 @@
     {
       "name": "Recline onto Bolster",
       "description": "Place a bolster lengthwise behind the bent-knee side and recline onto it rather than the floor, providing a supported backbend with reduced lumbar extension.",
-      "props_used": ["bolster"],
+      "props_used": [
+        "bolster"
+      ],
       "accessibility_level": "intermediate"
     }
   ],
@@ -136,5 +142,9 @@
   "sequencing_position": [
     "building",
     "peak"
+  ],
+  "chakras": [
+    "sacral",
+    "heart"
   ]
 }

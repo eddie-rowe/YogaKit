@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import type { Pose, PoseTypeTag, MuscleGroup, FiveElement, NervousSystemEffect, SequencingPosition } from '@/lib/pipeline/types'
+import { allSearchableNames } from '@/lib/pose-library/display-name'
 import PoseCard from './PoseCard'
 
 interface Props {
@@ -15,6 +16,15 @@ const ELEMENT_COLORS: Record<FiveElement, string> = {
   fire:  'bg-red-100 text-red-800 border-red-300',
   earth: 'bg-yellow-100 text-yellow-800 border-yellow-300',
   metal: 'bg-gray-100 text-gray-800 border-gray-300',
+  water: 'bg-blue-100 text-blue-800 border-blue-300',
+}
+
+// Active state classes for element chips (always-visible row)
+const ELEMENT_CHIP_ACTIVE: Record<FiveElement, string> = {
+  wood:  'bg-green-100 text-green-800 border-green-300',
+  fire:  'bg-red-100 text-red-800 border-red-300',
+  earth: 'bg-yellow-100 text-yellow-800 border-yellow-300',
+  metal: 'bg-gray-200 text-gray-800 border-gray-400',
   water: 'bg-blue-100 text-blue-800 border-blue-300',
 }
 
@@ -67,9 +77,7 @@ export default function PosesClient({ poses }: Props) {
     if (search.trim()) {
       const q = search.toLowerCase()
       list = list.filter(p =>
-        p.english.toLowerCase().includes(q) ||
-        p.sanskrit.toLowerCase().includes(q) ||
-        p.aliases.some(a => a.toLowerCase().includes(q))
+        allSearchableNames(p).some(n => n.toLowerCase().includes(q))
       )
     }
 
@@ -133,8 +141,15 @@ export default function PosesClient({ poses }: Props) {
     setSortBy('alpha')
   }
 
+  // All filters (used by "Clear all" visibility)
   const hasActiveFilters =
     search || filterElement || filterPosition || filterNS || filterSeqPosition ||
+    filterTypeTags.length || filterMuscleGroups.length ||
+    filterComplexityMax < 10 || filterRiskMax < 10
+
+  // Only the filters living inside the Advanced panel (for the Advanced button indicator)
+  const hasAdvancedFilters =
+    filterNS || filterSeqPosition ||
     filterTypeTags.length || filterMuscleGroups.length ||
     filterComplexityMax < 10 || filterRiskMax < 10
 
@@ -154,92 +169,85 @@ export default function PosesClient({ poses }: Props) {
             </a>
           </div>
 
-          {/* Search + sort row */}
-          <div className="flex flex-col sm:flex-row gap-2">
-            <input
-              type="search"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Search by English, Sanskrit, or alias..."
-              className="w-full sm:flex-1 px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-400 bg-white"
-            />
-            <div className="flex gap-2">
-              <select
-                value={sortBy}
-                onChange={e => setSortBy(e.target.value as SortKey)}
-                className="flex-1 sm:flex-none px-3 py-2 text-sm border border-stone-200 rounded-lg bg-white focus:outline-none"
-              >
-                <option value="alpha">A–Z</option>
-                <option value="complexity-asc">Complexity ↑</option>
-                <option value="complexity-desc">Complexity ↓</option>
-                <option value="risk-asc">Risk ↑</option>
-                <option value="risk-desc">Risk ↓</option>
-              </select>
+          {/* Search bar */}
+          <input
+            type="search"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search poses by name, Sanskrit, or alias…"
+            className="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-400 bg-white"
+          />
+
+          {/* Body position chips */}
+          <div className="flex flex-wrap gap-1 mt-2">
+            <button
+              onClick={() => setFilterPosition('')}
+              className={`px-3 py-1 text-xs rounded-full border transition-colors ${!filterPosition ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
+            >
+              All
+            </button>
+            {BODY_POSITIONS.map(pos => (
               <button
-                onClick={() => setShowFilters(f => !f)}
-                className={`px-3 py-2 text-sm border rounded-lg transition-colors ${
-                  hasActiveFilters
-                    ? 'border-[#3d3530] bg-[#3d3530] text-white'
-                    : 'border-stone-200 bg-white text-stone-700 hover:border-stone-400'
-                }`}
+                key={pos}
+                onClick={() => setFilterPosition(prev => prev === pos ? '' : pos)}
+                className={`px-3 py-1 text-xs rounded-full border capitalize transition-colors ${filterPosition === pos ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
               >
-                Filters {hasActiveFilters ? `(active)` : ''}
+                {pos}
               </button>
-            </div>
+            ))}
           </div>
 
-          {/* Filter panel */}
+          {/* Element chips */}
+          <div className="flex flex-wrap gap-1 mt-1.5">
+            <button
+              onClick={() => setFilterElement('')}
+              className={`px-3 py-1 text-xs rounded-full border transition-colors ${!filterElement ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
+            >
+              All
+            </button>
+            {ELEMENTS.map(el => (
+              <button
+                key={el}
+                onClick={() => setFilterElement(prev => prev === el ? '' : el)}
+                className={`px-3 py-1 text-xs rounded-full border capitalize transition-colors ${
+                  filterElement === el
+                    ? ELEMENT_CHIP_ACTIVE[el]
+                    : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'
+                }`}
+              >
+                {el}
+              </button>
+            ))}
+          </div>
+
+          {/* Sort + Advanced filters row */}
+          <div className="flex items-center justify-between gap-2 mt-2">
+            <select
+              value={sortBy}
+              onChange={e => setSortBy(e.target.value as SortKey)}
+              className="px-3 py-1.5 text-sm border border-stone-200 rounded-lg bg-white focus:outline-none"
+            >
+              <option value="alpha">A–Z</option>
+              <option value="complexity-asc">Complexity ↑</option>
+              <option value="complexity-desc">Complexity ↓</option>
+              <option value="risk-asc">Risk ↑</option>
+              <option value="risk-desc">Risk ↓</option>
+            </select>
+            <button
+              onClick={() => setShowFilters(f => !f)}
+              className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${
+                hasAdvancedFilters
+                  ? 'border-[#3d3530] bg-[#3d3530] text-white'
+                  : 'border-stone-200 bg-white text-stone-700 hover:border-stone-400'
+              }`}
+            >
+              Advanced filters{hasAdvancedFilters ? ' (active)' : ''}
+            </button>
+          </div>
+
+          {/* Advanced filter panel */}
           {showFilters && (
             <div className="mt-3 pt-3 border-t border-stone-100 space-y-4">
-              {/* Element + position row */}
-              <div className="flex flex-wrap gap-3">
-                <div>
-                  <label className="text-xs font-medium text-stone-500 block mb-1">Element</label>
-                  <div className="flex gap-1">
-                    <button
-                      onClick={() => setFilterElement('')}
-                      className={`px-2 py-1 text-xs rounded border ${!filterElement ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
-                    >
-                      All
-                    </button>
-                    {ELEMENTS.map(el => (
-                      <button
-                        key={el}
-                        onClick={() => setFilterElement(prev => prev === el ? '' : el)}
-                        className={`px-2 py-1 text-xs rounded border capitalize ${
-                          filterElement === el
-                            ? `border ${ELEMENT_COLORS[el]}`
-                            : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'
-                        }`}
-                      >
-                        {el}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-xs font-medium text-stone-500 block mb-1">Body position</label>
-                  <div className="flex flex-wrap gap-1">
-                    <button
-                      onClick={() => setFilterPosition('')}
-                      className={`px-2 py-1 text-xs rounded border ${!filterPosition ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
-                    >
-                      All
-                    </button>
-                    {BODY_POSITIONS.map(pos => (
-                      <button
-                        key={pos}
-                        onClick={() => setFilterPosition(prev => prev === pos ? '' : pos)}
-                        className={`px-2 py-1 text-xs rounded border capitalize ${filterPosition === pos ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
-                      >
-                        {pos}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
               {/* NS effect + sequencing position row */}
               <div className="flex flex-wrap gap-3">
                 <div>

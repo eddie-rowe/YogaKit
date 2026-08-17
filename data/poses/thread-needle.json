@@ -100,13 +100,17 @@
     {
       "name": "Pillow or Blanket Under Shoulder",
       "description": "Place a folded blanket or small pillow under the lowered shoulder to reduce the depth of the rotational stretch, appropriate for those with posterior shoulder tightness or impingement.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Top Arm on Block",
       "description": "Rest the top arm's hand on a block instead of extending it forward, reducing thoracic rotation demand and providing a sense of support and stability.",
-      "props_used": ["blocks"],
+      "props_used": [
+        "blocks"
+      ],
       "accessibility_level": "intermediate"
     }
   ],
@@ -130,5 +134,9 @@
   "sequencing_position": [
     "building",
     "cooldown"
+  ],
+  "chakras": [
+    "heart",
+    "solar-plexus"
   ]
 }

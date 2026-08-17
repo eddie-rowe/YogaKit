@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getAllPoses, getPoseBySlug } from '@/lib/pose-library'
+import { resolveDisplayName } from '@/lib/pose-library/display-name'
 import PoseDetailClient from './PoseDetailClient'
 
 interface Props {
@@ -13,10 +14,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
   const pose = getPoseBySlug(slug)
-  if (!pose) return { title: 'Pose not found — Krama' }
+  if (!pose) return { title: 'Pose not found — Yoga Kit' }
   return {
-    title: `${pose.english} (${pose.sanskrit}) — Krama`,
-    description: `Anatomy, meridians, and sequencing for ${pose.english} in yin yoga.`,
+    title: `${resolveDisplayName(pose)} (${pose.sanskrit}) — Yoga Kit`,
+    description: `Anatomy, meridians, and sequencing for ${resolveDisplayName(pose)} in yin yoga.`,
   }
 }
 

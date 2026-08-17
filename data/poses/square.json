@@ -94,13 +94,17 @@
     {
       "name": "Blanket Under Front Shin",
       "description": "Place a folded blanket under the top shin to reduce the angle of shin stacking and decrease the load on the lateral knee ligaments.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Blocks Under Both Knees",
       "description": "Support both knees with blocks so that neither hip is forced into deeper external rotation than the joint allows — essential for students with limited hip mobility.",
-      "props_used": ["block"],
+      "props_used": [
+        "block"
+      ],
       "accessibility_level": "accessible"
     },
     {
@@ -136,5 +140,9 @@
   "sequencing_position": [
     "building",
     "peak"
+  ],
+  "chakras": [
+    "sacral",
+    "root"
   ]
 }

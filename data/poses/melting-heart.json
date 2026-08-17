@@ -1,26 +1,44 @@
 {
   "slug": "melting-heart",
-  "sanskrit": "Anahatasana variation",
+  "sanskrit": "Anahatasana",
   "english": "Melting Heart",
-  "aliases": ["Supported Anahatasana", "Heart Melting Pose", "Prone Heart Opener"],
+  "aliases": [
+    "Supported Anahatasana",
+    "Heart Melting Pose",
+    "Prone Heart Opener"
+  ],
   "modes": [
     {
       "type": "yin",
       "tissue_target": "connective",
-      "hold_range": { "min": 2, "max": 5 },
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
       "cue_notes": "From all fours, walk the hands forward while keeping the hips over the knees. Allow the chest to melt toward the floor, chin or forehead resting on the mat or a bolster. Arms extend forward. The heart center descends as the thoracic spine extends. Keep the hips stacked over the knees — do not let them slide back. A bolster under the chest reduces intensity."
     }
   ],
-  "body_position": "seated",
-  "meridians": ["heart", "lung"],
+  "body_position": "kneeling",
+  "meridians": [
+    "heart",
+    "lung"
+  ],
   "element": "fire",
-  "energetic_quality": ["opening", "cooling"],
+  "energetic_quality": [
+    "opening",
+    "cooling"
+  ],
   "difficulty": "accessible",
   "props_required": [],
   "prop_free_variation": null,
-  "counterposes": ["child-pose", "constructive-rest"],
+  "counterposes": [
+    "child-pose",
+    "constructive-rest"
+  ],
   "rebound_pose": "child-pose",
-  "contraindications": ["shoulder-injury"],
+  "contraindications": [
+    "shoulder-injury"
+  ],
   "bilateral": false,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
   "notes": "Targets the thoracic spine extension and anterior shoulder. Heart and lung meridians run the inner arm and chest wall. Counterpose is Child's Pose to neutralize the thoracic extension.",
@@ -82,13 +100,18 @@
     {
       "name": "Bolster Under Chest",
       "description": "Place a bolster under the chest to support the sternum and reduce the degree of thoracic extension, shifting the pose from active stress to a more restorative opening.",
-      "props_used": ["bolster"],
+      "props_used": [
+        "bolster"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Props Under Hips",
       "description": "Place a blanket or folded blocks under the hips (between hips and heels) to reduce the lumbar extension component, useful for those with lumbar sensitivity.",
-      "props_used": ["blanket", "blocks"],
+      "props_used": [
+        "blanket",
+        "blocks"
+      ],
       "accessibility_level": "intermediate"
     },
     {
@@ -122,5 +145,9 @@
   "sequencing_position": [
     "building",
     "peak"
+  ],
+  "chakras": [
+    "heart",
+    "throat"
   ]
 }

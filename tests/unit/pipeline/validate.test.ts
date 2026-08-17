@@ -76,13 +76,18 @@ function makeCtx(overrides: Partial<SessionContext> = {}): SessionContext {
 }
 
 function makeConstrained(items: SequenceItem[], ctxOverrides: Partial<SessionContext> = {}): ConstrainedSequence {
+  const totalHoldMinutes = items.reduce((s, i) => s + i.holdMinutes, 0)
+  const transitionMinutes = items.length * 3
   return {
     sessionContext: makeCtx(ctxOverrides),
     themeStatement: 'Test theme',
     philosophicalFraming: 'Test framing',
     quote: { text: 'Test quote', attribution: 'Test' },
+    sutra: { text: 'Test sutra', attribution: 'Test sutra source' },
     items,
-    totalHoldMinutes: items.reduce((s, i) => s + i.holdMinutes, 0),
+    totalHoldMinutes,
+    transitionMinutes,
+    totalSessionMinutes: totalHoldMinutes + transitionMinutes,
   }
 }
 

@@ -43,6 +43,13 @@
       "items": { "type": "string" },
       "default": []
     },
+    "tradition_names": {
+      "type": "object",
+      "description": "Optional per-style display name override. Keys are Style enum values. `english` remains the canonical fallback.",
+      "propertyNames": { "enum": ["yin", "vinyasa", "ashtanga", "restorative"] },
+      "additionalProperties": { "type": "string", "minLength": 1 },
+      "default": {}
+    },
     "modes": {
       "type": "array",
       "minItems": 1,

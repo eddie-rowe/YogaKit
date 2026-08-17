@@ -42,8 +42,21 @@
   "bilateral": false,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
   "notes": "Targets the inner groin, sacrum, and hip external rotators. The kidney and bladder meridians run along the inner leg and spine, making this an effective water-element pose.",
-  "type_tags": ["hip-opener", "groin-opener", "sacrum-release", "restorative"],
-  "muscle_groups": ["hip-adductors", "piriformis", "glutes", "sacroiliac-ligaments", "lumbar-spine", "hamstrings", "hip-abductors"],
+  "type_tags": [
+    "hip-opener",
+    "groin-opener",
+    "sacrum-release",
+    "restorative"
+  ],
+  "muscle_groups": [
+    "hip-adductors",
+    "piriformis",
+    "glutes",
+    "sacroiliac-ligaments",
+    "lumbar-spine",
+    "hamstrings",
+    "hip-abductors"
+  ],
   "complexity": 2,
   "injury_risk": 2,
   "breathing_cues": {
@@ -51,10 +64,30 @@
     "holding": "Direct each inhale into the lower belly and inner groin; on the exhale, allow the sacrum to get heavier and wider against the mat. If rocking side to side, coordinate the movement with the breath.",
     "exiting": "On an exhale, release the feet and let the legs extend slowly back toward the floor, pausing in constructive rest."
   },
-  "before_poses": ["constructive-rest", "supta-baddha-konasana", "windshield-wipers", "reclining-twist"],
-  "after_poses": ["windshield-wipers", "reclining-twist", "twisted-roots", "savasana"],
-  "joint_action": ["flexion", "external_rotation", "abduction", "traction"],
-  "primary_joints_involved": ["sacroiliac", "hip", "knee", "lumbar"],
+  "before_poses": [
+    "constructive-rest",
+    "supta-baddha-konasana",
+    "windshield-wipers",
+    "reclining-twist"
+  ],
+  "after_poses": [
+    "windshield-wipers",
+    "reclining-twist",
+    "twisted-roots",
+    "savasana"
+  ],
+  "joint_action": [
+    "flexion",
+    "external_rotation",
+    "abduction",
+    "traction"
+  ],
+  "primary_joints_involved": [
+    "sacroiliac",
+    "hip",
+    "knee",
+    "lumbar"
+  ],
   "nervous_system_effect": "parasympathetic",
   "tissue_depth": "deep",
   "modifications": [
@@ -67,7 +100,9 @@
     {
       "name": "Strap around feet",
       "description": "Loop a strap around each foot so arms do not have to reach as far, making the pose accessible for students with limited flexibility.",
-      "props_used": ["strap"],
+      "props_used": [
+        "strap"
+      ],
       "accessibility_level": "accessible"
     },
     {
@@ -79,7 +114,9 @@
     {
       "name": "Block under sacrum",
       "description": "Place a block under the sacrum for a supported inversion variation that adds gentle traction and reduces effort needed to keep the hips grounded.",
-      "props_used": ["block"],
+      "props_used": [
+        "block"
+      ],
       "accessibility_level": "intermediate"
     }
   ],
@@ -105,5 +142,12 @@
       "notes": "The playful, childlike shape often evokes levity and spontaneous joy. The slight chest opening as shoulders broaden adds heart energy to the pose."
     }
   ],
-  "sequencing_position": ["opening", "cooldown"]
+  "sequencing_position": [
+    "opening",
+    "cooldown"
+  ],
+  "chakras": [
+    "root",
+    "sacral"
+  ]
 }

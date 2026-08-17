@@ -103,19 +103,26 @@
     {
       "name": "Bolster Under Torso",
       "description": "Place a bolster lengthwise under the torso so the chest and belly rest on it. This lifts the floor to meet the body and is essential for pregnant students and those with lumbar disc sensitivity.",
-      "props_used": ["bolster"],
+      "props_used": [
+        "bolster"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Blanket Behind Knees",
       "description": "Tuck a rolled blanket into the crease behind the knees before folding forward. This reduces the degree of knee flexion and is invaluable for students with knee compression sensitivity.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Pillow or Block Under Forehead",
       "description": "Place a block or folded blanket under the forehead to support the head without neck compression. This is particularly helpful when the forehead does not comfortably reach the floor.",
-      "props_used": ["block", "blanket"],
+      "props_used": [
+        "block",
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     }
   ],
@@ -145,5 +152,9 @@
     "opening",
     "cooldown",
     "integration"
+  ],
+  "chakras": [
+    "root",
+    "third-eye"
   ]
 }

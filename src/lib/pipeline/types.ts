@@ -153,6 +153,8 @@ export interface Pose {
   before_poses?: string[]
   after_poses?: string[]
   chakras?: ChakraName[]
+  // Multi-tradition naming (added in v0.4)
+  tradition_names?: Partial<Record<Style, string>>
 }
 
 // ─── Meridian Data Types ─────────────────────────────────────────────────────
@@ -227,6 +229,10 @@ export interface PipelineDraft {
     text: string
     attribution: string
   }
+  sutra: {
+    text: string
+    attribution: string
+  }
   poses: DraftPoseEntry[]
 }
 
@@ -248,8 +254,11 @@ export interface ConstrainedSequence {
   themeStatement: string
   philosophicalFraming: string
   quote: { text: string; attribution: string }
+  sutra: { text: string; attribution: string }
   items: SequenceItem[]
   totalHoldMinutes: number
+  transitionMinutes: number
+  totalSessionMinutes: number
 }
 
 // ─── Pipeline Stage 3 output: ValidatedSequence (final) ──────────────────────

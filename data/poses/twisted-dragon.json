@@ -1,6 +1,6 @@
 {
   "slug": "twisted-dragon",
-  "sanskrit": "Parivrtta Anjaneyasana variation",
+  "sanskrit": "Parivrtta Anjaneyasana",
   "english": "Twisted Dragon",
   "aliases": [
     "Dragon with Twist",
@@ -109,7 +109,9 @@
     {
       "name": "Hand on Block",
       "description": "Place the lower hand on a block at its highest setting to maintain a longer spine during the twist. This prevents collapsing through the lumbar and allows cleaner rotational loading of the thoracic fascia.",
-      "props_used": ["block"],
+      "props_used": [
+        "block"
+      ],
       "accessibility_level": "accessible"
     },
     {
@@ -138,5 +140,9 @@
   ],
   "sequencing_position": [
     "peak"
+  ],
+  "chakras": [
+    "sacral",
+    "solar-plexus"
   ]
 }

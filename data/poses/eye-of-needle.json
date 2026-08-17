@@ -97,13 +97,17 @@
     {
       "name": "Strap Around Raised Leg",
       "description": "Loop a strap around the bottom thigh and hold the ends to draw the leg in without straining the arms or shoulders, useful for those with limited arm reach or shoulder sensitivity.",
-      "props_used": ["strap"],
+      "props_used": [
+        "strap"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Blanket Under Head",
       "description": "Place a folded blanket under the head to support a neutral cervical spine, particularly important for those who strain the neck when lying flat.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
@@ -132,5 +136,9 @@
   "sequencing_position": [
     "opening",
     "cooldown"
+  ],
+  "chakras": [
+    "root",
+    "sacral"
   ]
 }

@@ -42,8 +42,26 @@
   "bilateral": true,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
   "notes": "Targets the thoracolumbar fascia, paraspinal muscles, and outer hip. The gallbladder meridian courses the lateral body; the stomach meridian runs along the anterior thigh and abdomen.",
-  "type_tags": ["twist", "outer-hip", "sacrum-release", "neck-release", "restorative"],
-  "muscle_groups": ["obliques", "lumbar-spine", "thoracic-spine", "cervical-spine", "spinal-erectors", "IT-band", "glutes", "piriformis", "sacroiliac-ligaments", "posterior-shoulder", "rhomboids"],
+  "type_tags": [
+    "twist",
+    "outer-hip",
+    "sacrum-release",
+    "neck-release",
+    "restorative"
+  ],
+  "muscle_groups": [
+    "obliques",
+    "lumbar-spine",
+    "thoracic-spine",
+    "cervical-spine",
+    "spinal-erectors",
+    "IT-band",
+    "glutes",
+    "piriformis",
+    "sacroiliac-ligaments",
+    "posterior-shoulder",
+    "rhomboids"
+  ],
   "complexity": 3,
   "injury_risk": 4,
   "breathing_cues": {
@@ -51,23 +69,48 @@
     "holding": "Use the inhale to feel length in the spine — imagining space between each vertebra — and use the exhale to allow the thoracic spine to soften a little further into the rotation. The shoulder reaching back toward the floor can soften with each exhale.",
     "exiting": "On an inhale, bring the knee back to center and pause in constructive rest for two full breath cycles before switching sides."
   },
-  "before_poses": ["constructive-rest", "windshield-wipers", "happy-baby", "legs-up-the-wall"],
-  "after_poses": ["twisted-roots", "constructive-rest", "savasana", "windshield-wipers"],
-  "joint_action": ["internal_rotation", "lateral_flexion", "compression"],
-  "primary_joints_involved": ["lumbar", "thoracic", "sacroiliac", "hip", "shoulder", "neck"],
+  "before_poses": [
+    "constructive-rest",
+    "windshield-wipers",
+    "happy-baby",
+    "legs-up-the-wall"
+  ],
+  "after_poses": [
+    "twisted-roots",
+    "constructive-rest",
+    "savasana",
+    "windshield-wipers"
+  ],
+  "joint_action": [
+    "internal_rotation",
+    "lateral_flexion",
+    "compression"
+  ],
+  "primary_joints_involved": [
+    "lumbar",
+    "thoracic",
+    "sacroiliac",
+    "hip",
+    "shoulder",
+    "neck"
+  ],
   "nervous_system_effect": "parasympathetic",
   "tissue_depth": "deep",
   "modifications": [
     {
       "name": "Bolster under top knee",
       "description": "Place a bolster or folded blanket under the top knee to reduce the depth of the spinal rotation and offload the sacroiliac joint, making the pose safer for sensitive SI joints or herniated discs.",
-      "props_used": ["bolster"],
+      "props_used": [
+        "bolster"
+      ],
       "accessibility_level": "accessible"
     },
     {
       "name": "Blanket between knees",
       "description": "Stack a blanket between the knees for a more supported version that reduces hip adduction and creates better lumbar neutrality.",
-      "props_used": ["blanket"],
+      "props_used": [
+        "blanket"
+      ],
       "accessibility_level": "accessible"
     },
     {
@@ -105,5 +148,12 @@
       "notes": "The spiraling action of the spine is inherently a releasing movement. Invite students to use each exhale as a micro-release of something they are ready to let go of."
     }
   ],
-  "sequencing_position": ["cooldown", "integration"]
+  "sequencing_position": [
+    "cooldown",
+    "integration"
+  ],
+  "chakras": [
+    "solar-plexus",
+    "heart"
+  ]
 }

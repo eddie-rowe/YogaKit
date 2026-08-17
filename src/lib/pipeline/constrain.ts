@@ -10,6 +10,7 @@ import type {
 } from './types'
 import { getAllPoses, getPoseBySlug, filterPoses, rankAlternatesForPose } from '@/lib/pose-library'
 import { getMeridianSlugsForElement } from '@/lib/meridians'
+import { bufferMinutesPerPose } from './propose'
 
 const DIFFICULTY_ORDER: Record<PoseDifficulty, number> = {
   accessible: 0,
@@ -126,7 +127,8 @@ function buildFallbackSequence(ctx: SessionContext): { poses: SequenceItem[]; to
   const modeFilter: ModeType = isMeditative ? 'yin' : 'yang'
   const duration = ctx.durationMinutes ?? 75
   const targetHold = isMeditative ? 5 : 1
-  const targetCount = Math.floor((duration * 0.8) / targetHold)
+  const buffer = bufferMinutesPerPose(style)
+  const targetCount = Math.floor(duration / (targetHold + buffer))
 
   const contraindications = ctx.hardConstraints.contraindications
   const meridians = ctx.elementFocus
@@ -242,14 +244,20 @@ export function constrain(draft: PipelineDraft, ctx: SessionContext): Constraine
     }
   }
 
+  const buffer = bufferMinutesPerPose(ctx.style)
+  const transitionMinutes = Math.round(expanded.length * buffer)
   const totalHoldMinutes = expanded.reduce((sum, it) => sum + it.holdMinutes, 0)
+  const totalSessionMinutes = totalHoldMinutes + transitionMinutes
 
   return {
     sessionContext: ctx,
     themeStatement: draft.themeStatement,
     philosophicalFraming: draft.philosophicalFraming,
     quote: draft.quote,
+    sutra: draft.sutra,
     items: expanded,
     totalHoldMinutes,
+    transitionMinutes,
+    totalSessionMinutes,
   }
 }
