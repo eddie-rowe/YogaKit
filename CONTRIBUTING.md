@@ -28,7 +28,11 @@ Every file must conform to `data/schemas/pose.schema.json`. Run the validator be
 npm run validate:poses
 ```
 
-Key fields:
+Fields are tagged Tier-1 (required for every pose) or Tier-2 (backfilled opportunistically
+— never block a PR on Tier-2 completeness). The full field dictionary, including the
+newer geometry fields that feed the friction engine (`base_of_support`, `orientation`,
+`cog_height`, `spinal_action`, `plane`, `level`, `zone`, `energetic_direction`), lives in
+[`docs/krama-atlas.md`](docs/krama-atlas.md). Key fields:
 
 | Field | Type | Notes |
 |---|---|---|
@@ -53,15 +57,21 @@ Key fields:
 
 Poses may only reference slugs from the 29 canonical contraindications defined in `data/schemas/contraindications.json`. Do not create new slugs — open a discussion first.
 
-## Pipeline architecture
+## Engine architecture (v0.1)
 
-The generation pipeline has a fixed, immutable order:
+v0.1 is fully deterministic — there is no AI call in the critical path. The order is:
 
 ```
-AI propose → rules engine constrain → safety validate
+teacher composes → friction engine derives seam indicators → validator-lite warns (never blocks) → read view
 ```
 
-No stage may be skipped or reordered. The safety layer (`validate.ts`) is the final authority. All changes to pipeline files require 100% test coverage on `constrain.ts` and `validate.ts`.
+The friction engine's weights live in one exported constant (tuning is data, not code —
+see `docs/krama-atlas.md` and `specs/001-krama-mvp-spec/contracts/friction-engine.md`).
+All changes to the friction engine or validator-lite require 100% test coverage.
+
+The prior AI-first pipeline (`src/lib/pipeline/`, `/api/generate`, `/dimensions`) is
+parked, not deleted — see `DECISIONS.md`. It's the starting point for v0.2's Suggest
+button. Don't extend it for v0.1 work; don't delete it either.
 
 ## Tests
 
