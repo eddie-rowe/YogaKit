@@ -11,13 +11,6 @@ interface Props {
 }
 
 const ELEMENTS: FiveElement[] = ['wood', 'fire', 'earth', 'metal', 'water']
-const ELEMENT_COLORS: Record<FiveElement, string> = {
-  wood:  'bg-green-100 text-green-800 border-green-300',
-  fire:  'bg-red-100 text-red-800 border-red-300',
-  earth: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-  metal: 'bg-gray-100 text-gray-800 border-gray-300',
-  water: 'bg-blue-100 text-blue-800 border-blue-300',
-}
 
 // Active state classes for element chips (always-visible row)
 const ELEMENT_CHIP_ACTIVE: Record<FiveElement, string> = {
@@ -154,18 +147,21 @@ export default function PosesClient({ poses }: Props) {
     filterComplexityMax < 10 || filterRiskMax < 10
 
   return (
-    <div className="min-h-screen bg-[#f4f1ed]">
+    <div className="min-h-screen" style={{ background: 'var(--background)' }}>
       {/* Header */}
-      <header className="bg-white/90 backdrop-blur-md border-b border-[#e2dbd4] px-4 py-4 sticky top-14 z-10">
+      <header
+        className="backdrop-blur-md border-b px-4 py-4 sticky top-14 z-10"
+        style={{ background: 'color-mix(in srgb, var(--background) 90%, transparent)', borderColor: 'var(--border)' }}
+      >
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <h1 className="font-serif text-2xl font-semibold text-stone-900">Pose Library</h1>
-              <p className="text-sm text-stone-500">{filtered.length} of {poses.length} poses</p>
+              <h1 className="font-serif text-2xl font-semibold" style={{ color: 'var(--foreground)' }}>Pose Library</h1>
+              <p className="text-sm" style={{ color: 'var(--muted)' }}>{filtered.length} of {poses.length} poses</p>
             </div>
-            <a href="/dimensions" className="flex items-center gap-1.5 text-sm text-stone-500 hover:text-stone-900 transition-colors">
+            <a href="/" className="flex items-center gap-1.5 text-sm transition-colors" style={{ color: 'var(--muted)', transitionDuration: '150ms' }}>
               <ArrowLeft size={14} />
-              New session
+              Home
             </a>
           </div>
 
@@ -175,22 +171,20 @@ export default function PosesClient({ poses }: Props) {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search poses by name, Sanskrit, or alias…"
-            className="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-400 bg-white"
+            className="kk-input w-full"
           />
 
           {/* Body position chips */}
           <div className="flex flex-wrap gap-1 mt-2">
-            <button
-              onClick={() => setFilterPosition('')}
-              className={`px-3 py-1 text-xs rounded-full border transition-colors ${!filterPosition ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
-            >
+            <button onClick={() => setFilterPosition('')} data-active={!filterPosition} className="kk-chip px-3 py-1 text-xs">
               All
             </button>
             {BODY_POSITIONS.map(pos => (
               <button
                 key={pos}
                 onClick={() => setFilterPosition(prev => prev === pos ? '' : pos)}
-                className={`px-3 py-1 text-xs rounded-full border capitalize transition-colors ${filterPosition === pos ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
+                data-active={filterPosition === pos}
+                className="kk-chip px-3 py-1 text-xs capitalize"
               >
                 {pos}
               </button>
@@ -199,10 +193,7 @@ export default function PosesClient({ poses }: Props) {
 
           {/* Element chips */}
           <div className="flex flex-wrap gap-1 mt-1.5">
-            <button
-              onClick={() => setFilterElement('')}
-              className={`px-3 py-1 text-xs rounded-full border transition-colors ${!filterElement ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
-            >
+            <button onClick={() => setFilterElement('')} data-active={!filterElement} className="kk-chip px-3 py-1 text-xs">
               All
             </button>
             {ELEMENTS.map(el => (
@@ -212,8 +203,9 @@ export default function PosesClient({ poses }: Props) {
                 className={`px-3 py-1 text-xs rounded-full border capitalize transition-colors ${
                   filterElement === el
                     ? ELEMENT_CHIP_ACTIVE[el]
-                    : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'
+                    : 'kk-chip'
                 }`}
+                style={{ transitionDuration: '150ms' }}
               >
                 {el}
               </button>
@@ -225,7 +217,7 @@ export default function PosesClient({ poses }: Props) {
             <select
               value={sortBy}
               onChange={e => setSortBy(e.target.value as SortKey)}
-              className="px-3 py-1.5 text-sm border border-stone-200 rounded-lg bg-white focus:outline-none"
+              className="kk-input px-3 py-1.5 text-sm w-auto"
             >
               <option value="alpha">A–Z</option>
               <option value="complexity-asc">Complexity ↑</option>
@@ -235,11 +227,8 @@ export default function PosesClient({ poses }: Props) {
             </select>
             <button
               onClick={() => setShowFilters(f => !f)}
-              className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${
-                hasAdvancedFilters
-                  ? 'border-[#3d3530] bg-[#3d3530] text-white'
-                  : 'border-stone-200 bg-white text-stone-700 hover:border-stone-400'
-              }`}
+              data-active={hasAdvancedFilters}
+              className="kk-chip px-3 py-1.5 text-sm"
             >
               Advanced filters{hasAdvancedFilters ? ' (active)' : ''}
             </button>
@@ -247,23 +236,21 @@ export default function PosesClient({ poses }: Props) {
 
           {/* Advanced filter panel */}
           {showFilters && (
-            <div className="mt-3 pt-3 border-t border-stone-100 space-y-4">
+            <div className="mt-3 pt-3 border-t space-y-4" style={{ borderColor: 'var(--border)' }}>
               {/* NS effect + sequencing position row */}
               <div className="flex flex-wrap gap-3">
                 <div>
-                  <label className="text-xs font-medium text-stone-500 block mb-1">Nervous system effect</label>
+                  <label className="text-xs font-medium block mb-1" style={{ color: 'var(--muted)' }}>Nervous system effect</label>
                   <div className="flex gap-1">
-                    <button
-                      onClick={() => setFilterNS('')}
-                      className={`px-2 py-1 text-xs rounded border ${!filterNS ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
-                    >
+                    <button onClick={() => setFilterNS('')} data-active={!filterNS} className="kk-chip px-2 py-1 text-xs">
                       All
                     </button>
                     {NS_OPTIONS.map(ns => (
                       <button
                         key={ns}
                         onClick={() => setFilterNS(prev => prev === ns ? '' : ns)}
-                        className={`px-2 py-1 text-xs rounded border capitalize ${filterNS === ns ? NS_COLORS[ns] : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
+                        className={`px-2 py-1 text-xs rounded border capitalize transition-colors ${filterNS === ns ? NS_COLORS[ns] : 'kk-chip'}`}
+                        style={{ transitionDuration: '150ms' }}
                       >
                         {ns}
                       </button>
@@ -272,19 +259,17 @@ export default function PosesClient({ poses }: Props) {
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-stone-500 block mb-1">Sequencing position</label>
+                  <label className="text-xs font-medium block mb-1" style={{ color: 'var(--muted)' }}>Sequencing position</label>
                   <div className="flex flex-wrap gap-1">
-                    <button
-                      onClick={() => setFilterSeqPosition('')}
-                      className={`px-2 py-1 text-xs rounded border ${!filterSeqPosition ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
-                    >
+                    <button onClick={() => setFilterSeqPosition('')} data-active={!filterSeqPosition} className="kk-chip px-2 py-1 text-xs">
                       All
                     </button>
                     {SEQ_OPTIONS.map(pos => (
                       <button
                         key={pos}
                         onClick={() => setFilterSeqPosition(prev => prev === pos ? '' : pos)}
-                        className={`px-2 py-1 text-xs rounded border capitalize ${filterSeqPosition === pos ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
+                        data-active={filterSeqPosition === pos}
+                        className="kk-chip px-2 py-1 text-xs capitalize"
                       >
                         {pos}
                       </button>
@@ -296,8 +281,8 @@ export default function PosesClient({ poses }: Props) {
               {/* Complexity + risk sliders */}
               <div className="flex gap-6">
                 <div>
-                  <label className="text-xs font-medium text-stone-500">
-                    Max complexity: <span className="text-stone-900 font-semibold">{filterComplexityMax}</span>
+                  <label className="text-xs font-medium" style={{ color: 'var(--muted)' }}>
+                    Max complexity: <span className="font-semibold" style={{ color: 'var(--foreground)' }}>{filterComplexityMax}</span>
                   </label>
                   <input
                     type="range" min={1} max={10} value={filterComplexityMax}
@@ -306,8 +291,8 @@ export default function PosesClient({ poses }: Props) {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-stone-500">
-                    Max injury risk: <span className="text-stone-900 font-semibold">{filterRiskMax}</span>
+                  <label className="text-xs font-medium" style={{ color: 'var(--muted)' }}>
+                    Max injury risk: <span className="font-semibold" style={{ color: 'var(--foreground)' }}>{filterRiskMax}</span>
                   </label>
                   <input
                     type="range" min={1} max={10} value={filterRiskMax}
@@ -319,13 +304,14 @@ export default function PosesClient({ poses }: Props) {
 
               {/* Type tags */}
               <div>
-                <label className="text-xs font-medium text-stone-500 block mb-1">Type tags (all selected must match)</label>
+                <label className="text-xs font-medium block mb-1" style={{ color: 'var(--muted)' }}>Type tags (all selected must match)</label>
                 <div className="flex flex-wrap gap-1">
                   {TYPE_TAGS.map(tag => (
                     <button
                       key={tag}
                       onClick={() => toggleTypeTag(tag)}
-                      className={`px-2 py-0.5 text-xs rounded border ${filterTypeTags.includes(tag) ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
+                      data-active={filterTypeTags.includes(tag)}
+                      className="kk-chip px-2 py-0.5 text-xs"
                     >
                       {tag}
                     </button>
@@ -335,13 +321,14 @@ export default function PosesClient({ poses }: Props) {
 
               {/* Muscle groups */}
               <div>
-                <label className="text-xs font-medium text-stone-500 block mb-1">Muscle groups (all selected must match)</label>
+                <label className="text-xs font-medium block mb-1" style={{ color: 'var(--muted)' }}>Muscle groups (all selected must match)</label>
                 <div className="flex flex-wrap gap-1">
                   {MUSCLE_GROUPS.map(m => (
                     <button
                       key={m}
                       onClick={() => toggleMuscleGroup(m)}
-                      className={`px-2 py-0.5 text-xs rounded border ${filterMuscleGroups.includes(m) ? 'bg-[#3d3530] text-white border-[#3d3530]' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
+                      data-active={filterMuscleGroups.includes(m)}
+                      className="kk-chip px-2 py-0.5 text-xs"
                     >
                       {m}
                     </button>
@@ -352,7 +339,8 @@ export default function PosesClient({ poses }: Props) {
               {hasActiveFilters && (
                 <button
                   onClick={clearFilters}
-                  className="text-xs text-red-600 hover:text-red-800 underline"
+                  className="text-xs underline transition-colors"
+                  style={{ color: 'var(--warning)', transitionDuration: '150ms' }}
                 >
                   Clear all filters
                 </button>
@@ -365,9 +353,9 @@ export default function PosesClient({ poses }: Props) {
       {/* Grid */}
       <main className="max-w-7xl mx-auto px-4 py-6">
         {filtered.length === 0 ? (
-          <div className="text-center py-20 text-stone-400">
+          <div className="text-center py-20" style={{ color: 'var(--muted)' }}>
             <p className="text-lg">No poses match your filters.</p>
-            <button onClick={clearFilters} className="mt-2 text-sm underline hover:text-stone-600">Clear filters</button>
+            <button onClick={clearFilters} className="mt-2 text-sm underline transition-colors" style={{ transitionDuration: '150ms' }}>Clear filters</button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">

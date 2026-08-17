@@ -48,14 +48,14 @@ const SEQ_POSITION_COLORS: Record<string, string> = {
 function ComplexityBar({ value, label, color }: { value: number; label: string; color: string }) {
   return (
     <div>
-      <div className="flex justify-between text-xs text-stone-500 mb-0.5">
+      <div className="flex justify-between text-xs mb-0.5" style={{ color: 'var(--muted)' }}>
         <span>{label}</span>
-        <span className="font-medium text-stone-700">{value}/10</span>
+        <span className="font-medium" style={{ color: 'var(--foreground)' }}>{value}/10</span>
       </div>
-      <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
+      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--surface-raised)' }}>
         <div
           className={`h-full rounded-full transition-all ${color}`}
-          style={{ width: `${value * 10}%` }}
+          style={{ width: `${value * 10}%`, transitionDuration: '150ms' }}
         />
       </div>
     </div>
@@ -66,7 +66,7 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
   const yinMode = pose.modes.find(m => m.type === 'yin') ?? pose.modes[0]
 
   return (
-    <article className="bg-white border border-[#e2dbd4] rounded-xl overflow-hidden hover:border-[#c9b9a8] hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.06)] transition-all duration-200">
+    <article className="kk-card overflow-hidden">
       {/* Card header — always visible */}
       <button
         onClick={onToggle}
@@ -79,12 +79,12 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
               {pose.element && (
                 <span className={`inline-block w-2 h-2 rounded-full flex-shrink-0 ${ELEMENT_DOT_COLORS[pose.element]}`} />
               )}
-              <h2 className="font-serif font-semibold text-stone-900 truncate">{resolveDisplayName(pose)}</h2>
+              <h2 className="font-serif font-semibold truncate">{resolveDisplayName(pose)}</h2>
             </div>
-            <p className="text-xs text-stone-400 italic truncate mt-0.5">{pose.sanskrit}</p>
-            <p className="text-xs text-stone-400 mt-0.5 capitalize">{pose.body_position} · {pose.difficulty}</p>
+            <p className="text-xs italic truncate mt-0.5" style={{ color: 'var(--muted)' }}>{pose.sanskrit}</p>
+            <p className="text-xs mt-0.5 capitalize" style={{ color: 'var(--muted)' }}>{pose.body_position} · {pose.difficulty}</p>
           </div>
-          <span className="flex-shrink-0 text-stone-400 ml-1 mt-0.5">
+          <span className="flex-shrink-0 ml-1 mt-0.5" style={{ color: 'var(--muted)' }}>
             {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           </span>
         </div>
@@ -93,7 +93,7 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
       {/* Expanded detail */}
       <div className={`expandable-content ${expanded ? 'open' : ''}`}>
         <div>
-        <div className="px-4 pb-4 border-t border-stone-100 mt-1 pt-3 space-y-4 text-sm">
+        <div className="px-4 pb-4 border-t mt-1 pt-3 space-y-4 text-sm" style={{ borderColor: 'var(--border)' }}>
 
           {/* Complexity/risk bars */}
           <div className="space-y-1.5">
@@ -105,7 +105,7 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
           {(pose.type_tags?.length ?? 0) > 0 && (
             <div className="flex flex-wrap gap-1">
               {pose.type_tags!.map(tag => (
-                <span key={tag} className="text-xs px-2 py-0.5 bg-stone-100 text-stone-600 rounded-full">
+                <span key={tag} className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--surface-raised)', color: 'var(--foreground)' }}>
                   {tag}
                 </span>
               ))}
@@ -114,9 +114,9 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
 
           {/* Hold range + body position + NS effect + tissue depth + sequencing position */}
           <div className="flex flex-wrap gap-1.5 text-xs">
-            <span className="capitalize bg-stone-50 text-stone-600 px-2 py-1 rounded">{pose.body_position}</span>
+            <span className="capitalize px-2 py-1 rounded" style={{ background: 'var(--surface-raised)', color: 'var(--foreground)' }}>{pose.body_position}</span>
             {yinMode && (
-              <span className="bg-stone-50 text-stone-600 px-2 py-1 rounded">
+              <span className="px-2 py-1 rounded" style={{ background: 'var(--surface-raised)', color: 'var(--foreground)' }}>
                 {yinMode.hold_range.min}–{yinMode.hold_range.max} min
               </span>
             )}
@@ -141,7 +141,7 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
           {/* Meridians */}
           {(pose.meridians?.length ?? 0) > 0 && (
             <div>
-              <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1">Meridians</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--muted)' }}>Meridians</h3>
               <div className="flex flex-wrap gap-1">
                 {pose.meridians!.map(m => (
                   <span key={m} className="text-xs px-1.5 py-0.5 bg-teal-50 text-teal-700 rounded capitalize">{m}</span>
@@ -152,10 +152,10 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
 
           {/* Muscle groups */}
           <div>
-            <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1">Muscle groups</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--muted)' }}>Muscle groups</h3>
             <div className="flex flex-wrap gap-1">
               {(pose.muscle_groups ?? []).map(m => (
-                <span key={m} className="text-xs px-1.5 py-0.5 bg-stone-100 text-stone-600 rounded">{m}</span>
+                <span key={m} className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--surface-raised)', color: 'var(--foreground)' }}>{m}</span>
               ))}
             </div>
           </div>
@@ -172,19 +172,19 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
 
           {/* Breathing cues */}
           <div>
-            <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-2">Breathing cues</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--muted)' }}>Breathing cues</h3>
             <div className="space-y-2">
               <div>
-                <span className="text-xs font-medium text-stone-600">Entering: </span>
-                <span className="text-xs text-stone-700">{pose.breathing_cues.entering}</span>
+                <span className="text-xs font-medium" style={{ color: 'var(--muted)' }}>Entering: </span>
+                <span className="text-xs" style={{ color: 'var(--foreground)' }}>{pose.breathing_cues.entering}</span>
               </div>
               <div>
-                <span className="text-xs font-medium text-stone-600">Holding: </span>
-                <span className="text-xs text-stone-700">{pose.breathing_cues.holding}</span>
+                <span className="text-xs font-medium" style={{ color: 'var(--muted)' }}>Holding: </span>
+                <span className="text-xs" style={{ color: 'var(--foreground)' }}>{pose.breathing_cues.holding}</span>
               </div>
               <div>
-                <span className="text-xs font-medium text-stone-600">Exiting: </span>
-                <span className="text-xs text-stone-700">{pose.breathing_cues.exiting}</span>
+                <span className="text-xs font-medium" style={{ color: 'var(--muted)' }}>Exiting: </span>
+                <span className="text-xs" style={{ color: 'var(--foreground)' }}>{pose.breathing_cues.exiting}</span>
               </div>
             </div>
           </div>
@@ -192,15 +192,15 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
           {/* Cue notes */}
           {yinMode?.cue_notes && (
             <div>
-              <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1">Teacher cues</h3>
-              <p className="text-xs text-stone-600 leading-relaxed">{yinMode.cue_notes}</p>
+              <h3 className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--muted)' }}>Teacher cues</h3>
+              <p className="text-xs leading-relaxed" style={{ color: 'var(--foreground)' }}>{yinMode.cue_notes}</p>
             </div>
           )}
 
           {/* Joint actions + joints involved */}
           {(pose.joint_action?.length ?? 0) > 0 && (
             <div>
-              <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1">Joint actions</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--muted)' }}>Joint actions</h3>
               <div className="flex flex-wrap gap-1">
                 {pose.joint_action!.map(j => (
                   <span key={j} className="text-xs px-1.5 py-0.5 bg-slate-50 text-slate-600 rounded">{j.replace(/_/g, ' ')}</span>
@@ -219,11 +219,11 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
           {/* Dosha affinity */}
           {pose.dosha_affinity && (
             <div>
-              <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1">Dosha affinity</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--muted)' }}>Dosha affinity</h3>
               <div className="flex gap-4 text-xs">
                 {(['vata', 'pitta', 'kapha'] as const).map(d => (
                   <div key={d} className="flex flex-col items-center">
-                    <span className="text-stone-400 capitalize mb-0.5">{d}</span>
+                    <span className="capitalize mb-0.5" style={{ color: 'var(--muted)' }}>{d}</span>
                     <span className={`font-medium capitalize ${DOSHA_EFFECT_COLORS[pose.dosha_affinity![d]]}`}>
                       {pose.dosha_affinity![d]}
                     </span>
@@ -236,13 +236,13 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
           {/* Emotional release potential */}
           {(pose.emotional_release_potential?.length ?? 0) > 0 && (
             <div>
-              <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1">Emotional territory</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--muted)' }}>Emotional territory</h3>
               <div className="space-y-1.5">
                 {pose.emotional_release_potential!.map((e, i) => (
                   <div key={i} className="flex gap-2 items-start">
                     <span className="text-xs px-1.5 py-0.5 bg-rose-50 text-rose-700 rounded capitalize whitespace-nowrap">{e.emotion}</span>
-                    <span className="text-xs text-stone-400">({e.tcm_organ})</span>
-                    {e.notes && <span className="text-xs text-stone-500 leading-relaxed">{e.notes}</span>}
+                    <span className="text-xs" style={{ color: 'var(--muted)' }}>({e.tcm_organ})</span>
+                    {e.notes && <span className="text-xs leading-relaxed" style={{ color: 'var(--muted)' }}>{e.notes}</span>}
                   </div>
                 ))}
               </div>
@@ -252,21 +252,21 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
           {/* Modifications */}
           {(pose.modifications?.length ?? 0) > 0 && (
             <div>
-              <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1">Modifications</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--muted)' }}>Modifications</h3>
               <div className="space-y-2">
                 {pose.modifications!.map((mod, i) => (
-                  <div key={i} className="border border-stone-100 rounded-lg px-2.5 py-2">
+                  <div key={i} className="border rounded-lg px-2.5 py-2" style={{ borderColor: 'var(--border)' }}>
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-xs font-medium text-stone-700">{mod.name}</span>
+                      <span className="text-xs font-medium" style={{ color: 'var(--foreground)' }}>{mod.name}</span>
                       <span className={`text-xs px-1 py-0.5 rounded capitalize ${DIFFICULTY_COLORS[mod.accessibility_level]}`}>
                         {mod.accessibility_level}
                       </span>
                     </div>
-                    <p className="text-xs text-stone-500 leading-relaxed">{mod.description}</p>
+                    <p className="text-xs leading-relaxed" style={{ color: 'var(--muted)' }}>{mod.description}</p>
                     {mod.props_used && mod.props_used.length > 0 && (
                       <div className="flex gap-1 mt-1">
                         {mod.props_used.map(p => (
-                          <span key={p} className="text-xs px-1 py-0.5 bg-stone-100 text-stone-500 rounded">{p}</span>
+                          <span key={p} className="text-xs px-1 py-0.5 rounded" style={{ background: 'var(--surface-raised)', color: 'var(--muted)' }}>{p}</span>
                         ))}
                       </div>
                     )}
@@ -279,10 +279,10 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
           {/* Contraindications */}
           {pose.contraindications.length > 0 && (
             <div>
-              <h3 className="text-xs font-semibold text-rose-500 uppercase tracking-wide mb-1">Contraindications</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--warning)' }}>Contraindications</h3>
               <div className="flex flex-wrap gap-1">
                 {pose.contraindications.map(c => (
-                  <span key={c} className="text-xs px-1.5 py-0.5 bg-rose-50 text-rose-700 rounded">{c}</span>
+                  <span key={c} className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--warning-bg)', color: 'var(--warning)', border: '1px solid var(--warning-border)' }}>{c}</span>
                 ))}
               </div>
             </div>
@@ -291,10 +291,10 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
           {/* Props */}
           {pose.props_required.length > 0 && (
             <div>
-              <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1">Props required</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--muted)' }}>Props required</h3>
               <div className="flex flex-wrap gap-1">
                 {pose.props_required.map(p => (
-                  <span key={p} className="text-xs px-1.5 py-0.5 bg-stone-100 text-stone-600 rounded">{p}</span>
+                  <span key={p} className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--surface-raised)', color: 'var(--foreground)' }}>{p}</span>
                 ))}
               </div>
             </div>
@@ -303,18 +303,19 @@ export default function PoseCard({ pose, expanded, onToggle }: Props) {
           {/* Notes */}
           {pose.notes && (
             <div>
-              <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1">Notes</h3>
-              <p className="text-xs text-stone-600 leading-relaxed">{pose.notes}</p>
+              <h3 className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--muted)' }}>Notes</h3>
+              <p className="text-xs leading-relaxed" style={{ color: 'var(--foreground)' }}>{pose.notes}</p>
             </div>
           )}
 
           {/* Source */}
-          <p className="text-xs text-stone-400 pt-1 border-t border-stone-50">{pose.source}</p>
+          <p className="text-xs pt-1 border-t" style={{ color: 'var(--muted)', borderColor: 'var(--border)' }}>{pose.source}</p>
 
           {/* Detail link */}
           <Link
             href={`/poses/${pose.slug}`}
-            className="inline-flex items-center gap-1 text-xs text-[#3d3530] hover:text-[#1c1714] font-medium transition-colors"
+            className="inline-flex items-center gap-1 text-xs font-medium transition-colors"
+            style={{ color: 'var(--accent)', transitionDuration: '150ms' }}
             onClick={e => e.stopPropagation()}
           >
             View anatomy diagram →
