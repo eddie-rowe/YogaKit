@@ -6,6 +6,14 @@ unambiguous, consistent, and measurable before planning begins.
 **Updated**: 2026-06-22 (post clarify/plan/analyze passes)
 **Feature**: [spec.md](../spec.md)
 
+> **Historical record (2026-08-17)**: This checklist validated the pre-amendment,
+> AI-first spec (safety layer, hybrid pipeline, per-pose alternates). `spec.md` was
+> rewritten to match `docs/krama-v0.1-spec.md` — the FR numbers below (FR-003, FR-009,
+> FR-015/015a, etc.) no longer exist in the current spec. Kept as-is rather than
+> rewritten or deleted — it documents that QA pass honestly, and remains the reference
+> for what a v0.2 roster/safety layer must re-satisfy. A fresh checklist pass against
+> the rewritten spec is Phase B follow-up work, not yet done.
+
 ---
 
 ## Safety Requirements Quality

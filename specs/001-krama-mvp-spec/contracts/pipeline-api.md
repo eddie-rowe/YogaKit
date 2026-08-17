@@ -1,4 +1,15 @@
-# Contract: Sequence Generation API
+> **PARKED (2026-08-17)** — `docs/krama-v0.1-spec.md` ships v0.1 with no AI call
+> anywhere in the critical path (see `spec.md`'s Amendment note and `DECISIONS.md`).
+> This contract is not deleted — it is the starting point for v0.2's "Suggest" button,
+> which is gated on teacher feedback from the Oct 31 milestone (locked spec §9). The
+> route handler (`src/app/api/generate/`) and the pipeline modules it calls
+> (`src/lib/pipeline/`) stay on disk, unlinked from nav, per the "park, don't delete"
+> decision. Do not extend this contract for v0.1 work. When v0.2 revives it: the
+> deterministic friction engine and validator-lite (`friction-engine.md`) remain
+> downstream and authoritative over anything this endpoint proposes — constitution
+> Principle III (2.0.0), RULE-H2/H3.
+
+# Contract: Sequence Generation API (v0.2, parked)
 
 **Endpoint**: `POST /api/generate`
 **Type**: Next.js Route Handler (serverless)

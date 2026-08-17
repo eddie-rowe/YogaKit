@@ -1,525 +1,260 @@
-# Tasks: Krama MVP
+# Tasks: Krama MVP (v0.1)
 
-**Input**: `plan.md`, `spec.md`, `data-model.md`, `contracts/`
-**Branch**: `001-krama-mvp-spec`
-**Date**: 2026-06-22
+**Input**: `spec.md`, `plan.md`, `data-model.md`, `contracts/friction-engine.md`,
+`contracts/flow-file-format.md`, `contracts/pose-library-schema.md`, `docs/krama-atlas.md`,
+`docs/krama-guardrails.md`
+**Amended**: 2026-08-17 — regenerated against the deterministic v0.1 architecture. The
+prior T001–T078 breakdown (AI pipeline, dimension form, timer view) is not preserved
+inline here; it's recoverable from git history at commit `d48ce81` and remains the
+reference for v0.2's parked-code follow-up. Tasks below are renumbered from T001.
 
-## Format: `[ID] [P?] [Story?] Description — file path`
+**Tests**: Tests are REQUIRED for the friction engine and validator-lite (constitution
+mandate, 100% line coverage) and for the `.krama.json` round-trip (SC-005). Elsewhere,
+tests are written where they gate a P1 story's acceptance criteria.
 
-- **[P]**: Parallelizable (no dependency on incomplete tasks, different files)
-- **[USN]**: Maps to User Story N from spec.md
-- All paths relative to repository root
-
----
-
-## Phase 1: Setup
-
-**Purpose**: Project scaffolding and toolchain. No dependencies — start immediately.
-
-- [ ] T001 Initialize Next.js 15 App Router project with TypeScript — run `npx create-next-app@latest . --typescript --tailwind --app --src-dir --import-alias "@/*"` in repo root
-- [ ] T002 [P] Add `@ducanh2912/next-pwa` and configure PWA manifest — `public/manifest.json`, `next.config.ts`
-- [ ] T003 [P] Configure Vitest with `@vitejs/plugin-react` and coverage via `@vitest/coverage-v8` — `vitest.config.ts`
-- [ ] T004 [P] Install and configure Playwright for E2E — `playwright.config.ts`
-- [ ] T005 [P] Install core dependencies: `idb`, `@anthropic-ai/sdk`, `radix-ui` primitives, `ajv` — `package.json`
-- [ ] T006 [P] Create GitHub Actions CI workflow: lint, type-check, `npm test`, `npm run validate:poses` — `.github/workflows/ci.yml`
-- [ ] T007 Create complete directory structure per plan.md: `data/poses/`, `data/meridians/`, `data/quotes/`, `data/schemas/`, `src/lib/pipeline/`, `src/lib/pose-library/`, `src/lib/meridians/`, `src/lib/storage/`, `src/components/dimensions/`, `src/components/sequence/`, `src/components/deliver/`, `src/components/export/`, `tests/unit/pipeline/`, `tests/unit/pose-library/`, `tests/integration/`, `tests/e2e/`
-- [ ] T008 [P] Add `.env.local.example` with `ANTHROPIC_API_KEY=` placeholder and update `.gitignore` to exclude `.env.local`
-- [ ] T009 [P] Configure Vercel deployment: `vercel.json` with function timeout 30s for `/api/generate`, environment variable documentation in README
-
-**Checkpoint**: `npm run dev` starts without errors; `npm test` runs (zero tests passing is fine); CI pipeline defined.
+**Organization**: Grouped by phase per the approved merge plan
+(`~/.claude/plans/please-investigate-this-spec-proud-hoare.md`), then by user story
+within Phase D so stories stay independently completable and testable.
 
 ---
 
-## Phase 2: Foundational
+## Phase A — Governance (Aug 31 gate) — DONE (commit `0204a3a`)
 
-**Purpose**: Core data types, pose library, and pipeline scaffolds. ALL user stories
-depend on this phase. No user story work begins until this phase is complete.
+- [X] T001 Amend `.specify/memory/constitution.md` to 2.0.0
+- [X] T002 Update `CLAUDE.md` non-negotiables and key artifacts list
+- [X] T003 Update `CONTRIBUTING.md` engine-architecture section
+- [X] T004 Author `docs/krama-atlas.md`
+- [X] T005 Author `docs/krama-guardrails.md`
+- [X] T006 Author `DECISIONS.md`, `FRICTION.md`
 
-**⚠️ CRITICAL**: Do not start any Phase 3+ task until all Phase 2 tasks are done.
+## Phase B — Spec artifacts (Aug 31 gate) — IN PROGRESS
 
-### TypeScript Type Definitions
+- [X] T007 Rewrite `spec.md` — new P1/P2 user stories, Deferred to v0.2 appendix
+- [X] T008 Rewrite `plan.md` — Technical Context, Constitution Check v2.0.0, project structure
+- [X] T009 Rewrite `data-model.md` — Flow/FlowItem/Phase/Block/StillnessNode/LayerPreference/FrictionResult
+- [X] T010 Author `contracts/friction-engine.md`
+- [X] T011 Author `contracts/flow-file-format.md`
+- [X] T012 Rewrite `contracts/pose-library-schema.md` for Atlas tiers
+- [X] T013 Mark `contracts/pipeline-api.md` parked (banner + rename note, not deleted)
+- [X] T014 Rewrite `quickstart.md`
+- [X] T015 Amend `research.md` — friction engine + validator-lite decisions; mark AI sections deferred
+- [X] T016 Annotate `checklists/requirements.md`, `checklists/spec-quality.md` as historical
+- [X] T017 Regenerate `tasks.md` (this file)
+- [ ] T018 Commit Phase B as a documentation-only commit
 
-- [ ] T010 Create all shared pipeline TypeScript types from data-model.md — `src/lib/pipeline/types.ts`
-  - `Style`, `Season`, `Dosha`, `FiveElement`, `BodyPosition`, `EnergeticQ`, `IntensityCurve`, `ExperienceLevel`, `PoseDifficulty`, `ModeType` enums/literals
-  - `HoldRange`, `PoseMode`, `Pose`, `MeridianRecord`, `ElementRecord` interfaces
-  - `HardConstraints`, `SessionContext` interfaces
-  - `DraftPoseEntry`, `PipelineDraft`, `SequenceItem`, `ConstrainedSequence`, `SafetyNote`, `ValidatedSequence` interfaces
-  - `SavedSequence` interface (for P2 storage)
+## Phase C — Schema and data
 
-### JSON Schema and CI Validation
+**Gate**: Aug 31 — schema final + 5 poses as proof. Sept 30 — all 63 poses.
 
-- [ ] T011 [P] Create pose JSON Schema — `data/schemas/pose.schema.json` (use contracts/pose-library-schema.md)
-- [ ] T012 [P] Create `npm run validate:poses` script using `ajv-cli` that validates all `data/poses/*.json` against the schema — `package.json` scripts section
-- [ ] T013 [P] Create contraindications vocabulary JSON — `data/schemas/contraindications.json` (list from data-model.md)
+- [ ] T019 [P] Add the ten new Tier-1 fields to `data/schemas/pose.schema.json` per
+  `contracts/pose-library-schema.md` (`base_of_support`, `orientation`, `cog_height`,
+  `spinal_action`, `plane`, `level`, `zone`, `energetic_direction`, `intensity`,
+  `default_measure`); move `type_tags`, `muscle_groups`, `injury_risk`, `joint_action`,
+  `primary_joints_involved`, `nervous_system_effect`, `tissue_depth`, `modifications`,
+  `dosha_affinity`, `emotional_release_potential`, `sequencing_position` out of the hard
+  `required` array into a Tier-2 warn-only set.
+- [ ] T020 Update `scripts/validate-poses.js` with a `--tier1` completeness report:
+  schema failures still fail CI; Tier-2 gaps print a warning table and exit 0.
+- [ ] T021 [P] Backfill the ten new Tier-1 fields on 5 representative existing poses
+  (`butterfly`, `savasana`, `dragon-low-lunge`, `child-pose`, `sphinx`) as the Aug 31
+  schema proof.
+- [ ] T022 Backfill the ten new Tier-1 fields across the remaining 38 existing pose files.
+- [ ] T023 [P] Author `data/poses/rebound-supine.json` and
+  `data/poses/seated-stillness.json` (stillness nodes, near-empty geometry, full Tier-1).
+- [ ] T024 [P] Author the ~20 new yang pose files (Mountain, Standing Forward Fold,
+  Halfway Lift, Chair, Tree, High Lunge, Low Lunge, Warrior I, Warrior II, Reverse
+  Warrior, Extended Side Angle, Triangle, Half Moon, Down Dog, Plank, Chaturanga, Cobra,
+  Up Dog, Locust, Cat-Cow, Camel, Easy Seat), each with full Tier-1 fields.
+- [ ] T025 Author `data/blocks/sun-salutation-a.json` (or equivalent location) as the
+  first `Block` entity instance.
+- [ ] T026 Convert `src/lib/reference-sequences/index.ts`'s built-ins into
+  `data/flows/*.krama.json` (10-min personal asana, 60-min heart-openers vinyasa,
+  60-min yin — reusing `classic-yin-full-body` as the yin one), each stamped
+  `schema_version: "0.1.0"`, `isBuiltIn: true`.
+- [ ] T027 External step (not performable by this agent): have Gioconda & Tavo review
+  Tier-1 geometry data for 10 poses before T022/T024's mass entry, per locked spec §9.
+- [ ] T028 Run `npm run validate:poses` — confirm 0 Tier-1 failures across all 63 poses,
+  a clean Tier-2 warning report.
 
-### Pose Library Seed Data (40+ yin poses)
+## Phase D — Code (Sept 30 gate)
 
-- [ ] T014 [P] Create pose data files for supine yin poses (8 poses): `data/poses/constructive-rest.json`, `data/poses/happy-baby.json`, `data/poses/supta-baddha-konasana.json`, `data/poses/windshield-wipers.json`, `data/poses/reclining-twist.json`, `data/poses/savasana.json`, `data/poses/legs-up-the-wall.json`, `data/poses/bridge-yin.json`
-- [ ] T015 [P] Create pose data files for prone yin poses (5 poses): `data/poses/sphinx.json`, `data/poses/seal.json`, `data/poses/crocodile.json`, `data/poses/frog.json`, `data/poses/half-frog.json`
-- [ ] T016 [P] Create pose data files for seated yin poses (10 poses): `data/poses/butterfly.json`, `data/poses/half-butterfly.json`, `data/poses/caterpillar.json`, `data/poses/shoelace.json`, `data/poses/square.json`, `data/poses/dragon-sitting.json`, `data/poses/deer.json`, `data/poses/saddle.json`, `data/poses/half-saddle.json`, `data/poses/melting-heart.json`
-- [ ] T017 [P] Create pose data files for kneeling/standing yin poses (10 poses): `data/poses/sleeping-swan.json`, `data/poses/dragon-low-lunge.json`, `data/poses/dragon-high-lunge.json`, `data/poses/twisted-dragon.json`, `data/poses/child-pose.json`, `data/poses/toe-squat.json`, `data/poses/ankle-stretch.json`, `data/poses/wide-knee-child.json`, `data/poses/dangling.json`, `data/poses/bananasana.json`
-- [ ] T018 [P] Create pose data files for remaining yin poses covering all meridian pairs (10 poses): `data/poses/square-fold.json`, `data/poses/eye-of-needle.json`, `data/poses/shoelace-fold.json`, `data/poses/straddle.json`, `data/poses/snail.json`, `data/poses/supported-fish.json`, `data/poses/anahatasana.json`, `data/poses/thread-needle.json`, `data/poses/twisted-roots.json`, `data/poses/half-dragonfly.json`
-- [ ] T019 Run `npm run validate:poses` and fix any schema violations in T014–T018 before proceeding
+### D.0 — Foundational (blocks all user stories below)
 
-### Meridian and Quote Seed Data
+- [ ] T029 Rename Sequence → Flow: create `src/lib/flow/types.ts` with the `Flow`,
+  `FlowItem`, `Phase`, `Block`, `LayerPreference`, `FrictionResult` types from
+  `data-model.md`. Do not delete `src/lib/pipeline/types.ts` — it stays for the parked
+  pipeline.
+- [ ] T030 Add a `src/lib/pipeline/README.md` noting v0.2-parked status per `DECISIONS.md`.
+- [ ] T031 [P] `src/lib/friction/index.ts` — `friction()`, exported `WEIGHTS` constant,
+  `tierFor()`, reason templates, per `contracts/friction-engine.md`.
+- [ ] T032 [P] `src/lib/friction/build-matrix.ts` — build-time script producing the
+  precomputed `FrictionMatrix` static JSON artifact from `data/poses/`.
+- [ ] T033 [P] `src/lib/validator/lite.ts` — `validateLite()`: laterality +
+  no-closing-stillness checks, reusing the bilateral-pairing approach from
+  `src/lib/pipeline/constrain.ts` (read-only reuse — don't modify the parked module).
+- [ ] T034 [P] `src/lib/storage/index.ts` — localStorage/IndexedDB (via `idb`) CRUD for
+  `Flow` records.
+- [ ] T035 [P] `src/lib/storage/kramaFile.ts` — `exportKramaFile()`, `importKramaFile()`,
+  `schema_version` migration table, per `contracts/flow-file-format.md`.
+- [ ] T036 Rewrite `src/components/layout/AppHeader.tsx` — five-tab nav (Home, Compose,
+  Flows, Poses, Learn) per `docs/krama-guardrails.md` §1.3 nav testids; drop `/dimensions`,
+  `/sequence`, `/sequences`, `/api/generate` links (modules stay on disk, unlinked).
+- [ ] T037 [P] Dark-mode/beauty-tenet CSS token pass in `src/app/globals.css` (single
+  accent token, light+dark palettes) per `docs/krama-guardrails.md` §2.
 
-- [ ] T020 [P] Create Five-Element/meridian data files: `data/meridians/wood.json`, `data/meridians/fire.json`, `data/meridians/earth.json`, `data/meridians/metal.json`, `data/meridians/water.json` (structure from data-model.md)
-- [ ] T021 [P] Create initial quotes collection (20+ quotes with full attribution, tagged by theme) — `data/quotes/quotes.json`
+**Checkpoint**: friction engine, validator-lite, and storage are independently unit-
+testable before any UI exists. Foundational work must complete before Phase D.1+.
 
-### Pose Library Data Access Layer
+### D.1 — User Story 1: Compose a Flow by Hand (P1)
 
-- [ ] T022 Create pose library loader — `src/lib/pose-library/index.ts`
-  - `loadAllPoses(): Pose[]` — imports all JSON files from `data/poses/` at build time
-  - `getPoseBySlug(slug: string): Pose | undefined`
-  - `filterPoses(constraints: FilterConstraints): Pose[]` — filters by meridian, body position, difficulty, mode, contraindications
+- [ ] T038 [US1] `src/app/compose/page.tsx` — Compose route shell.
+- [ ] T039 [US1] `src/components/compose/PoseSearch.tsx` — search-add, testid
+  `compose-search-input` / `compose-add-pose-{slug}`.
+- [ ] T040 [US1] `src/components/compose/FlowItemRow.tsx` — measure toggle (breaths/
+  seconds), notes field, reorder buttons; testids `compose-item-{index}`,
+  `compose-item-measure-{index}`, `compose-item-notes-{index}`,
+  `compose-item-reorder-up/down-{index}`.
+- [ ] T041 [US1] Drag-to-reorder on `FlowItemRow` (pointer-based, no external DnD
+  library required unless one's already a dependency).
+- [ ] T042 [US1] `src/components/compose/PhaseGroup.tsx` — six-phase default template,
+  renameable/reorderable phases, per-phase summed duration; testid
+  `compose-phase-{phase-id}`.
+- [ ] T043 [US1] `src/components/compose/LayerChips.tsx` — simple/advanced/expert/custom
+  field-visibility toggle, persisted per view; testid `compose-layer-{layer}`.
+- [ ] T044 [US1] `src/components/compose/SeamIndicator.tsx` — reads the precomputed
+  `FrictionMatrix` (T032), renders tier + reason line; testid
+  `compose-seam-{fromIndex}-{toIndex}`.
+- [ ] T045 [US1] Live total duration readout; testid `compose-total-duration`.
 
-- [ ] T023 [P] Create meridian data access layer — `src/lib/meridians/index.ts`
-  - `getElementBySlug(element: FiveElement): ElementRecord`
-  - `getMeridiansByElement(element: FiveElement): MeridianRecord[]`
+**Checkpoint**: US1 is independently testable — add, measure, note, reorder, phase-group,
+see live total and seam indicators, all without saving.
 
-### Pipeline Stage Scaffolds
+### D.2 — User Story 3: Save, Duplicate, Export, Import Flows (P1)
 
-- [ ] T024 Create AI proposal stage — `src/lib/pipeline/propose.ts`
-  - `propose(context: SessionContext, poseLibrary: Pose[], meridianData: ElementRecord[]): Promise<PipelineDraft>`
-  - Builds prompt from context (categorical constraints only — no PII)
-  - Calls Anthropic API with structured output instruction
-  - 25-second timeout; on failure sets `generationSkipped: true` and returns a minimal seed draft
-  - Returns `PipelineDraft`
+- [ ] T046 [US3] `src/app/flows/page.tsx` — Flows list (saved + built-in); testid
+  `flows-list`, `flows-item-{id}`.
+- [ ] T047 [US3] `src/app/flows/[id]/page.tsx` — flow detail / edit entry.
+- [ ] T048 [US3] Save action in Compose, using T034's storage module.
+- [ ] T049 [US3] [P] Duplicate action; testid `flows-duplicate-{id}`; built-ins stay
+  read-only, duplicate creates `isBuiltIn: false` copy.
+- [ ] T050 [US3] [P] Export action using T035; testid `flows-export-{id}`.
+- [ ] T051 [US3] [P] Import action (file picker) using T035; testid `flows-import`.
+- [ ] T052 [US3] Delete action (saved flows only, not built-ins); testid
+  `flows-delete-{id}`.
+- [ ] T053 [US3] Integration test: export → import round-trip, including one
+  `schema_version` bump migration (SC-005).
 
-- [ ] T025 Create rules engine — `src/lib/pipeline/constrain.ts`
-  - `constrain(draft: PipelineDraft, context: SessionContext, library: Pose[]): ConstrainedSequence`
-  - Resolves AI pose slugs against library (drops unknown slugs, substitutes from library)
-  - Enforces bilateral symmetry (adds missing side)
-  - Enforces rebound pose after deep yin holds
-  - Validates hold times against pose `hold_range`
-  - Trims or extends sequence to fit `durationMinutes` ± 10%
-  - Ranks and assigns alternates per SequenceItem
-  - Enforces transition body-position continuity
-  - Returns `ConstrainedSequence`
+**Checkpoint**: A flow built in Compose can be saved, reopened, duplicated, exported, and
+reimported without data loss.
 
-- [ ] T026 Create safety layer — `src/lib/pipeline/validate.ts`
-  - `validate(sequence: ConstrainedSequence, context: SessionContext, library: Pose[]): ValidatedSequence`
-  - For each SequenceItem: checks `pose.contraindications` vs `context.hardConstraints.contraindications`
-  - For each SequenceItem: checks `pose.props_required` vs `context.hardConstraints.propsAvailable`
-  - Checks intensity ceiling (no `difficulty: 'advanced'` poses for beginner sessions)
-  - Checks bilateral completeness
-  - Attempts auto-replacement on violation (FR-015a); inserts rest/rebound gap if no replacement
-  - Returns `ValidatedSequence` with `safetyNotes` and `passedValidation: true`
-  - Never returns a sequence where `passedValidation` is false
+### D.3 — User Story 2: Read View Passes the 6am Test (P1)
 
-### Safety Layer Unit Tests (Mandatory before any story ships)
+- [ ] T054 [US2] `src/app/read/[id]/page.tsx` — read view route, reusing
+  `src/app/sequence/export/print.css`.
+- [ ] T055 [US2] `src/components/read/PhaseSection.tsx` — phase-grouped rendering;
+  testid `read-phase-{phase-id}`.
+- [ ] T056 [US2] `src/components/read/BreathMark.tsx` — breath-notation marks (↑ ↓ ~),
+  not paragraphs; testid `read-breath-mark`.
+- [ ] T057 [US2] `src/components/read/ReadItem.tsx` — per-pose entry: name, measure,
+  note; testid `read-item-{index}`.
+- [ ] T058 [US2] Stillness-node visual treatment (reduced weight, no accent) per
+  `docs/krama-guardrails.md` §2.
+- [ ] T059 [US2] Confirm offline rendering (service worker caches the read route + its
+  flow data) and Lighthouse mobile ≥ 90 (SC-008).
 
-- [ ] T027 Write adversarial unit tests for safety layer — `tests/unit/pipeline/validate.test.ts`
-  - Test: AI proposes inversion for high-blood-pressure student → pose replaced
-  - Test: AI proposes prop-dependent pose when "no props" → replaced with prop-free variation or gap
-  - Test: AI proposes only right side of bilateral pose → left side added
-  - Test: AI outputs malformed JSON → pipeline does not crash; falls back gracefully
-  - Test: AI produces sequence totaling 2× requested duration → trimmed to within tolerance
-  - Test: AI proposes advanced pose for beginner session → replaced
-  - Test: No valid replacement exists → gap inserted with safetyNote
-  - Achieve 100% line coverage on `validate.ts`
+**Checkpoint**: Any saved flow has a working, offline-capable, dark-mode-correct,
+print-ready read view.
 
-- [ ] T027a Write unit tests verifying `propose()` never includes PII in the AI prompt — `tests/unit/pipeline/propose.test.ts`
-  - Test: constraint "John Smith has a hip replacement" → prompt contains "hip-replacement" category slug, not "John Smith"
-  - Test: constraint field with an email address or phone number → prompt omits it, uses generic category
-  - Test: pregnancy constraint → prompt says "second-trimester pregnancy" not any name/age
-  - Verify prompt builder strips or ignores any tokens matching name/contact patterns
+### D.4 — User Story 4: Friction-Guided Seam Indicator (P2)
 
-- [ ] T028 Write unit tests for rules engine — `tests/unit/pipeline/constrain.test.ts`
-  - Test: Unknown pose slug in draft → dropped from sequence
-  - Test: Bilateral pose appears once → both sides added
-  - Test: Hold time outside pose `hold_range` → clamped to range
-  - Test: Duration overflow → sequence trimmed
-  - Test: Duration underflow → sequence padded with rebound/rest poses
-  - Test: Body position changes two families without bridge → bridge pose inserted
-  - Achieve 100% line coverage on `constrain.ts`
+Mostly delivered by T031/T032/T044 above. Remaining:
 
-- [ ] T029 [P] Write unit tests for pose library loader — `tests/unit/pose-library/loader.test.ts`
-  - Test: All pose files pass `filterPoses` without error
-  - Test: `getPoseBySlug` returns correct pose or undefined
-  - Test: `filterPoses` correctly excludes contraindicated poses
+- [ ] T060 [US4] Handle missing-Tier-1-field poses gracefully in `SeamIndicator`
+  (best-effort score, fewer reasons, no crash) — exercises the friction engine's
+  documented edge case in the UI.
 
-### Generate API Route Handler
+### D.5 — User Story 5: Validator-Lite Warnings (P2)
 
-- [ ] T030 Create serverless generate Route Handler — `src/app/api/generate/route.ts`
-  - Validates request body shape
-  - Loads pose library and meridian data (static import)
-  - Calls `propose()` → `constrain()` → `validate()` in order (RULE-H2)
-  - Streams SSE: `progress` events during each stage, `sequence` event on completion
-  - Emits `error` events for `SAFETY_UNRESOLVABLE`, `DURATION_CONFLICT`, `NO_POSES_MATCH`
-  - Never exposes `ANTHROPIC_API_KEY` to client
+- [ ] T061 [US5] Wire `validateLite()` (T033) into Compose and the Flows save path;
+  render both warnings wherever applicable; testids `validator-warning-laterality`,
+  `validator-warning-closing-stillness`.
+- [ ] T062 [US5] Confirm warnings never block save or export (explicit test).
 
-**Checkpoint**: `npm test` passes all unit tests; rules engine and safety layer have 100%
-coverage; `POST /api/generate` with a minimal SessionContext returns a valid
-ValidatedSequence; adversarial inputs are all caught by tests.
+### D.6 — User Story 6: Pose Library Browsing (P2)
 
----
+- [ ] T063 [US6] [P] Restyle `PosesClient.tsx`, `PoseCard.tsx`,
+  `src/app/poses/[slug]/PoseDetailClient.tsx` for dark mode + beauty tenets.
+- [ ] T064 [US6] Hide empty Tier-2 field sections on the pose detail page rather than
+  rendering an empty label.
 
-## Phase 3: User Story 1 — Compose a Yin Class (P1) 🎯 MVP
+### D.7 — User Story 7: Built-in Flows (P2)
 
-**Goal**: Teacher sets dimensions, receives a complete sequence, swaps one pose,
-exports a cue sheet. End-to-end P1 value delivered.
+- [ ] T065 [US7] `src/app/page.tsx` (Home) — today's flow, new-flow entry, three
+  built-in cards; testids `home-todays-flow`, `home-new-flow`, `home-builtin-{slug}`.
+- [ ] T066 [US7] Confirm built-in flows open directly in the read view without requiring
+  duplication first.
 
-**Independent Test**: A teacher with a blank session can set style=yin, duration=60,
-theme="letting go", generate, swap one pose, and export a printable cue sheet — all
-without login, in a fresh browser tab.
+### D.8 — Navigation, PWA, Telemetry (cross-cutting)
 
-### Dimension Input UI
+- [ ] T067 `src/app/learn/page.tsx` — stub ("soon"); testid via `nav-learn`.
+- [ ] T068 Confirm PWA install + offline works for the new route set (T036's nav, T054's
+  read view, T038's Compose) — update `public/manifest.json` / service worker cache list
+  as needed.
+- [ ] T069 Datadog RUM init in `src/app/layout.tsx`, scoped to page views/errors/web
+  vitals; explicit test or code-review check that no user content reaches a RUM payload
+  (RULE-L7).
 
-- [ ] T031 [US1] Create dimension input page layout — `src/app/page.tsx`
-  - Full-page form with sections: Style, Duration, Theme/Goal, Target/Meridian, Level, Props
-  - "Generate Sequence" button triggers POST to `/api/generate`
-  - All fields optional with visible defaults
+## Phase E — Tests
 
-- [ ] T032 [P] [US1] Create StyleSelector component — `src/components/dimensions/StyleSelector.tsx`
-  - Segmented control: Yin / Vinyasa / Ashtanga / Restorative
+- [ ] T070 [P] Unit tests: `src/lib/friction/index.ts` — 100% line coverage, cases per
+  `contracts/friction-engine.md` §Test requirements.
+- [ ] T071 [P] Unit tests: `src/lib/validator/lite.ts` — 100% line coverage, both
+  warning conditions plus the "neither blocks" invariant.
+- [ ] T072 [P] Unit tests: `src/lib/storage/kramaFile.ts` — round-trip (T053 covers the
+  integration angle; this covers unit-level migration-table edge cases: unknown
+  version, malformed JSON).
+- [ ] T073 Confirm existing 47 pipeline tests still pass unmodified (parked module,
+  untouched).
+- [ ] T074 CI: wire the Tier-1 completeness gate (T020) into the pipeline; confirm it
+  fails on a deliberately-broken Tier-1 field and passes otherwise.
+- [ ] T075 [P] Playwright smoke tests for the six flows in
+  `docs/krama-guardrails.md` §1.2, keyed to the testid contract in §1.3.
+- [ ] T076 `npm run test:coverage` — confirm 100% lines on `src/lib/friction/` and
+  `src/lib/validator/`; confirm no regression elsewhere.
 
-- [ ] T033 [P] [US1] Create DurationPicker component — `src/components/dimensions/DurationPicker.tsx`
-  - Slider or stepper, 15–120 minutes in 15-minute increments; default 60
+## Verification (manual, see plan.md)
 
-- [ ] T034 [P] [US1] Create ThemeGoalInput component — `src/components/dimensions/ThemeGoalInput.tsx`
-  - Free-text fields for theme (e.g., "letting go") and goal (e.g., "downregulate nervous system")
-
-- [ ] T035 [P] [US1] Create MeridianElementPicker component — `src/components/dimensions/MeridianElementPicker.tsx`
-  - Five-Element wheel or grid; selecting element auto-suggests meridian pair
-  - Meridian pair display (e.g., "Liver / Gallbladder")
-
-- [ ] T036 [P] [US1] Create ExperienceLevelSelector component — `src/components/dimensions/ExperienceLevelSelector.tsx`
-  - Options: Beginner / Intermediate / Advanced / Mixed
-
-- [ ] T037 [P] [US1] Create PropsPicker component — `src/components/dimensions/PropsPicker.tsx`
-  - Multi-select checkboxes: Bolster, Block, Blanket, Strap, Wall, Chair, None
-
-- [ ] T038 [P] [US1] Create HardConstraintsInput component — `src/components/dimensions/HardConstraintsInput.tsx`
-  - Clearly labeled "Safety Constraints" section (visually distinct from preferences)
-  - Multi-select from contraindication vocabulary
-  - Short explainer: "These are hard rules — no pose that conflicts will appear"
-
-### Sequence Generation State and Loading
-
-- [ ] T039 [US1] Create useGenerate React hook for streaming generation — `src/lib/hooks/useGenerate.ts`
-  - POST to `/api/generate` with `SessionContext`
-  - Parses SSE stream: progress events update UI state; sequence event delivers `ValidatedSequence`
-  - Sets `generationProvenance` flag; shows "Generated without AI enhancement" indicator when `rules-only`
-  - Handles error events: displays plain-language message per error code
-
-- [ ] T040 [US1] Create generation loading / progress UI — `src/components/sequence/GenerationProgress.tsx`
-  - Shows current pipeline stage ("Proposing sequence…", "Applying rules…", "Validating safety…")
-  - Non-blocking; teacher can cancel
-
-### Sequence Review UI
-
-- [ ] T041 [US1] Create SequenceView page — `src/app/sequence/page.tsx`
-  - Lists all SequenceItems in order
-  - Shows theme statement and philosophical framing at top
-  - Shows quote with attribution
-  - Shows total duration; flags overrun
-
-- [ ] T042 [P] [US1] Create PoseCard component — `src/components/sequence/PoseCard.tsx`
-  - Displays: English name, Sanskrit name, hold time, "why" text, transition note
-  - "Why?" expandable section (always present, RULE-T1)
-  - "Swap" button opens AlternatesModal
-  - Editable hold time (inline number input, RULE-T4)
-
-- [ ] T043 [P] [US1] Create AlternatesModal component — `src/components/sequence/AlternatesModal.tsx`
-  - Lists alternates ranked by dimensional alignment
-  - Each alternate shows: name, why it qualifies, hold time
-  - One-tap swap (RULE-T2)
-
-- [ ] T044 [P] [US1] Create TransitionNote component — `src/components/sequence/TransitionNote.tsx`
-  - Shown between PoseCards
-  - Displays transition "why" text (RULE-T3)
-  - Editable (RULE-T4)
-
-### Cue Sheet Export
-
-- [ ] T045 [US1] Create CueSheetView page — `src/app/sequence/cue-sheet/page.tsx`
-  - Printable layout: pose table (name, hold, cue, transition), theme statement, quote
-  - "Print" button triggers `window.print()`
-
-- [ ] T046 [US1] Create print stylesheet — `src/components/export/print.css`
-  - Hides navigation and non-print elements
-  - Two-column layout option; 11pt minimum font; page breaks between sections
-  - No color backgrounds (printer-friendly)
-
-**Checkpoint**: End-to-end path works: dimension input → generate → sequence review
-(swap a pose, edit a hold time) → cue sheet (printable). Safety indicator shown when
-AI unavailable.
+- [ ] T077 Run the 7-step manual walkthrough from the plan's Verification section
+  (compose → save/export/reimport → duplicate → read view phone/dark/offline/print →
+  both warnings → Lighthouse → first `FRICTION.md` entry from what's discovered).
 
 ---
 
-## Phase 4: User Story 2 — Safety Constraints Enforce Themselves (P1)
+## Dependencies
 
-**Goal**: Teacher-stated contraindications are completely enforced. Zero safety
-violations reach the UI.
+- Phase A → B → C → D → E, strictly (each phase's docs/schema/code depend on the prior).
+- Within Phase D: D.0 (foundational) blocks all of D.1–D.8.
+- D.1 (Compose) blocks D.2 (Save/export needs something to save) and D.4/D.5 (seam
+  indicator and warnings render inside Compose).
+- D.2 blocks D.3 (read view needs a saved flow) and D.7 (Home needs Flows to exist).
+- D.6 and D.8 are otherwise independent of D.1–D.5 and can run in parallel with them
+  once D.0 is done.
 
-**Independent Test**: Teacher enters "high blood pressure" as a constraint. Generated
-sequence contains zero inverted poses (Legs Up Wall, Shoulder Stand, Headstand, etc.).
-All alternates also respect the constraint.
-
-- [ ] T047 [US2] Write integration test for full pipeline with contraindications — `tests/integration/pipeline-safety.test.ts`
-  - Test: high-blood-pressure → no inversions in sequence or alternates
-  - Test: no-props-available → all poses are prop-free
-  - Test: pregnancy-second-trimester → no prone, no deep twists, no supine vena-cava poses
-  - Test: hip-replacement + no-hip-external-rotation → Dragon, Sleeping Swan excluded
-  - Test: constraint-vs-theme conflict (no-hip-external-rotation + theme="hip opening") → conflict notice emitted, not a crash
-
-- [ ] T048 [US2] Add conflict detection to generate Route Handler — `src/app/api/generate/route.ts`
-  - Detect when hard constraints make the chosen theme impossible
-  - Emit structured conflict description (plain language) in the SSE stream
-  - Propose a safe thematic reinterpretation based on meridian/element data
-
-- [ ] T049 [US2] Create ConflictNotice component — `src/components/sequence/ConflictNotice.tsx`
-  - Shown when constraint-vs-theme conflict detected
-  - Plain language: "Your 'hip opening' theme conflicts with the hip-replacement constraint"
-  - Offers a thematic reinterpretation (e.g., "We suggest reframing around 'grounding' instead")
-  - Teacher must accept or choose a different theme before generation continues (FR-016)
-
-- [ ] T050 [US2] Create DurationConflictNotice component — `src/components/sequence/DurationConflictNotice.tsx`
-  - Shown when requested duration is too short for requested depth (FR-017)
-  - Offers three options: Accept compressed version / Extend duration / Reduce pose count
-  - Teacher selection feeds back into a regeneration call
-
-**Checkpoint**: All integration tests pass. Constraint enforcement is visible in the
-UI for the three main conflict types. ConflictNotice and DurationConflictNotice render
-and allow teacher resolution.
-
----
-
-## Phase 5: User Story 3 — Every Suggestion is Explainable and Editable (P1)
-
-**Goal**: Every pose and transition has a "why" referencing teacher dimensions. All
-generated text is editable without re-triggering generation.
-
-**Independent Test**: For each pose in a 10-pose test sequence, the "why" text
-contains at least one word from the session dimensions (meridian name, theme word,
-energetic quality, or style). All cues, hold times, and philosophical notes are editable.
-
-- [ ] T051 [P] [US3] Enhance AI prompt to require dimensional references in every "why" — `src/lib/pipeline/propose.ts`
-  - Prompt must instruct Claude to reference at least one active dimension in each pose rationale
-  - Add a prompt-level validation that rejects "why" fields that are purely anatomical
-
-- [ ] T052 [P] [US3] Add rules engine fallback "why" generation — `src/lib/pipeline/constrain.ts`
-  - When a pose "why" is missing or generic, generate a dimensional reference from session context
-  - Template: "[Pose] targets the [meridian] meridian, supporting your [theme/goal] focus"
-  - Applied to AI-sourced AND rules-engine-seeded poses
-
-- [ ] T053 [US3] Create EditableField component — `src/components/sequence/EditableField.tsx`
-  - Inline editable text with click-to-edit pattern
-  - Used for: hold time, cue text, "why" text, transition note, philosophical framing
-  - Changes are local state — no regen triggered (FR-019)
-  - Persists edits across the session
-
-- [ ] T054 [P] [US3] Wire EditableField into PoseCard for all editable fields — `src/components/sequence/PoseCard.tsx`
-  - Hold time → EditableField (numeric)
-  - "Why" text → EditableField (textarea)
-  - Cue note → EditableField (textarea)
-
-- [ ] T055 [P] [US3] Wire EditableField into SequenceView for theme/framing — `src/app/sequence/page.tsx`
-  - Theme statement → EditableField
-  - Philosophical framing → EditableField
-  - Quote text and attribution → EditableField
-
-**Checkpoint**: Every pose "why" and transition "why" references at least one dimension.
-Editing any field works without re-triggering generation. Changes appear in the cue
-sheet export.
-
----
-
-## Phase 6: User Story 4 — Dimension Dials Drive the Sequence Shape (P1)
-
-**Goal**: Full dimension surface works including correlated dimensions (season ↔
-element ↔ meridian). All defaults produce a valid sequence.
-
-**Independent Test**: (a) Teacher sets only duration=45min, generates — valid sequence,
-no prompt required. (b) Teacher sets season=Winter, and the element picker pre-selects
-Water; meridian suggests Kidney/Bladder; generated sequence emphasizes these.
-
-- [ ] T056 [US4] Add season ↔ element auto-suggestion to MeridianElementPicker — `src/components/dimensions/MeridianElementPicker.tsx`
-  - Setting season auto-highlights the corresponding element
-  - Selecting an element auto-suggests its meridian pair
-  - Teacher can override any suggestion
-
-- [ ] T057 [P] [US4] Create IntensityCurvePicker component — `src/components/dimensions/IntensityCurvePicker.tsx`
-  - Visual selector: Bell / Plateau / Gradual Ramp / Front-loaded / Back-loaded
-  - Small sparkline preview of each curve shape
-
-- [ ] T058 [P] [US4] Create Dosha/FiveElementPicker component — `src/components/dimensions/DoshaPicker.tsx`
-  - Optional section: Ayurvedic dosha emphasis (Vata / Pitta / Kapha / mixed)
-  - Linked to element picker: selecting Water element highlights Vata-balancing
-
-- [ ] T059 [US4] Add default resolution logic to SessionContext builder — `src/lib/session/defaults.ts`
-  - `resolveDefaults(partial: Partial<SessionContext>): SessionContext`
-  - Fills: `durationMinutes = 60`, `style = 'yin'`, `experienceLevel = 'mixed'`,
-    `hardConstraints = { contraindications: [], propsAvailable: [] }` (all props available)
-  - Infers element from season when set; infers meridians from element when set
-
-- [ ] T060 [P] [US4] Add dimension coherence validation to rules engine — `src/lib/pipeline/constrain.ts`
-  - When season + element + meridian are all set, verify they are consistent (Spring+Wood+Liver OK; Spring+Water+Kidney is a conflict)
-  - If incoherent: prefer the most specific (meridian overrides element overrides season)
-
-**Checkpoint**: All dimension combinations generate without error. Season ↔ element
-correlation works. Default-only session produces a valid sequence.
-
----
-
-## Phase 7: User Story 5 — Save and Revisit Sequences (P2)
-
-**Goal**: Teacher saves a sequence to a local library, rates it after teaching, reopens it.
-
-**Independent Test**: Save a sequence, reload the page, open the library, verify the
-sequence is intact with all edits.
-
-- [ ] T061 [US5] Create IndexedDB storage layer — `src/lib/storage/sequences.ts`
-  - `saveSequence(seq: ValidatedSequence, title: string): Promise<string>` → returns UUID
-  - `getAllSavedSequences(): Promise<SavedSequence[]>`
-  - `getSavedSequence(id: string): Promise<SavedSequence | undefined>`
-  - `rateSequence(id: string, rating: 1|2|3|4|5, notes: string): Promise<void>`
-  - `deleteSequence(id: string): Promise<void>`
-  - Uses `idb` library; schema version 1
-
-- [ ] T062 [US5] Create Save button and title input in SequenceView — `src/app/sequence/page.tsx`
-  - "Save to Library" button; prompts for title (auto-generated from theme if empty)
-  - Shows save confirmation; no account required
-
-- [ ] T063 [P] [US5] Create Library page — `src/app/library/page.tsx`
-  - Grid of SavedSequence cards: title, date, duration, style, rating (if rated)
-  - Tap to open → loads ValidatedSequence into SequenceView (read-only with edit toggle)
-
-- [ ] T064 [P] [US5] Create SavedSequenceCard component — `src/components/library/SavedSequenceCard.tsx`
-  - Shows title, date, duration, style badge, star rating
-  - Quick-action: Rate / Delete
-
-- [ ] T065 [P] [US5] Create RatingModal component — `src/components/library/RatingModal.tsx`
-  - 1–5 star selector + freeform text field for post-teaching notes
-  - Saves via `rateSequence()`
-
-**Checkpoint**: Save → close → reopen → library shows saved sequence → rating persists.
-
----
-
-## Phase 8: User Story 6 — In-Class Timer and Teleprompter View (P2)
-
-**Goal**: Full-screen distraction-free view with countdown timer, auto-advance, pause.
-
-**Independent Test**: Load a 5-pose sequence in timer view; timer counts down each
-pose hold; single-tap advances; screen stays on.
-
-- [ ] T066 [US6] Create Deliver page with timer state machine — `src/app/deliver/page.tsx`
-  - States: idle → playing → paused → complete
-  - Tracks current pose index and remaining hold time
-  - Auto-advance when timer reaches zero (configurable via toggle)
-  - Uses `NoSleep.js` or `WakeLock API` to keep screen on during holds
-
-- [ ] T067 [P] [US6] Create TimerDisplay component — `src/components/deliver/TimerDisplay.tsx`
-  - Large countdown: MM:SS format
-  - Circular progress ring around timer
-  - Current pose name (large, readable at arm's length — minimum 32px)
-  - Current pose cue (readable — minimum 20px)
-
-- [ ] T068 [P] [US6] Create DeliverControls component — `src/components/deliver/DeliverControls.tsx`
-  - Play/Pause (single tap anywhere on screen, or explicit button)
-  - Previous / Next pose buttons
-  - Toggle: Auto-advance on/off
-
-- [ ] T069 [P] [US6] Create PoseProgressBar component — `src/components/deliver/PoseProgressBar.tsx`
-  - Horizontal bar showing position in sequence (current pose / total)
-  - Dots or segments per pose; highlights current
-
-- [ ] T070 [US6] Add bilateral side indicator to deliver view — `src/components/deliver/TimerDisplay.tsx`
-  - For bilateral poses: shows "Left Side" / "Right Side" and advances automatically
-    to the other side after the hold
-
-**Checkpoint**: Full-screen timer view works for a 5-pose sequence. Auto-advance,
-pause, and manual advance work. Screen does not dim during holds on supported browsers.
-
----
-
-## Phase 9: Polish and Cross-Cutting Concerns
-
-**Purpose**: Accessibility, offline, performance, and final validation across all stories.
-
-- [ ] T071 Audit all interactive components for keyboard navigation and ARIA labels — all `src/components/` files
-- [ ] T072 [P] Implement service worker pre-caching for pose library JSON and app shell — `public/sw.js` (generated by next-pwa config)
-- [ ] T073 [P] Run Lighthouse audit on the deliver view and sequence view; fix any issues to reach ≥ 90 mobile score
-- [ ] T074 [P] Add `<meta name="viewport">` and mobile-specific touch targets (minimum 44px) — global layout
-- [ ] T075 Write Playwright E2E test for the critical path — `tests/e2e/critical-path.spec.ts`
-  - Set dimensions → generate → swap one pose → edit one hold time → export cue sheet
-  - Full happy path without login
-- [ ] T076 [P] Add CI coverage gate: fail if `src/lib/pipeline/constrain.ts` or `src/lib/pipeline/validate.ts` coverage drops below 100% — `vitest.config.ts` thresholds
-- [ ] T077 [P] Write CONTRIBUTING.md documenting pose library schema, slug conventions, attribution requirements, and CI validation
-- [ ] T078 [P] Final `npm run validate:poses` pass — confirm all seed poses pass schema; fix any issues
-
----
-
-## Dependencies & Execution Order
-
-### Phase Dependencies
-
-- **Phase 1 (Setup)**: No dependencies — start immediately
-- **Phase 2 (Foundational)**: Depends on Phase 1 completion — BLOCKS all user stories
-- **Phases 3–6 (P1 Stories)**: All depend on Phase 2 completion
-  - Can proceed in parallel if staffed (T031–T060 are largely independent)
-  - US2 depends on US1 pipeline being functional (T030 must be done first)
-  - US3 enhancements build on US1 components (PoseCard, SequenceView)
-  - US4 builds on US1 dimension input components
-- **Phases 7–8 (P2 Stories)**: Depend on all P1 stories passing their checkpoints
-- **Phase 9 (Polish)**: Depends on all story phases complete
-
-### Within Phase 2
-
-Pipeline order is immutable: T024 (propose) → T025 (constrain) → T026 (validate).
-Tests (T027, T028, T029) can be written before or alongside implementation.
-Pose data (T014–T018) and type definitions (T010) can be done in parallel.
-
-### MVP Scope (Ship P1)
-
-To ship the minimum viable product:
-1. Complete Phase 1 (Setup)
-2. Complete Phase 2 (Foundation)
-3. Complete Phase 3 (US1 — full generation → export path)
-4. Complete Phase 4 (US2 — safety enforcement visible in UI)
-5. **Stop and validate**: critical-path E2E passes; Lighthouse ≥ 90; all pipeline tests green
-6. Ship
-
-P2 stories (US5, US6) and Polish can follow.
-
----
-
-## Parallel Execution Examples
-
-### Phase 2 parallelizable block
+## Parallel execution examples
 
 ```
-T010 (types) ──────────────────────────────────────────────┐
-T011 (pose schema) ──────────────────────────────────┐      │
-T014–T018 (pose seed data) ──────────────────────────┤      │
-T020 (meridian data) ────────────────────────────────┤      │
-T021 (quotes) ───────────────────────────────────────┘      │
-                                                            ▼
-T022 (pose loader) ─── needs T010 + T014–T018               │
-T023 (meridian loader) ─ needs T010 + T020                  │
-T024 (propose) ──────── needs T010                 ◀────────┘
-T025 (constrain) ─────── needs T024
-T026 (validate) ─────────── needs T025
-T027/T028 (tests) ──── alongside T026
-```
+# Phase C, once schema (T019) lands:
+Task: "T021 backfill 5 proof poses"
+Task: "T023 author stillness node poses"
+Task: "T024 author ~20 yang poses"
+Task: "T026 convert built-ins to .krama.json"
+# — independent files, safe in parallel.
 
-### Phase 3 parallelizable block
-
-```
-T032 (StyleSelector) ────────────────────────────────────────┐
-T033 (DurationPicker) ───────────────────────────────────────┤
-T034 (ThemeGoalInput) ───────────────────────────────────────┤
-T035 (MeridianElementPicker) ────────────────────────────────┤
-T036 (ExperienceLevelSelector) ──────────────────────────────┤
-T037 (PropsPicker) ──────────────────────────────────────────┤ All parallel
-T038 (HardConstraintsInput) ─────────────────────────────────┤
-T042 (PoseCard) ─────────────────────────────────────────────┤
-T043 (AlternatesModal) ──────────────────────────────────────┤
-T044 (TransitionNote) ───────────────────────────────────────┘
-                                                            ▼
-T031 (page.tsx) ──── needs all dimension components
-T039 (useGenerate) ─ needs T030 (API route) to be running
-T041 (SequenceView) ─ needs T039 + PoseCard + TransitionNote
+# Phase D.0, once T029 lands:
+Task: "T031 friction engine"
+Task: "T033 validator-lite"
+Task: "T034 storage CRUD"
+Task: "T035 krama file import/export"
+Task: "T037 dark-mode token pass"
+# — independent modules, safe in parallel.
 ```

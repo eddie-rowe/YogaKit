@@ -4,6 +4,13 @@
 **Created**: 2026-06-22
 **Feature**: [spec.md](../spec.md)
 
+> **Historical record (2026-08-17)**: This checklist validated the pre-amendment,
+> AI-first spec. `spec.md` was rewritten to match `docs/krama-v0.1-spec.md` (see its
+> Amendment note); FR numbers and assumptions referenced below no longer exist in the
+> current spec. Kept as-is rather than rewritten or deleted — it documents that QA pass
+> honestly. A fresh checklist pass against the rewritten spec is Phase B follow-up work,
+> not yet done.
+
 ## Content Quality
 
 - [x] CHK001 No implementation details (languages, frameworks, APIs)

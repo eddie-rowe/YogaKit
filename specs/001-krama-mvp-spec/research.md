@@ -1,6 +1,15 @@
 # Research: Krama MVP
 
-**Phase 0 output** | **Date**: 2026-06-22
+**Phase 0 output** | **Date**: 2026-06-22 | **Amended**: 2026-08-17
+
+## Amendment note (2026-08-17)
+
+The PWA, IndexedDB, pose-format, print-CSS, and testing decisions below are unchanged
+and still govern v0.1. The **Anthropic API Integration** and **Rules Engine Design** /
+**Safety Layer Design** sections describe v0.2-parked work (see `DECISIONS.md`) — kept
+below under **Deferred to v0.2** rather than deleted, since they're the starting point
+for the Suggest button and the future roster/safety layer. Two new sections are added
+for v0.1: **Friction Engine Design** and **Validator-Lite Design**.
 
 ---
 
@@ -37,7 +46,52 @@ unnecessarily, but adds a dependency for minimal gain given our known environmen
 
 ---
 
-## Anthropic API Integration (Server-Side Only)
+## Friction Engine Design (v0.1, new)
+
+**Decision**: Pure TypeScript module (`src/lib/friction/index.ts`), no I/O, computing
+`friction(fromPose, toPose) → {score, tier, reasons[]}` from five weighted Tier-1
+geometry terms (contact 0.35, orientation 0.25, cog 0.20, spine 0.10, plane 0.10). Full
+pairwise matrix precomputed at build time rather than calculated per-render in Compose.
+See `contracts/friction-engine.md` for the term-by-term delta definitions and reason
+templates.
+
+**Rationale**: The locked spec's hard line (§6) is that the engine derives structure
+from measured geometry and never authors cues or teacher voice — a pure function over
+declared fields is the only design that can't drift into inventing reasoning. Build-time
+precomputation keeps Compose's seam indicator free even as the pose library grows past
+63 poses (63² = ~3,969 pairs, trivial to precompute, non-trivial to recompute per
+keystroke if Compose ever adds a live "what if I swap this pose" preview).
+
+**Alternatives considered**: A learned/statistical friction model (no training data
+exists, and it would contradict the "derived, not authored" hard line); computing
+friction lazily at render time (works fine at 63 poses but doesn't scale, and there's no
+reason to accept the complexity of a lazy cache when a static build artifact is simpler).
+
+---
+
+## Validator-Lite Design (v0.1, new)
+
+**Decision**: Pure TypeScript module (`src/lib/validator/lite.ts`) exporting
+`validateLite(flow, poseLibrary) → ValidatorWarning[]`. Two checks: laterality (a
+bilateral pose sequenced without its paired side) and no-closing-stillness (a flow whose
+last item isn't one of the four stillness nodes). Never throws; never blocks save or
+export; runs synchronously wherever a flow is viewed or saved.
+
+**Rationale**: v0.1 ships no roster or constraint input, so there is nothing for a real
+safety layer to enforce yet (constitution RULE-S2's scope note). These two checks are
+craft quality signals a solo practitioner benefits from without needing a teacher to
+declare constraints first. The laterality check reuses the bilateral-pairing detection
+approach already proven in the parked `src/lib/pipeline/constrain.ts`.
+
+**Alternatives considered**: Silently auto-adding the missing side / a closing stillness
+pose (rejected — v0.1's Compose is teacher-authored; the app should flag, not
+auto-edit, per the locked spec's deterministic-but-hands-off posture); deferring both
+checks entirely to v0.2 (rejected — they're cheap, valuable now, and exercising the
+warning-rendering UI early de-risks the later real safety layer's UI).
+
+---
+
+## Anthropic API Integration (Server-Side Only) — DEFERRED to v0.2, parked
 
 **Decision**: Call the Anthropic Claude API from a Next.js Route Handler
 (`/api/generate`). Use `claude-sonnet-4-6` (current Sonnet) as the default model. Use
@@ -63,7 +117,7 @@ require a server, violating the lightweight principle).
 
 ---
 
-## Rules Engine Design
+## Rules Engine Design — DEFERRED to v0.2, parked
 
 **Decision**: Pure TypeScript module (`src/lib/pipeline/constrain.ts`) with no external
 I/O. Takes a `PipelineDraft` and the teacher's `SessionContext` (dimensions + hard
@@ -88,7 +142,7 @@ heavy. A declarative rule DSL; unnecessary abstraction for a known fixed rule se
 
 ---
 
-## Safety Layer Design
+## Safety Layer Design — DEFERRED to v0.2, parked
 
 **Decision**: Pure TypeScript module (`src/lib/pipeline/validate.ts`). Takes a
 `ConstrainedSequence` and the session's hard constraints; always returns a
@@ -208,10 +262,36 @@ than Playwright for this use case).
 
 ---
 
+## Telemetry (Datadog RUM) (v0.1, new)
+
+**Decision**: Datadog RUM initialized client-side in `src/app/layout.tsx`. Scope limited
+to page views, JS errors, and web vitals. No custom RUM actions carry pose names, flow
+titles, notes, or any other teacher-authored string (constitution RULE-L7).
+
+**Rationale**: The locked spec (§8) calls for telemetry from day one to catch real-world
+friction and errors ahead of the Oct 31 teacher-feedback milestone, without building a
+custom analytics pipeline. Datadog RUM's default web-vitals/error capture satisfies this
+with no app code needing to construct payloads by hand — which is also what keeps user
+content out of them by default; the risk is a future custom event accidentally including
+it, which is why RULE-L7 exists as a standing constitution check, not just a launch-day
+habit.
+
+**Alternatives considered**: A custom `/api/telemetry` endpoint (adds a server component
+v0.1 otherwise has none of); no telemetry at all (rejected — the spec's Aug 31–Sept 30
+build-out has no other signal for "did this actually work" before Oct 31's teacher
+feedback).
+
+---
+
 ## Deployment
 
-**Decision**: Vercel (default). Zero-config Next.js deployment. `ANTHROPIC_API_KEY`
-stored as a Vercel environment variable. Cloudflare fronts DNS and CDN.
+**Decision**: Vercel (default). Zero-config Next.js deployment. Cloudflare fronts DNS
+and CDN. No environment secret is required for the core v0.1 build — no
+`ANTHROPIC_API_KEY` or equivalent, since there is no AI call in the critical path. If
+Datadog RUM requires a client token, it ships as a public RUM application ID (by
+design, safe to expose client-side), not a secret.
 
-**No Vercel-specific lock-in** beyond the serverless function format — the Route Handler
-is standard Next.js and would work on any Next.js-compatible host.
+**No Vercel-specific lock-in** — the app is standard Next.js and would work on any
+Next.js-compatible host. (This note previously referenced a serverless Route Handler
+for the AI proxy; that route is parked, not deleted — see `DECISIONS.md` — and is not
+part of the v0.1 deployment surface.)

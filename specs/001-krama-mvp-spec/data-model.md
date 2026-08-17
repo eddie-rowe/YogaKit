@@ -1,295 +1,325 @@
-# Data Model: Krama MVP
+# Data Model: Krama MVP (v0.1)
 
-**Phase 1 output** | **Date**: 2026-06-22
+**Phase 1 output** | **Date**: 2026-06-22 | **Amended**: 2026-08-17
 
-All types are TypeScript interfaces. They represent the data shapes at each pipeline
-stage boundary and in the pose library. No ORM, no database — the pose library is
-static JSON; sequences are serialized to IndexedDB as JSON blobs.
+All types are TypeScript interfaces. No ORM, no database — the pose and built-in flow
+libraries are static JSON at build time; user-saved flows serialize to
+localStorage/IndexedDB and to `.krama.json` on export.
 
----
+## Amendment note (2026-08-17)
 
-## Dimension Allowed Values (enums)
+This file previously modeled the AI pipeline's three stage-boundary types
+(`PipelineDraft` → `ConstrainedSequence` → `ValidatedSequence`) plus a `SavedSequence`
+type and a 29-slug contraindication vocabulary tied to a `SessionContext` teacher-input
+form. `docs/krama-v0.1-spec.md` ships none of that in v0.1. This rewrite:
 
-```typescript
-type Style         = 'yin' | 'vinyasa' | 'ashtanga' | 'restorative';
-type Season        = 'spring' | 'summer' | 'late-summer' | 'autumn' | 'winter';
-type Dosha         = 'vata' | 'pitta' | 'kapha' | 'vata-pitta' | 'pitta-kapha'
-                   | 'vata-kapha' | 'tridoshic';
-type FiveElement   = 'wood' | 'fire' | 'earth' | 'metal' | 'water';
-type BodyPosition  = 'supine' | 'prone' | 'seated' | 'kneeling' | 'standing'
-                   | 'inverted';
-type EnergeticQ    = 'grounding' | 'opening' | 'cooling' | 'heating' | 'calming'
-                   | 'stimulating';
-type IntensityCurve = 'bell' | 'plateau' | 'gradual-ramp' | 'front-loaded'
-                   | 'back-loaded';
-type ExperienceLevel = 'beginner' | 'intermediate' | 'advanced' | 'mixed';
-type PoseDifficulty  = 'accessible' | 'intermediate' | 'advanced';
-type ModeType      = 'yin' | 'yang' | 'both';
-```
+- Replaces the pipeline stage types with `Flow`, `FlowItem`, `Phase`, `Block`,
+  `StillnessNode`, `LayerPreference`, and `FrictionResult`.
+- Corrects the `Pose` type, which had drifted from the real
+  `data/schemas/pose.schema.json` — this version matches the schema plus the Tier-1
+  additions in `docs/krama-atlas.md`, and is the type both the code and this doc must
+  track going forward.
+- Retains the contraindication vocabulary and `SessionContext`-shaped types verbatim in
+  the **Deferred to v0.2** section at the bottom — the schema still carries
+  `contraindications` on every pose (Tier-1, unchanged), and this shape is what a v0.2
+  roster/safety layer would consume.
 
 ---
 
 ## Pose Library Types
 
+Mirrors `data/schemas/pose.schema.json` (`additionalProperties: false` — every field
+here must be declared in the schema; see `docs/krama-atlas.md` for the full dictionary
+and the Tier-1/Tier-2 split).
+
 ```typescript
-/** Canonical hold time range in minutes. */
+type ModeType        = 'yin' | 'yang' | 'both';
+type BodyPosition    = 'supine' | 'prone' | 'seated' | 'kneeling' | 'standing' | 'inverted';
+type EnergeticQ      = 'grounding' | 'opening' | 'cooling' | 'heating' | 'calming' | 'stimulating';
+type PoseDifficulty  = 'accessible' | 'intermediate' | 'advanced';
+type FiveElement     = 'wood' | 'fire' | 'earth' | 'metal' | 'water';
+
+// New Tier-1 geometry fields (2026-08-17) — feed the friction engine.
+type ContactPoint    = 'hands' | 'feet' | 'sitbones' | 'forearms' | 'knees' | 'back' | 'shoulders';
+type Orientation     = 'prone' | 'supine' | 'upright' | 'inverted';
+type CogHeight        = 'floor' | 'low' | 'mid' | 'high';
+type SpinalAction     = 'flexion' | 'extension' | 'neutral' | 'lateral' | 'rotation';
+type Plane             = 'sagittal' | 'coronal' | 'transverse' | 'multi';
+type KinesphereLevel  = 'high' | 'middle' | 'low';
+type KinesphereZone   = 'near' | 'mid-reach' | 'far';
+type EnergeticDirection = 'brahmana' | 'langhana' | 'samana';
+
 interface HoldRange {
-  min: number;  // minutes
-  max: number;  // minutes
+  min: number;   // minutes
+  max: number;   // minutes
 }
 
 /** One expression of a pose (yin or yang mode). */
 interface PoseMode {
   type: ModeType;
   tissue_target: 'connective' | 'muscular' | 'both';
-  hold_range: HoldRange;      // yin: typically 2–8 min; yang: 5–30 breaths (represented as seconds)
-  cue_notes: string;          // brief teaching note for this mode
+  hold_range: HoldRange;
+  cue_notes: string;
 }
 
-/** A single entry in the pose library. */
+interface DefaultMeasure {
+  breaths?: number;
+  seconds?: number;
+  // Exactly one of breaths/seconds is set. Compose surface's default hold entry —
+  // distinct from PoseMode.hold_range, which stays a minutes-based yin-style range.
+}
+
+/** A single entry in the pose library. Tier-1 fields are required for every pose
+ *  before the Sept 30 gate; Tier-2 fields are backfilled opportunistically and never
+ *  block CI. See docs/krama-atlas.md for the full tier assignment. */
 interface Pose {
-  slug: string;               // canonical identifier e.g. "sleeping-swan"
-  sanskrit: string;           // e.g. "Kapotasana variation"
-  english: string;            // e.g. "Sleeping Swan"
-  aliases: string[];          // e.g. ["Half Pigeon", "Eye of the Needle (variation)"]
+  // Tier 1 — identity
+  slug: string;
+  sanskrit: string;
+  english: string;
+  aliases: string[];
 
-  modes: PoseMode[];          // at least one; may have both yin and yang
-
+  // Tier 1 — modes & body
+  modes: PoseMode[];
   body_position: BodyPosition;
-  meridians: string[];        // slugs e.g. ["liver", "gallbladder"]
-  element: FiveElement | null;
-
   energetic_quality: EnergeticQ[];
   difficulty: PoseDifficulty;
+  complexity: number;          // 1–10, existing scale, unchanged
+  breathing_cues: { entering: string; holding: string; exiting: string };
+  bilateral: boolean;
+  contraindications: string[]; // slugs from data/schemas/contraindications.json
+  props_required: string[];
+  prop_free_variation: string | null;
+  source: string;
 
-  props_required: string[];   // e.g. ["bolster", "block"]; empty if none
-  prop_free_variation: string | null; // slug of a variant that needs no props, or null
-  counterposes: string[];     // pose slugs; poses that follow naturally
-  rebound_pose: string | null;// slug of the rebound/rest pose after a deep hold
+  // Tier 1 — new geometry fields (2026-08-17, feed the friction engine)
+  base_of_support: ContactPoint[];
+  orientation: Orientation;
+  cog_height: CogHeight;
+  spinal_action: SpinalAction;
+  plane: Plane;
+  level: KinesphereLevel;
+  zone: KinesphereZone;
+  energetic_direction: EnergeticDirection;
+  intensity: number;            // 1–5, distinct from complexity (1–10)
+  default_measure: DefaultMeasure;
 
-  contraindications: string[];// categorical slugs e.g. ["high-blood-pressure",
-                              //   "hip-replacement", "pregnancy-second-trimester"]
-  bilateral: boolean;         // true if the pose must be done on both sides
-
-  source: string;             // attribution e.g. "Paul Grilley, Yin Yoga (2002)"
-  notes: string;              // optional teaching notes / lineage context
+  // Tier 2 — backfilled opportunistically, never blocks CI
+  type_tags?: string[];
+  muscle_groups?: string[];
+  injury_risk?: string[];
+  joint_action?: string[];
+  primary_joints_involved?: string[];
+  nervous_system_effect?: string;
+  tissue_depth?: string;
+  modifications?: string[];
+  dosha_affinity?: string[];
+  emotional_release_potential?: string;
+  sequencing_position?: string;
+  before_poses?: string[];
+  after_poses?: string[];
+  chakras?: string[];
+  tradition_names?: Record<string, string>;
+  element?: FiveElement | null;
+  meridians?: string[];
+  counterposes?: string[];
+  rebound_pose?: string | null;
+  notes?: string;
 }
 ```
 
 ---
 
-## Meridian Record
+## Friction Engine Types
 
 ```typescript
-interface MeridianRecord {
-  slug: string;               // e.g. "liver"
-  organ: string;              // e.g. "Liver"
-  element: FiveElement;
-  direction: 'ascending' | 'descending';
-  peak_hours: string;         // e.g. "1am–3am"
+type FrictionTier = 1 | 2 | 3;  // 1 = low friction (smooth seam), 3 = high friction
+
+interface FrictionWeights {
+  contact: number;      // 0.35
+  orientation: number;  // 0.25
+  cog: number;           // 0.20
+  spine: number;         // 0.10
+  plane: number;         // 0.10
 }
 
-interface ElementRecord {
-  element: FiveElement;
-  season: Season;
-  meridians: MeridianRecord[];
-  themes: string[];
-  emotions: {
-    balanced: string;
-    excess: string;
-    deficiency: string;
-  };
-  body_focus: string[];       // anatomical areas this element's poses tend to load
+interface FrictionResult {
+  score: number;         // 0–1, weighted sum of per-term deltas
+  tier: FrictionTier;
+  reasons: string[];      // plain-language, one per contributing term with a non-zero delta
+}
+
+// friction(fromPose, toPose) → FrictionResult — pure function, see contracts/friction-engine.md
+type FrictionFn = (fromPose: Pose, toPose: Pose) => FrictionResult;
+
+/** Precomputed at build time over the full pose library. */
+type FrictionMatrix = Record<string /* fromSlug */, Record<string /* toSlug */, FrictionResult>>;
+```
+
+---
+
+## Flow Types
+
+"Flow" is the canonical entity end-to-end (renamed from "Sequence" — see spec.md
+Amendment note and `DECISIONS.md`).
+
+```typescript
+type LayerName = 'simple' | 'advanced' | 'expert' | 'custom';
+
+interface LayerPreference {
+  layer: LayerName;
+  visibleFields: string[];   // pose fields shown in Compose at this layer; ignored when layer !== 'custom'
+}
+
+/** A named, reorderable, optional grouping of Flow Items. */
+interface Phase {
+  id: string;
+  name: string;                          // e.g. "Warm-up"; renameable
+  intentTag: EnergeticDirection;          // drives default ordering/coloring
+  order: number;
+}
+
+/** A single step in a flow. */
+interface FlowItem {
+  id: string;
+  poseSlug: string;             // resolved against the pose library at render time
+  mode: ModeType;
+  measure: DefaultMeasure;      // breaths or seconds, overridable per item
+  note?: string;                 // teacher-authored, free text
+  phaseId: string | null;        // null = ungrouped
+  order: number;
+}
+
+/** An ordered sub-sequence of poses insertable into a flow as a single unit
+ *  (e.g. Sun Salutation A). Not a Pose; not a Flow. Expands into member FlowItems
+ *  on insertion. */
+interface Block {
+  slug: string;
+  name: string;
+  members: Array<{ poseSlug: string; measure: DefaultMeasure }>;
+}
+
+/** A Pose with near-empty geometry and a distinct, visually quieter read-view
+ *  treatment. Four ship in v0.1. */
+type StillnessNode = Pose; // identified by membership in the fixed 4-slug set below:
+// ['rebound-supine', 'constructive-rest', 'seated-stillness', 'savasana']
+
+/** The canonical entity for the app's primary output. */
+interface Flow {
+  id: string;                    // UUID, generated at save time
+  title: string;                 // teacher-provided
+  items: FlowItem[];
+  phases: Phase[];                // may be empty (ungrouped flow)
+  createdAt: string;              // ISO 8601
+  updatedAt: string;               // ISO 8601
+  isBuiltIn: boolean;               // true for the 3 shipped templates; read-only
+  schema_version: string;           // e.g. "0.1.0" — see contracts/flow-file-format.md
 }
 ```
 
 ---
 
-## Session Context (teacher input)
+## `.krama.json` Export Envelope
+
+See `contracts/flow-file-format.md` for the full contract; summarized here for the data
+model:
 
 ```typescript
-/** Hard constraints — enforced by safety layer. */
-interface HardConstraints {
-  contraindications: string[];  // categorical slugs from the contraindications vocabulary
-  propsAvailable: string[];     // props the class has access to; safety layer checks this
-  // If propsAvailable is undefined/null, treat as all props available.
-}
-
-/** All teacher-set dimensions for a session. All fields optional. */
-interface SessionContext {
-  style?: Style;
-  durationMinutes?: number;
-  timeOfDay?: 'morning' | 'midday' | 'afternoon' | 'evening' | 'night';
-  season?: Season;
-
-  experienceLevel?: ExperienceLevel;
-  ageRange?: { min: number; max: number };
-  fitnessLevel?: 'low' | 'moderate' | 'high';
-  numberOfStudents?: number;
-  roomTemperature?: 'cool' | 'neutral' | 'warm' | 'heated';
-  classFormat?: 'drop-in' | 'series';
-
-  targetSystem?: string;        // free text e.g. "hips", "spine", "nervous system"
-  meridianFocus?: string[];     // meridian slugs e.g. ["liver", "gallbladder"]
-  elementFocus?: FiveElement;
-
-  doshaEmphasis?: Dosha;
-  goal?: string;                // free text e.g. "downregulate nervous system"
-  theme?: string;               // free text e.g. "letting go"
-
-  intensityCurve?: IntensityCurve;
-  poseComplexity?: 'simple' | 'moderate' | 'complex';
-  yinYangBalance?: number;      // 0.0 = pure yin, 1.0 = pure yang; 0.2 typical for yin class
-  density?: 'sparse' | 'moderate' | 'dense';
-
-  hardConstraints: HardConstraints;
+interface KramaFile {
+  schema_version: string;
+  exported_at: string;     // ISO 8601
+  flow: Flow;
 }
 ```
 
 ---
 
-## Pipeline Stage Interfaces
-
-These are the typed boundaries between the three pipeline stages (RULE-H1).
-
-### Stage 1 → Stage 2: PipelineDraft (AI output, untrusted)
+## Validator-Lite Types
 
 ```typescript
-/** A proposed pose entry from the AI layer. Treated as untrusted. */
+interface ValidatorWarning {
+  code: 'laterality' | 'closing-stillness';
+  message: string;          // plain language, names the specific pose/item
+  itemId?: string;           // the offending FlowItem, if applicable
+}
+
+// validateLite(flow, poseLibrary) → ValidatorWarning[] — pure function, never throws,
+// never blocks save/export. See src/lib/validator/lite.ts.
+type ValidateLiteFn = (flow: Flow, poseLibrary: Pose[]) => ValidatorWarning[];
+```
+
+---
+
+## State Transitions: Flow Lifecycle
+
+```
+[Compose: add/reorder/note/phase] → [Draft in memory]
+                                          ↓
+                          friction() computed per adjacent pair (from precomputed matrix)
+                                          ↓
+                          validateLite() → ValidatorWarning[] (never blocks)
+                                          ↓
+                          [Teacher saves] → [Flow persisted to localStorage/IndexedDB]
+                                          ↓
+                    [Duplicate] ──┐        [Export .krama.json] ──→ [Import elsewhere]
+                                  ↓
+                          [New editable Flow, isBuiltIn: false]
+                                          ↓
+                          [Read view] — the 6am artifact, offline-capable, print-ready
+```
+
+---
+
+## Deferred to v0.2 (retained for traceability — not implemented in v0.1)
+
+The following types described the AI pipeline's stage boundaries and the roster/safety
+input model. They are not deleted from the codebase (`src/lib/pipeline/types.ts` still
+defines them) — they are the starting point for v0.2's Suggest button and roster/safety
+layer. See `DECISIONS.md` and the spec's "Deferred to v0.2" appendix.
+
+```typescript
+// AI proposal stage output — untrusted.
 interface DraftPoseEntry {
-  poseSlug: string;           // AI's suggested pose — may not exist in library
+  poseSlug: string;
   modeType: ModeType;
   holdMinutes: number;
-  why: string;                // AI-generated rationale
-  transitionFromPrev: string; // AI-generated transition note
+  why: string;
+  transitionFromPrev: string;
   suggestedAlternateSlugs: string[];
 }
-
-/** The AI layer's full draft — untrusted input to the rules engine. */
 interface PipelineDraft {
   themeStatement: string;
   philosophicalFraming: string;
-  quote: {
-    text: string;
-    attribution: string;
-  };
-  poses: DraftPoseEntry[];
-  aiModelUsed: string;        // for provenance tracking
-  generationSkipped: boolean; // true when AI was unavailable; rules engine seeded this
-}
-```
-
-### Stage 2 → Stage 3: ConstrainedSequence (rules engine output)
-
-```typescript
-/** A sequence item after rules engine processing. Poses are validated against library. */
-interface SequenceItem {
-  pose: Pose;                 // resolved from library by slug; invalid slugs dropped
-  modeType: ModeType;
-  holdMinutes: number;
-  side?: 'left' | 'right' | 'both'; // set by bilateral logic
-  why: string;                // carried from AI or generated by rules engine
-  transitionFromPrev: string;
-  transitionToNext: string;   // rules engine may add/update this
-  alternates: Pose[];         // resolved and ranked by dimensional alignment
-}
-
-interface ConstrainedSequence {
-  sessionContext: SessionContext;
-  themeStatement: string;
-  philosophicalFraming: string;
   quote: { text: string; attribution: string };
-  items: SequenceItem[];
-  totalHoldMinutes: number;   // sum computed by rules engine
-  generationProvenance: 'ai-assisted' | 'rules-only';
+  poses: DraftPoseEntry[];
+  aiModelUsed: string;
+  generationSkipped: boolean;
 }
-```
 
-### Stage 3 output: ValidatedSequence (safety layer output — final)
+// Roster / hard-constraint input — the future safety layer's enforcement surface.
+interface HardConstraints {
+  contraindications: string[];
+  propsAvailable: string[];
+}
+interface SessionContext {
+  style?: 'yin' | 'vinyasa' | 'ashtanga' | 'restorative';
+  durationMinutes?: number;
+  experienceLevel?: 'beginner' | 'intermediate' | 'advanced' | 'mixed';
+  hardConstraints: HardConstraints;
+  // ...full shape unchanged from the pre-2026-08-17 data-model.md; truncated here.
+}
 
-```typescript
-/** Safety layer's report for a single item. */
+// Safety layer output shape — when it returns, this is the boundary it produces.
 interface SafetyNote {
   poseSlug: string;
-  issue: string;              // plain language description of what was caught
+  issue: string;
   action: 'replaced' | 'gap-inserted';
-  replacedWith?: string;      // slug of replacement pose, if replaced
-}
-
-/** The final output shown to the teacher. */
-interface ValidatedSequence extends ConstrainedSequence {
-  safetyNotes: SafetyNote[]; // empty if no interventions; shown to teacher if non-empty
-  passedValidation: boolean;  // always true when shown to UI (false sequences are retried)
-  timingSumWarning?: string;  // present if total still outside ±5 min after correction
+  replacedWith?: string;
 }
 ```
 
----
-
-## Saved Sequence (P2 — IndexedDB)
-
-```typescript
-interface SavedSequence {
-  id: string;                 // UUID generated at save time
-  title: string;              // teacher-provided or auto-generated from theme
-  savedAt: string;            // ISO 8601
-  sequence: ValidatedSequence;
-  rating?: 1 | 2 | 3 | 4 | 5;
-  postTeachingNotes?: string;
-  taughtAt?: string;          // ISO 8601
-}
-```
-
----
-
-## Contraindication Vocabulary
-
-Canonical slugs for the safety layer's constraint matching. Poses tag themselves with
-these slugs; teachers select from this list in the UI. Extensible via PR.
-
-```
-high-blood-pressure
-glaucoma
-vertigo
-recent-surgery-general
-recent-surgery-hip
-recent-surgery-knee
-recent-surgery-shoulder
-hip-replacement
-knee-replacement
-pregnancy-first-trimester
-pregnancy-second-trimester
-pregnancy-third-trimester
-postpartum-recent          # within 6 weeks
-herniated-disc-lumbar
-herniated-disc-cervical
-sciatica
-carpal-tunnel
-wrist-injury
-ankle-injury
-shoulder-injury
-no-floor-transitions
-chair-based                # practice must remain seated
-no-inversions
-no-forward-folds
-no-backbends
-no-hip-external-rotation
-no-hip-internal-rotation
-no-deep-hip-flexion
-no-spinal-rotation
-```
-
----
-
-## State Transitions: Sequence Lifecycle
-
-```
-[Dimensions Set] → generate() → [PipelineDraft] → constrain() → [ConstrainedSequence]
-                                                              → validate() → [ValidatedSequence]
-                                                                          ↓
-                                                              [Displayed to Teacher]
-                                                                          ↓
-                          [Teacher Reviews / Edits / Swaps] (no regen)
-                                                                          ↓
-                          [Export Cue Sheet] or [Save to Library (P2)]
-```
+**Contraindication vocabulary** (unchanged, still Tier-1 on every `Pose`, still the
+vocabulary a v0.2 safety layer would match against — see
+`data/schemas/contraindications.json` for the current canonical list, currently 29
+slugs including `high-blood-pressure`, `glaucoma`, `pregnancy-second-trimester`,
+`hip-replacement`, `no-inversions`, and others).
