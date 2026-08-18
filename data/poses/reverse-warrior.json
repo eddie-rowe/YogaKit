@@ -15,7 +15,7 @@
     "holding": "Each inhale lengthens the reaching arm and side ribs, each exhale keeps the front knee stacked and stable.",
     "exiting": "Inhale to rise back to Warrior 2, sweeping the front arm forward and level."
   },
-  "bilateral": false,
+  "bilateral": true,
   "contraindications": ["knee-injury", "shoulder-injury", "low-back-injury"],
   "props_required": [],
   "prop_free_variation": "Rest the back hand on the back thigh instead of sliding down the shin to keep weight off the front knee.",

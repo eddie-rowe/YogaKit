@@ -20,7 +20,7 @@
     "holding": "Hold the breath briefly or breathe evenly while reaching the crown forward and tailbone back.",
     "exiting": "Exhale to fold forward again, or inhale to rise into a standing position."
   },
-  "bilateral": true,
+  "bilateral": false,
   "contraindications": ["low-back-injury", "herniated-disc"],
   "props_required": [],
   "prop_free_variation": null,

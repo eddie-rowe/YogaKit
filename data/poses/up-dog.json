@@ -19,7 +19,7 @@
   "counterposes": ["child-pose"],
   "rebound_pose": "child-pose",
   "contraindications": ["wrist-injury", "low-back-injury", "shoulder-injury", "pregnancy", "carpal-tunnel"],
-  "bilateral": true,
+  "bilateral": false,
   "source": "Traditional hatha/vinyasa yoga",
   "notes": "A deeper backbend than cobra, with the thighs lifted and only hands/feet in contact. Common vinyasa transition point following chaturanga, preceding downward dog.",
   "type_tags": ["backbend", "chest-opener"],

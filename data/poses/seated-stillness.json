@@ -14,7 +14,7 @@
     "holding": "Simply observe the breath moving in and out, without changing it.",
     "exiting": "Take one deeper breath, then softly open the eyes."
   },
-  "bilateral": true,
+  "bilateral": false,
   "contraindications": ["knee-injury", "hip-injury"],
   "props_required": [],
   "prop_free_variation": null,

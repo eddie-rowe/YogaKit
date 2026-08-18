@@ -26,7 +26,7 @@
     "holding": "Breathe smoothly and evenly, using each exhale to deepen the sense of rootedness.",
     "exiting": "Exhale as you release the lifted leg back down to standing."
   },
-  "bilateral": false,
+  "bilateral": true,
   "contraindications": [
     "knee-injury",
     "ankle-injury"

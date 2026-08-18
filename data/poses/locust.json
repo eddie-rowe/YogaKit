@@ -19,7 +19,7 @@
   "counterposes": ["child-pose"],
   "rebound_pose": "child-pose",
   "contraindications": ["low-back-injury", "pregnancy", "herniated-disc", "sacroiliac-joint"],
-  "bilateral": true,
+  "bilateral": false,
   "source": "Traditional hatha/vinyasa yoga",
   "notes": "No hand or foot contact with the floor once lifted; the torso, hips, and thighs bear the weight. Strengthens the full posterior chain and is often used to build the strength needed for deeper backbends like camel or upward dog.",
   "type_tags": ["backbend", "integration"],

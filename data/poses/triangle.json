@@ -15,7 +15,7 @@
     "holding": "Inhale to lengthen through the crown and reaching top arm, exhale to root evenly through both feet.",
     "exiting": "Inhale to engage the front thigh and rise the torso back to vertical, leading with the top arm."
   },
-  "bilateral": false,
+  "bilateral": true,
   "contraindications": ["low-blood-pressure", "high-blood-pressure", "neck-injury", "sacroiliac-joint"],
   "props_required": [],
   "prop_free_variation": "Rest the front hand on a shin or block-height support instead of the floor to keep the torso long rather than rounding.",

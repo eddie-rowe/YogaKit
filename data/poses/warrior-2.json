@@ -15,7 +15,7 @@
     "holding": "Breathe steadily; inhale to lift through the crown, exhale to root down through both feet and sink the front thigh toward parallel.",
     "exiting": "Exhale to straighten the front leg and turn the feet to face the next direction."
   },
-  "bilateral": false,
+  "bilateral": true,
   "contraindications": ["knee-injury", "hip-injury", "shoulder-injury", "high-blood-pressure"],
   "props_required": [],
   "prop_free_variation": "Shorten the stance and reduce front-knee bend for tighter hips or knee sensitivity.",

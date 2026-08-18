@@ -15,7 +15,7 @@
     "holding": "Inhale to lengthen the spine, exhale to draw the chest toward the thighs and settle deeper into the fold.",
     "exiting": "Exhale to bend the knees and step or float forward to the front of the mat, or lower to the belly."
   },
-  "bilateral": true,
+  "bilateral": false,
   "contraindications": ["high-blood-pressure", "carpal-tunnel", "wrist-injury", "shoulder-injury", "pregnancy"],
   "props_required": [],
   "prop_free_variation": "Bend the knees generously and keep the heels lifted if hamstrings or calves are tight.",

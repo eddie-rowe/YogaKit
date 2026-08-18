@@ -19,7 +19,7 @@
   "counterposes": [],
   "rebound_pose": null,
   "contraindications": ["wrist-injury", "neck-injury"],
-  "bilateral": true,
+  "bilateral": false,
   "source": "Traditional hatha/vinyasa yoga",
   "notes": "A gentle, continuous flow rather than a static hold; treated here as a single entry representing the paired movement. Frequently used as a warm-up to mobilize the whole spine before deeper backbends or forward folds. Spinal action oscillates between flexion and extension; flexion (cat) is used as the representative default since the pose typically completes there.",
   "type_tags": ["spinal-traction", "integration"],

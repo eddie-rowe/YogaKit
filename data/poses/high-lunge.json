@@ -20,7 +20,7 @@
     "holding": "Breathe steadily, grounding through the front foot while lengthening through the back leg.",
     "exiting": "Exhale to step the back foot forward or step back into a plank or downward-facing shape."
   },
-  "bilateral": false,
+  "bilateral": true,
   "contraindications": ["knee-injury", "hip-injury", "sacroiliac-joint"],
   "props_required": [],
   "prop_free_variation": null,

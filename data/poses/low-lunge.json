@@ -26,7 +26,7 @@
     "holding": "Breathe evenly, softening the back hip toward the floor with each exhale.",
     "exiting": "Exhale to lift the back knee and step forward, or shift back toward downward-facing shapes."
   },
-  "bilateral": false,
+  "bilateral": true,
   "contraindications": [
     "knee-injury",
     "hip-injury"

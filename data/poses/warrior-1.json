@@ -15,7 +15,7 @@
     "holding": "Steady even breaths; each inhale lengthens the spine, each exhale sinks the back heel and grounds the legs.",
     "exiting": "Exhale to release the arms and step the feet back together, or flow into the next shape."
   },
-  "bilateral": false,
+  "bilateral": true,
   "contraindications": ["knee-injury", "shoulder-injury", "sacroiliac-joint", "high-blood-pressure"],
   "props_required": [],
   "prop_free_variation": "Shorten the stance and keep the back heel lifted (high lunge) if the hips or sacrum resist squaring forward.",

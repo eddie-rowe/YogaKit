@@ -19,7 +19,7 @@
   "counterposes": ["child-pose", "wide-knee-child"],
   "rebound_pose": "child-pose",
   "contraindications": ["low-back-injury", "neck-injury", "high-blood-pressure", "low-blood-pressure", "vertigo", "herniated-disc"],
-  "bilateral": true,
+  "bilateral": false,
   "source": "Traditional hatha/vinyasa yoga",
   "notes": "A deep heart-opening backbend that can bring up strong emotional or dizzy sensations; teach students to come out slowly and rest afterward. Often placed near the peak of a vinyasa sequence.",
   "type_tags": ["backbend", "heart-opener", "chest-opener"],

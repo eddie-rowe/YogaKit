@@ -19,7 +19,7 @@
   "counterposes": ["child-pose"],
   "rebound_pose": "child-pose",
   "contraindications": ["wrist-injury", "shoulder-injury", "rotator-cuff", "elbow-injury", "carpal-tunnel"],
-  "bilateral": true,
+  "bilateral": false,
   "source": "Traditional hatha/vinyasa yoga",
   "notes": "One of the most commonly misaligned vinyasa transitions; shallow bends and elbow flare are frequent teaching points. Beginners are usually cued to lower knees-chest-chin instead of a full hover.",
   "type_tags": ["integration"],

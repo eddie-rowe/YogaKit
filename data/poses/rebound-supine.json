@@ -20,7 +20,7 @@
     "holding": "Let the breath return to its own natural rhythm without adjustment.",
     "exiting": "Inhale as you gently begin to bring movement back into fingers and toes."
   },
-  "bilateral": true,
+  "bilateral": false,
   "contraindications": ["pregnancy"],
   "props_required": [],
   "prop_free_variation": null,

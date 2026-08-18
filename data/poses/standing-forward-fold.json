@@ -26,7 +26,7 @@
     "holding": "Inhale to lengthen the spine slightly, exhale to soften deeper into the fold.",
     "exiting": "Inhale as you bend the knees and roll up slowly through the spine, stacking one vertebra at a time."
   },
-  "bilateral": true,
+  "bilateral": false,
   "contraindications": [
     "low-back-injury",
     "herniated-disc",

@@ -20,7 +20,7 @@
     "holding": "Breathe steadily and evenly, feeling the feet root down as the crown lifts.",
     "exiting": "Exhale to soften the shoulders before transitioning to the next shape."
   },
-  "bilateral": true,
+  "bilateral": false,
   "contraindications": [],
   "props_required": [],
   "prop_free_variation": null,

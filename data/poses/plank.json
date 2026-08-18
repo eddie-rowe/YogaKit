@@ -19,7 +19,7 @@
   "counterposes": ["child-pose"],
   "rebound_pose": "child-pose",
   "contraindications": ["wrist-injury", "shoulder-injury", "carpal-tunnel", "low-back-injury"],
-  "bilateral": true,
+  "bilateral": false,
   "source": "Traditional hatha/vinyasa yoga",
   "notes": "A full-body isometric hold that builds core, shoulder, and wrist stability. Commonly used as a transition point in Sun Salutations between forward fold and chaturanga.",
   "type_tags": ["integration"],

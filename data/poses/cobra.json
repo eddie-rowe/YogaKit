@@ -19,7 +19,7 @@
   "counterposes": ["child-pose", "cat-cow"],
   "rebound_pose": "child-pose",
   "contraindications": ["low-back-injury", "wrist-injury", "pregnancy", "herniated-disc"],
-  "bilateral": true,
+  "bilateral": false,
   "source": "Traditional hatha/vinyasa yoga",
   "notes": "A gentler alternative to upward-facing dog, well suited to beginners, back rehab contexts, or slower vinyasa flows where a lower backbend intensity is desired.",
   "type_tags": ["backbend", "chest-opener", "spinal-traction"],
