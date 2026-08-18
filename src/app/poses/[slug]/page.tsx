@@ -14,9 +14,9 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
   const pose = getPoseBySlug(slug)
-  if (!pose) return { title: 'Pose not found — Yoga Kit' }
+  if (!pose) return { title: 'Pose not found | YogaKit' }
   return {
-    title: `${resolveDisplayName(pose)} (${pose.sanskrit}) — Yoga Kit`,
+    title: `${resolveDisplayName(pose)} (${pose.sanskrit}) | YogaKit`,
     description: `Anatomy, meridians, and sequencing for ${resolveDisplayName(pose)} in yin yoga.`,
   }
 }

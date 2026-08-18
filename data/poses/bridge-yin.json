@@ -70,8 +70,8 @@
   "complexity": 3,
   "injury_risk": 3,
   "breathing_cues": {
-    "entering": "Lie on your back with knees bent. On an inhale, gently press the feet and lift the hips just enough to slide the prop under the sacrum. Exhale as you release the full weight of the pelvis onto the block or bolster — ensure the prop is supporting bone, not soft tissue.",
-    "holding": "Allow the breath to be full and expansive. Each inhale naturally lifts the sternum and broadens the collarbones; each exhale melts the belly down toward the spine. If the arms are extended overhead, feel the breath widen the chest and armpits. There is nothing to do here — simply breathe and receive.",
+    "entering": "Lie on your back with knees bent. On an inhale, gently press the feet and lift the hips just enough to slide the prop under the sacrum. Exhale as you release the full weight of the pelvis onto the block or bolster. Ensure the prop is supporting bone, not soft tissue.",
+    "holding": "Allow the breath to be full and expansive. Each inhale naturally lifts the sternum and broadens the collarbones; each exhale melts the belly down toward the spine. If the arms are extended overhead, feel the breath widen the chest and armpits. There is nothing to do here: simply breathe and receive.",
     "exiting": "On an inhale, engage the deep abdominals lightly and press the feet into the floor to lift the hips slightly. Slide the prop free with one hand, then exhale as you lower the spine slowly, vertebra by vertebra, to the floor."
   },
   "before_poses": [
@@ -148,12 +148,12 @@
     {
       "emotion": "fear",
       "tcm_organ": "kidney",
-      "notes": "The psoas — the muscle most associated with the fear response and the freeze state — is passively lengthened in this pose. Long holds may release stored fear held chronically in the hip flexors."
+      "notes": "The psoas, the muscle most associated with the fear response and the freeze state, is passively lengthened in this pose. Long holds may release stored fear held chronically in the hip flexors."
     },
     {
       "emotion": "courage",
       "tcm_organ": "heart",
-      "notes": "The upward orientation of the sternum and the passive opening of the chest embodies quiet courage — a willingness to be seen and to receive without defenses."
+      "notes": "The upward orientation of the sternum and the passive opening of the chest embodies quiet courage: a willingness to be seen and to receive without defenses."
     }
   ],
   "sequencing_position": [

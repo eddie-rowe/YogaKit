@@ -1,4 +1,4 @@
-# Krama Guardrails
+# YogaKit Guardrails
 
 Companion to the locked spec (`docs/krama-v0.1-spec.md`). Where the Atlas (`krama-atlas.md`)
 governs pose data, this file governs the UI contract that tests and CI rely on, plus the
@@ -63,6 +63,12 @@ carries a `data-testid`. Naming: `{area}-{element}`, kebab-case, stable across r
 | Read | `read-item-{index}` | Each pose entry in the read view |
 | Read | `read-breath-mark` | A breath-notation mark (↑ ↓ ~) — asserted for presence, not content |
 | Poses | `poses-search-input`, `poses-category-filter`, `poses-card-{slug}` | Unchanged from the existing Poses tab |
+| Poses | `poses-view-toggle-filter`, `poses-view-toggle-theme` | "By filter" / "By theme" view mode toggle chips |
+| Poses | `poses-theme-section-{emotion-slug}` | Theme section heading + pose list, in "By theme" view |
+| Poses | `poses-overlay` | Full-screen pose detail overlay outer container |
+| Poses | `poses-overlay-close` | Close button on the pose detail overlay |
+| Poses | `poses-detail-layer-{l}` | Detail depth chip (`simple`/`advanced`/`expert`/`custom`), on `/poses/{slug}` and in the overlay |
+| Poses | `poses-detail-custom-field-{group}` | Field-group checkbox shown when the `custom` depth layer is active |
 | Validator | `validator-warning-laterality`, `validator-warning-closing-stillness` | The two v0.1 warnings, wherever they render |
 | Nav | `nav-home`, `nav-compose`, `nav-flows`, `nav-poses`, `nav-learn` | Five-tab nav (spec §3) |
 

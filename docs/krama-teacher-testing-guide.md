@@ -1,11 +1,11 @@
-# Krama — A Guided Walk for Teachers
+# YogaKit — A Guided Walk for Teachers
 *Thank you for being one of the first three teachers to try this. Your honest reactions — especially the uncomfortable ones — are the most valuable thing you can give.*
 
 ---
 
 ## Before you begin
 
-**What Krama is:** a small app for planning yoga classes. You build a sequence from a pose library, arrange it into the arc of a class, and read from it when you teach.
+**What YogaKit is:** a small app for planning yoga classes. You build a sequence from a pose library, arrange it into the arc of a class, and read from it when you teach.
 
 **What it is not (yet):** there are no accounts and nothing to sign up for. Your sequences live on your own phone or laptop. Some features are intentionally missing — this is an early version, and what's missing is part of what I'm asking you about.
 

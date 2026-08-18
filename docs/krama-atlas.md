@@ -1,4 +1,4 @@
-# Krama Atlas — Pose Field Dictionary
+# YogaKit Atlas — Pose Field Dictionary
 
 Companion to the locked spec (`docs/krama-v0.1-spec.md` §4). This is the authority for
 every field in `data/schemas/pose.schema.json`: what it means, which entry tier it

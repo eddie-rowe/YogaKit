@@ -15,7 +15,7 @@
         "min": 3,
         "max": 8
       },
-      "cue_notes": "From a seated position, roll back bringing the knees toward the floor behind the head (like Plow/Halasana but allowing the knees to bend and the spine to fully round). Support the lower back with the hands or rest the arms alongside the body. The entire posterior spinal chain — from sacrum to occiput — receives the stretch. Only attempt if the shoulders are comfortable bearing some weight. Come out slowly by rolling the spine back down vertebra by vertebra."
+      "cue_notes": "From a seated position, roll back bringing the knees toward the floor behind the head (like Plow/Halasana but allowing the knees to bend and the spine to fully round). Support the lower back with the hands or rest the arms alongside the body. The entire posterior spinal chain, from sacrum to occiput, receives the stretch. Only attempt if the shoulders are comfortable bearing some weight. Come out slowly by rolling the spine back down vertebra by vertebra."
     }
   ],
   "body_position": "inverted",
@@ -69,8 +69,8 @@
   "complexity": 8,
   "injury_risk": 8,
   "breathing_cues": {
-    "entering": "Exhale fully as you roll the hips overhead, using the exhalation to create space in the posterior body before the weight arrives. Never hold the breath on the way in — continuous slow breathing helps gauge when to stop.",
-    "holding": "Breathing in this shape is naturally restricted; allow the breath to be soft and subtle, expanding laterally into the ribcage rather than forcing a deep belly breath. If breathing feels impossible, you have gone too far — back off slightly.",
+    "entering": "Exhale fully as you roll the hips overhead, using the exhalation to create space in the posterior body before the weight arrives. Never hold the breath on the way in: continuous slow breathing helps gauge when to stop.",
+    "holding": "Breathing in this shape is naturally restricted; allow the breath to be soft and subtle, expanding laterally into the ribcage rather than forcing a deep belly breath. If breathing feels impossible, you have gone too far. Back off slightly.",
     "exiting": "On an inhale, begin to slowly roll the spine back down to the floor vertebra by vertebra, using the abdominals to control the descent rather than dropping suddenly."
   },
   "before_poses": [
@@ -104,7 +104,7 @@
   "modifications": [
     {
       "name": "Legs Less Overhead",
-      "description": "Rather than bringing the knees all the way to the floor behind the head, allow them to hover in a position that is sustainable — even just rolling into plow with bent knees is sufficient. NEVER force the knees to the floor.",
+      "description": "Rather than bringing the knees all the way to the floor behind the head, allow them to hover in a position that is sustainable: even just rolling into plow with bent knees is sufficient. NEVER force the knees to the floor.",
       "accessibility_level": "intermediate"
     },
     {
@@ -140,7 +140,7 @@
     {
       "emotion": "surrender",
       "tcm_organ": "bladder",
-      "notes": "The complete inward curling of the body — a fetal-like return — invites a profound letting go of effort and control, releasing patterns held in the entire posterior fascia chain."
+      "notes": "The complete inward curling of the body, a fetal-like return, invites a profound letting go of effort and control, releasing patterns held in the entire posterior fascia chain."
     },
     {
       "emotion": "vulnerability",

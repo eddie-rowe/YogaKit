@@ -15,7 +15,7 @@
         "min": 3,
         "max": 7
       },
-      "cue_notes": "Sit with both shins stacked parallel, one on top of the other like two logs. The ankle of the top leg rests on the knee of the bottom leg. Both shins should be parallel and roughly horizontal. Sit upright or fold forward. If the top knee is high off the floor, place a block or blanket under it. Ensure there is no sharp pain in the knee — the stretch should be felt in the outer hip. Hold each side."
+      "cue_notes": "Sit with both shins stacked parallel, one on top of the other like two logs. The ankle of the top leg rests on the knee of the bottom leg. Both shins should be parallel and roughly horizontal. Sit upright or fold forward. If the top knee is high off the floor, place a block or blanket under it. Ensure there is no sharp pain in the knee: the stretch should be felt in the outer hip. Hold each side."
     }
   ],
   "body_position": "seated",
@@ -41,7 +41,7 @@
   ],
   "bilateral": true,
   "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
-  "notes": "Targets the deep lateral hip rotators (piriformis, obturators) and IT band. Gallbladder meridian runs the lateral hip and thigh. The knee should feel no pain — sensation should be in the outer hip only.",
+  "notes": "Targets the deep lateral hip rotators (piriformis, obturators) and IT band. Gallbladder meridian runs the lateral hip and thigh. The knee should feel no pain: sensation should be in the outer hip only.",
   "type_tags": [
     "hip-opener",
     "outer-hip",
@@ -59,7 +59,7 @@
   "complexity": 5,
   "injury_risk": 5,
   "breathing_cues": {
-    "entering": "Inhale to sit tall, then on the exhale allow the torso to settle over the stacked shins. Let the weight of the torso create a natural load into the outer hips — no forcing, only allowing.",
+    "entering": "Inhale to sit tall, then on the exhale allow the torso to settle over the stacked shins. Let the weight of the torso create a natural load into the outer hips, no forcing, only allowing.",
     "holding": "Breathe into the outer hips and lateral pelvis. On each exhale, invite the piriformis and lateral rotators to yield. If sensations are intense, soften the breath and visualize space being created in the outer hip joint.",
     "exiting": "On an inhale, press the hands into the floor to lift the torso. Gently unfold the legs and take a simple seated position or lie down for rebound before switching sides."
   },
@@ -101,7 +101,7 @@
     },
     {
       "name": "Blocks Under Both Knees",
-      "description": "Support both knees with blocks so that neither hip is forced into deeper external rotation than the joint allows — essential for students with limited hip mobility.",
+      "description": "Support both knees with blocks so that neither hip is forced into deeper external rotation than the joint allows - essential for students with limited hip mobility.",
       "props_used": [
         "block"
       ],
@@ -129,7 +129,7 @@
     {
       "emotion": "frustration",
       "tcm_organ": "gallbladder",
-      "notes": "The gallbladder meridian runs the lateral hip and IT band — a common storage site for suppressed frustration, irritability, and the energy of unexpressed decisions."
+      "notes": "The gallbladder meridian runs the lateral hip and IT band, a common storage site for suppressed frustration, irritability, and the energy of unexpressed decisions."
     },
     {
       "emotion": "rigidity",

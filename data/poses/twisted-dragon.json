@@ -14,7 +14,7 @@
         "min": 3,
         "max": 7
       },
-      "cue_notes": "From a low lunge with the right foot forward, rotate the torso to the right, bringing the right arm back or the left elbow to the outside of the right knee. Allow the spinal rotation to happen passively — do not force it. The hip flexor stretch of the back leg continues alongside the rotational stress to the thoracolumbar fascia. Hold each side."
+      "cue_notes": "From a low lunge with the right foot forward, rotate the torso to the right, bringing the right arm back or the left elbow to the outside of the right knee. Allow the spinal rotation to happen passively. Do not force it. The hip flexor stretch of the back leg continues alongside the rotational stress to the thoracolumbar fascia. Hold each side."
     }
   ],
   "body_position": "kneeling",
@@ -74,8 +74,8 @@
   "complexity": 6,
   "injury_risk": 5,
   "breathing_cues": {
-    "entering": "From low lunge, inhale to lengthen the spine upright, then exhale to begin the rotation — letting the ribcage turn without forcing the shoulder. Move only as far as the breath allows.",
-    "holding": "With each inhale, grow a little taller through the crown of the head; with each exhale, allow the rotation to deepen passively. Do not use muscular effort to push the twist further — let gravity and breath do the work.",
+    "entering": "From low lunge, inhale to lengthen the spine upright, then exhale to begin the rotation, letting the ribcage turn without forcing the shoulder. Move only as far as the breath allows.",
+    "holding": "With each inhale, grow a little taller through the crown of the head; with each exhale, allow the rotation to deepen passively. Do not use muscular effort to push the twist further. Let gravity and breath do the work.",
     "exiting": "Inhale to unwind the torso back to center, then exhale to return to a neutral low lunge before stepping back."
   },
   "before_poses": [
@@ -145,7 +145,7 @@
     {
       "emotion": "conflict",
       "tcm_organ": "gallbladder",
-      "notes": "The simultaneous forward-reaching (stomach meridian) and lateral-turning (gallbladder meridian) quality of this pose can mirror internal experiences of moving in two directions at once — integrating opposing forces."
+      "notes": "The simultaneous forward-reaching (stomach meridian) and lateral-turning (gallbladder meridian) quality of this pose can mirror internal experiences of moving in two directions at once, integrating opposing forces."
     }
   ],
   "sequencing_position": [

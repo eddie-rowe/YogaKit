@@ -93,3 +93,22 @@ worse than no drag at all — it reads as a bug, not a missing feature. The butt
 already covers the same functionality end to end; shipping only that path now is honest
 about what v0.1 actually supports, and a real touch-drag implementation is worth doing
 properly rather than bolted on under gate pressure.
+
+---
+
+## 2026-08-18 — Rename "Krama" to "YogaKit" in UI copy and docs prose only
+
+**Context:** The product is being renamed from "Krama" to "YogaKit" in all user-visible
+copy: page title/metadata, the home screen heading, the header wordmark, the PWA manifest,
+and the prose/headings in `docs/*.md`.
+
+**Decision:** Rename visible strings only. Deliberately did NOT rename the `.krama.json`
+export/import format, the `krama-file.ts` module or its `exportKramaFile`/`importKramaFile`
+exports, the IndexedDB database name (`krama`), the `krama-v2` service worker cache
+version, or the `krama-compose-layer` / `krama-pose-detail-layer` / `krama_sequence`
+localStorage keys.
+
+**Why:** Those identifiers are load-bearing for already-saved and already-exported user
+data. Renaming them would silently break existing `.krama.json` exports and in-browser
+state with no user-facing benefit — the rename is a branding change, not a data model
+change.

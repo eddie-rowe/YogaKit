@@ -383,7 +383,7 @@ function DimensionsForm() {
                       disabled={loading}
                       className={inputBase}
                     >
-                      <option value="">—</option>
+                      <option value="">-</option>
                       <option value="morning">Morning</option>
                       <option value="midday">Midday</option>
                       <option value="afternoon">Afternoon</option>

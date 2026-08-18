@@ -74,7 +74,7 @@
   "injury_risk": 5,
   "breathing_cues": {
     "entering": "Settle the weight of both sitting bones evenly toward the floor. On an exhale, allow the pelvis to descend between the two legs without forcing alignment. Let the hips find their natural position.",
-    "holding": "Breathe evenly, allowing the ribcage to soften and the pelvis to open with each exhale. Notice the contrasting sensations — outer hip on the front leg, inner thigh and hip flexor on the back leg — and invite equal release in both directions.",
+    "holding": "Breathe evenly, allowing the ribcage to soften and the pelvis to open with each exhale. Notice the contrasting sensations: outer hip on the front leg, inner thigh and hip flexor on the back leg, and invite equal release in both directions.",
     "exiting": "On an inhale, use the hands to press the floor and lift the hips. Draw both knees together gently before switching sides or lying down for rebound."
   },
   "before_poses": [
@@ -146,7 +146,7 @@
     {
       "emotion": "integration",
       "tcm_organ": "liver",
-      "notes": "The unique combination of simultaneous external and internal rotation invites integration of opposing forces — the liver meridian governs the smooth flow of qi and the harmonizing of inner contradictions."
+      "notes": "The unique combination of simultaneous external and internal rotation invites integration of opposing forces; the liver meridian governs the smooth flow of qi and the harmonizing of inner contradictions."
     },
     {
       "emotion": "stored pelvic emotion",

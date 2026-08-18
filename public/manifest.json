@@ -1,6 +1,6 @@
 {
-  "name": "Krama — Yoga Sequence Builder",
-  "short_name": "Krama",
+  "name": "YogaKit: Yoga Sequence Builder",
+  "short_name": "YogaKit",
   "description": "Free, open-source yoga sequencing tool for teachers.",
   "start_url": "/",
   "display": "standalone",
