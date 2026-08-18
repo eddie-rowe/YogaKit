@@ -1,0 +1,169 @@
+{
+  "slug": "reclining-twist",
+  "sanskrit": "Supta Matsyendrasana",
+  "english": "Reclining Twist",
+  "aliases": [
+    "Supine Spinal Twist",
+    "Jathara Parivartanasana"
+  ],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
+      "cue_notes": "Lie on your back. Draw one knee to the chest then guide it across the body with the opposite hand while extending the same-side arm out to the side. Look away from the knee if cervical rotation is comfortable. Allow gravity to deepen the twist rather than pulling the knee down. Keep both shoulder blades in contact with the floor if possible. Hold each side."
+    }
+  ],
+  "body_position": "supine",
+  "meridians": [
+    "gallbladder",
+    "stomach"
+  ],
+  "element": "wood",
+  "energetic_quality": [
+    "opening",
+    "calming"
+  ],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": [
+    "constructive-rest",
+    "savasana"
+  ],
+  "rebound_pose": "constructive-rest",
+  "contraindications": [
+    "herniated-disc",
+    "sacroiliac-joint"
+  ],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Targets the thoracolumbar fascia, paraspinal muscles, and outer hip. The gallbladder meridian courses the lateral body; the stomach meridian runs along the anterior thigh and abdomen.",
+  "type_tags": [
+    "twist",
+    "outer-hip",
+    "sacrum-release",
+    "neck-release",
+    "restorative"
+  ],
+  "muscle_groups": [
+    "obliques",
+    "lumbar-spine",
+    "thoracic-spine",
+    "cervical-spine",
+    "spinal-erectors",
+    "IT-band",
+    "glutes",
+    "piriformis",
+    "sacroiliac-ligaments",
+    "posterior-shoulder",
+    "rhomboids"
+  ],
+  "complexity": 3,
+  "injury_risk": 4,
+  "breathing_cues": {
+    "entering": "Draw the knee to the chest on an exhale, then guide it across the body on the next exhale — let each out-breath be the vehicle for rotating deeper.",
+    "holding": "Use the inhale to feel length in the spine — imagining space between each vertebra — and use the exhale to allow the thoracic spine to soften a little further into the rotation. The shoulder reaching back toward the floor can soften with each exhale.",
+    "exiting": "On an inhale, bring the knee back to center and pause in constructive rest for two full breath cycles before switching sides."
+  },
+  "before_poses": [
+    "constructive-rest",
+    "windshield-wipers",
+    "happy-baby",
+    "legs-up-the-wall"
+  ],
+  "after_poses": [
+    "twisted-roots",
+    "constructive-rest",
+    "savasana",
+    "windshield-wipers"
+  ],
+  "joint_action": [
+    "internal_rotation",
+    "lateral_flexion",
+    "compression"
+  ],
+  "primary_joints_involved": [
+    "lumbar",
+    "thoracic",
+    "sacroiliac",
+    "hip",
+    "shoulder",
+    "neck"
+  ],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Bolster under top knee",
+      "description": "Place a bolster or folded blanket under the top knee to reduce the depth of the spinal rotation and offload the sacroiliac joint, making the pose safer for sensitive SI joints or herniated discs.",
+      "props_used": [
+        "bolster"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Blanket between knees",
+      "description": "Stack a blanket between the knees for a more supported version that reduces hip adduction and creates better lumbar neutrality.",
+      "props_used": [
+        "blanket"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "No cervical rotation",
+      "description": "Keep the gaze neutral (looking at the ceiling) rather than turning the head away from the knee, reducing demand on the cervical spine for students with neck issues.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Reduced rotation range",
+      "description": "Instead of bringing the knee all the way across the body, stop when the lumbar just begins to rotate — staying in a shallower range targets the thoracolumbar fascia without compressing the SI joint.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "balancing",
+    "pitta": "balancing",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "anger",
+      "tcm_organ": "liver",
+      "notes": "Lateral rotation of the spine and hip compresses and then releases the gallbladder and liver meridian territory. Pent-up frustration and anger stored along the lateral body can surface, especially on the right side (liver)."
+    },
+    {
+      "emotion": "frustration",
+      "tcm_organ": "gallbladder",
+      "notes": "The gallbladder governs decision-making and the capacity to move forward. Long holds in this twist can release chronic holding in the lateral hip and lumbar associated with rumination and stuckness."
+    },
+    {
+      "emotion": "letting go",
+      "tcm_organ": "liver",
+      "notes": "The spiraling action of the spine is inherently a releasing movement. Invite students to use each exhale as a micro-release of something they are ready to let go of."
+    }
+  ],
+  "sequencing_position": [
+    "cooldown",
+    "integration"
+  ],
+  "chakras": [
+    "solar-plexus",
+    "heart"
+  ],
+  "base_of_support": ["back"],
+  "orientation": "supine",
+  "cog_height": "floor",
+  "spinal_action": "rotation",
+  "plane": "transverse",
+  "level": "low",
+  "zone": "mid-reach",
+  "energetic_direction": "langhana",
+  "intensity": 2,
+  "default_measure": { "seconds": 120 }
+}

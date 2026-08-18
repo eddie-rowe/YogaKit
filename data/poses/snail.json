@@ -1,0 +1,168 @@
+{
+  "slug": "snail",
+  "sanskrit": "Halasana",
+  "english": "Snail Pose",
+  "aliases": [
+    "Yin Halasana",
+    "Snail",
+    "Karnapidasana variation"
+  ],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": {
+        "min": 3,
+        "max": 8
+      },
+      "cue_notes": "From a seated position, roll back bringing the knees toward the floor behind the head (like Plow/Halasana but allowing the knees to bend and the spine to fully round). Support the lower back with the hands or rest the arms alongside the body. The entire posterior spinal chain — from sacrum to occiput — receives the stretch. Only attempt if the shoulders are comfortable bearing some weight. Come out slowly by rolling the spine back down vertebra by vertebra."
+    }
+  ],
+  "body_position": "inverted",
+  "meridians": [
+    "kidney",
+    "bladder"
+  ],
+  "element": "water",
+  "energetic_quality": [
+    "cooling",
+    "calming",
+    "opening"
+  ],
+  "difficulty": "advanced",
+  "props_required": [],
+  "prop_free_variation": "caterpillar",
+  "counterposes": [
+    "constructive-rest",
+    "savasana"
+  ],
+  "rebound_pose": "savasana",
+  "contraindications": [
+    "glaucoma",
+    "high-blood-pressure",
+    "neck-injury",
+    "no-inversions"
+  ],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "An advanced yin inversion that deeply stresses the posterior cervical and thoracic spine. Must be approached with caution. Kidney and bladder meridians run the entire posterior chain. The prop-free accessible alternative is Caterpillar.",
+  "type_tags": [
+    "inversion",
+    "forward-fold",
+    "spinal-traction",
+    "neck-release",
+    "sacrum-release",
+    "hamstring-stretch"
+  ],
+  "muscle_groups": [
+    "lumbar-spine",
+    "thoracic-spine",
+    "cervical-spine",
+    "spinal-erectors",
+    "hamstrings",
+    "calves",
+    "plantar-fascia",
+    "sacroiliac-ligaments",
+    "rhomboids",
+    "trapezius"
+  ],
+  "complexity": 8,
+  "injury_risk": 8,
+  "breathing_cues": {
+    "entering": "Exhale fully as you roll the hips overhead, using the exhalation to create space in the posterior body before the weight arrives. Never hold the breath on the way in — continuous slow breathing helps gauge when to stop.",
+    "holding": "Breathing in this shape is naturally restricted; allow the breath to be soft and subtle, expanding laterally into the ribcage rather than forcing a deep belly breath. If breathing feels impossible, you have gone too far — back off slightly.",
+    "exiting": "On an inhale, begin to slowly roll the spine back down to the floor vertebra by vertebra, using the abdominals to control the descent rather than dropping suddenly."
+  },
+  "before_poses": [
+    "caterpillar",
+    "butterfly",
+    "dangling",
+    "half-butterfly"
+  ],
+  "after_poses": [
+    "constructive-rest",
+    "savasana",
+    "legs-up-the-wall"
+  ],
+  "joint_action": [
+    "flexion",
+    "traction",
+    "inversion",
+    "compression"
+  ],
+  "primary_joints_involved": [
+    "cervical",
+    "thoracic",
+    "lumbar",
+    "sacroiliac",
+    "hip",
+    "knee",
+    "shoulder"
+  ],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Legs Less Overhead",
+      "description": "Rather than bringing the knees all the way to the floor behind the head, allow them to hover in a position that is sustainable — even just rolling into plow with bent knees is sufficient. NEVER force the knees to the floor.",
+      "accessibility_level": "intermediate"
+    },
+    {
+      "name": "Supported Against a Wall",
+      "description": "Practice near a wall so the feet can rest against it rather than the floor, allowing the student to control the degree of inversion and posterior spinal compression without risk of collapsing too far.",
+      "accessibility_level": "intermediate"
+    },
+    {
+      "name": "Caterpillar as Accessible Alternative",
+      "description": "Caterpillar (seated forward fold) targets the same kidney and bladder meridians along the entire posterior chain without inversion, making it the go-to alternative for those with contraindications.",
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Blanket Under Shoulders",
+      "description": "Place a folded blanket under the shoulders (not the neck) to create a slight elevation that reduces compression at the cervical-thoracic junction.",
+      "props_used": [
+        "blanket"
+      ],
+      "accessibility_level": "intermediate"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "neutral",
+    "pitta": "balancing",
+    "kapha": "aggravating"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "grief and letting go",
+      "tcm_organ": "kidney",
+      "notes": "The full posterior body compression activates the bladder and kidney meridians, which in TCM hold ancestral fear, grief, and the will to live. Long holds can surface deep stored sorrow."
+    },
+    {
+      "emotion": "surrender",
+      "tcm_organ": "bladder",
+      "notes": "The complete inward curling of the body — a fetal-like return — invites a profound letting go of effort and control, releasing patterns held in the entire posterior fascia chain."
+    },
+    {
+      "emotion": "vulnerability",
+      "tcm_organ": "kidney",
+      "notes": "The deeply introverted nature of this shape can bring up feelings of exposure and the need for safety; teacher presence and a slow approach are essential."
+    }
+  ],
+  "sequencing_position": [
+    "peak"
+  ],
+  "chakras": [
+    "throat",
+    "third-eye"
+  ],
+  "base_of_support": ["shoulders", "knees", "hands"],
+  "orientation": "inverted",
+  "cog_height": "low",
+  "spinal_action": "flexion",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "near",
+  "energetic_direction": "langhana",
+  "intensity": 5,
+  "default_measure": { "seconds": 180 }
+}

@@ -1,0 +1,15 @@
+{
+  "element": "metal",
+  "season": "autumn",
+  "meridians": [
+    { "slug": "lung", "organ": "Lung", "element": "metal", "direction": "descending", "peak_hours": "3am–5am" },
+    { "slug": "large-intestine", "organ": "Large Intestine", "element": "metal", "direction": "ascending", "peak_hours": "5am–7am" }
+  ],
+  "themes": ["letting go", "grief", "refinement", "clarity", "boundaries", "what is essential", "release"],
+  "emotions": {
+    "balanced": "grief processed cleanly, clarity, discernment",
+    "excess": "unresolved grief, rigidity, perfectionism",
+    "deficiency": "difficulty letting go, holding on, depression"
+  },
+  "body_focus": ["chest", "lungs", "front of shoulder", "thumb-side of arm", "large intestine region (lower abdomen)", "upper chest"]
+}

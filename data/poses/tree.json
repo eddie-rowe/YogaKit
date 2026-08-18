@@ -1,0 +1,64 @@
+{
+  "slug": "tree",
+  "sanskrit": "Vrksasana",
+  "english": "Tree Pose",
+  "aliases": [],
+  "modes": [
+    {
+      "type": "yang",
+      "tissue_target": "muscular",
+      "hold_range": {
+        "min": 4,
+        "max": 8
+      },
+      "cue_notes": "Shift weight into one foot and place the opposite sole against the inner ankle, calf, or thigh (avoiding the knee joint). Press the raised foot and standing leg together to create stability. Hands may rest at heart center or reach overhead. Fix the gaze on a steady point to support balance."
+    }
+  ],
+  "body_position": "standing",
+  "energetic_quality": [
+    "grounding",
+    "calming"
+  ],
+  "difficulty": "intermediate",
+  "complexity": 4,
+  "breathing_cues": {
+    "entering": "Inhale as you root down through the standing leg and draw the other foot up along the leg.",
+    "holding": "Breathe smoothly and evenly, using each exhale to deepen the sense of rootedness.",
+    "exiting": "Exhale as you release the lifted leg back down to standing."
+  },
+  "bilateral": true,
+  "contraindications": [
+    "knee-injury",
+    "ankle-injury"
+  ],
+  "props_required": [],
+  "prop_free_variation": "Rest the raised foot's toes on the floor beside the standing ankle for a lower balance point.",
+  "source": "Traditional hatha/vinyasa yoga",
+  "base_of_support": [
+    "feet"
+  ],
+  "orientation": "upright",
+  "cog_height": "high",
+  "spinal_action": "neutral",
+  "plane": "sagittal",
+  "level": "high",
+  "zone": "near",
+  "energetic_direction": "samana",
+  "intensity": 3,
+  "default_measure": {
+    "breaths": 6
+  },
+  "type_tags": [
+    "hip-opener",
+    "integration"
+  ],
+  "muscle_groups": [
+    "hip-abductors",
+    "ankle-ligaments",
+    "glutes"
+  ],
+  "injury_risk": 2,
+  "notes": "Classic balance pose; one-sided, requires practicing on both legs. Wall or chair nearby helps beginners.",
+  "counterposes": [],
+  "rebound_pose": "mountain"
+}

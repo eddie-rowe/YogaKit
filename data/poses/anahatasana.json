@@ -1,0 +1,163 @@
+{
+  "slug": "anahatasana",
+  "sanskrit": "Anahatasana",
+  "english": "Anahatasana",
+  "aliases": [
+    "Extended Puppy Pose",
+    "Heart-to-Earth Pose",
+    "Uttana Shishosana"
+  ],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
+      "cue_notes": "From all fours, walk the hands forward while keeping the hips stacked over the knees. Allow the chest to descend toward the floor, chin or forehead resting on the mat. Arms fully extend forward. The thoracic spine extends as the heart center melts down. A bolster under the chest can reduce intensity. Unlike Child's Pose, the hips stay elevated over the knees."
+    }
+  ],
+  "body_position": "kneeling",
+  "meridians": [
+    "heart",
+    "lung"
+  ],
+  "element": "fire",
+  "energetic_quality": [
+    "opening",
+    "cooling"
+  ],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": [
+    "child-pose"
+  ],
+  "rebound_pose": "child-pose",
+  "contraindications": [
+    "low-back-injury",
+    "shoulder-injury"
+  ],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Targets the thoracic spine, anterior shoulder, and biceps fascia. Heart and lung meridians run along the inner arm and chest. Related to Melting Heart but with the hips elevated (not sitting back onto heels).",
+  "type_tags": [
+    "backbend",
+    "heart-opener",
+    "chest-opener",
+    "shoulder-opener",
+    "spinal-traction",
+    "restorative"
+  ],
+  "muscle_groups": [
+    "thoracic-spine",
+    "anterior-shoulder",
+    "chest-pectorals",
+    "lats",
+    "intercostals",
+    "rhomboids",
+    "cervical-spine"
+  ],
+  "complexity": 4,
+  "injury_risk": 4,
+  "breathing_cues": {
+    "entering": "Walk the hands forward on an exhale, allowing the sternum to descend toward the earth with the outgoing breath. Let each exhalation carry the heart a little closer to the floor without forcing.",
+    "holding": "Breathe deeply into the front of the chest, expanding the pectorals and intercostals with each inhale. Each exhale softens the thoracic spine further into extension. Allow the breath to become wide and spacious across the collarbones.",
+    "exiting": "On an inhale, press gently through the palms and walk the hands back, slowly restacking the spine into a neutral all-fours position."
+  },
+  "before_poses": [
+    "child-pose",
+    "wide-knee-child",
+    "thread-needle",
+    "melting-heart"
+  ],
+  "after_poses": [
+    "child-pose",
+    "thread-needle",
+    "sphinx",
+    "seal"
+  ],
+  "joint_action": [
+    "extension",
+    "traction",
+    "external_rotation",
+    "compression"
+  ],
+  "primary_joints_involved": [
+    "thoracic",
+    "shoulder",
+    "lumbar",
+    "cervical",
+    "wrist"
+  ],
+  "nervous_system_effect": "neutral",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Folded Blanket Under Chest",
+      "description": "Place a folded blanket or thin bolster under the chest to reduce the degree of thoracic extension and provide a resting surface, making the pose more restorative.",
+      "props_used": [
+        "blanket"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Arms on Blocks",
+      "description": "Rest the forearms on blocks instead of extending them fully along the floor. This reduces shoulder flexion demand and is useful for those with tight anterior shoulders or rotator cuff issues.",
+      "props_used": [
+        "blocks"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Child's Pose Variation",
+      "description": "Allow the hips to slide back toward the heels, transitioning toward child's pose. This removes the thoracic extension component and is suitable as the very first stage of approach.",
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Forehead on Stacked Fists",
+      "description": "Rest the forehead on stacked fists rather than the mat to avoid compression of the cervical spine in those with neck sensitivity, while maintaining the heart-opening shape.",
+      "accessibility_level": "intermediate"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "balancing",
+    "pitta": "neutral",
+    "kapha": "balancing"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "grief",
+      "tcm_organ": "lung",
+      "notes": "The lung meridian runs through the anterior shoulder and upper chest; opening this region in a sustained yin hold can surface stored grief and sadness that is held in the chest and upper arms."
+    },
+    {
+      "emotion": "love and compassion",
+      "tcm_organ": "heart",
+      "notes": "Anahata is the heart chakra; this pose directly opens the heart center, inviting qualities of self-compassion, connection, and warmth to emerge."
+    },
+    {
+      "emotion": "vulnerability",
+      "tcm_organ": "lung",
+      "notes": "The exposed and opened chest can bring up a sense of emotional vulnerability; the supported, gravity-assisted nature of the pose makes this a gentler invitation than deeper backbends."
+    }
+  ],
+  "sequencing_position": [
+    "building"
+  ],
+  "chakras": [
+    "heart",
+    "throat"
+  ],
+  "base_of_support": ["hands", "knees"],
+  "orientation": "upright",
+  "cog_height": "low",
+  "spinal_action": "extension",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "far",
+  "energetic_direction": "langhana",
+  "intensity": 2,
+  "default_measure": { "seconds": 120 }
+}

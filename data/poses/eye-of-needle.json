@@ -1,0 +1,154 @@
+{
+  "slug": "eye-of-needle",
+  "sanskrit": "Sucirandhrasana",
+  "english": "Eye of the Needle",
+  "aliases": [
+    "Sucirandhrasana",
+    "Supine Pigeon",
+    "Figure Four"
+  ],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
+      "cue_notes": "Lie on your back with knees bent. Cross one ankle over the opposite thigh just above the knee, flexing the foot. Either stay here (first stage) or draw the bottom leg toward the chest by threading the hands through or around the thigh. The crossed-leg hip is in external rotation; the piriformis and lateral hip rotators receive the stretch. Hold each side."
+    }
+  ],
+  "body_position": "supine",
+  "meridians": [
+    "gallbladder"
+  ],
+  "element": "wood",
+  "energetic_quality": [
+    "opening",
+    "cooling",
+    "calming"
+  ],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": [
+    "constructive-rest",
+    "windshield-wipers"
+  ],
+  "rebound_pose": "constructive-rest",
+  "contraindications": [
+    "hip-injury"
+  ],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "base_of_support": ["back"],
+  "orientation": "supine",
+  "cog_height": "floor",
+  "spinal_action": "neutral",
+  "plane": "multi",
+  "level": "low",
+  "zone": "near",
+  "energetic_direction": "langhana",
+  "intensity": 2,
+  "default_measure": { "seconds": 120 },
+  "notes": "The supine accessible alternative to Sleeping Swan / Yin Pigeon. Targets the piriformis and external hip rotators along the gallbladder meridian without the knee-to-floor pressure of the prone version.",
+  "type_tags": [
+    "hip-opener",
+    "outer-hip",
+    "restorative",
+    "sacrum-release"
+  ],
+  "muscle_groups": [
+    "piriformis",
+    "glutes",
+    "hip-abductors",
+    "IT-band",
+    "sacroiliac-ligaments",
+    "lumbar-spine"
+  ],
+  "complexity": 3,
+  "injury_risk": 3,
+  "breathing_cues": {
+    "entering": "As you cross the ankle over the thigh, exhale and gently flex the foot. If drawing the leg toward you, inhale first to create space, then exhale as you draw in, feeling the outer hip open.",
+    "holding": "Direct the breath into the outer hip and buttock of the crossed leg. Each exhale can deepen the surrender in the piriformis without pulling. Allow any gripping in the glutes to soften with each breath cycle.",
+    "exiting": "On an inhale, release the grip on the thigh and allow the foot to lower back to the floor, uncrossing the ankle on the exhale."
+  },
+  "before_poses": [
+    "happy-baby",
+    "constructive-rest",
+    "windshield-wipers",
+    "reclining-twist"
+  ],
+  "after_poses": [
+    "sleeping-swan",
+    "shoelace",
+    "twisted-roots",
+    "constructive-rest"
+  ],
+  "joint_action": [
+    "external_rotation",
+    "flexion",
+    "abduction"
+  ],
+  "primary_joints_involved": [
+    "hip",
+    "sacroiliac",
+    "knee",
+    "lumbar"
+  ],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Foot on Floor — First Stage",
+      "description": "Keep the bottom foot flat on the floor rather than drawing the leg in. This reduces the intensity of hip external rotation and is the ideal starting position for beginners or those with tight hips.",
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Strap Around Raised Leg",
+      "description": "Loop a strap around the bottom thigh and hold the ends to draw the leg in without straining the arms or shoulders, useful for those with limited arm reach or shoulder sensitivity.",
+      "props_used": [
+        "strap"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Blanket Under Head",
+      "description": "Place a folded blanket under the head to support a neutral cervical spine, particularly important for those who strain the neck when lying flat.",
+      "props_used": [
+        "blanket"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Recline Against Wall",
+      "description": "Practice with the bottom foot resting against a wall rather than being held in the hands, allowing the hip to open passively without any upper body effort.",
+      "accessibility_level": "intermediate"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "balancing",
+    "pitta": "balancing",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "frustration and anger",
+      "tcm_organ": "gallbladder",
+      "notes": "The gallbladder meridian runs along the outer hip and lateral leg; the piriformis and IT band region is a classic storage site for unexpressed frustration and the wood element's thwarted forward movement."
+    },
+    {
+      "emotion": "control and release",
+      "tcm_organ": "gallbladder",
+      "notes": "The gallbladder governs decision-making and planning; surrendering the outer hip in this supine shape can invite a release of the need to control outcomes and plans."
+    }
+  ],
+  "sequencing_position": [
+    "opening",
+    "cooldown"
+  ],
+  "chakras": [
+    "root",
+    "sacral"
+  ]
+}

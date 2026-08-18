@@ -1,0 +1,171 @@
+{
+  "slug": "butterfly",
+  "sanskrit": "Baddha Konasana",
+  "english": "Butterfly",
+  "aliases": [
+    "Baddha Konasana",
+    "Bound Angle Pose",
+    "Cobbler's Pose"
+  ],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
+      "cue_notes": "Sit with the soles of the feet together and allow the knees to fall open. Let the spine round forward in a C-curve — this is yin butterfly, not the upright yang version. Allow the head to hang toward the feet. Place hands on the feet or let them rest on the floor. The inner groin and back body should both be receiving the stretch."
+    }
+  ],
+  "body_position": "seated",
+  "meridians": [
+    "kidney",
+    "liver"
+  ],
+  "element": "water",
+  "energetic_quality": [
+    "opening",
+    "cooling",
+    "calming"
+  ],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": [
+    "constructive-rest",
+    "windshield-wipers"
+  ],
+  "rebound_pose": "constructive-rest",
+  "contraindications": [
+    "hip-injury"
+  ],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "In yin style, the spine rounds forward rather than staying upright. This stresses the posterior spinal ligaments and inner groin connective tissues. Kidney and liver meridians run the inner thigh and groin.",
+  "type_tags": [
+    "forward-fold",
+    "hip-opener",
+    "groin-opener",
+    "hamstring-stretch",
+    "spinal-traction",
+    "restorative"
+  ],
+  "muscle_groups": [
+    "hip-adductors",
+    "hamstrings",
+    "lumbar-spine",
+    "thoracic-spine",
+    "spinal-erectors",
+    "sacroiliac-ligaments"
+  ],
+  "complexity": 3,
+  "injury_risk": 3,
+  "breathing_cues": {
+    "entering": "Take a full inhale to lengthen the spine. On a slow exhale, allow the torso to drape forward over the feet, releasing muscular control and letting gravity do the work.",
+    "holding": "Breathe naturally and softly. With each exhale, invite a little more release in the inner groin and lower back. Avoid deepening with the breath — simply allow the tissues to yield over time.",
+    "exiting": "On an inhale, use the hands to gently press into the floor and slowly roll the spine upright, stacking one vertebra at a time."
+  },
+  "before_poses": [
+    "child-pose",
+    "constructive-rest",
+    "supta-baddha-konasana",
+    "wide-knee-child"
+  ],
+  "after_poses": [
+    "half-butterfly",
+    "caterpillar",
+    "straddle",
+    "deer"
+  ],
+  "joint_action": [
+    "flexion",
+    "abduction",
+    "external_rotation",
+    "traction"
+  ],
+  "primary_joints_involved": [
+    "hip",
+    "knee",
+    "sacroiliac",
+    "lumbar",
+    "thoracic"
+  ],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Bolster Under Knees",
+      "description": "Place a bolster or folded blanket under each knee to reduce the load on the inner groin and hip joint, allowing the adductor tendons to release without strain.",
+      "props_used": [
+        "bolster",
+        "blanket"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Sit on Folded Blanket",
+      "description": "Elevate the hips by sitting on a folded blanket or block to reduce posterior pelvic tilt and make the forward fold more accessible for those with tight hamstrings or lower back sensitivity.",
+      "props_used": [
+        "blanket",
+        "block"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Arms Extended Forward",
+      "description": "Walk the hands forward along the floor beyond the feet rather than holding the feet, creating a longer forward fold and increased spinal traction through the thoracic spine.",
+      "props_used": [],
+      "accessibility_level": "intermediate"
+    },
+    {
+      "name": "Supported Head Rest",
+      "description": "Place a bolster or block under the forehead to support the head and reduce neck strain, allowing the cervical spine to decompress passively.",
+      "props_used": [
+        "bolster",
+        "block"
+      ],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "balancing",
+    "pitta": "balancing",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "fear",
+      "tcm_organ": "kidney",
+      "notes": "The kidney meridian runs the inner groin and adductor line; stored fear and insecurity can surface as the inner thigh connective tissues release over time."
+    },
+    {
+      "emotion": "grief",
+      "tcm_organ": "liver",
+      "notes": "The liver meridian traces the inner thigh and groin crease; unresolved grief and unexpressed emotion may be held in this tissue layer."
+    },
+    {
+      "emotion": "sadness",
+      "tcm_organ": "liver",
+      "notes": "The forward draping position and inner hip crease release can evoke stored sadness, particularly when held for extended periods in stillness."
+    }
+  ],
+  "sequencing_position": [
+    "opening",
+    "building"
+  ],
+  "chakras": [
+    "root",
+    "sacral"
+  ],
+  "base_of_support": ["sitbones", "feet"],
+  "orientation": "upright",
+  "cog_height": "low",
+  "spinal_action": "flexion",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "near",
+  "energetic_direction": "langhana",
+  "intensity": 2,
+  "default_measure": { "seconds": 120 }
+}

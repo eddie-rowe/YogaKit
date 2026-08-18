@@ -1,0 +1,172 @@
+{
+  "slug": "saddle",
+  "sanskrit": "Supta Virasana",
+  "english": "Saddle Pose",
+  "aliases": [
+    "Supta Virasana",
+    "Reclined Hero",
+    "Full Saddle"
+  ],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": {
+        "min": 3,
+        "max": 7
+      },
+      "cue_notes": "Kneel with feet wider than hips and lower the hips between the feet (or onto a bolster if hips don't reach the floor). Then recline backward onto forearms or all the way down onto the floor or bolster. This creates an intense stretch of the anterior thighs and hip flexors. Ensure both knees stay on the floor if possible. If there is sharp knee pain, place a folded blanket in the back of the knee crease or come out of the pose."
+    }
+  ],
+  "body_position": "seated",
+  "meridians": [
+    "stomach"
+  ],
+  "element": "earth",
+  "energetic_quality": [
+    "opening",
+    "stimulating"
+  ],
+  "difficulty": "intermediate",
+  "props_required": [
+    "bolster"
+  ],
+  "prop_free_variation": "half-saddle",
+  "counterposes": [
+    "child-pose",
+    "caterpillar"
+  ],
+  "rebound_pose": "child-pose",
+  "contraindications": [
+    "herniated-disc",
+    "hip-injury",
+    "knee-injury",
+    "low-back-injury"
+  ],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "One of the most intense yin poses for the anterior thigh and lumbar spine. The stomach meridian runs the entire front of the thigh. Proceed very slowly — this pose can strain the knees if approached too quickly.",
+  "type_tags": [
+    "backbend",
+    "quad-stretch",
+    "hip-flexor-release",
+    "spinal-compression",
+    "heart-opener",
+    "ankle-opener"
+  ],
+  "muscle_groups": [
+    "quadriceps",
+    "psoas",
+    "iliacus",
+    "hip-flexors",
+    "lumbar-spine",
+    "ankle-ligaments",
+    "tibialis-anterior",
+    "achilles"
+  ],
+  "complexity": 7,
+  "injury_risk": 7,
+  "breathing_cues": {
+    "entering": "Exhale slowly as you begin to recline backward, letting gravity do the work rather than muscling down. Pause on any inhale if you encounter sharp resistance — breathe into the front of the thighs and allow the tissues to soften before continuing.",
+    "holding": "Allow the breath to become natural and full. Notice how each exhale deepens the release in the anterior thigh without forcing. Let the ribcage expand three-dimensionally with each inhale, avoiding the urge to suck in the belly.",
+    "exiting": "On an inhale, press firmly into the palms or forearms and slowly rise, allowing the spine to stack one vertebra at a time."
+  },
+  "before_poses": [
+    "toe-squat",
+    "half-saddle",
+    "dragon-low-lunge",
+    "half-frog"
+  ],
+  "after_poses": [
+    "child-pose",
+    "caterpillar",
+    "windshield-wipers",
+    "constructive-rest"
+  ],
+  "joint_action": [
+    "extension",
+    "flexion",
+    "compression"
+  ],
+  "primary_joints_involved": [
+    "lumbar",
+    "sacroiliac",
+    "hip",
+    "knee",
+    "ankle",
+    "toes"
+  ],
+  "nervous_system_effect": "neutral",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Half-Saddle First",
+      "description": "Practice half-saddle on each side before attempting full saddle to gradually prepare the quadriceps, knee joint capsule, and lumbar spine.",
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Bolster Between Legs or Under Sit Bones",
+      "description": "Place a bolster lengthwise between the legs or under the sit bones so the hips rest on support rather than descending fully to the floor, significantly reducing knee and lumbar compression.",
+      "props_used": [
+        "bolster"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Reclining on a Bolster",
+      "description": "Rather than lying flat on the floor, recline backward onto a bolster placed lengthwise along the spine. This reduces the degree of lumbar extension and anterior thigh stretch.",
+      "props_used": [
+        "bolster"
+      ],
+      "accessibility_level": "intermediate"
+    },
+    {
+      "name": "Blanket Under Ankles",
+      "description": "Fold a blanket and place it under the ankles to reduce plantar flexion stress and protect the ankle ligaments and tops of the feet.",
+      "props_used": [
+        "blanket"
+      ],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "aggravating",
+    "pitta": "aggravating",
+    "kapha": "balancing"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "grief and unprocessed loss",
+      "tcm_organ": "stomach",
+      "notes": "The stomach meridian runs the entire anterior thigh; deep compression here can surface unprocessed grief, longing, and loss held in the front body."
+    },
+    {
+      "emotion": "vulnerability",
+      "tcm_organ": "heart",
+      "notes": "The fully exposed front body — chest, belly, throat — can evoke feelings of vulnerability and the need for protection; extended holds can invite a gradual opening to trust."
+    },
+    {
+      "emotion": "courage",
+      "tcm_organ": "stomach",
+      "notes": "Meeting the intensity of this pose with steady breath cultivates courage and willingness to face discomfort — a quality associated with the earth element's capacity to nourish and sustain."
+    }
+  ],
+  "sequencing_position": [
+    "peak"
+  ],
+  "chakras": [
+    "sacral",
+    "heart",
+    "throat"
+  ],
+  "base_of_support": ["knees", "sitbones", "forearms"],
+  "orientation": "upright",
+  "cog_height": "low",
+  "spinal_action": "extension",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "far",
+  "energetic_direction": "brahmana",
+  "intensity": 4,
+  "default_measure": { "seconds": 180 }
+}

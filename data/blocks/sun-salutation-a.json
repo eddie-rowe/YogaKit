@@ -1,0 +1,16 @@
+{
+  "slug": "sun-salutation-a",
+  "name": "Sun Salutation A",
+  "members": [
+    { "poseSlug": "mountain", "measure": { "breaths": 1 } },
+    { "poseSlug": "standing-forward-fold", "measure": { "breaths": 1 } },
+    { "poseSlug": "halfway-lift", "measure": { "breaths": 1 } },
+    { "poseSlug": "plank", "measure": { "breaths": 1 } },
+    { "poseSlug": "chaturanga", "measure": { "breaths": 1 } },
+    { "poseSlug": "up-dog", "measure": { "breaths": 1 } },
+    { "poseSlug": "down-dog", "measure": { "breaths": 5 } },
+    { "poseSlug": "halfway-lift", "measure": { "breaths": 1 } },
+    { "poseSlug": "standing-forward-fold", "measure": { "breaths": 1 } },
+    { "poseSlug": "mountain", "measure": { "breaths": 1 } }
+  ]
+}

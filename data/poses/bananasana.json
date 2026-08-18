@@ -1,0 +1,155 @@
+{
+  "slug": "bananasana",
+  "sanskrit": "Bananasana",
+  "english": "Bananasana",
+  "aliases": [
+    "Crescent Moon Pose",
+    "Lateral Crescent"
+  ],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
+      "cue_notes": "Lie on your back and keep the hips anchored to the floor. Walk both feet to the right and then bring both arms overhead and toward the right as well, creating a lateral crescent (banana) shape. Cross the right ankle over the left for additional side-body stretch. Hold each side. The entire lateral line — from hip to armpit — should feel the stretch."
+    }
+  ],
+  "body_position": "supine",
+  "meridians": [
+    "liver",
+    "gallbladder"
+  ],
+  "element": "wood",
+  "energetic_quality": [
+    "opening",
+    "cooling"
+  ],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": [
+    "constructive-rest",
+    "savasana"
+  ],
+  "rebound_pose": "constructive-rest",
+  "contraindications": [],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Targets the lateral fascial line including the QL, intercostals, and lateral hip. Liver and gallbladder meridians run the inner and outer aspects of the lateral body.",
+  "type_tags": [
+    "lateral-stretch",
+    "outer-hip",
+    "restorative",
+    "neck-release"
+  ],
+  "muscle_groups": [
+    "obliques",
+    "intercostals",
+    "IT-band",
+    "hip-abductors",
+    "lumbar-spine",
+    "thoracic-spine",
+    "cervical-spine",
+    "lats",
+    "diaphragm"
+  ],
+  "complexity": 3,
+  "injury_risk": 3,
+  "breathing_cues": {
+    "entering": "Exhale to anchor the hips, then on the next inhale slowly walk the arms overhead — let the breath create the arc of the pose rather than muscle effort.",
+    "holding": "With each inhale, feel the intercostal spaces on the upper side widen and expand laterally — the breath itself deepens the stretch. On the exhale, the ribs soften and the side body lengthens further.",
+    "exiting": "Inhale the arms back toward center first, then exhale to bring the feet back to neutral before switching sides."
+  },
+  "before_poses": [
+    "constructive-rest",
+    "windshield-wipers",
+    "reclining-twist",
+    "supta-baddha-konasana"
+  ],
+  "after_poses": [
+    "constructive-rest",
+    "reclining-twist",
+    "twisted-roots",
+    "savasana"
+  ],
+  "joint_action": [
+    "lateral_flexion",
+    "traction",
+    "adduction"
+  ],
+  "primary_joints_involved": [
+    "lumbar",
+    "thoracic",
+    "sacroiliac",
+    "hip",
+    "shoulder"
+  ],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "intermediate",
+  "modifications": [
+    {
+      "name": "Less pronounced arc",
+      "description": "Walk feet and arms only slightly to the side to reduce the lateral stretch intensity, suitable for students with rib or intercostal sensitivity.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Arms alongside body",
+      "description": "Keep arms resting alongside the body rather than overhead to remove shoulder and cervical strain while retaining the lateral hip and QL stretch.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Bolster under upper torso",
+      "description": "Place a bolster diagonally under the ribs and side torso to provide passive support and reduce the depth of the lateral crescent.",
+      "props_used": [
+        "bolster"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "No ankle cross",
+      "description": "Omit crossing the ankles to reduce the lateral hip component, focusing the stretch purely on the torso and intercostals.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "balancing",
+    "pitta": "balancing",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "grief",
+      "tcm_organ": "lung",
+      "notes": "The intercostal and lateral chest stretch accesses the lung meridian territory. Grief and unprocessed sadness are stored here according to TCM; long holds may release sighing, tears, or spontaneous deep breathing."
+    },
+    {
+      "emotion": "suppressed anger",
+      "tcm_organ": "liver",
+      "notes": "The liver and gallbladder meridians run the lateral body. Frustration and unexpressed anger that become stored as lateral body tension may surface here, particularly in the IT band and outer hip."
+    }
+  ],
+  "sequencing_position": [
+    "building",
+    "cooldown"
+  ],
+  "chakras": [
+    "sacral",
+    "heart"
+  ],
+  "base_of_support": ["back", "feet"],
+  "orientation": "supine",
+  "cog_height": "floor",
+  "spinal_action": "lateral",
+  "plane": "coronal",
+  "level": "low",
+  "zone": "far",
+  "energetic_direction": "langhana",
+  "intensity": 2,
+  "default_measure": { "seconds": 120 }
+}

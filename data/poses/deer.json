@@ -1,0 +1,165 @@
+{
+  "slug": "deer",
+  "sanskrit": "Mrigasana",
+  "english": "Deer Pose",
+  "aliases": [
+    "Mrigasana",
+    "Sleeping Swan variation"
+  ],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
+      "cue_notes": "Sit with one leg in front at roughly a 90-degree angle (external rotation, shin parallel to the front of the mat) and the other leg behind at a 90-degree angle (internal rotation, shin extending behind). Sit between both legs. The front hip is in external rotation; the back hip is in internal rotation. The torso can be upright, hinge over the front shin, or rotate toward the back leg. Hold each side."
+    }
+  ],
+  "body_position": "seated",
+  "meridians": [
+    "liver",
+    "gallbladder"
+  ],
+  "element": "wood",
+  "energetic_quality": [
+    "opening",
+    "cooling"
+  ],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": [
+    "constructive-rest",
+    "windshield-wipers"
+  ],
+  "rebound_pose": "constructive-rest",
+  "contraindications": [
+    "hip-injury"
+  ],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "base_of_support": ["sitbones", "knees"],
+  "orientation": "upright",
+  "cog_height": "mid",
+  "spinal_action": "neutral",
+  "plane": "multi",
+  "level": "middle",
+  "zone": "mid-reach",
+  "energetic_direction": "langhana",
+  "intensity": 3,
+  "default_measure": { "seconds": 120 },
+  "notes": "Uniquely targets both hip external rotation (front leg) and hip internal rotation (back leg) simultaneously. Liver and gallbladder meridians run the inner and outer aspects of the hip and thigh.",
+  "type_tags": [
+    "hip-opener",
+    "outer-hip",
+    "groin-opener",
+    "hip-flexor-release",
+    "restorative",
+    "sacrum-release"
+  ],
+  "muscle_groups": [
+    "piriformis",
+    "glutes",
+    "hip-abductors",
+    "hip-adductors",
+    "hip-flexors",
+    "psoas",
+    "iliacus",
+    "sacroiliac-ligaments",
+    "IT-band"
+  ],
+  "complexity": 5,
+  "injury_risk": 5,
+  "breathing_cues": {
+    "entering": "Settle the weight of both sitting bones evenly toward the floor. On an exhale, allow the pelvis to descend between the two legs without forcing alignment. Let the hips find their natural position.",
+    "holding": "Breathe evenly, allowing the ribcage to soften and the pelvis to open with each exhale. Notice the contrasting sensations — outer hip on the front leg, inner thigh and hip flexor on the back leg — and invite equal release in both directions.",
+    "exiting": "On an inhale, use the hands to press the floor and lift the hips. Draw both knees together gently before switching sides or lying down for rebound."
+  },
+  "before_poses": [
+    "square",
+    "shoelace",
+    "butterfly",
+    "eye-of-needle",
+    "windshield-wipers"
+  ],
+  "after_poses": [
+    "shoelace-fold",
+    "square-fold",
+    "reclining-twist",
+    "constructive-rest"
+  ],
+  "joint_action": [
+    "external_rotation",
+    "internal_rotation",
+    "flexion",
+    "abduction",
+    "adduction"
+  ],
+  "primary_joints_involved": [
+    "hip",
+    "knee",
+    "sacroiliac",
+    "lumbar"
+  ],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Blanket Under Raised Sit Bone",
+      "description": "If one sitting bone lifts off the floor, place a folded blanket under it to level the pelvis and reduce asymmetric sacroiliac strain.",
+      "props_used": [
+        "blanket"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Reduce Forward Lean",
+      "description": "Remain upright rather than hinging over the front shin, allowing the hip capsule to receive the dual rotation load without the added demand of a forward fold.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Hands on Blocks",
+      "description": "Place blocks on either side of the front shin to support the hands and reduce the depth of the forward hinge, useful for students with sacroiliac sensitivity.",
+      "props_used": [
+        "block"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Back Leg on Bolster",
+      "description": "Place a bolster under the back thigh to reduce the degree of hip internal rotation on that side, making the pose more accessible for students with limited internal rotation range.",
+      "props_used": [
+        "bolster"
+      ],
+      "accessibility_level": "intermediate"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "balancing",
+    "pitta": "balancing",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "integration",
+      "tcm_organ": "liver",
+      "notes": "The unique combination of simultaneous external and internal rotation invites integration of opposing forces — the liver meridian governs the smooth flow of qi and the harmonizing of inner contradictions."
+    },
+    {
+      "emotion": "stored pelvic emotion",
+      "tcm_organ": "kidney",
+      "notes": "The pelvis is considered a primary holding vessel in somatic psychology; the deep bilateral hip work of Deer can release layers of stored emotion from the pelvic bowl."
+    }
+  ],
+  "sequencing_position": [
+    "building",
+    "peak"
+  ],
+  "chakras": [
+    "sacral",
+    "solar-plexus"
+  ]
+}

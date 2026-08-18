@@ -1,0 +1,175 @@
+{
+  "slug": "sleeping-swan",
+  "sanskrit": "Eka Pada Rajakapotasana",
+  "english": "Sleeping Swan",
+  "aliases": [
+    "Yin Pigeon",
+    "Swan Pose",
+    "Sleeping Pigeon"
+  ],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": {
+        "min": 3,
+        "max": 7
+      },
+      "cue_notes": "From all fours, slide one knee forward toward the same-side wrist and extend the other leg straight back. The shin of the front leg is at an angle (rather than parallel to the front of the mat for most people). Fold forward over the front shin, lowering the chest toward the floor or onto a bolster. Allow the weight of the body to gradually open the outer hip. Both hips should face the floor evenly — use a blanket under the front hip if it is elevated. Hold each side."
+    }
+  ],
+  "body_position": "kneeling",
+  "meridians": [
+    "gallbladder"
+  ],
+  "element": "wood",
+  "energetic_quality": [
+    "opening",
+    "cooling"
+  ],
+  "difficulty": "intermediate",
+  "props_required": [],
+  "prop_free_variation": "eye-of-needle",
+  "counterposes": [
+    "child-pose",
+    "constructive-rest",
+    "windshield-wipers"
+  ],
+  "rebound_pose": "constructive-rest",
+  "contraindications": [
+    "hip-injury",
+    "hip-replacement"
+  ],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "The yin yoga equivalent of Pigeon Pose. Targets the piriformis and deep lateral hip rotators along the gallbladder meridian line. Eye of Needle (supine) is the accessible alternative.",
+  "type_tags": [
+    "hip-opener",
+    "outer-hip",
+    "forward-fold",
+    "groin-opener",
+    "restorative"
+  ],
+  "muscle_groups": [
+    "piriformis",
+    "glutes",
+    "hip-abductors",
+    "IT-band",
+    "hip-adductors",
+    "psoas",
+    "sacroiliac-ligaments"
+  ],
+  "complexity": 5,
+  "injury_risk": 5,
+  "breathing_cues": {
+    "entering": "Inhale to lengthen the spine, then exhale slowly as you walk the hands forward and lower the chest toward the floor. Let each exhale carry you a little deeper into the shape — do not force.",
+    "holding": "Breathe naturally into the back of the pelvis and the outer hip. On each exhale, invite the muscles around the hip to soften and yield. If the breath becomes short or held, you have gone too deep.",
+    "exiting": "Inhale to press the hands into the floor and gently lift the chest. Use the breath to re-engage the core before shifting weight off the front hip."
+  },
+  "before_poses": [
+    "dragon-low-lunge",
+    "eye-of-needle",
+    "windshield-wipers",
+    "half-butterfly",
+    "deer"
+  ],
+  "after_poses": [
+    "twisted-dragon",
+    "child-pose",
+    "constructive-rest",
+    "reclining-twist",
+    "windshield-wipers"
+  ],
+  "joint_action": [
+    "external_rotation",
+    "flexion",
+    "abduction",
+    "compression"
+  ],
+  "primary_joints_involved": [
+    "hip",
+    "sacroiliac",
+    "knee",
+    "lumbar",
+    "ankle"
+  ],
+  "nervous_system_effect": "neutral",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Bolster Under Front Hip",
+      "description": "Place a folded blanket or bolster under the front hip if it does not reach the floor. This prevents the pelvis from tilting and distributes load more evenly across both hip joints.",
+      "props_used": [
+        "bolster",
+        "blanket"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Blanket Under Front Shin",
+      "description": "Slide a folded blanket under the front shin and knee to cushion the joint and reduce pressure on the knee ligaments, especially when the shin is at a more acute angle.",
+      "props_used": [
+        "blanket"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Supported Forward Fold on Bolster",
+      "description": "Place a bolster lengthwise over the front shin and rest the torso fully on it. This allows complete muscular release and makes long holds more sustainable for sensitive hips.",
+      "props_used": [
+        "bolster"
+      ],
+      "accessibility_level": "intermediate"
+    },
+    {
+      "name": "Eye-of-Needle (Supine Alternative)",
+      "description": "Lie on the back, cross the right ankle over the left thigh, and draw both legs toward the chest. This is a fully accessible supine substitute that targets the same outer hip tissue without any knee stress.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "neutral",
+    "pitta": "balancing",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "frustration",
+      "tcm_organ": "gallbladder",
+      "notes": "The outer hip is the primary site of the gallbladder meridian. Sustained compression here can surface long-held frustration or suppressed decision-making tension."
+    },
+    {
+      "emotion": "grief",
+      "tcm_organ": "lung",
+      "notes": "When the torso folds forward over the shin, the lung meridian line along the inner arm and chest is gently loaded. Grief and sadness may arise as the chest yields toward the floor."
+    },
+    {
+      "emotion": "vulnerability",
+      "tcm_organ": "kidney",
+      "notes": "The complete surrender required to melt the hip open can activate a deep sense of vulnerability or exposure — a hallmark of kidney-water emotional territory."
+    }
+  ],
+  "sequencing_position": [
+    "building",
+    "peak"
+  ],
+  "chakras": [
+    "sacral",
+    "root"
+  ],
+  "tradition_names": {
+    "yin": "Sleeping Swan",
+    "vinyasa": "Pigeon Prep"
+  },
+  "base_of_support": ["knees", "feet", "hands"],
+  "orientation": "upright",
+  "cog_height": "low",
+  "spinal_action": "flexion",
+  "plane": "multi",
+  "level": "low",
+  "zone": "mid-reach",
+  "energetic_direction": "langhana",
+  "intensity": 3,
+  "default_measure": { "seconds": 180 }
+}

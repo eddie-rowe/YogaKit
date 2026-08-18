@@ -1,0 +1,168 @@
+{
+  "slug": "frog",
+  "sanskrit": "Mandukasana",
+  "english": "Frog Pose",
+  "aliases": [
+    "Mandukasana",
+    "Full Frog"
+  ],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": {
+        "min": 3,
+        "max": 7
+      },
+      "cue_notes": "Begin on all fours and slowly walk the knees apart, bringing the inner edges of the feet and knees to the floor. Thighs should be roughly perpendicular to the spine. Lower onto the forearms or a bolster. Feet flex so the soles face up or out. Allow gravity to slowly widen the hips. This is an intense inner groin stretch — move in slowly. If inner knee discomfort arises, pad under the knees or reduce the width."
+    }
+  ],
+  "body_position": "prone",
+  "meridians": [
+    "kidney",
+    "bladder"
+  ],
+  "element": "water",
+  "energetic_quality": [
+    "opening",
+    "cooling"
+  ],
+  "difficulty": "intermediate",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": [
+    "child-pose",
+    "constructive-rest"
+  ],
+  "rebound_pose": "child-pose",
+  "contraindications": [
+    "hip-injury",
+    "knee-injury"
+  ],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "base_of_support": ["knees", "forearms"],
+  "orientation": "prone",
+  "cog_height": "floor",
+  "spinal_action": "neutral",
+  "plane": "coronal",
+  "level": "low",
+  "zone": "far",
+  "energetic_direction": "langhana",
+  "intensity": 4,
+  "default_measure": { "seconds": 180 },
+  "notes": "Targets the inner groin (adductors), hip flexors, and medial knee ligaments. The kidney and bladder meridians run along the inner and back leg. One of the most intense hip openers in yin yoga.",
+  "type_tags": [
+    "groin-opener",
+    "hip-opener",
+    "hip-flexor-release",
+    "quad-stretch",
+    "ankle-opener"
+  ],
+  "muscle_groups": [
+    "hip-adductors",
+    "psoas",
+    "hip-flexors",
+    "quadriceps",
+    "lumbar-spine",
+    "sacroiliac-ligaments",
+    "ankle-ligaments"
+  ],
+  "complexity": 7,
+  "injury_risk": 7,
+  "breathing_cues": {
+    "entering": "From all fours, take a slow inhale to prepare. On each exhale, walk the knees a centimeter or two wider, pausing between breaths to let the tissues respond. Never use muscular force to widen — let gravity and the exhale do the work.",
+    "holding": "Once settled, breathe slowly and deeply into the belly and inner groins. Each exhale is an opportunity to soften the adductors and inner hip fascia without straining. If you feel a burning or sharp sensation rather than a deep, dull stretch, walk the knees slightly closer together on your next exhale.",
+    "exiting": "On an inhale, press into the forearms or hands to lift the torso. Walk the knees slowly together on successive exhales. Pause in a wide-knee child's pose for several breaths before transitioning."
+  },
+  "before_poses": [
+    "half-frog",
+    "dragon-low-lunge",
+    "butterfly",
+    "supta-baddha-konasana",
+    "wide-knee-child"
+  ],
+  "after_poses": [
+    "child-pose",
+    "wide-knee-child",
+    "constructive-rest",
+    "windshield-wipers"
+  ],
+  "joint_action": [
+    "abduction",
+    "external_rotation",
+    "flexion",
+    "compression"
+  ],
+  "primary_joints_involved": [
+    "hip",
+    "knee",
+    "ankle",
+    "sacroiliac",
+    "lumbar"
+  ],
+  "nervous_system_effect": "neutral",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Blankets Under Knees",
+      "description": "Place folded blankets or a doubled mat under both knees to cushion the medial knee and reduce pressure on the joint capsule. Essential for students with any knee sensitivity.",
+      "props_used": [
+        "blanket"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Bolster Under Torso",
+      "description": "Place a bolster lengthwise under the chest and belly so the torso is supported rather than suspended. This removes upper body effort entirely and allows the hips to release more fully.",
+      "props_used": [
+        "bolster"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Narrower Knee Width",
+      "description": "Keep the knees only slightly wider than hip-width rather than fully abducted. This reduces the intensity of the adductor stretch significantly and is the appropriate starting point for most students.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Blocks Under Chest",
+      "description": "Place two blocks (one for each hand or stacked for height) under the chest to elevate the torso and reduce the downward gravitational pull on the inner groins. Allows students to regulate intensity precisely.",
+      "props_used": [
+        "block"
+      ],
+      "accessibility_level": "intermediate"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "neutral",
+    "pitta": "aggravating",
+    "kapha": "balancing"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "fear",
+      "tcm_organ": "kidney",
+      "notes": "The inner thigh and groin region is associated with the kidney meridian in TCM. The vulnerable position (wide open hips, face toward the floor) can surface deep fear, particularly existential or sexual vulnerability."
+    },
+    {
+      "emotion": "shame",
+      "tcm_organ": "kidney",
+      "notes": "The exposure of the inner groin and pelvic region in this posture can activate body shame or stored sexual emotions. The kidney's association with primal survival emotions makes this a common site of held shame."
+    },
+    {
+      "emotion": "surrender",
+      "tcm_organ": "liver",
+      "notes": "The extreme intensity of the pose and the requirement to yield rather than force makes frog a powerful teacher of surrender. The liver meridian runs along the inner thigh — releasing here is releasing the grip of the controlling mind."
+    }
+  ],
+  "sequencing_position": [
+    "building",
+    "peak"
+  ],
+  "chakras": [
+    "sacral",
+    "root"
+  ]
+}

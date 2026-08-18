@@ -1,0 +1,66 @@
+{
+  "slug": "chaturanga",
+  "sanskrit": "Chaturanga Dandasana",
+  "english": "Four-Limbed Staff Pose",
+  "aliases": ["Low Plank", "Chaturanga"],
+  "modes": [
+    {
+      "type": "yang",
+      "tissue_target": "muscular",
+      "hold_range": { "min": 1, "max": 3 },
+      "cue_notes": "From plank, bend the elbows straight back at roughly a 90-degree angle, hugging them close to the ribs rather than flaring outward. Keep the body in one plank-length line — no dropping the hips, no lifting them — and hover a few inches above the mat. Gaze slightly forward, shoulders no lower than elbow height to protect the shoulder joint."
+    }
+  ],
+  "body_position": "prone",
+  "energetic_quality": ["heating", "stimulating"],
+  "difficulty": "advanced",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["child-pose"],
+  "rebound_pose": "child-pose",
+  "contraindications": ["wrist-injury", "shoulder-injury", "rotator-cuff", "elbow-injury", "carpal-tunnel"],
+  "bilateral": false,
+  "source": "Traditional hatha/vinyasa yoga",
+  "notes": "One of the most commonly misaligned vinyasa transitions; shallow bends and elbow flare are frequent teaching points. Beginners are usually cued to lower knees-chest-chin instead of a full hover.",
+  "type_tags": ["integration"],
+  "muscle_groups": ["anterior-shoulder", "chest-pectorals", "obliques", "wrist-extensors", "quadriceps"],
+  "complexity": 7,
+  "injury_risk": 6,
+  "breathing_cues": {
+    "entering": "Exhale as you shift weight forward and bend the elbows to lower halfway, keeping the descent controlled rather than a drop.",
+    "holding": "This is typically a single-breath transition; if pausing, breathe shallowly and evenly, keeping the core engaged.",
+    "exiting": "Inhale to press forward and up into upward-facing dog, rolling over the toes, or lower fully to the mat to rest."
+  },
+  "before_poses": ["plank"],
+  "after_poses": ["up-dog", "cobra"],
+  "joint_action": ["flexion", "extension", "compression"],
+  "primary_joints_involved": ["shoulder", "elbow", "wrist", "lumbar"],
+  "nervous_system_effect": "sympathetic",
+  "tissue_depth": "intermediate",
+  "modifications": [
+    {
+      "name": "Knees-Chest-Chin",
+      "description": "Lower the knees to the mat first, then lower chest and chin toward the floor while keeping elbows hugged in, reducing load while learning the bend pattern.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Blocks Under Shoulders",
+      "description": "Place yoga blocks under the shoulders to limit the depth of the lower and protect against collapsing too far.",
+      "props_used": ["block"],
+      "accessibility_level": "intermediate"
+    }
+  ],
+  "dosha_affinity": { "vata": "aggravating", "pitta": "neutral", "kapha": "balancing" },
+  "sequencing_position": ["building", "peak"],
+  "base_of_support": ["hands", "feet"],
+  "orientation": "prone",
+  "cog_height": "low",
+  "spinal_action": "neutral",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "far",
+  "energetic_direction": "brahmana",
+  "intensity": 4,
+  "default_measure": { "breaths": 1 }
+}

@@ -1,0 +1,156 @@
+{
+  "slug": "dragon-high-lunge",
+  "sanskrit": "Utthita Ashwa Sanchalanasana",
+  "english": "Dragon Flying High",
+  "aliases": [
+    "High Dragon",
+    "High Lunge Yin",
+    "Dragon High Lunge"
+  ],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
+      "cue_notes": "From a low lunge, curl the back toes under and lift the back knee off the floor. The back leg remains straight. Sink the hips forward and down, keeping the front knee over the ankle. Arms can reach overhead or hands can rest on the front thigh. This position creates a strong stretch in the hip flexor and psoas of the back leg, with less knee-to-floor contact than Low Dragon. Hold each side."
+    }
+  ],
+  "body_position": "standing",
+  "meridians": [
+    "stomach"
+  ],
+  "element": "earth",
+  "energetic_quality": [
+    "opening",
+    "stimulating",
+    "heating"
+  ],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": [
+    "child-pose",
+    "constructive-rest"
+  ],
+  "rebound_pose": "constructive-rest",
+  "contraindications": [
+    "hip-injury"
+  ],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "base_of_support": ["feet"],
+  "orientation": "upright",
+  "cog_height": "high",
+  "spinal_action": "extension",
+  "plane": "multi",
+  "level": "high",
+  "zone": "far",
+  "energetic_direction": "brahmana",
+  "intensity": 3,
+  "default_measure": { "seconds": 120 },
+  "notes": "A standing variant of the Dragon lunge family that lifts the back knee. More muscularly engaging than Low Dragon while still creating deep hip flexor opening. Stomach meridian along the anterior thigh.",
+  "type_tags": [
+    "hip-flexor-release",
+    "hip-opener",
+    "groin-opener",
+    "quad-stretch",
+    "backbend"
+  ],
+  "muscle_groups": [
+    "psoas",
+    "iliacus",
+    "hip-flexors",
+    "quadriceps",
+    "hip-adductors",
+    "calves",
+    "achilles",
+    "lumbar-spine"
+  ],
+  "complexity": 5,
+  "injury_risk": 5,
+  "breathing_cues": {
+    "entering": "From low lunge, inhale to curl the back toes under, then exhale to lift the back knee and straighten the back leg. Allow the hips to settle downward with the next exhale.",
+    "holding": "Breathe into the deep hip crease and the front of the back-leg thigh. The inhale subtly lifts the chest; the exhale releases weight through the pelvis toward the floor. Keep the breath steady to prevent the quad from gripping.",
+    "exiting": "Inhale to root through the front foot, then exhale as you lower the back knee to the floor or step back to all fours."
+  },
+  "before_poses": [
+    "dragon-low-lunge",
+    "child-pose",
+    "toe-squat",
+    "ankle-stretch",
+    "constructive-rest"
+  ],
+  "after_poses": [
+    "twisted-dragon",
+    "sleeping-swan",
+    "child-pose",
+    "constructive-rest",
+    "reclining-twist"
+  ],
+  "joint_action": [
+    "extension",
+    "flexion",
+    "compression",
+    "traction"
+  ],
+  "primary_joints_involved": [
+    "hip",
+    "knee",
+    "ankle",
+    "lumbar",
+    "sacroiliac",
+    "shoulder"
+  ],
+  "nervous_system_effect": "neutral",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Hands on Front Thigh",
+      "description": "Rather than reaching arms overhead, place both hands on the front thigh. This removes shoulder engagement, reduces balance demand, and allows more attention to be directed into the hip flexor opening.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Blocks Under Hands",
+      "description": "Keep hands on blocks at the highest setting alongside the front foot. This option removes all shoulder and balance demand and is ideal for students who cannot yet maintain a lifted back leg comfortably.",
+      "props_used": [
+        "blocks"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Back Knee Lowered",
+      "description": "Return the back knee to the floor (reverting to Low Dragon) to reduce intensity. This is the immediate regression when balance is challenging or hip flexor sensation is too strong.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "balancing",
+    "pitta": "neutral",
+    "kapha": "balancing"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "fear",
+      "tcm_organ": "kidney",
+      "notes": "Like Low Dragon, the upright psoas stretch can surface survival-based fear. The more activating, standing position may bring a sense of courage alongside the release."
+    },
+    {
+      "emotion": "courage",
+      "tcm_organ": "kidney",
+      "notes": "The upright, expansive position of High Dragon can evoke a sense of moving forward into life — the positive expression of the kidney-water transition from fear to willingness."
+    }
+  ],
+  "sequencing_position": [
+    "building",
+    "peak"
+  ],
+  "chakras": [
+    "root",
+    "sacral"
+  ]
+}

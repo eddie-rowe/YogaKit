@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Yoga Kit Contraindication Vocabulary",
+  "description": "Canonical 29-slug contraindication vocabulary. Pose files may only reference slugs in this list.",
+  "type": "array",
+  "items": {
+    "type": "string",
+    "enum": [
+      "high-blood-pressure",
+      "low-blood-pressure",
+      "glaucoma",
+      "pregnancy",
+      "no-inversions",
+      "neck-injury",
+      "shoulder-injury",
+      "wrist-injury",
+      "elbow-injury",
+      "low-back-injury",
+      "mid-back-injury",
+      "hip-replacement",
+      "hip-injury",
+      "knee-injury",
+      "ankle-injury",
+      "sacroiliac-joint",
+      "osteoporosis",
+      "herniated-disc",
+      "scoliosis",
+      "meniscus-injury",
+      "rotator-cuff",
+      "carpal-tunnel",
+      "sciatica",
+      "fibromyalgia",
+      "arthritis",
+      "multiple-sclerosis",
+      "vertigo",
+      "lymphedema",
+      "deep-vein-thrombosis"
+    ]
+  }
+}

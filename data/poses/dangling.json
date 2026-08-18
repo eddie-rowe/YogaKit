@@ -1,0 +1,172 @@
+{
+  "slug": "dangling",
+  "sanskrit": "Uttanasana",
+  "english": "Dangling",
+  "aliases": [
+    "Yin Uttanasana",
+    "Standing Forward Fold",
+    "Uttanasana"
+  ],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
+      "cue_notes": "Stand with feet hip-width apart and fold forward, bending the knees generously. Grab opposite elbows and let the head, neck, and upper body hang completely. The weight of the torso creates gentle spinal traction. Bend the knees as much as needed to release the hamstrings and low back. This is a hanging, dangling sensation rather than a straight-leg hamstring stretch."
+    }
+  ],
+  "body_position": "standing",
+  "meridians": [
+    "kidney",
+    "bladder"
+  ],
+  "element": "water",
+  "energetic_quality": [
+    "cooling",
+    "calming",
+    "opening"
+  ],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": [
+    "bridge-yin",
+    "supported-fish"
+  ],
+  "rebound_pose": "constructive-rest",
+  "contraindications": [
+    "herniated-disc",
+    "high-blood-pressure",
+    "sciatica"
+  ],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "base_of_support": ["feet"],
+  "orientation": "upright",
+  "cog_height": "high",
+  "spinal_action": "flexion",
+  "plane": "sagittal",
+  "level": "high",
+  "zone": "near",
+  "energetic_direction": "langhana",
+  "intensity": 2,
+  "default_measure": { "seconds": 120 },
+  "notes": "A standing yin forward fold emphasizing spinal decompression through gravitational hanging. Kidney and bladder meridians run the posterior chain. The mild inversion aspect requires caution for high blood pressure.",
+  "type_tags": [
+    "forward-fold",
+    "spinal-traction",
+    "hamstring-stretch",
+    "inversion",
+    "neck-release",
+    "restorative"
+  ],
+  "muscle_groups": [
+    "hamstrings",
+    "calves",
+    "lumbar-spine",
+    "thoracic-spine",
+    "cervical-spine",
+    "spinal-erectors",
+    "sacroiliac-ligaments"
+  ],
+  "complexity": 3,
+  "injury_risk": 3,
+  "breathing_cues": {
+    "entering": "Inhale to stand tall, then exhale to slowly hinge forward at the hips and bend the knees generously. Let the torso hang heavy on the next exhale, releasing the neck completely.",
+    "holding": "Allow the breath to move naturally in the back body. Each exhale lengthens the spine downward through gravity. The head and arms remain completely passive — no muscular effort in the neck or shoulders.",
+    "exiting": "Inhale to firm the feet into the floor and begin to roll slowly up through the spine, stacking one vertebra at a time. Keep the knees soft and the head the last to rise."
+  },
+  "before_poses": [
+    "caterpillar",
+    "half-butterfly",
+    "butterfly",
+    "constructive-rest",
+    "child-pose"
+  ],
+  "after_poses": [
+    "caterpillar",
+    "constructive-rest",
+    "reclining-twist",
+    "savasana",
+    "legs-up-the-wall"
+  ],
+  "joint_action": [
+    "flexion",
+    "traction",
+    "inversion"
+  ],
+  "primary_joints_involved": [
+    "lumbar",
+    "thoracic",
+    "cervical",
+    "hip",
+    "knee",
+    "ankle",
+    "neck",
+    "shoulder"
+  ],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Knees More Bent",
+      "description": "Bend the knees generously — even deeply — to completely release the hamstrings and low back from any stretch tension. This converts the pose from a hamstring stretch into a pure spinal decompression.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Hands on Blocks",
+      "description": "Place blocks on the floor and rest the hands on them rather than holding the elbows. This shortens the distance to the floor and is useful for students with very tight posterior chains.",
+      "props_used": [
+        "blocks"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Rag Doll — Hold Opposite Elbows",
+      "description": "Clasp opposite elbows overhead and allow the entire arm girdle to hang passively. The added weight of the arms deepens the gravitational traction on the cervical and thoracic spine.",
+      "props_used": [],
+      "accessibility_level": "intermediate"
+    },
+    {
+      "name": "Lean Against Wall",
+      "description": "Stand with the back of the thighs resting lightly against a wall and fold forward. The wall provides stability and prevents swaying, which is helpful for students who feel unsteady in the fold.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "balancing",
+    "pitta": "balancing",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "letting go",
+      "tcm_organ": "bladder",
+      "notes": "The complete surrender of the posterior body to gravity — head, neck, arms all hanging — is one of the most direct somatic expressions of releasing control. The bladder meridian runs the entire back body from head to heel."
+    },
+    {
+      "emotion": "grief",
+      "tcm_organ": "kidney",
+      "notes": "The kidney meridian ascends the posterior chain through the lumbar and sacrum. The decompression of the lumbar spine can release held grief or deep exhaustion stored in the kidney-water system."
+    },
+    {
+      "emotion": "trust",
+      "tcm_organ": "kidney",
+      "notes": "Yielding completely to gravity requires trusting the body and the ground beneath it. This quality of releasing into support can mirror a broader emotional shift toward trust and ease."
+    }
+  ],
+  "sequencing_position": [
+    "opening",
+    "building",
+    "cooldown"
+  ],
+  "chakras": [
+    "root",
+    "third-eye"
+  ]
+}

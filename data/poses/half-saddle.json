@@ -1,0 +1,160 @@
+{
+  "slug": "half-saddle",
+  "sanskrit": "Ardha Supta Virasana",
+  "english": "Half Saddle",
+  "aliases": [
+    "Ardha Supta Virasana",
+    "One-Legged Saddle"
+  ],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
+      "cue_notes": "From a kneeling position, extend one leg straight forward while keeping the other knee bent with the foot beside the hip. Recline backward onto forearms or the floor. A bolster under the lower back can reduce intensity. The anterior thigh and hip flexor of the bent-leg side receive the stretch. The extended leg can remain straight or bend at the knee. Hold each side."
+    }
+  ],
+  "body_position": "seated",
+  "meridians": [
+    "stomach"
+  ],
+  "element": "earth",
+  "energetic_quality": [
+    "opening",
+    "stimulating"
+  ],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": [
+    "child-pose",
+    "caterpillar"
+  ],
+  "rebound_pose": "child-pose",
+  "contraindications": [
+    "knee-injury",
+    "low-back-injury"
+  ],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "A more accessible version of Saddle targeting one side at a time. Less lumbar compression than full Saddle. The stomach meridian runs the anterior thigh of the bent-knee leg.",
+  "type_tags": [
+    "backbend",
+    "quad-stretch",
+    "hip-flexor-release",
+    "spinal-compression",
+    "heart-opener",
+    "ankle-opener"
+  ],
+  "muscle_groups": [
+    "quadriceps",
+    "psoas",
+    "iliacus",
+    "hip-flexors",
+    "lumbar-spine",
+    "hamstrings",
+    "ankle-ligaments"
+  ],
+  "complexity": 5,
+  "injury_risk": 5,
+  "breathing_cues": {
+    "entering": "Exhale as you lower yourself back onto your forearms, softening the front of the bent-leg thigh with each breath out. Move only on exhalations and pause to breathe if you encounter strong resistance.",
+    "holding": "Breathe fully into the belly and the front of the thigh. Each exhale can invite a small additional release in the quadriceps and hip flexor without muscling deeper. Let the breath be your guide — shallow or held breath signals too much intensity.",
+    "exiting": "Inhale to prepare, then press into the hands and rise slowly, keeping the weight evenly distributed as you return to upright."
+  },
+  "before_poses": [
+    "toe-squat",
+    "dragon-low-lunge",
+    "dragon-sitting",
+    "half-frog"
+  ],
+  "after_poses": [
+    "saddle",
+    "child-pose",
+    "caterpillar",
+    "constructive-rest"
+  ],
+  "joint_action": [
+    "extension",
+    "flexion",
+    "compression"
+  ],
+  "primary_joints_involved": [
+    "lumbar",
+    "hip",
+    "knee",
+    "ankle",
+    "sacroiliac"
+  ],
+  "nervous_system_effect": "neutral",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Bolster Beside Hip",
+      "description": "Place a bolster alongside the bent-knee hip so the pelvis can rest on it rather than descending fully to the floor, reducing knee and lumbar compression.",
+      "props_used": [
+        "bolster"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Folded Blanket Under Knee",
+      "description": "Tuck a folded blanket into the back of the bent knee crease to relieve pressure on the joint capsule and meniscus.",
+      "props_used": [
+        "blanket"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Lean on Hands Instead of Reclining",
+      "description": "Rather than lying back, remain propped on both hands behind the hips. This is the least intense version and appropriate for those new to the shape or with significant quadriceps tightness.",
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Recline onto Bolster",
+      "description": "Place a bolster lengthwise behind the bent-knee side and recline onto it rather than the floor, providing a supported backbend with reduced lumbar extension.",
+      "props_used": [
+        "bolster"
+      ],
+      "accessibility_level": "intermediate"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "neutral",
+    "pitta": "neutral",
+    "kapha": "balancing"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "grief and unprocessed loss",
+      "tcm_organ": "stomach",
+      "notes": "Like full saddle, the stomach meridian along the anterior thigh holds patterns of longing and unresolved grief; the unilateral approach is more accessible and less overwhelming."
+    },
+    {
+      "emotion": "processing and integration",
+      "tcm_organ": "stomach",
+      "notes": "Working one side at a time allows greater discernment and internal awareness, supporting the earth element's quality of transformation and assimilation of experience."
+    }
+  ],
+  "sequencing_position": [
+    "building",
+    "peak"
+  ],
+  "chakras": [
+    "sacral",
+    "heart"
+  ],
+  "base_of_support": ["sitbones", "forearms"],
+  "orientation": "upright",
+  "cog_height": "low",
+  "spinal_action": "extension",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "mid-reach",
+  "energetic_direction": "brahmana",
+  "intensity": 3,
+  "default_measure": { "seconds": 120 }
+}

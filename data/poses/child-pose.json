@@ -1,0 +1,170 @@
+{
+  "slug": "child-pose",
+  "sanskrit": "Balasana",
+  "english": "Child's Pose",
+  "aliases": [
+    "Balasana",
+    "Child Pose",
+    "Extended Child's Pose"
+  ],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
+      "cue_notes": "Kneel with toes together and knees together (or hip-width for more space). Sit back toward the heels and fold the torso forward, forehead to the floor or a bolster. Arms extend forward or rest alongside the body. A bolster between the thighs and chest reduces compression. Allow the sacrum to widen and the lower back to release. Breathe into the back body."
+    }
+  ],
+  "body_position": "kneeling",
+  "meridians": [
+    "kidney"
+  ],
+  "element": "water",
+  "energetic_quality": [
+    "grounding",
+    "calming",
+    "cooling"
+  ],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": [],
+  "rebound_pose": "constructive-rest",
+  "contraindications": [
+    "herniated-disc",
+    "knee-injury",
+    "pregnancy"
+  ],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Primary counterpose after backbends and hip openers. Decompresses the lumbar spine and sacrum. Kidney meridian runs along the inner thigh and sacral area. Wide-knee variation acceptable in pregnancy.",
+  "type_tags": [
+    "forward-fold",
+    "spinal-traction",
+    "hip-opener",
+    "restorative",
+    "integration",
+    "sacrum-release"
+  ],
+  "muscle_groups": [
+    "lumbar-spine",
+    "sacroiliac-ligaments",
+    "spinal-erectors",
+    "hip-flexors",
+    "glutes",
+    "thoracic-spine"
+  ],
+  "complexity": 2,
+  "injury_risk": 2,
+  "breathing_cues": {
+    "entering": "Exhale to fold forward and lower the forehead down. Let the exhale carry the weight of the body toward the heels — no muscular effort needed.",
+    "holding": "Breathe into the back of the ribcage and the sacrum. Feel the back body rise on the inhale and soften on the exhale. The belly rests passively between the thighs.",
+    "exiting": "Inhale to walk the hands back toward the knees and gently press up to a kneeling position."
+  },
+  "before_poses": [
+    "sleeping-swan",
+    "dragon-low-lunge",
+    "dragon-high-lunge",
+    "twisted-dragon",
+    "toe-squat"
+  ],
+  "after_poses": [
+    "wide-knee-child",
+    "constructive-rest",
+    "thread-needle",
+    "reclining-twist",
+    "savasana"
+  ],
+  "joint_action": [
+    "flexion",
+    "traction",
+    "compression"
+  ],
+  "primary_joints_involved": [
+    "hip",
+    "knee",
+    "ankle",
+    "lumbar",
+    "thoracic",
+    "shoulder"
+  ],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "intermediate",
+  "modifications": [
+    {
+      "name": "Arms Alongside Body",
+      "description": "Rest the arms alongside the body with palms facing up rather than extending them forward. This eliminates shoulder engagement entirely and is more restful for students with shoulder tension.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Bolster Under Torso",
+      "description": "Place a bolster lengthwise under the torso so the chest and belly rest on it. This lifts the floor to meet the body and is essential for pregnant students and those with lumbar disc sensitivity.",
+      "props_used": [
+        "bolster"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Blanket Behind Knees",
+      "description": "Tuck a rolled blanket into the crease behind the knees before folding forward. This reduces the degree of knee flexion and is invaluable for students with knee compression sensitivity.",
+      "props_used": [
+        "blanket"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Pillow or Block Under Forehead",
+      "description": "Place a block or folded blanket under the forehead to support the head without neck compression. This is particularly helpful when the forehead does not comfortably reach the floor.",
+      "props_used": [
+        "block",
+        "blanket"
+      ],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "balancing",
+    "pitta": "balancing",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "safety",
+      "tcm_organ": "kidney",
+      "notes": "The fetal position of Child's Pose activates a primal safety response in the nervous system. The enclosed posture signals protection and can quickly calm anxiety and overwhelm."
+    },
+    {
+      "emotion": "grief",
+      "tcm_organ": "kidney",
+      "notes": "The compression of the back body and lumbar area loads the kidney meridian line. Unexpressed grief or deep sadness may surface during extended holds, particularly with breath directed into the back body."
+    },
+    {
+      "emotion": "surrender",
+      "tcm_organ": "lung",
+      "notes": "Folding forward and lowering the head below the heart encourages the release of control. The lung meridian's theme of letting go can be consciously invited through the forward-bowing shape."
+    }
+  ],
+  "sequencing_position": [
+    "opening",
+    "cooldown",
+    "integration"
+  ],
+  "chakras": [
+    "root",
+    "third-eye"
+  ],
+  "base_of_support": ["knees", "feet"],
+  "orientation": "upright",
+  "cog_height": "low",
+  "spinal_action": "flexion",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "near",
+  "energetic_direction": "langhana",
+  "intensity": 1,
+  "default_measure": { "seconds": 120 }
+}

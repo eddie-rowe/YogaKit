@@ -1,0 +1,154 @@
+{
+  "slug": "windshield-wipers",
+  "sanskrit": "Supta",
+  "english": "Windshield Wipers",
+  "aliases": [
+    "Supine Spinal Twist Variation",
+    "Knees-Side-to-Side"
+  ],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
+      "cue_notes": "Lie on your back with knees bent, feet flat. Let both knees fall to one side, allowing a gentle spinal rotation. Hold each side. Can also be done dynamically (sweeping knees side to side) as a transition or warm-up. For yin, hold each side passively and let the weight of the legs create the rotation."
+    }
+  ],
+  "body_position": "supine",
+  "base_of_support": ["back", "feet"],
+  "orientation": "supine",
+  "cog_height": "floor",
+  "spinal_action": "rotation",
+  "plane": "transverse",
+  "level": "low",
+  "zone": "mid-reach",
+  "energetic_direction": "langhana",
+  "intensity": 1,
+  "default_measure": { "seconds": 120 },
+  "meridians": [
+    "gallbladder"
+  ],
+  "element": "wood",
+  "energetic_quality": [
+    "opening",
+    "calming"
+  ],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": [
+    "constructive-rest"
+  ],
+  "rebound_pose": "constructive-rest",
+  "contraindications": [
+    "sacroiliac-joint"
+  ],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "A gentle lateral spinal rotation targeting the outer hip and IT band. The gallbladder meridian runs along the lateral body. Often used as a transition pose between supine postures or after deeper hip openers.",
+  "type_tags": [
+    "twist",
+    "outer-hip",
+    "sacrum-release",
+    "restorative"
+  ],
+  "muscle_groups": [
+    "IT-band",
+    "glutes",
+    "piriformis",
+    "hip-abductors",
+    "obliques",
+    "lumbar-spine",
+    "thoracic-spine",
+    "sacroiliac-ligaments",
+    "spinal-erectors"
+  ],
+  "complexity": 3,
+  "injury_risk": 2,
+  "breathing_cues": {
+    "entering": "Exhale to let the knees fall to one side — the exhale is what releases the rotation; avoid using muscular effort to push the knees down.",
+    "holding": "Each inhale gently lifts the ribs and creates a small counter-rotation in the thorax; each exhale allows the lumbar and sacral region to soften deeper into the twist. Notice the space between each vertebra opening.",
+    "exiting": "Inhale the knees back to center on the breath — use the core rather than momentum — then exhale and allow them to fall to the opposite side."
+  },
+  "before_poses": [
+    "constructive-rest",
+    "happy-baby",
+    "supta-baddha-konasana",
+    "legs-up-the-wall"
+  ],
+  "after_poses": [
+    "reclining-twist",
+    "twisted-roots",
+    "constructive-rest",
+    "savasana"
+  ],
+  "joint_action": [
+    "internal_rotation",
+    "external_rotation",
+    "lateral_flexion"
+  ],
+  "primary_joints_involved": [
+    "sacroiliac",
+    "lumbar",
+    "hip",
+    "knee"
+  ],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "intermediate",
+  "modifications": [
+    {
+      "name": "Feet wider apart",
+      "description": "Place feet wider than hips before letting the knees fall, reducing the intensity of the hip rotation and making the pose more accessible for sensitive SI joints.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Bolster between knees",
+      "description": "Place a bolster or folded blanket between the thighs before dropping to one side, creating a supported version that reduces the range of lumbar rotation.",
+      "props_used": [
+        "bolster"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Dynamic sweeping",
+      "description": "Use the pose dynamically — sweep knees from side to side with the breath — as a warming or transitional movement rather than a static yin hold.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Hand guidance",
+      "description": "Use the opposite hand to gently guide the top knee toward the floor, adding a small amount of assisted depth for students who want more intensity in the outer hip.",
+      "props_used": [],
+      "accessibility_level": "intermediate"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "balancing",
+    "pitta": "neutral",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "tension",
+      "tcm_organ": "gallbladder",
+      "notes": "The gallbladder meridian governs decision-making and indecision; lateral spinal rotation releases holding patterns in the lumbar and sacrum associated with chronic stress and over-control."
+    },
+    {
+      "emotion": "adaptability",
+      "tcm_organ": "liver",
+      "notes": "The fluid, yielding quality of this pose — letting the legs drop by their own weight — teaches the nervous system to trust surrender over control, a key theme of wood-element work."
+    }
+  ],
+  "sequencing_position": [
+    "opening",
+    "cooldown"
+  ],
+  "chakras": [
+    "sacral",
+    "root"
+  ]
+}

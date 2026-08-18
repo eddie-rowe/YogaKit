@@ -1,0 +1,15 @@
+{
+  "element": "earth",
+  "season": "late-summer",
+  "meridians": [
+    { "slug": "stomach", "organ": "Stomach", "element": "earth", "direction": "descending", "peak_hours": "7am–9am" },
+    { "slug": "spleen", "organ": "Spleen", "element": "earth", "direction": "ascending", "peak_hours": "9am–11am" }
+  ],
+  "themes": ["nourishment", "groundedness", "digestion", "centering", "self-care", "harvest", "stability"],
+  "emotions": {
+    "balanced": "empathy, nurturing, centeredness",
+    "excess": "worry, over-thinking, neediness",
+    "deficiency": "lack of self-nourishment, anxiety, poor boundaries"
+  },
+  "body_focus": ["front of hip (hip flexors)", "quadriceps", "shin", "stomach region", "inner leg (spleen)", "plantar fascia"]
+}

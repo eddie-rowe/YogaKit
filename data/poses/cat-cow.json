@@ -1,0 +1,66 @@
+{
+  "slug": "cat-cow",
+  "sanskrit": "Marjaryasana-Bitilasana",
+  "english": "Cat-Cow",
+  "aliases": ["Cat Pose", "Cow Pose"],
+  "modes": [
+    {
+      "type": "yang",
+      "tissue_target": "muscular",
+      "hold_range": { "min": 3, "max": 8 },
+      "cue_notes": "From a neutral all-fours position with wrists under shoulders and knees under hips, flow between rounding the spine toward the ceiling and tucking the chin (cat) and arching the spine so the belly drops and the chest and tailbone lift (cow). Move slowly and continuously with the breath, letting the movement originate from the tailbone and travel through the entire spine to the crown."
+    }
+  ],
+  "body_position": "kneeling",
+  "energetic_quality": ["grounding", "calming"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": [],
+  "rebound_pose": null,
+  "contraindications": ["wrist-injury", "neck-injury"],
+  "bilateral": false,
+  "source": "Traditional hatha/vinyasa yoga",
+  "notes": "A gentle, continuous flow rather than a static hold; treated here as a single entry representing the paired movement. Frequently used as a warm-up to mobilize the whole spine before deeper backbends or forward folds. Spinal action oscillates between flexion and extension; flexion (cat) is used as the representative default since the pose typically completes there.",
+  "type_tags": ["spinal-traction", "integration"],
+  "muscle_groups": ["spinal-erectors", "lumbar-spine", "thoracic-spine", "cervical-spine", "obliques"],
+  "complexity": 1,
+  "injury_risk": 1,
+  "breathing_cues": {
+    "entering": "Begin in neutral all-fours, spine long, weight evenly spread across the hands and knees.",
+    "holding": "Inhale to arch into cow, letting the belly soften and the gaze lift slightly. Exhale to round into cat, tucking the chin and drawing the navel up toward the spine. Let each breath drive one full movement.",
+    "exiting": "Return to a neutral spine on an inhale, pausing in all-fours before moving into the next pose."
+  },
+  "before_poses": [],
+  "after_poses": ["plank", "cobra", "child-pose"],
+  "joint_action": ["flexion", "extension"],
+  "primary_joints_involved": ["lumbar", "thoracic", "cervical", "wrist"],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "superficial",
+  "modifications": [
+    {
+      "name": "Fists or Forearms",
+      "description": "Make soft fists or come onto the forearms instead of flat palms to reduce strain on sensitive wrists.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Padded Knees",
+      "description": "Place a folded blanket under the knees for cushioning on a hard floor.",
+      "props_used": ["blanket"],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": { "vata": "balancing", "pitta": "balancing", "kapha": "neutral" },
+  "sequencing_position": ["opening", "building"],
+  "base_of_support": ["hands", "knees"],
+  "orientation": "upright",
+  "cog_height": "low",
+  "spinal_action": "flexion",
+  "plane": "sagittal",
+  "level": "middle",
+  "zone": "near",
+  "energetic_direction": "samana",
+  "intensity": 1,
+  "default_measure": { "breaths": 5 }
+}

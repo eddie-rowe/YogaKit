@@ -1,0 +1,183 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f4f1ed;
+  --surface: #fefcfb;
+  --surface-raised: #ffffff;
+  --foreground: #1c1714;
+  --border: #e2dbd4;
+  --muted: #8a7d73;
+  /* The one accent token (guardrails §2). Every other "color" in the app is either a
+     neutral (above) or a semantic data-category color on pose content, not a UI accent. */
+  --accent: #3d3530;
+  --accent-foreground: #fefcfb;
+  --warning: #92400e;
+  --warning-bg: #fef3c7;
+  --warning-border: #fde68a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-cormorant);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1a1612;
+    --surface: #242018;
+    --surface-raised: #2c2620;
+    --foreground: #f5ede3;
+    --border: #3d342c;
+    --muted: #8a7d73;
+    --accent: #d8cabb;
+    --accent-foreground: #1a1612;
+    --warning: #fbbf24;
+    --warning-bg: #3d2f0f;
+    --warning-border: #5c4a1a;
+  }
+}
+
+html, body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  /* No whole-page rubber-band / pull-to-refresh in standalone PWA — a native app
+     doesn't do this (mobile-first, Phase 0). */
+  overscroll-behavior: none;
+}
+
+/* iOS paints a grey flash box on every tap of a link or button by default. */
+a, button, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Long-press on pose names/rows should never raise the iOS copy/share sheet
+   mid-class. */
+.kk-nocallout {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Smooth height animation for expandable cards */
+.expandable-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 200ms ease;
+  overflow: hidden;
+}
+.expandable-content.open {
+  grid-template-rows: 1fr;
+}
+.expandable-content > div {
+  overflow: hidden;
+  min-height: 0;
+}
+
+input[type=range] {
+  accent-color: #3d3530;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Shared surfaces for the v0.1 app (Compose/Flows/Read/Home) — token-driven so dark
+   mode is automatic, not a separate pass. All transitions capped at 200ms, ease only
+   (guardrails §2 — no spring/bounce). */
+.kk-page {
+  background: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
+}
+
+.kk-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+.kk-btn {
+  background: var(--accent);
+  color: var(--accent-foreground);
+  border-radius: 0.5rem;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+.kk-btn:hover { opacity: 0.85; }
+.kk-btn:active { transform: scale(0.98); }
+.kk-btn:disabled { opacity: 0.4; }
+
+.kk-btn-outline {
+  background: transparent;
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+.kk-btn-outline:hover { border-color: var(--accent); }
+
+.kk-chip {
+  background: var(--surface);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+.kk-chip[data-active="true"] {
+  background: var(--accent);
+  color: var(--accent-foreground);
+  border-color: var(--accent);
+}
+
+.kk-input {
+  background: var(--surface);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  /* 16px floor — below this, Safari zooms the viewport on focus (mobile-first,
+     Phase 0). Keep this even if a parent sets a smaller text utility class. */
+  font-size: 1rem;
+}
+
+.kk-warning {
+  background: var(--warning-bg);
+  color: var(--warning);
+  border: 1px solid var(--warning-border);
+  border-radius: 0.5rem;
+}
+
+/* Stillness nodes carry reduced visual weight everywhere they appear in a flow —
+   never bolder than an active pose (guardrails §2). */
+.kk-stillness {
+  color: var(--muted);
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+/* Seam indicator between adjacent flow items — a hairline whose weight communicates
+   friction tier, never color-only (accent-neutral, per the single-accent rule). */
+.kk-seam {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  transition: color 160ms ease;
+}
+.kk-seam-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.kk-seam[data-tier="2"] .kk-seam-line { height: 2px; }
+.kk-seam[data-tier="3"] .kk-seam-line { height: 2px; background: var(--muted); }

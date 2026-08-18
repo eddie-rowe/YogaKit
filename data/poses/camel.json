@@ -1,0 +1,73 @@
+{
+  "slug": "camel",
+  "sanskrit": "Ustrasana",
+  "english": "Camel Pose",
+  "aliases": [],
+  "modes": [
+    {
+      "type": "yang",
+      "tissue_target": "muscular",
+      "hold_range": { "min": 3, "max": 8 },
+      "cue_notes": "Kneeling with hips stacked over knees, bring the hands to the low back with fingers pointing down for support, and lift the chest while drawing the elbows toward each other behind the back. Lead the backbend with the heart, keeping the hips pressing forward over the knees rather than sinking back. Only reach the hands to the heels if the low back and shoulders allow it without strain; otherwise stay supported at the low back or sacrum."
+    }
+  ],
+  "body_position": "kneeling",
+  "energetic_quality": ["heating", "opening", "stimulating"],
+  "difficulty": "intermediate",
+  "props_required": [],
+  "prop_free_variation": "Hands stay supported at the low back or sacrum instead of reaching for the heels.",
+  "counterposes": ["child-pose", "wide-knee-child"],
+  "rebound_pose": "child-pose",
+  "contraindications": ["low-back-injury", "neck-injury", "high-blood-pressure", "low-blood-pressure", "vertigo", "herniated-disc"],
+  "bilateral": false,
+  "source": "Traditional hatha/vinyasa yoga",
+  "notes": "A deep heart-opening backbend that can bring up strong emotional or dizzy sensations; teach students to come out slowly and rest afterward. Often placed near the peak of a vinyasa sequence.",
+  "type_tags": ["backbend", "heart-opener", "chest-opener"],
+  "muscle_groups": ["spinal-erectors", "lumbar-spine", "thoracic-spine", "chest-pectorals", "hip-flexors", "quadriceps"],
+  "complexity": 6,
+  "injury_risk": 6,
+  "breathing_cues": {
+    "entering": "Inhale to lift the chest and begin arching back, keeping the hips pressing forward over the knees as the hands find the low back.",
+    "holding": "Breathe fully into the open chest; keep the throat soft and avoid crunching the neck by keeping the chin slightly tucked or gaze at the tip of the nose.",
+    "exiting": "Inhale to lead with the heart and lift back up to kneeling one vertebra at a time, then rest in child's pose or wide-knee child for a moment."
+  },
+  "before_poses": ["locust", "cat-cow"],
+  "after_poses": ["child-pose", "wide-knee-child"],
+  "joint_action": ["extension"],
+  "primary_joints_involved": ["lumbar", "thoracic", "cervical", "hip", "shoulder"],
+  "nervous_system_effect": "sympathetic",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Hands at Low Back",
+      "description": "Keep the hands supported at the low back or sacrum throughout, generating the backbend without reaching for the heels.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Blocks at Heels",
+      "description": "Place yoga blocks on their tallest setting outside the heels to shorten the reach for the hands.",
+      "props_used": ["block"],
+      "accessibility_level": "intermediate"
+    },
+    {
+      "name": "Toes Tucked",
+      "description": "Tuck the toes under to raise the heels, shortening the distance for the hands to reach back.",
+      "props_used": [],
+      "accessibility_level": "intermediate"
+    }
+  ],
+  "dosha_affinity": { "vata": "aggravating", "pitta": "aggravating", "kapha": "balancing" },
+  "sequencing_position": ["peak"],
+  "chakras": ["heart"],
+  "base_of_support": ["knees"],
+  "orientation": "upright",
+  "cog_height": "mid",
+  "spinal_action": "extension",
+  "plane": "sagittal",
+  "level": "middle",
+  "zone": "far",
+  "energetic_direction": "brahmana",
+  "intensity": 4,
+  "default_measure": { "breaths": 5 }
+}

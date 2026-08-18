@@ -1,0 +1,141 @@
+{
+  "slug": "ankle-stretch",
+  "sanskrit": "Vajrasana",
+  "english": "Ankle Stretch",
+  "aliases": [
+    "Kneeling Ankle Stretch",
+    "Tops of Feet Stretch"
+  ],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
+      "cue_notes": "From a kneeling position with the tops of the feet flat on the floor, sit back onto the heels. The ankles are plantar-flexed and the shins and anterior ankles receive the stretch. Keep the body upright or lean slightly back to increase the stretch. If the stretch is too intense, slide a rolled blanket under the ankles to elevate them."
+    }
+  ],
+  "body_position": "kneeling",
+  "meridians": [
+    "stomach"
+  ],
+  "element": "earth",
+  "energetic_quality": [
+    "opening",
+    "grounding"
+  ],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": [
+    "child-pose"
+  ],
+  "rebound_pose": "child-pose",
+  "contraindications": [
+    "ankle-injury",
+    "knee-injury"
+  ],
+  "bilateral": false,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Targets the anterior ankle, shin extensors, and dorsal foot fascia. The stomach meridian runs along the anterior shin and dorsal foot. Often paired with Toe Squat in sequence.",
+  "type_tags": [
+    "ankle-opener",
+    "restorative"
+  ],
+  "muscle_groups": [
+    "ankle-ligaments",
+    "tibialis-anterior"
+  ],
+  "complexity": 3,
+  "injury_risk": 3,
+  "breathing_cues": {
+    "entering": "Inhale to kneel upright, then exhale to slowly lower the hips toward the heels, allowing the tops of the feet to receive the body's weight gradually. Pause at any point of strong sensation.",
+    "holding": "Breathe into the chest and upper back to maintain an upright torso. Each exhale softens the anterior ankle and shin. If sensation is intense, keep the breath long and slow to down-regulate the nervous system.",
+    "exiting": "Inhale to lift the hips slightly off the heels, then exhale as you rise to a neutral kneeling position. Wiggle the ankles gently before moving on."
+  },
+  "before_poses": [
+    "toe-squat",
+    "child-pose",
+    "dragon-low-lunge",
+    "constructive-rest"
+  ],
+  "after_poses": [
+    "toe-squat",
+    "dragon-low-lunge",
+    "child-pose",
+    "wide-knee-child"
+  ],
+  "joint_action": [
+    "extension",
+    "compression",
+    "eversion"
+  ],
+  "primary_joints_involved": [
+    "ankle",
+    "feet",
+    "toes",
+    "knee"
+  ],
+  "nervous_system_effect": "neutral",
+  "tissue_depth": "intermediate",
+  "modifications": [
+    {
+      "name": "Blanket Under Shins",
+      "description": "Roll a blanket and place it under the shins and ankles before sitting back. This elevates the ankle into a less extreme plantar-flexed position, making the stretch significantly more accessible.",
+      "props_used": [
+        "blanket"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Hands on Blocks",
+      "description": "Place blocks alongside the hips and use the hands to support some body weight. This reduces load through the ankle joint and allows students to fine-tune the intensity.",
+      "props_used": [
+        "blocks"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "More Upright Torso",
+      "description": "Keep the hips slightly lifted rather than sitting fully onto the heels. This reduces the angle of plantar flexion and is the gentlest entry point for students new to ankle-stretch poses.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "neutral",
+    "pitta": "neutral",
+    "kapha": "balancing"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "groundedness",
+      "tcm_organ": "stomach",
+      "notes": "The stomach meridian runs the anterior shin and dorsal foot — the opposite end of the same line stimulated in Toe Squat. Opening this pathway can reinforce felt connection to earth and embodied presence."
+    },
+    {
+      "emotion": "surrender",
+      "tcm_organ": "stomach",
+      "notes": "Sitting back onto the tops of the feet requires releasing habitual ankle rigidity. This willingness to let the foot yield can mirror a broader capacity for softening and surrender in areas of physical holding."
+    }
+  ],
+  "sequencing_position": [
+    "opening",
+    "building"
+  ],
+  "chakras": [
+    "root"
+  ],
+  "base_of_support": ["knees", "feet"],
+  "orientation": "upright",
+  "cog_height": "mid",
+  "spinal_action": "neutral",
+  "plane": "sagittal",
+  "level": "middle",
+  "zone": "near",
+  "energetic_direction": "langhana",
+  "intensity": 2,
+  "default_measure": { "seconds": 120 }
+}

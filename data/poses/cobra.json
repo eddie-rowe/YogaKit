@@ -1,0 +1,66 @@
+{
+  "slug": "cobra",
+  "sanskrit": "Bhujangasana",
+  "english": "Cobra Pose",
+  "aliases": ["Baby Cobra"],
+  "modes": [
+    {
+      "type": "yang",
+      "tissue_target": "muscular",
+      "hold_range": { "min": 3, "max": 8 },
+      "cue_notes": "Lying prone, draw the hands beneath the shoulders with elbows hugging close to the ribs. Press gently through the hands and low back muscles — not a heavy shove — to lift the chest, keeping the pubic bone and thighs grounded on the mat. Keep the lift low and gentle, elbows softly bent, shoulders drawing down away from the ears. This is a smaller, more accessible backbend than upward dog."
+    }
+  ],
+  "body_position": "prone",
+  "energetic_quality": ["heating", "opening"],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["child-pose", "cat-cow"],
+  "rebound_pose": "child-pose",
+  "contraindications": ["low-back-injury", "wrist-injury", "pregnancy", "herniated-disc"],
+  "bilateral": false,
+  "source": "Traditional hatha/vinyasa yoga",
+  "notes": "A gentler alternative to upward-facing dog, well suited to beginners, back rehab contexts, or slower vinyasa flows where a lower backbend intensity is desired.",
+  "type_tags": ["backbend", "chest-opener", "spinal-traction"],
+  "muscle_groups": ["spinal-erectors", "lumbar-spine", "chest-pectorals", "anterior-shoulder"],
+  "complexity": 2,
+  "injury_risk": 3,
+  "breathing_cues": {
+    "entering": "Inhale to press gently into the hands and lift the chest, keeping the lift led by the muscles of the back rather than a hard push of the arms.",
+    "holding": "Breathe fully into the front of the chest, feeling the ribs expand; keep the low back long rather than compressed.",
+    "exiting": "Exhale to lower the chest slowly back down to the mat, turning the head to one side to rest."
+  },
+  "before_poses": ["cat-cow"],
+  "after_poses": ["child-pose", "locust"],
+  "joint_action": ["extension"],
+  "primary_joints_involved": ["lumbar", "thoracic", "shoulder"],
+  "nervous_system_effect": "sympathetic",
+  "tissue_depth": "intermediate",
+  "modifications": [
+    {
+      "name": "Sphinx Forearms",
+      "description": "Rest on the forearms instead of pressing through the hands for a lower-intensity, more sustained backbend.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Hands Further Forward",
+      "description": "Walk the hands slightly forward of the shoulders to reduce the depth of the backbend for sensitive lower backs.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": { "vata": "neutral", "pitta": "neutral", "kapha": "balancing" },
+  "sequencing_position": ["building"],
+  "base_of_support": ["hands", "feet"],
+  "orientation": "prone",
+  "cog_height": "floor",
+  "spinal_action": "extension",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "near",
+  "energetic_direction": "brahmana",
+  "intensity": 2,
+  "default_measure": { "breaths": 5 }
+}

@@ -1,0 +1,158 @@
+{
+  "slug": "square",
+  "sanskrit": "Agnistambhasana",
+  "english": "Square Pose",
+  "aliases": [
+    "Fire Log Pose",
+    "Double Pigeon",
+    "Agnistambhasana"
+  ],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": {
+        "min": 3,
+        "max": 7
+      },
+      "cue_notes": "Sit with both shins stacked parallel, one on top of the other like two logs. The ankle of the top leg rests on the knee of the bottom leg. Both shins should be parallel and roughly horizontal. Sit upright or fold forward. If the top knee is high off the floor, place a block or blanket under it. Ensure there is no sharp pain in the knee — the stretch should be felt in the outer hip. Hold each side."
+    }
+  ],
+  "body_position": "seated",
+  "meridians": [
+    "gallbladder"
+  ],
+  "element": "wood",
+  "energetic_quality": [
+    "opening",
+    "cooling"
+  ],
+  "difficulty": "intermediate",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": [
+    "constructive-rest",
+    "windshield-wipers"
+  ],
+  "rebound_pose": "constructive-rest",
+  "contraindications": [
+    "hip-injury",
+    "knee-injury"
+  ],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "notes": "Targets the deep lateral hip rotators (piriformis, obturators) and IT band. Gallbladder meridian runs the lateral hip and thigh. The knee should feel no pain — sensation should be in the outer hip only.",
+  "type_tags": [
+    "hip-opener",
+    "outer-hip",
+    "groin-opener",
+    "restorative"
+  ],
+  "muscle_groups": [
+    "piriformis",
+    "glutes",
+    "hip-abductors",
+    "IT-band",
+    "sacroiliac-ligaments",
+    "hip-adductors"
+  ],
+  "complexity": 5,
+  "injury_risk": 5,
+  "breathing_cues": {
+    "entering": "Inhale to sit tall, then on the exhale allow the torso to settle over the stacked shins. Let the weight of the torso create a natural load into the outer hips — no forcing, only allowing.",
+    "holding": "Breathe into the outer hips and lateral pelvis. On each exhale, invite the piriformis and lateral rotators to yield. If sensations are intense, soften the breath and visualize space being created in the outer hip joint.",
+    "exiting": "On an inhale, press the hands into the floor to lift the torso. Gently unfold the legs and take a simple seated position or lie down for rebound before switching sides."
+  },
+  "before_poses": [
+    "butterfly",
+    "eye-of-needle",
+    "constructive-rest",
+    "windshield-wipers",
+    "thread-needle"
+  ],
+  "after_poses": [
+    "square-fold",
+    "shoelace",
+    "deer",
+    "windshield-wipers"
+  ],
+  "joint_action": [
+    "external_rotation",
+    "abduction",
+    "flexion",
+    "compression"
+  ],
+  "primary_joints_involved": [
+    "hip",
+    "knee",
+    "sacroiliac",
+    "lumbar"
+  ],
+  "nervous_system_effect": "parasympathetic",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Blanket Under Front Shin",
+      "description": "Place a folded blanket under the top shin to reduce the angle of shin stacking and decrease the load on the lateral knee ligaments.",
+      "props_used": [
+        "blanket"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Blocks Under Both Knees",
+      "description": "Support both knees with blocks so that neither hip is forced into deeper external rotation than the joint allows — essential for students with limited hip mobility.",
+      "props_used": [
+        "block"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Reduced Shin Overlap",
+      "description": "Instead of fully stacking the shins, keep the front ankle lower on the calf rather than at knee height, reducing the intensity for tight lateral hips.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Gentle Forward Drape",
+      "description": "From the upright position, lightly hinge the torso a few degrees forward over the stacked shins to increase load in the outer hip without a full forward fold.",
+      "props_used": [],
+      "accessibility_level": "intermediate"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "neutral",
+    "pitta": "balancing",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "frustration",
+      "tcm_organ": "gallbladder",
+      "notes": "The gallbladder meridian runs the lateral hip and IT band — a common storage site for suppressed frustration, irritability, and the energy of unexpressed decisions."
+    },
+    {
+      "emotion": "rigidity",
+      "tcm_organ": "gallbladder",
+      "notes": "The deep compression and external rotation of the hip joint can confront physical and psychological rigidity; releasing here supports mental flexibility and openness."
+    }
+  ],
+  "sequencing_position": [
+    "building",
+    "peak"
+  ],
+  "chakras": [
+    "sacral",
+    "root"
+  ],
+  "base_of_support": ["sitbones"],
+  "orientation": "upright",
+  "cog_height": "mid",
+  "spinal_action": "neutral",
+  "plane": "multi",
+  "level": "middle",
+  "zone": "near",
+  "energetic_direction": "langhana",
+  "intensity": 3,
+  "default_measure": { "seconds": 180 }
+}

@@ -1,0 +1,147 @@
+{
+  "slug": "dragon-sitting",
+  "sanskrit": "Anjaneyasana",
+  "english": "Sitting Dragon",
+  "aliases": [
+    "Seated Dragon",
+    "Dragon Sitting",
+    "Hip Flexor Seat"
+  ],
+  "modes": [
+    {
+      "type": "yin",
+      "tissue_target": "connective",
+      "hold_range": {
+        "min": 2,
+        "max": 5
+      },
+      "cue_notes": "From a low lunge, lower the back knee to the floor and bring the torso upright. Alternatively, sit with one leg extended behind and the other foot forward in a seated position. The hip flexor of the extended-back leg is the primary target. Keep the front knee stacked over the front ankle. Arms can rest on the front thigh, raise overhead, or hold the back foot for additional quad stretch. Hold each side."
+    }
+  ],
+  "body_position": "seated",
+  "meridians": [
+    "stomach",
+    "spleen"
+  ],
+  "element": "earth",
+  "energetic_quality": [
+    "opening",
+    "stimulating"
+  ],
+  "difficulty": "accessible",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": [
+    "child-pose",
+    "constructive-rest"
+  ],
+  "rebound_pose": "constructive-rest",
+  "contraindications": [],
+  "bilateral": true,
+  "source": "Traditional yin yoga; see Paul Grilley, Bernie Clark, Sarah Powers",
+  "base_of_support": ["feet", "knees", "sitbones"],
+  "orientation": "upright",
+  "cog_height": "mid",
+  "spinal_action": "neutral",
+  "plane": "multi",
+  "level": "middle",
+  "zone": "far",
+  "energetic_direction": "brahmana",
+  "intensity": 3,
+  "default_measure": { "seconds": 120 },
+  "notes": "Targets the hip flexors (psoas, iliacus, rectus femoris) from a seated or semi-kneeling position. Stomach and spleen meridians run the anterior thigh and medial leg.",
+  "type_tags": [
+    "hip-flexor-release",
+    "hip-opener",
+    "quad-stretch",
+    "groin-opener"
+  ],
+  "muscle_groups": [
+    "psoas",
+    "iliacus",
+    "hip-flexors",
+    "quadriceps",
+    "hip-adductors",
+    "lumbar-spine"
+  ],
+  "complexity": 4,
+  "injury_risk": 4,
+  "breathing_cues": {
+    "entering": "As you step into the lunge and lower the back knee, exhale completely and allow the hips to sink toward the floor with the breath. Let each exhale carry you a little deeper into the hip flexor stretch.",
+    "holding": "Allow the breath to expand into the belly and groin area. On each exhale, visualize softening the crease at the front of the back hip. Breathing should remain slow, even, and unconstricted.",
+    "exiting": "Inhale to lengthen the spine, then step the front foot back to meet the back knee on an exhale, returning to a neutral position before switching sides."
+  },
+  "before_poses": [
+    "dragon-low-lunge",
+    "dragon-high-lunge",
+    "half-saddle",
+    "toe-squat"
+  ],
+  "after_poses": [
+    "half-saddle",
+    "saddle",
+    "child-pose",
+    "constructive-rest"
+  ],
+  "joint_action": [
+    "flexion",
+    "extension",
+    "compression"
+  ],
+  "primary_joints_involved": [
+    "hip",
+    "knee",
+    "ankle",
+    "lumbar",
+    "sacroiliac"
+  ],
+  "nervous_system_effect": "neutral",
+  "tissue_depth": "deep",
+  "modifications": [
+    {
+      "name": "Blanket Under Back Knee",
+      "description": "Place a folded blanket under the back knee to cushion the joint and reduce pressure on the kneecap, making the pose accessible for those with sensitive knees.",
+      "props_used": [
+        "blanket"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Hands on Blocks",
+      "description": "Place blocks on either side of the front foot to raise the floor and allow the torso to stay more upright, reducing the demand on the hip flexors and making breath more accessible.",
+      "props_used": [
+        "blocks"
+      ],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Less Forward Lean",
+      "description": "Keep the torso fully upright rather than leaning forward over the front thigh. This reduces hip flexor intensity and is a useful starting point before progressing deeper.",
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": {
+    "vata": "balancing",
+    "pitta": "neutral",
+    "kapha": "neutral"
+  },
+  "emotional_release_potential": [
+    {
+      "emotion": "fear and survival anxiety",
+      "tcm_organ": "kidney",
+      "notes": "The psoas — the body's primary fight-or-flight muscle — attaches to the lumbar vertebrae and lesser trochanter and is intimately connected to the kidney meridian and ancestral fear responses. Long holds can release deep-seated survival tension."
+    },
+    {
+      "emotion": "grounding and security",
+      "tcm_organ": "spleen",
+      "notes": "The earth element quality of this pose — stable, low to the ground, one side at a time — cultivates a felt sense of safety and belonging, countering vata-type anxiety."
+    }
+  ],
+  "sequencing_position": [
+    "building"
+  ],
+  "chakras": [
+    "root",
+    "sacral"
+  ]
+}

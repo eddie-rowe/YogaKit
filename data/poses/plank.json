@@ -1,0 +1,66 @@
+{
+  "slug": "plank",
+  "sanskrit": "Phalakasana",
+  "english": "Plank Pose",
+  "aliases": ["Plank"],
+  "modes": [
+    {
+      "type": "yang",
+      "tissue_target": "muscular",
+      "hold_range": { "min": 1, "max": 5 },
+      "cue_notes": "Stack shoulders directly over wrists, spread the fingers wide, and press firmly through the whole hand. Draw the navel toward the spine and lengthen from heels to crown so the body forms one straight line, no sagging in the low back and no hiking the hips skyward. Legs are active, thighs lifted, heels reaching back."
+    }
+  ],
+  "body_position": "prone",
+  "energetic_quality": ["heating", "stimulating"],
+  "difficulty": "intermediate",
+  "props_required": [],
+  "prop_free_variation": null,
+  "counterposes": ["child-pose"],
+  "rebound_pose": "child-pose",
+  "contraindications": ["wrist-injury", "shoulder-injury", "carpal-tunnel", "low-back-injury"],
+  "bilateral": false,
+  "source": "Traditional hatha/vinyasa yoga",
+  "notes": "A full-body isometric hold that builds core, shoulder, and wrist stability. Commonly used as a transition point in Sun Salutations between forward fold and chaturanga.",
+  "type_tags": ["integration"],
+  "muscle_groups": ["chest-pectorals", "anterior-shoulder", "obliques", "quadriceps", "wrist-extensors"],
+  "complexity": 4,
+  "injury_risk": 4,
+  "breathing_cues": {
+    "entering": "Exhale to step or float back from a forward fold into the straight-arm plank, or shift the shoulders forward over the wrists from all fours.",
+    "holding": "Breathe steadily and evenly; resist the urge to hold the breath under the effort. Each exhale, hug the midline in a little more.",
+    "exiting": "Exhale to lower with control into chaturanga, or shift back to child's pose or downward dog."
+  },
+  "before_poses": ["cat-cow"],
+  "after_poses": ["chaturanga", "up-dog"],
+  "joint_action": ["extension", "compression"],
+  "primary_joints_involved": ["wrist", "shoulder", "elbow", "lumbar"],
+  "nervous_system_effect": "sympathetic",
+  "tissue_depth": "intermediate",
+  "modifications": [
+    {
+      "name": "Forearm Plank",
+      "description": "Lower onto the forearms to reduce wrist load while still building core and shoulder stability.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    },
+    {
+      "name": "Knees Down",
+      "description": "Lower the knees to the mat while keeping the line from knees to crown long, reducing the load on the shoulders and core.",
+      "props_used": [],
+      "accessibility_level": "accessible"
+    }
+  ],
+  "dosha_affinity": { "vata": "aggravating", "pitta": "neutral", "kapha": "balancing" },
+  "sequencing_position": ["building", "peak"],
+  "base_of_support": ["hands", "feet"],
+  "orientation": "prone",
+  "cog_height": "low",
+  "spinal_action": "neutral",
+  "plane": "sagittal",
+  "level": "low",
+  "zone": "far",
+  "energetic_direction": "brahmana",
+  "intensity": 3,
+  "default_measure": { "breaths": 1 }
+}
