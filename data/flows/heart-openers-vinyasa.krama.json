@@ -3,7 +3,7 @@
   "exported_at": "2026-08-17T00:00:00.000Z",
   "flow": {
     "id": "b79a753d-fc7c-42e7-8abc-10181fabdb12",
-    "title": "60-Minute Vinyasa — Heart Openers",
+    "title": "60-Minute Vinyasa: Heart Openers",
     "items": [
       {
         "id": "7935b491-a93d-4e7e-a414-90c8215c8f25",
@@ -33,7 +33,7 @@
         "measure": {
           "breaths": 1
         },
-        "note": "Sun Salutation A — round 1",
+        "note": "Sun Salutation A, round 1",
         "phaseId": "d0dc0110-6030-48a8-a804-98cb804e2154",
         "order": 2
       },
@@ -124,7 +124,7 @@
         "measure": {
           "breaths": 1
         },
-        "note": "Sun Salutation A — round 2 begins here; repeat the same shapes.",
+        "note": "Sun Salutation A, round 2 begins here; repeat the same shapes.",
         "phaseId": "d0dc0110-6030-48a8-a804-98cb804e2154",
         "order": 11
       },
