@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import type { Pose } from '@/lib/pipeline/types'
 import BodyDiagram from '@/components/poses/BodyDiagram'
 import { CHAKRA_DOTS } from '@/lib/pose-library/body-map'
+import * as haptics from '@/lib/haptics'
 
 interface Props {
   pose: Pose
@@ -111,7 +112,7 @@ export function DetailLayerChips({ layer, onSelect }: LayerChipsProps) {
           key={l}
           data-testid={`poses-detail-layer-${l}`}
           data-active={layer === l}
-          onClick={() => onSelect(l)}
+          onClick={() => { haptics.tick(); onSelect(l) }}
           className="kk-chip px-3 py-1 text-xs capitalize"
         >
           {l}

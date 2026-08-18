@@ -2,6 +2,20 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import {
+  DndContext,
+  PointerSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+  sortableKeyboardCoordinates,
+} from '@dnd-kit/sortable'
 import type { Pose } from '@/lib/pipeline/types'
 import type { Flow, FlowItem, LayerName, Phase } from '@/lib/flow/types'
 import { isStillnessNode } from '@/lib/flow/types'
@@ -11,7 +25,9 @@ import { buildFrictionMatrix } from '@/lib/friction'
 import { validateLite } from '@/lib/validator/lite'
 import { saveFlow, getFlow, getAllFlows } from '@/lib/storage/flow-store'
 import { CURRENT_SCHEMA_VERSION } from '@/lib/storage/krama-file'
-import { formatDuration, totalSeconds, SECONDS_PER_BREATH } from '@/lib/flow/duration'
+import { formatDuration, totalSeconds } from '@/lib/flow/duration'
+import ComposeFlowItem from './ComposeFlowItem'
+import * as haptics from '@/lib/haptics'
 
 interface Props {
   poses: Pose[]
@@ -136,6 +152,7 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
   )
 
   function setLayerAndPersist(next: LayerName) {
+    haptics.tick()
     setLayer(next)
     if (typeof window !== 'undefined') window.localStorage.setItem(LAYER_STORAGE_KEY, next)
   }
@@ -180,6 +197,29 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
       const reordered = items.map((i, idx) => ({ ...i, order: idx }))
       return { ...f, items: reordered, updatedAt: nowIso() }
     })
+  }
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  )
+
+  function handleDragStart() {
+    haptics.tick()
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    updateFlow(f => {
+      const items = [...f.items].sort((a, b) => a.order - b.order)
+      const oldIndex = items.findIndex(i => i.id === active.id)
+      const newIndex = items.findIndex(i => i.id === over.id)
+      if (oldIndex === -1 || newIndex === -1) return f
+      const reordered = arrayMove(items, oldIndex, newIndex).map((i, idx) => ({ ...i, order: idx }))
+      return { ...f, items: reordered, updatedAt: nowIso() }
+    })
+    haptics.success()
   }
 
   function updateItem(id: string, patch: Partial<FlowItem>) {
@@ -356,140 +396,35 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
               Search above to add your first pose.
             </p>
           )}
-          {sortedItems.map((item, index) => {
-            const pose = poseBySlug.get(item.poseSlug)
-            const stillness = isStillnessNode(item.poseSlug)
-            const next = sortedItems[index + 1]
-            const seam = next && pose
-              ? frictionMatrix[pose.slug]?.[next.poseSlug]
-              : undefined
-            return (
-              <div key={item.id}>
-                <div
-                  data-testid={`compose-item-${index}`}
-                  className={`kk-card px-3 py-2.5 flex flex-col gap-2 ${stillness ? 'kk-stillness' : ''}`}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="kk-nocallout text-sm font-medium flex-1">
-                      {pose ? resolveDisplayName(pose) : item.poseSlug}
-                    </span>
-                    <div data-testid={`compose-item-measure-${index}`} className="flex items-center gap-1 text-xs">
-                      <select
-                        value={item.measure.breaths != null ? 'breaths' : 'seconds'}
-                        onChange={e => {
-                          const kind = e.target.value
-                          // Convert the existing value instead of discarding it —
-                          // flipping breaths↔seconds used to silently reset to a
-                          // default (Phase 1).
-                          const measure =
-                            kind === 'breaths'
-                              ? { breaths: item.measure.seconds != null
-                                  ? Math.max(1, Math.round(item.measure.seconds / SECONDS_PER_BREATH))
-                                  : 5 }
-                              : { seconds: item.measure.breaths != null
-                                  ? item.measure.breaths * SECONDS_PER_BREATH
-                                  : 60 }
-                          updateItem(item.id, { measure })
-                        }}
-                        className="kk-input px-2 py-2"
-                      >
-                        <option value="breaths">breaths</option>
-                        <option value="seconds">seconds</option>
-                      </select>
-                      <input
-                        type="number"
-                        min={1}
-                        value={item.measure.breaths ?? item.measure.seconds ?? 0}
-                        onChange={e => {
-                          const value = e.target.value === '' ? 1 : Math.max(1, Number(e.target.value))
-                          updateItem(item.id, {
-                            measure: item.measure.breaths != null ? { breaths: value } : { seconds: value },
-                          })
-                        }}
-                        className="kk-input w-14 px-2 py-2"
-                      />
-                    </div>
-                    <button
-                      data-testid={`compose-item-reorder-up-${index}`}
-                      onClick={() => moveItem(index, -1)}
-                      disabled={index === 0}
-                      className="kk-btn-outline px-2.5 py-2.5 text-xs"
-                    >
-                      ↑
-                    </button>
-                    <button
-                      data-testid={`compose-item-reorder-down-${index}`}
-                      onClick={() => moveItem(index, 1)}
-                      disabled={index === sortedItems.length - 1}
-                      className="kk-btn-outline px-2.5 py-2.5 text-xs"
-                    >
-                      ↓
-                    </button>
-                    <button
-                      onClick={() => removeItem(item.id)}
-                      className="px-2.5 py-2.5 text-xs"
-                      style={{ color: 'var(--muted)' }}
-                    >
-                      Remove
-                    </button>
-                  </div>
-                  {(layer !== 'simple') && (
-                    <input
-                      data-testid={`compose-item-notes-${index}`}
-                      value={item.note ?? ''}
-                      onChange={e => updateItem(item.id, { note: e.target.value })}
-                      placeholder="Note for this pose…"
-                      className="kk-input px-2 py-2"
-                    />
-                  )}
-                  {pose && (layer === 'advanced' || layer === 'expert') && (
-                    <div data-testid={`compose-item-geometry-${index}`} className="flex flex-wrap gap-1 text-xs">
-                      <span className="capitalize px-2 py-1 rounded" style={{ background: 'var(--surface-raised)', color: 'var(--foreground)' }}>
-                        {pose.body_position}
-                      </span>
-                      {pose.bilateral && (
-                        <span className="bg-amber-50 text-amber-700 px-2 py-1 rounded">Bilateral</span>
-                      )}
-                      {pose.nervous_system_effect && (
-                        <span className="px-2 py-1 rounded capitalize" style={{ background: 'var(--surface-raised)', color: 'var(--foreground)' }}>
-                          {pose.nervous_system_effect}
-                        </span>
-                      )}
-                      {pose.tissue_depth && (
-                        <span className="bg-violet-50 text-violet-700 px-2 py-1 rounded capitalize">
-                          {pose.tissue_depth} tissue
-                        </span>
-                      )}
-                    </div>
-                  )}
-                  {pose && layer === 'expert' && (
-                    <div data-testid={`compose-item-energetics-${index}`} className="flex flex-wrap gap-1 text-xs">
-                      {pose.energetic_quality.map(eq => (
-                        <span key={eq} className="px-1.5 py-0.5 bg-purple-50 text-purple-700 rounded capitalize">{eq}</span>
-                      ))}
-                      <span className="px-1.5 py-0.5 bg-purple-50 text-purple-700 rounded capitalize">{pose.energetic_direction}</span>
-                    </div>
-                  )}
-                </div>
-                {next && seam && (
-                  <div
-                    data-testid={`compose-seam-${index}-${index + 1}`}
-                    data-tier={seam.tier}
-                    className="kk-seam px-3 py-1"
-                    title={seam.reasons.join('; ')}
-                  >
-                    <span className="kk-seam-line" />
-                    <span>
-                      tier {seam.tier}
-                      {seam.reasons.length > 0 && layer !== 'expert' && `: ${seam.reasons[0]}`}
-                      {seam.reasons.length > 0 && layer === 'expert' && `: ${seam.reasons.join(', ')}`}
-                    </span>
-                    <span className="kk-seam-line" />
-                  </div>
-                )}
-              </div>
-            )
-          })}
+          <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+            <SortableContext items={sortedItems.map(i => i.id)} strategy={verticalListSortingStrategy}>
+              {sortedItems.map((item, index) => {
+                const pose = poseBySlug.get(item.poseSlug)
+                const stillness = isStillnessNode(item.poseSlug)
+                const next = sortedItems[index + 1]
+                const seam = next && pose
+                  ? frictionMatrix[pose.slug]?.[next.poseSlug]
+                  : undefined
+                return (
+                  <ComposeFlowItem
+                    key={item.id}
+                    item={item}
+                    index={index}
+                    pose={pose}
+                    stillness={stillness}
+                    layer={layer}
+                    isFirst={index === 0}
+                    isLast={index === sortedItems.length - 1}
+                    next={next}
+                    seam={seam}
+                    onMove={moveItem}
+                    onUpdate={updateItem}
+                    onRemove={removeItem}
+                  />
+                )
+              })}
+            </SortableContext>
+          </DndContext>
         </div>
 
         {/* Phases */}
