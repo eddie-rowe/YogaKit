@@ -2,7 +2,7 @@ import { getAllPoses } from '@/lib/pose-library'
 import { getBuiltInFlowById } from '@/lib/flow-library'
 import ReadView from './ReadView'
 import ReadViewClient from './ReadViewClient'
-import '@/app/sequence/export/print.css'
+import './read-print.css'
 
 export const dynamic = 'force-dynamic'
 

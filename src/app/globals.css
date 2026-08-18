@@ -40,10 +40,26 @@
   }
 }
 
-body {
+html, body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  /* No whole-page rubber-band / pull-to-refresh in standalone PWA — a native app
+     doesn't do this (mobile-first, Phase 0). */
+  overscroll-behavior: none;
+}
+
+/* iOS paints a grey flash box on every tap of a link or button by default. */
+a, button, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Long-press on pose names/rows should never raise the iOS copy/share sheet
+   mid-class. */
+.kk-nocallout {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* Smooth height animation for expandable cards */
@@ -128,6 +144,9 @@ input[type=range] {
   color: var(--foreground);
   border: 1px solid var(--border);
   border-radius: 0.5rem;
+  /* 16px floor — below this, Safari zooms the viewport on focus (mobile-first,
+     Phase 0). Keep this even if a parent sets a smaller text utility class. */
+  font-size: 1rem;
 }
 
 .kk-warning {

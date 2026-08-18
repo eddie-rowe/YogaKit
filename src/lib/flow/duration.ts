@@ -3,7 +3,7 @@ import type { FlowItem } from './types'
 
 // One breath ≈ 5 seconds at a teaching pace. Rough, display-only — never used for
 // anything the friction engine or validator reasons about.
-const SECONDS_PER_BREATH = 5
+export const SECONDS_PER_BREATH = 5
 
 export function measureToSeconds(measure: DefaultMeasure): number {
   if (typeof measure.seconds === 'number') return measure.seconds

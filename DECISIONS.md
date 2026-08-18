@@ -73,3 +73,23 @@ built-in flows beyond the yin one; deleting working, validated content to match 
 count is pure loss. The yin built-in gets richer for free. The real cost — more Tier-1
 entry work before the Sept 30 gate — is accepted explicitly here rather than discovered
 during entry.
+
+---
+
+## 2026-08-18 — Drop HTML5 drag-and-drop reorder in Compose; buttons are the only reorder path
+
+**Context:** Compose's item reorder used native HTML5 `draggable`/`dragstart`/`drop`
+handlers. HTML5 DnD does not fire on iOS Safari touch, which is the primary target device
+for this app — on a real iPhone, dragging an item silently did nothing, with no error and
+no fallback.
+
+**Decision:** Remove the HTML5 DnD handlers entirely. The always-visible ↑/↓ reorder
+buttons (already present and working everywhere, including touch) are the sole reorder
+mechanism for v0.1. A touch-friendly drag implementation (Pointer Events, drag handle,
+drop indicator) is deferred to v0.2.
+
+**Why:** A reorder control that silently does nothing on the primary target device is
+worse than no drag at all — it reads as a bug, not a missing feature. The button path
+already covers the same functionality end to end; shipping only that path now is honest
+about what v0.1 actually supports, and a real touch-drag implementation is worth doing
+properly rather than bolted on under gate pressure.

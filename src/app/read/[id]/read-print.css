@@ -1,0 +1,41 @@
+/* Read view's own print stylesheet — decoupled from the parked
+   src/app/sequence/export/print.css tree (Phase 3), which /read used to depend on.
+   Only the two rules the read view actually uses, plus a fix for dark-mode inline
+   colors: elements set `color: var(--muted)` inline, and an inline style always
+   wins over an inherited value regardless of !important on an ancestor, so the
+   force-to-black has to target those elements directly. */
+
+@media print {
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .print-page {
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+
+  .print-page *,
+  .pose-row {
+    color: #000000 !important;
+  }
+
+  .pose-row {
+    page-break-inside: avoid;
+  }
+
+  section {
+    page-break-inside: avoid;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  @page {
+    margin: 1.8cm 2cm;
+    size: A4 portrait;
+  }
+}

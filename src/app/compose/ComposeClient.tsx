@@ -9,9 +9,9 @@ import { resolveDisplayName } from '@/lib/pose-library/display-name'
 import { allSearchableNames } from '@/lib/pose-library/display-name'
 import { buildFrictionMatrix } from '@/lib/friction'
 import { validateLite } from '@/lib/validator/lite'
-import { saveFlow, getFlow } from '@/lib/storage/flow-store'
+import { saveFlow, getFlow, getAllFlows } from '@/lib/storage/flow-store'
 import { CURRENT_SCHEMA_VERSION } from '@/lib/storage/krama-file'
-import { formatDuration, totalSeconds } from '@/lib/flow/duration'
+import { formatDuration, totalSeconds, SECONDS_PER_BREATH } from '@/lib/flow/duration'
 
 interface Props {
   poses: Pose[]
@@ -47,7 +47,16 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
   const [loading, setLoading] = useState(!!flowId)
   const [search, setSearch] = useState('')
   const [layer, setLayer] = useState<LayerName>('simple')
-  const [savedAt, setSavedAt] = useState<string | null>(null)
+  // Honest save state: 'dirty' as soon as anything changes, 'saving' while the
+  // write is in flight, 'saved' only once that exact write has landed, 'error' if
+  // it didn't. Replaces the old savedAt-forever "Saved" label (Phase 1).
+  const [saveState, setSaveState] = useState<'saved' | 'dirty' | 'saving' | 'error'>(
+    flowId ? 'saved' : 'dirty'
+  )
+
+  // Every mutation goes through updateFlow, so mark dirty there rather than at each
+  // call site.
+  const markDirty = () => setSaveState('dirty')
 
   useEffect(() => {
     const stored = typeof window !== 'undefined' ? window.localStorage.getItem(LAYER_STORAGE_KEY) : null
@@ -63,6 +72,15 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
       if (builtin) {
         // Compose only ever edits an editable copy — duplicate a built-in on open,
         // never mutate the shipped template (guardrails: built-ins stay read-only).
+        // Guard against re-duplicating on every visit to /compose/[builtin-id]: if
+        // a copy already exists, reuse it instead of spawning another (Phase 1).
+        const existingCopy = (await getAllFlows()).find(
+          f => !f.isBuiltIn && f.title === `${builtin.title} (copy)`
+        )
+        if (existingCopy) {
+          if (!cancelled) router.replace(`/compose/${existingCopy.id}`)
+          return
+        }
         const copy: Flow = {
           ...builtin,
           id: crypto.randomUUID(),
@@ -78,6 +96,7 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
       const existing = await getFlow(flowId!)
       if (!cancelled) {
         setFlow(existing ?? emptyFlow())
+        setSaveState(existing ? 'saved' : 'dirty')
         setLoading(false)
       }
     }
@@ -119,6 +138,7 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
 
   function updateFlow(fn: (f: Flow) => Flow) {
     setFlow(prev => (prev ? fn(prev) : prev))
+    markDirty()
   }
 
   function addPose(pose: Pose) {
@@ -144,23 +164,15 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
     }))
   }
 
+  // Builds from f.items (the render-scoped updater's own argument), not the
+  // sortedItems memo — matches removeItem, and avoids the stale-closure bug where a
+  // rapid second reorder would silently operate on an out-of-date order.
   function moveItem(index: number, direction: -1 | 1) {
     updateFlow(f => {
-      const items = [...sortedItems]
+      const items = [...f.items].sort((a, b) => a.order - b.order)
       const target = index + direction
       if (target < 0 || target >= items.length) return f
       ;[items[index], items[target]] = [items[target], items[index]]
-      const reordered = items.map((i, idx) => ({ ...i, order: idx }))
-      return { ...f, items: reordered, updatedAt: nowIso() }
-    })
-  }
-
-  function reorderByDrag(fromIndex: number, toIndex: number) {
-    if (fromIndex === toIndex) return
-    updateFlow(f => {
-      const items = [...sortedItems]
-      const [moved] = items.splice(fromIndex, 1)
-      items.splice(toIndex, 0, moved)
       const reordered = items.map((i, idx) => ({ ...i, order: idx }))
       return { ...f, items: reordered, updatedAt: nowIso() }
     })
@@ -195,9 +207,42 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
 
   async function handleSave() {
     if (!flow) return
-    await saveFlow(flow)
-    setSavedAt(nowIso())
+    setSaveState('saving')
+    try {
+      await saveFlow(flow)
+      setSaveState('saved')
+    } catch (err) {
+      // The only copy of the teacher's work — a silent failure here (e.g. quota
+      // exceeded, private-mode IndexedDB) must surface, not vanish (Phase 1).
+      console.error('Failed to save flow', err)
+      setSaveState('error')
+    }
   }
+
+  // Debounced autosave — a teacher who steps away mid-edit should find the work
+  // still there, not lost with the tab (Phase 1). Skip while a save is already
+  // in flight or errored, so an autosave tick can't clobber a visible error state
+  // before the teacher has seen it.
+  useEffect(() => {
+    if (saveState !== 'dirty') return
+    const timer = setTimeout(() => {
+      handleSave()
+    }, 1000)
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flow, saveState])
+
+  // Don't let a teacher navigate away while an autosave write is still pending.
+  useEffect(() => {
+    function onBeforeUnload(e: BeforeUnloadEvent) {
+      if (saveState === 'dirty' || saveState === 'saving') {
+        e.preventDefault()
+        e.returnValue = ''
+      }
+    }
+    window.addEventListener('beforeunload', onBeforeUnload)
+    return () => window.removeEventListener('beforeunload', onBeforeUnload)
+  }, [saveState])
 
   if (loading || !flow) {
     return <div className="kk-page flex items-center justify-center py-24 text-sm" style={{ color: 'var(--muted)' }}>Loading…</div>
@@ -215,10 +260,24 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
             className="kk-input px-3 py-2 text-lg font-serif font-medium flex-1"
             placeholder="Name this flow"
           />
-          <button onClick={handleSave} className="kk-btn px-4 py-2 text-sm font-medium">
-            {savedAt ? 'Saved' : 'Save'}
+          <button
+            onClick={handleSave}
+            disabled={saveState === 'saving'}
+            data-testid="compose-save-button"
+            className="kk-btn px-4 py-2 text-sm font-medium"
+          >
+            {saveState === 'saved' && 'Saved'}
+            {saveState === 'dirty' && 'Save'}
+            {saveState === 'saving' && 'Saving…'}
+            {saveState === 'error' && 'Retry save'}
           </button>
         </div>
+        {saveState === 'error' && (
+          <div data-testid="compose-save-error" className="kk-warning px-3 py-2 text-sm">
+            Couldn&apos;t save — check available storage and try again. Your edits are still on
+            this screen.
+          </div>
+        )}
 
         {/* Layer chips */}
         <div className="flex gap-1.5">
@@ -242,7 +301,7 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search poses to add…"
-            className="kk-input w-full px-3 py-2 text-sm"
+            className="kk-input w-full px-3 py-2"
           />
           {searchResults.length > 0 && (
             <div className="kk-card absolute z-10 mt-1 w-full max-h-72 overflow-y-auto shadow-lg">
@@ -251,7 +310,7 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
                   key={p.slug}
                   data-testid={`compose-add-pose-${p.slug}`}
                   onClick={() => addPose(p)}
-                  className="w-full text-left px-3 py-2 text-sm hover:opacity-80 transition-opacity duration-150 flex items-center justify-between"
+                  className="w-full text-left px-3 py-2.5 text-sm hover:opacity-80 transition-opacity duration-150 flex items-center justify-between"
                 >
                   <span>{resolveDisplayName(p)}</span>
                   <span className="text-xs" style={{ color: 'var(--muted)' }}>{p.sanskrit}</span>
@@ -278,7 +337,7 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
         {/* Validator warnings — never block save */}
         {warnings.map(w => (
           <div
-            key={w.code}
+            key={`${w.code}-${w.itemId ?? 'flow'}`}
             data-testid={`validator-warning-${w.code}`}
             className="kk-warning px-3 py-2 text-sm"
           >
@@ -304,18 +363,10 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
               <div key={item.id}>
                 <div
                   data-testid={`compose-item-${index}`}
-                  draggable
-                  onDragStart={e => e.dataTransfer.setData('text/plain', String(index))}
-                  onDragOver={e => e.preventDefault()}
-                  onDrop={e => {
-                    e.preventDefault()
-                    const from = Number(e.dataTransfer.getData('text/plain'))
-                    reorderByDrag(from, index)
-                  }}
                   className={`kk-card px-3 py-2.5 flex flex-col gap-2 ${stillness ? 'kk-stillness' : ''}`}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium flex-1">
+                    <span className="kk-nocallout text-sm font-medium flex-1">
                       {pose ? resolveDisplayName(pose) : item.poseSlug}
                     </span>
                     <div data-testid={`compose-item-measure-${index}`} className="flex items-center gap-1 text-xs">
@@ -323,11 +374,20 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
                         value={item.measure.breaths != null ? 'breaths' : 'seconds'}
                         onChange={e => {
                           const kind = e.target.value
-                          updateItem(item.id, {
-                            measure: kind === 'breaths' ? { breaths: 5 } : { seconds: 60 },
-                          })
+                          // Convert the existing value instead of discarding it —
+                          // flipping breaths↔seconds used to silently reset to a
+                          // default (Phase 1).
+                          const measure =
+                            kind === 'breaths'
+                              ? { breaths: item.measure.seconds != null
+                                  ? Math.max(1, Math.round(item.measure.seconds / SECONDS_PER_BREATH))
+                                  : 5 }
+                              : { seconds: item.measure.breaths != null
+                                  ? item.measure.breaths * SECONDS_PER_BREATH
+                                  : 60 }
+                          updateItem(item.id, { measure })
                         }}
-                        className="kk-input px-1 py-1"
+                        className="kk-input px-2 py-2"
                       >
                         <option value="breaths">breaths</option>
                         <option value="seconds">seconds</option>
@@ -337,19 +397,19 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
                         min={1}
                         value={item.measure.breaths ?? item.measure.seconds ?? 0}
                         onChange={e => {
-                          const value = Number(e.target.value)
+                          const value = e.target.value === '' ? 1 : Math.max(1, Number(e.target.value))
                           updateItem(item.id, {
                             measure: item.measure.breaths != null ? { breaths: value } : { seconds: value },
                           })
                         }}
-                        className="kk-input w-14 px-1 py-1"
+                        className="kk-input w-14 px-2 py-2"
                       />
                     </div>
                     <button
                       data-testid={`compose-item-reorder-up-${index}`}
                       onClick={() => moveItem(index, -1)}
                       disabled={index === 0}
-                      className="kk-btn-outline px-2 py-1 text-xs"
+                      className="kk-btn-outline px-2.5 py-2.5 text-xs"
                     >
                       ↑
                     </button>
@@ -357,13 +417,13 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
                       data-testid={`compose-item-reorder-down-${index}`}
                       onClick={() => moveItem(index, 1)}
                       disabled={index === sortedItems.length - 1}
-                      className="kk-btn-outline px-2 py-1 text-xs"
+                      className="kk-btn-outline px-2.5 py-2.5 text-xs"
                     >
                       ↓
                     </button>
                     <button
                       onClick={() => removeItem(item.id)}
-                      className="text-xs px-2 py-1"
+                      className="px-2.5 py-2.5 text-xs"
                       style={{ color: 'var(--muted)' }}
                     >
                       Remove
@@ -375,7 +435,7 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
                       value={item.note ?? ''}
                       onChange={e => updateItem(item.id, { note: e.target.value })}
                       placeholder="Note for this pose…"
-                      className="kk-input px-2 py-1 text-xs"
+                      className="kk-input px-2 py-2"
                     />
                   )}
                 </div>
@@ -410,7 +470,7 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
                       phases: f.phases.map(p => (p.id === phase.id ? { ...p, name: e.target.value } : p)),
                     }))
                   }
-                  className="kk-input px-2 py-1 text-sm flex-1"
+                  className="kk-input px-2 py-2 flex-1"
                 />
                 <select
                   value=""
@@ -418,7 +478,7 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
                     const itemId = e.target.value
                     if (itemId) updateItem(itemId, { phaseId: phase.id })
                   }}
-                  className="kk-input px-1 py-1 text-xs"
+                  className="kk-input px-2 py-2 text-xs"
                 >
                   <option value="">Assign item…</option>
                   {sortedItems.map((item, idx) => (

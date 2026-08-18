@@ -16,10 +16,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Yoga Kit — Yoga Sequence Builder",
+  title: "Krama — Yoga Sequence Builder",
   description: "A free, open-source yoga sequencing tool for teachers.",
   manifest: "/manifest.json",
-  appleWebApp: { capable: true, statusBarStyle: "default", title: "Yoga Kit" },
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "Krama" },
 };
 
 export const viewport: Viewport = {
