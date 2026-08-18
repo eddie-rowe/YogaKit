@@ -14,7 +14,7 @@
         "min": 2,
         "max": 5
       },
-      "cue_notes": "Lie on your back and keep the hips anchored to the floor. Walk both feet to the right and then bring both arms overhead and toward the right as well, creating a lateral crescent (banana) shape. Cross the right ankle over the left for additional side-body stretch. Hold each side. The entire lateral line — from hip to armpit — should feel the stretch."
+      "cue_notes": "Lie on your back and keep the hips anchored to the floor. Walk both feet to the right and then bring both arms overhead and toward the right as well, creating a lateral crescent (banana) shape. Cross the right ankle over the left for additional side-body stretch. Hold each side. The entire lateral line, from hip to armpit, should feel the stretch."
     }
   ],
   "body_position": "supine",
@@ -59,8 +59,8 @@
   "complexity": 3,
   "injury_risk": 3,
   "breathing_cues": {
-    "entering": "Exhale to anchor the hips, then on the next inhale slowly walk the arms overhead — let the breath create the arc of the pose rather than muscle effort.",
-    "holding": "With each inhale, feel the intercostal spaces on the upper side widen and expand laterally — the breath itself deepens the stretch. On the exhale, the ribs soften and the side body lengthens further.",
+    "entering": "Exhale to anchor the hips, then on the next inhale slowly walk the arms overhead: let the breath create the arc of the pose rather than muscle effort.",
+    "holding": "With each inhale, feel the intercostal spaces on the upper side widen and expand laterally: the breath itself deepens the stretch. On the exhale, the ribs soften and the side body lengthens further.",
     "exiting": "Inhale the arms back toward center first, then exhale to bring the feet back to neutral before switching sides."
   },
   "before_poses": [

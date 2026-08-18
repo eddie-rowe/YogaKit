@@ -231,7 +231,7 @@ export default function SequencePage() {
               <div className="pt-1">
                 <p className="text-stone-600 text-sm italic">"{sequence.quote.text}"</p>
                 {sequence.quote.attribution && (
-                  <p className="text-stone-400 text-xs mt-1">— {sequence.quote.attribution}</p>
+                  <p className="text-stone-400 text-xs mt-1">- {sequence.quote.attribution}</p>
                 )}
               </div>
             )}
@@ -239,7 +239,7 @@ export default function SequencePage() {
               <div className="pt-2 border-t border-stone-100 mt-2">
                 <p className="text-xs font-semibold text-stone-400 uppercase tracking-wide mb-1">Yoga Sutra</p>
                 <p className="text-stone-600 text-sm italic">"{sequence.sutra.text}"</p>
-                <p className="text-stone-400 text-xs mt-1">— {sequence.sutra.attribution}</p>
+                <p className="text-stone-400 text-xs mt-1">- {sequence.sutra.attribution}</p>
               </div>
             )}
           </div>
@@ -370,7 +370,7 @@ export default function SequencePage() {
             {modified && (
               <span className="text-xs text-amber-700 flex items-center gap-1">
                 <AlertTriangle size={12} />
-                Modified — re-validate before teaching
+                Modified: re-validate before teaching
               </span>
             )}
           </div>

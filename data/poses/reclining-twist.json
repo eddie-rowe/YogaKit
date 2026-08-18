@@ -65,8 +65,8 @@
   "complexity": 3,
   "injury_risk": 4,
   "breathing_cues": {
-    "entering": "Draw the knee to the chest on an exhale, then guide it across the body on the next exhale — let each out-breath be the vehicle for rotating deeper.",
-    "holding": "Use the inhale to feel length in the spine — imagining space between each vertebra — and use the exhale to allow the thoracic spine to soften a little further into the rotation. The shoulder reaching back toward the floor can soften with each exhale.",
+    "entering": "Draw the knee to the chest on an exhale, then guide it across the body on the next exhale, letting each out-breath be the vehicle for rotating deeper.",
+    "holding": "Use the inhale to feel length in the spine, imagining space between each vertebra, and use the exhale to allow the thoracic spine to soften a little further into the rotation. The shoulder reaching back toward the floor can soften with each exhale.",
     "exiting": "On an inhale, bring the knee back to center and pause in constructive rest for two full breath cycles before switching sides."
   },
   "before_poses": [
@@ -121,7 +121,7 @@
     },
     {
       "name": "Reduced rotation range",
-      "description": "Instead of bringing the knee all the way across the body, stop when the lumbar just begins to rotate — staying in a shallower range targets the thoracolumbar fascia without compressing the SI joint.",
+      "description": "Instead of bringing the knee all the way across the body, stop when the lumbar just begins to rotate: staying in a shallower range targets the thoracolumbar fascia without compressing the SI joint.",
       "props_used": [],
       "accessibility_level": "accessible"
     }

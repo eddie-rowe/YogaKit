@@ -2,7 +2,7 @@ import { REFERENCE_SEQUENCES } from '@/lib/reference-sequences'
 import SequencesClient from './SequencesClient'
 
 export const metadata = {
-  title: 'Reference Sequences — Yoga Kit',
+  title: 'Reference Sequences | YogaKit',
   description: 'Community and research-backed yoga sequences for every style.',
 }
 

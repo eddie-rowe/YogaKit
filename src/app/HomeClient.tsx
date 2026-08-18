@@ -26,7 +26,7 @@ export default function HomeClient({ builtins }: Props) {
     <div className="kk-page">
       <div className="max-w-2xl mx-auto px-4 py-10 space-y-8">
         <div>
-          <h1 className="font-serif text-3xl font-semibold">Krama</h1>
+          <h1 className="font-serif text-3xl font-semibold">YogaKit</h1>
           <p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>
             Compose a class by hand. Read it on the mat.
           </p>

@@ -119,7 +119,7 @@ export default function FlowsClient({ builtins }: Props) {
             Yours
           </h2>
           {loaded && savedFlows.length === 0 && (
-            <p className="text-sm py-4" style={{ color: 'var(--muted)' }}>No saved flows yet — duplicate a built-in or start a new one.</p>
+            <p className="text-sm py-4" style={{ color: 'var(--muted)' }}>No saved flows yet. Duplicate a built-in or start a new one.</p>
           )}
           {savedFlows
             .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))

@@ -19,7 +19,7 @@ interface Props {
   flowId?: string
 }
 
-const LAYERS: LayerName[] = ['simple', 'advanced', 'expert', 'custom']
+const LAYERS: LayerName[] = ['simple', 'advanced', 'expert']
 const LAYER_STORAGE_KEY = 'krama-compose-layer'
 
 function nowIso(): string {
@@ -60,7 +60,11 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
 
   useEffect(() => {
     const stored = typeof window !== 'undefined' ? window.localStorage.getItem(LAYER_STORAGE_KEY) : null
-    if (stored && (LAYERS as string[]).includes(stored)) setLayer(stored as LayerName)
+    if (!stored) return
+    // 'custom' was removed as a Compose layer; fall back to 'advanced' for anyone
+    // who had it saved from before rather than crashing on an unknown layer.
+    if (stored === 'custom') setLayer('advanced')
+    else if ((LAYERS as string[]).includes(stored)) setLayer(stored as LayerName)
   }, [])
 
   useEffect(() => {
@@ -274,7 +278,7 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
         </div>
         {saveState === 'error' && (
           <div data-testid="compose-save-error" className="kk-warning px-3 py-2 text-sm">
-            Couldn&apos;t save — check available storage and try again. Your edits are still on
+            Couldn&apos;t save. Check available storage and try again. Your edits are still on
             this screen.
           </div>
         )}
@@ -438,6 +442,34 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
                       className="kk-input px-2 py-2"
                     />
                   )}
+                  {pose && (layer === 'advanced' || layer === 'expert') && (
+                    <div data-testid={`compose-item-geometry-${index}`} className="flex flex-wrap gap-1 text-xs">
+                      <span className="capitalize px-2 py-1 rounded" style={{ background: 'var(--surface-raised)', color: 'var(--foreground)' }}>
+                        {pose.body_position}
+                      </span>
+                      {pose.bilateral && (
+                        <span className="bg-amber-50 text-amber-700 px-2 py-1 rounded">Bilateral</span>
+                      )}
+                      {pose.nervous_system_effect && (
+                        <span className="px-2 py-1 rounded capitalize" style={{ background: 'var(--surface-raised)', color: 'var(--foreground)' }}>
+                          {pose.nervous_system_effect}
+                        </span>
+                      )}
+                      {pose.tissue_depth && (
+                        <span className="bg-violet-50 text-violet-700 px-2 py-1 rounded capitalize">
+                          {pose.tissue_depth} tissue
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  {pose && layer === 'expert' && (
+                    <div data-testid={`compose-item-energetics-${index}`} className="flex flex-wrap gap-1 text-xs">
+                      {pose.energetic_quality.map(eq => (
+                        <span key={eq} className="px-1.5 py-0.5 bg-purple-50 text-purple-700 rounded capitalize">{eq}</span>
+                      ))}
+                      <span className="px-1.5 py-0.5 bg-purple-50 text-purple-700 rounded capitalize">{pose.energetic_direction}</span>
+                    </div>
+                  )}
                 </div>
                 {next && seam && (
                   <div
@@ -447,7 +479,11 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
                     title={seam.reasons.join('; ')}
                   >
                     <span className="kk-seam-line" />
-                    <span>tier {seam.tier}{seam.reasons.length > 0 ? ` — ${seam.reasons[0]}` : ''}</span>
+                    <span>
+                      tier {seam.tier}
+                      {seam.reasons.length > 0 && layer !== 'expert' && `: ${seam.reasons[0]}`}
+                      {seam.reasons.length > 0 && layer === 'expert' && `: ${seam.reasons.join(', ')}`}
+                    </span>
                     <span className="kk-seam-line" />
                   </div>
                 )}

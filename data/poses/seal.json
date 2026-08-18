@@ -14,7 +14,7 @@
         "min": 3,
         "max": 7
       },
-      "cue_notes": "From Sphinx, straighten the arms and walk the hands forward or out to the sides until the elbows are straight (or nearly so). Allow the lumbar spine to compress more deeply than in Sphinx. Keep glutes soft. Hands may be wider than shoulder-width to reduce intensity. This is a deeper lumbar compression than Sphinx — find your edge without pain."
+      "cue_notes": "From Sphinx, straighten the arms and walk the hands forward or out to the sides until the elbows are straight (or nearly so). Allow the lumbar spine to compress more deeply than in Sphinx. Keep glutes soft. Hands may be wider than shoulder-width to reduce intensity. This is a deeper lumbar compression than Sphinx: find your edge without pain."
     }
   ],
   "body_position": "prone",
@@ -65,7 +65,7 @@
   "complexity": 5,
   "injury_risk": 6,
   "breathing_cues": {
-    "entering": "From Sphinx, inhale to prepare. As you exhale, slowly walk the hands forward and allow the spine to drop deeper into extension — let gravity do the work rather than muscular effort. Pause at your edge before your next inhale.",
+    "entering": "From Sphinx, inhale to prepare. As you exhale, slowly walk the hands forward and allow the spine to drop deeper into extension, letting gravity do the work rather than muscular effort. Pause at your edge before your next inhale.",
     "holding": "Allow the breath to be natural and unhurried. Each inhale will subtly lift the chest and create a momentary decompression; each exhale invites the lumbar to yield further. If the breath becomes restricted or shallow, use the hands to press up slightly and reduce the depth.",
     "exiting": "On an inhale, engage the arms lightly and press the floor away to walk the hands back under the shoulders. Exhale as you lower fully to the floor or move into your rebound."
   },
@@ -134,7 +134,7 @@
     {
       "emotion": "fear",
       "tcm_organ": "kidney",
-      "notes": "Deep lumbar compression along the kidney meridian pathway can stir stored fear. The intensity of Seal — greater than Sphinx — may surface vulnerability more acutely."
+      "notes": "Deep lumbar compression along the kidney meridian pathway can stir stored fear. The intensity of Seal, greater than Sphinx, may surface vulnerability more acutely."
     },
     {
       "emotion": "courage",

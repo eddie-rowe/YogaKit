@@ -62,7 +62,7 @@
   "injury_risk": 6,
   "breathing_cues": {
     "entering": "From Square, inhale to lengthen the spine. On a long exhale, hinge forward from the hips and walk the hands along the floor until the spine begins its natural rounding. Let the forehead release toward the shins.",
-    "holding": "Breathe into the back of the outer hips and the space between the shoulder blades. Each exhale is an invitation — release a little more of the outer hip and lower back without ever pulling or forcing.",
+    "holding": "Breathe into the back of the outer hips and the space between the shoulder blades. Each exhale is an invitation: release a little more of the outer hip and lower back without ever pulling or forcing.",
     "exiting": "On an inhale, walk the hands back and press to upright. Allow a moment seated before gently releasing the legs."
   },
   "before_poses": [
@@ -96,7 +96,7 @@
   "modifications": [
     {
       "name": "Stay Upright",
-      "description": "Remain in the upright Square Pose without adding the forward fold — this is the prop-free variation, appropriate when the outer hip is already at capacity.",
+      "description": "Remain in the upright Square Pose without adding the forward fold. This is the prop-free variation, appropriate when the outer hip is already at capacity.",
       "props_used": [],
       "accessibility_level": "accessible"
     },
@@ -126,7 +126,7 @@
     {
       "emotion": "frustration",
       "tcm_organ": "gallbladder",
-      "notes": "The forward fold over the stacked hips places maximum load on the gallbladder meridian line — this intense outer hip compression is a primary site for stored frustration and blocked decision-making energy."
+      "notes": "The forward fold over the stacked hips places maximum load on the gallbladder meridian line: this intense outer hip compression is a primary site for stored frustration and blocked decision-making energy."
     },
     {
       "emotion": "control",

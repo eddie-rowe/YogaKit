@@ -3,8 +3,9 @@
 import { useState, useMemo } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import type { Pose, PoseTypeTag, MuscleGroup, FiveElement, NervousSystemEffect, SequencingPosition } from '@/lib/pipeline/types'
-import { allSearchableNames } from '@/lib/pose-library/display-name'
+import { allSearchableNames, resolveDisplayName } from '@/lib/pose-library/display-name'
 import PoseCard from './PoseCard'
+import PoseOverlay from './PoseOverlay'
 
 interface Props {
   poses: Pose[]
@@ -50,6 +51,12 @@ const NS_COLORS: Record<NervousSystemEffect, string> = {
 }
 const SEQ_OPTIONS: SequencingPosition[] = ['opening', 'building', 'peak', 'cooldown', 'integration']
 
+type ViewMode = 'filter' | 'theme'
+
+function slugifyEmotion(emotion: string) {
+  return emotion.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+}
+
 export default function PosesClient({ poses }: Props) {
   const [search, setSearch] = useState('')
   const [filterElement, setFilterElement] = useState<FiveElement | ''>('')
@@ -61,8 +68,12 @@ export default function PosesClient({ poses }: Props) {
   const [filterComplexityMax, setFilterComplexityMax] = useState(10)
   const [filterRiskMax, setFilterRiskMax] = useState(10)
   const [sortBy, setSortBy] = useState<SortKey>('alpha')
-  const [expandedSlug, setExpandedSlug] = useState<string | null>(null)
+  const [openSlug, setOpenSlug] = useState<string | null>(null)
   const [showFilters, setShowFilters] = useState(false)
+  const [viewMode, setViewMode] = useState<ViewMode>('filter')
+  const [themeFilterChakra, setThemeFilterChakra] = useState('')
+  const [themeFilterDosha, setThemeFilterDosha] = useState('')
+  const [themeFilterElement, setThemeFilterElement] = useState<FiveElement | ''>('')
 
   const filtered = useMemo(() => {
     let list = poses
@@ -108,6 +119,38 @@ export default function PosesClient({ poses }: Props) {
       default:                return [...list].sort((a, b) => a.english.localeCompare(b.english))
     }
   }, [poses, search, filterElement, filterPosition, filterTypeTags, filterMuscleGroups, filterNS, filterSeqPosition, filterComplexityMax, filterRiskMax, sortBy])
+
+  const themeGroups = useMemo(() => {
+    const groups = new Map<string, Pose[]>()
+    for (const pose of poses) {
+      if (themeFilterElement && pose.element !== themeFilterElement) continue
+      if (themeFilterChakra && !(pose.chakras ?? []).includes(themeFilterChakra as never)) continue
+      if (themeFilterDosha) {
+        const [dosha, effect] = themeFilterDosha.split(':') as [keyof NonNullable<Pose['dosha_affinity']>, string]
+        if (pose.dosha_affinity?.[dosha] !== effect) continue
+      }
+      for (const e of pose.emotional_release_potential ?? []) {
+        const list = groups.get(e.emotion) ?? []
+        list.push(pose)
+        groups.set(e.emotion, list)
+      }
+    }
+    return [...groups.entries()]
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([emotion, list]) => ({
+        emotion,
+        slug: slugifyEmotion(emotion),
+        poses: [...list].sort((a, b) => resolveDisplayName(a).localeCompare(resolveDisplayName(b))),
+      }))
+  }, [poses, themeFilterElement, themeFilterChakra, themeFilterDosha])
+
+  const openPose = useMemo(() => poses.find(p => p.slug === openSlug) ?? null, [poses, openSlug])
+
+  const allChakras = useMemo(() => {
+    const set = new Set<string>()
+    for (const p of poses) for (const c of p.chakras ?? []) set.add(c)
+    return [...set].sort()
+  }, [poses])
 
   function toggleTypeTag(tag: PoseTypeTag) {
     setFilterTypeTags(prev =>
@@ -165,6 +208,28 @@ export default function PosesClient({ poses }: Props) {
             </a>
           </div>
 
+          {/* View mode toggle */}
+          <div className="flex flex-wrap gap-1 mb-2">
+            <button
+              data-testid="poses-view-toggle-filter"
+              onClick={() => setViewMode('filter')}
+              data-active={viewMode === 'filter'}
+              className="kk-chip px-3 py-1 text-xs"
+            >
+              By filter
+            </button>
+            <button
+              data-testid="poses-view-toggle-theme"
+              onClick={() => setViewMode('theme')}
+              data-active={viewMode === 'theme'}
+              className="kk-chip px-3 py-1 text-xs"
+            >
+              By theme
+            </button>
+          </div>
+
+          {viewMode === 'filter' && (
+          <>
           {/* Search bar */}
           <input
             type="search"
@@ -348,10 +413,100 @@ export default function PosesClient({ poses }: Props) {
               )}
             </div>
           )}
+          </>
+          )}
+
+          {viewMode === 'theme' && (
+            <div className="flex flex-wrap gap-3">
+              <div>
+                <label className="text-xs font-medium block mb-1" style={{ color: 'var(--muted)' }}>Element</label>
+                <div className="flex flex-wrap gap-1">
+                  <button onClick={() => setThemeFilterElement('')} data-active={!themeFilterElement} className="kk-chip px-2 py-1 text-xs">
+                    All
+                  </button>
+                  {ELEMENTS.map(el => (
+                    <button
+                      key={el}
+                      onClick={() => setThemeFilterElement(prev => prev === el ? '' : el)}
+                      data-active={themeFilterElement === el}
+                      className="kk-chip px-2 py-1 text-xs capitalize"
+                    >
+                      {el}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {allChakras.length > 0 && (
+                <div>
+                  <label className="text-xs font-medium block mb-1" style={{ color: 'var(--muted)' }}>Chakra</label>
+                  <div className="flex flex-wrap gap-1">
+                    <button onClick={() => setThemeFilterChakra('')} data-active={!themeFilterChakra} className="kk-chip px-2 py-1 text-xs">
+                      All
+                    </button>
+                    {allChakras.map(c => (
+                      <button
+                        key={c}
+                        onClick={() => setThemeFilterChakra(prev => prev === c ? '' : c)}
+                        data-active={themeFilterChakra === c}
+                        className="kk-chip px-2 py-1 text-xs capitalize"
+                      >
+                        {c}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <label className="text-xs font-medium block mb-1" style={{ color: 'var(--muted)' }}>Dosha affinity</label>
+                <select
+                  value={themeFilterDosha}
+                  onChange={e => setThemeFilterDosha(e.target.value)}
+                  className="kk-input px-2 py-1 text-xs w-auto"
+                >
+                  <option value="">All</option>
+                  {(['vata', 'pitta', 'kapha'] as const).flatMap(d =>
+                    (['balancing', 'neutral', 'aggravating'] as const).map(effect => (
+                      <option key={`${d}:${effect}`} value={`${d}:${effect}`}>{d}: {effect}</option>
+                    ))
+                  )}
+                </select>
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
-      {/* Grid */}
+      {viewMode === 'theme' ? (
+        <main className="max-w-7xl mx-auto px-4 py-6 space-y-8">
+          {themeGroups.length === 0 ? (
+            <div className="text-center py-20" style={{ color: 'var(--muted)' }}>
+              <p className="text-lg">No poses tagged with an emotional theme yet.</p>
+            </div>
+          ) : (
+            themeGroups.map(group => (
+              <section key={group.slug} data-testid={`poses-theme-section-${group.slug}`}>
+                <h2 className="font-serif text-lg font-semibold capitalize mb-2" style={{ color: 'var(--foreground)' }}>
+                  {group.emotion}
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {group.poses.map(pose => (
+                    <button
+                      key={pose.slug}
+                      data-testid={`poses-card-${pose.slug}`}
+                      onClick={() => setOpenSlug(pose.slug)}
+                      className="kk-chip px-3 py-1.5 text-sm"
+                    >
+                      {resolveDisplayName(pose)}
+                    </button>
+                  ))}
+                </div>
+              </section>
+            ))
+          )}
+        </main>
+      ) : (
       <main className="max-w-7xl mx-auto px-4 py-6">
         {filtered.length === 0 ? (
           <div className="text-center py-20" style={{ color: 'var(--muted)' }}>
@@ -364,13 +519,15 @@ export default function PosesClient({ poses }: Props) {
               <PoseCard
                 key={pose.slug}
                 pose={pose}
-                expanded={expandedSlug === pose.slug}
-                onToggle={() => setExpandedSlug(prev => prev === pose.slug ? null : pose.slug)}
+                onOpen={() => setOpenSlug(pose.slug)}
               />
             ))}
           </div>
         )}
       </main>
+      )}
+
+      {openPose && <PoseOverlay pose={openPose} onClose={() => setOpenSlug(null)} />}
     </div>
   )
 }

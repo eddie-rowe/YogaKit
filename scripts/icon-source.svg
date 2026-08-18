@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#3d3530"/>
+  <g fill="#fefcfb">
+    <!-- head -->
+    <circle cx="256" cy="176" r="46"/>
+    <!-- seated figure: shoulders/arms resting on crossed legs -->
+    <path d="
+      M 256 230
+      C 210 230 180 260 180 300
+      L 132 340
+      C 122 348 122 364 132 372
+      C 142 380 156 378 164 368
+      L 206 328
+      C 214 344 230 356 256 356
+      C 282 356 298 344 306 328
+      L 348 368
+      C 356 378 370 380 380 372
+      C 390 364 390 348 380 340
+      L 332 300
+      C 332 260 302 230 256 230
+      Z"/>
+  </g>
+</svg>

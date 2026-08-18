@@ -38,7 +38,7 @@ export default function SequencesClient({ sequences }: Props) {
           <h1 className="text-2xl font-semibold text-stone-900 mb-1">Reference Sequences</h1>
           <p className="text-stone-500 text-sm max-w-xl">
             Community and research-backed sequences for each yoga style. Use these as a benchmark
-            for what a well-paced class looks like — and as a starting point for your own.
+            for what a well-paced class looks like, and as a starting point for your own.
           </p>
         </div>
 

@@ -100,7 +100,7 @@
   "tissue_depth": "deep",
   "modifications": [
     {
-      "name": "Foot on Floor — First Stage",
+      "name": "Foot on Floor - First Stage",
       "description": "Keep the bottom foot flat on the floor rather than drawing the leg in. This reduces the intensity of hip external rotation and is the ideal starting position for beginners or those with tight hips.",
       "accessibility_level": "accessible"
     },

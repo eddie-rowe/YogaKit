@@ -38,7 +38,7 @@ export default function AppHeader() {
           className="font-serif text-lg font-medium tracking-tight hover:opacity-70 transition-opacity"
           style={{ color: 'var(--foreground)' }}
         >
-          Krama
+          YogaKit
         </Link>
         <nav className="hidden sm:flex items-center gap-1">
           {NAV_LINKS.map(({ href, label, testId }) => {

@@ -14,7 +14,7 @@
         "min": 2,
         "max": 5
       },
-      "cue_notes": "Lie on the belly with forearms on the floor, elbows under the shoulders or slightly forward. Press the forearms gently into the ground to lift the chest. Legs extend behind, either together or hip-width apart. Allow the lumbar spine to compress gently. Do not clench the glutes — let them soften to allow sacral compression. Gaze is forward or slightly down."
+      "cue_notes": "Lie on the belly with forearms on the floor, elbows under the shoulders or slightly forward. Press the forearms gently into the ground to lift the chest. Legs extend behind, either together or hip-width apart. Allow the lumbar spine to compress gently. Do not clench the glutes. Let them soften to allow sacral compression. Gaze is forward or slightly down."
     }
   ],
   "body_position": "prone",
@@ -65,7 +65,7 @@
   "injury_risk": 3,
   "breathing_cues": {
     "entering": "Take a full breath in before entering. As you exhale, lower onto your forearms and allow the belly and chest to settle forward and down. Let the exhale soften any initial resistance in the lumbar.",
-    "holding": "Breathe naturally and diaphragmatically. On each inhale, feel the chest gently lift and broaden; on each exhale, allow the lumbar to yield a little deeper into compression without forcing. The breath is your guide — if it shortens or tightens, ease back.",
+    "holding": "Breathe naturally and diaphragmatically. On each inhale, feel the chest gently lift and broaden; on each exhale, allow the lumbar to yield a little deeper into compression without forcing. The breath is your guide: if it shortens or tightens, ease back.",
     "exiting": "On an inhale, press gently into the forearms to lighten the torso. Exhale as you lower the chest down and transition into your rebound pose."
   },
   "before_poses": [
@@ -139,7 +139,7 @@
     {
       "emotion": "courage",
       "tcm_organ": "heart",
-      "notes": "The passive chest opening and forward gaze embody a posture of gentle courage — meeting the world with an open heart without aggression."
+      "notes": "The passive chest opening and forward gaze embody a posture of gentle courage: meeting the world with an open heart without aggression."
     }
   ],
   "sequencing_position": [
