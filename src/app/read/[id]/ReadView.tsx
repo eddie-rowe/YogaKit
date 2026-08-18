@@ -11,7 +11,7 @@ interface Props {
 // A teacher glances at this mid-pose (spec §10.6, "the 6am test") — large type,
 // minimal chrome, one breath mark per phase of the hold so it reads at arm's length.
 function breathMark(measure: { breaths?: number; seconds?: number }): string {
-  if (measure.breaths != null) return `${measure.breaths} breaths`
+  if (measure.breaths != null) return `${measure.breaths} breath${measure.breaths === 1 ? '' : 's'}`
   if (measure.seconds != null) {
     const minutes = Math.round(measure.seconds / 60)
     return minutes >= 1 ? `${minutes} min` : `${measure.seconds}s`

@@ -7,7 +7,7 @@ import type { Flow } from '@/lib/flow/types'
 import { isStillnessNode } from '@/lib/flow/types'
 import { getFlow, deleteFlow } from '@/lib/storage/flow-store'
 import { resolveDisplayName } from '@/lib/pose-library/display-name'
-import { formatDuration, totalSeconds } from '@/lib/flow/duration'
+import { formatDuration, formatMeasure, totalSeconds } from '@/lib/flow/duration'
 
 interface Props {
   id: string
@@ -75,7 +75,7 @@ export default function FlowDetailClient({ id, poses, builtins }: Props) {
                   {index + 1}. {pose ? resolveDisplayName(pose) : item.poseSlug}
                 </span>
                 <span className="text-xs" style={{ color: 'var(--muted)' }}>
-                  {item.measure.breaths != null ? `${item.measure.breaths} breaths` : `${item.measure.seconds}s`}
+                  {formatMeasure(item.measure)}
                 </span>
               </div>
             )

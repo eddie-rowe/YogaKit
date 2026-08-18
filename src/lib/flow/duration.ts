@@ -15,6 +15,11 @@ export function totalSeconds(items: FlowItem[]): number {
   return items.reduce((sum, item) => sum + measureToSeconds(item.measure), 0)
 }
 
+export function formatMeasure(measure: DefaultMeasure): string {
+  if (measure.breaths != null) return `${measure.breaths} breath${measure.breaths === 1 ? '' : 's'}`
+  return `${measure.seconds}s`
+}
+
 export function formatDuration(seconds: number): string {
   const minutes = Math.round(seconds / 60)
   if (minutes < 1) return `${Math.round(seconds)} sec`
