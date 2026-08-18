@@ -50,7 +50,7 @@ body {
 .expandable-content {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 220ms ease;
+  transition: grid-template-rows 200ms ease;
   overflow: hidden;
 }
 .expandable-content.open {
