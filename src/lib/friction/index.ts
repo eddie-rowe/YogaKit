@@ -80,38 +80,58 @@ export function friction(fromPose: Pose, toPose: Pose): FrictionResult {
     WEIGHTS.spine * cSpine +
     WEIGHTS.plane * cPlane
 
-  const reasons: string[] = []
+  const weighted: Array<{ weight: number; reason: string }> = []
 
   if (cContact > 0) {
     const a = new Set(fromPose.base_of_support ?? [])
     const b = new Set(toPose.base_of_support ?? [])
     const shared = [...a].filter(x => b.has(x))
-    if (shared.length > 0) {
-      reasons.push(`${shared.join(' and ')} stay planted`)
-    } else {
-      reasons.push(`${fromPose.english} and ${toPose.english} share no contact points`)
-    }
+    weighted.push({
+      weight: WEIGHTS.contact * cContact,
+      reason:
+        shared.length > 0
+          ? `${shared.join(' and ')} stay planted`
+          : `${fromPose.english} and ${toPose.english} share no contact points`,
+    })
   }
 
   if (cOrientation > 0) {
-    if (fromPose.orientation !== toPose.orientation) {
-      reasons.push(`flips from ${fromPose.orientation} to ${toPose.orientation}`)
-    } else {
-      reasons.push(`shifts kinesphere level from ${fromPose.level} to ${toPose.level}`)
-    }
+    weighted.push({
+      weight: WEIGHTS.orientation * cOrientation,
+      reason:
+        fromPose.orientation !== toPose.orientation
+          ? `flips from ${fromPose.orientation} to ${toPose.orientation}`
+          : `shifts kinesphere level from ${fromPose.level} to ${toPose.level}`,
+    })
   }
 
   if (cCog > 0) {
-    reasons.push(`center of gravity moves from ${fromPose.cog_height} to ${toPose.cog_height}`)
+    weighted.push({
+      weight: WEIGHTS.cog * cCog,
+      reason: `center of gravity moves from ${fromPose.cog_height} to ${toPose.cog_height}`,
+    })
   }
 
   if (cSpine > 0) {
-    reasons.push(`spine shifts from ${fromPose.spinal_action} to ${toPose.spinal_action}`)
+    weighted.push({
+      weight: WEIGHTS.spine * cSpine,
+      reason: `spine shifts from ${fromPose.spinal_action} to ${toPose.spinal_action}`,
+    })
   }
 
   if (cPlane > 0) {
-    reasons.push(`changes plane from ${fromPose.plane} to ${toPose.plane}`)
+    weighted.push({
+      weight: WEIGHTS.plane * cPlane,
+      reason: `changes plane from ${fromPose.plane} to ${toPose.plane}`,
+    })
   }
+
+  // Sort by weighted contribution (descending, stable) so the most tier-driving
+  // delta surfaces first — the UI shows reasons[0] as the seam's headline reason,
+  // and a low-weight contact match ("feet stay planted") shouldn't outrank a
+  // bigger driver like an orientation flip just because it was computed first.
+  weighted.sort((x, y) => y.weight - x.weight)
+  const reasons = weighted.map(w => w.reason)
 
   return { score, tier: tierFor(score), reasons }
 }
