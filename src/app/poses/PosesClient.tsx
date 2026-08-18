@@ -6,6 +6,7 @@ import type { Pose, PoseTypeTag, MuscleGroup, FiveElement, NervousSystemEffect, 
 import { allSearchableNames, resolveDisplayName } from '@/lib/pose-library/display-name'
 import PoseCard from './PoseCard'
 import PoseOverlay from './PoseOverlay'
+import * as haptics from '@/lib/haptics'
 
 interface Props {
   poses: Pose[]
@@ -212,7 +213,7 @@ export default function PosesClient({ poses }: Props) {
           <div className="flex flex-wrap gap-1 mb-2">
             <button
               data-testid="poses-view-toggle-filter"
-              onClick={() => setViewMode('filter')}
+              onClick={() => { haptics.tick(); setViewMode('filter') }}
               data-active={viewMode === 'filter'}
               className="kk-chip px-3 py-1 text-xs"
             >
@@ -220,7 +221,7 @@ export default function PosesClient({ poses }: Props) {
             </button>
             <button
               data-testid="poses-view-toggle-theme"
-              onClick={() => setViewMode('theme')}
+              onClick={() => { haptics.tick(); setViewMode('theme') }}
               data-active={viewMode === 'theme'}
               className="kk-chip px-3 py-1 text-xs"
             >

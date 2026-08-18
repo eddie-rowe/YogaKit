@@ -49,6 +49,7 @@ carries a `data-testid`. Naming: `{area}-{element}`, kebab-case, stable across r
 | Compose | `compose-item-measure-{index}` | Breaths/seconds toggle+input for an item |
 | Compose | `compose-item-notes-{index}` | Per-item notes field |
 | Compose | `compose-item-reorder-up-{index}` / `-down-{index}` | Button reorder controls |
+| Compose | `compose-item-drag-handle-{index}` | Drag handle for pointer/touch reorder (buttons remain the keyboard/fallback path) |
 | Compose | `compose-phase-{phase-id}` | Phase group container |
 | Compose | `compose-layer-{layer}` | Layer chip (`simple`/`advanced`/`expert`/`custom`) |
 | Compose | `compose-seam-{fromIndex}-{toIndex}` | Seam indicator between two adjacent items |
@@ -78,12 +79,18 @@ either the code or this table is wrong — fix whichever is stale, don't let the
 ## 2 · Beauty guardrails (operationalizing spec §10)
 
 - No screen may set an accent color outside the single defined accent token. If a screen
-  "needs" a second color, that's a signal to use weight/size/whitespace instead.
+  "needs" a second color, that's a signal to use weight/size/whitespace instead. The one
+  exception: a fixed semantic palette on pose *content* (element, difficulty, nervous-
+  system effect, tissue depth) — these describe data categories, not UI state, and don't
+  count as a second UI accent. They must stay confined to those data badges/chips and
+  never leak into buttons, links, or other interactive chrome.
 - Stillness nodes (rebound-supine, constructive-rest, seated-stillness, savasana) render
   with reduced visual weight (lower contrast text, no accent) wherever they appear in a
   flow — never bolder than an active pose.
 - Any transition/reorder animation MUST be ≤ 200ms and MUST NOT use a spring/bounce
-  easing. If it looks playful, it's wrong for a 6am tool.
+  easing. If it looks playful, it's wrong for a 6am tool. Use the shared motion tokens in
+  `globals.css` (`--duration-fast` 120ms, `--duration-base` 200ms, `--ease-standard`)
+  rather than hardcoding new timing values.
 - Dark mode is not an afterthought pass: every new component MUST be built against both
   the light and dark token sets before it's considered done, not "fixed later."
 - The read view is the one screen every beauty tenet is graded against literally: before
