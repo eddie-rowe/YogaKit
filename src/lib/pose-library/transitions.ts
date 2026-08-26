@@ -11,7 +11,8 @@
  * function does not consult them.
  */
 
-import type { Pose, FiveElement, PoseTypeTag, SessionContext } from '@/lib/pipeline/types'
+import type { SessionContext } from '@/lib/pipeline/types'
+import type { Pose, FiveElement, PoseTypeTag } from '@/lib/pose-types'
 import { getAllPoses } from './index'
 
 export interface TransitionCandidate {

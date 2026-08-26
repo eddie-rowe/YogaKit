@@ -1,4 +1,5 @@
-import type { SessionContext, Style, Season, ExperienceLevel, IntensityCurve } from '@/lib/pipeline/types'
+import type { SessionContext } from '@/lib/pipeline/types'
+import type { Style, Season, ExperienceLevel, IntensityCurve } from '@/lib/pose-types'
 
 // Maps style to preferred season default when teacher has not specified
 const STYLE_DEFAULT_SEASON: Record<Style, Season> = {

@@ -1,4 +1,4 @@
-import type { Pose, BodyPosition, EnergeticQ, FiveElement, PoseDifficulty, ModeType } from '@/lib/pipeline/types'
+import type { Pose, BodyPosition, EnergeticQ, FiveElement, PoseDifficulty, ModeType } from '@/lib/pose-types'
 
 // Build-time static imports — bundled at compile time, never fetched at runtime (RULE-L3)
 // Dynamically require all pose JSON files from data/poses/

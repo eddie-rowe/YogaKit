@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { validateLite } from '@/lib/validator/lite'
 import type { Flow, FlowItem } from '@/lib/flow/types'
-import type { Pose } from '@/lib/pipeline/types'
+import type { Pose } from '@/lib/pose-types'
 
 function makePose(overrides: Partial<Pose> = {}): Pose {
   return {

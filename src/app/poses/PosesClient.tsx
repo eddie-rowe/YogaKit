@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { ArrowLeft } from 'lucide-react'
-import type { Pose, PoseTypeTag, MuscleGroup, FiveElement, NervousSystemEffect, SequencingPosition } from '@/lib/pipeline/types'
+import type { Pose, PoseTypeTag, MuscleGroup, FiveElement, NervousSystemEffect, SequencingPosition } from '@/lib/pose-types'
 import { allSearchableNames } from '@/lib/pose-library/display-name'
 import PoseCard from './PoseCard'
 

@@ -3,14 +3,14 @@
 import { useState, useRef, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { CONTRAINDICATION_OPTIONS, ALL_PROPS } from '@/lib/contraindications'
+import type { SessionContext } from '@/lib/pipeline/types'
 import type {
-  SessionContext,
   Style,
   Season,
   FiveElement,
   ExperienceLevel,
   IntensityCurve,
-} from '@/lib/pipeline/types'
+} from '@/lib/pose-types'
 
 type TimeOfDay = 'morning' | 'midday' | 'afternoon' | 'evening' | 'night'
 

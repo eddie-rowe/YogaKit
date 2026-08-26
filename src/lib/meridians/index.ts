@@ -1,4 +1,4 @@
-import type { ElementRecord, FiveElement, MeridianRecord } from '@/lib/pipeline/types'
+import type { ElementRecord, FiveElement, MeridianRecord } from '@/lib/pose-types'
 
 function loadMeridianData(): Record<FiveElement, ElementRecord> {
   const fs = require('fs') as typeof import('fs')

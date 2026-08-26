@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import type { Pose, FiveElement } from '@/lib/pipeline/types'
+import type { Pose, FiveElement } from '@/lib/pose-types'
 import BodyDiagram from '@/components/poses/BodyDiagram'
 import { CHAKRA_DOTS } from '@/lib/pose-library/body-map'
 import { resolveDisplayName } from '@/lib/pose-library/display-name'

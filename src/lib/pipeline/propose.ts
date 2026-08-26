@@ -1,14 +1,12 @@
+import type { SessionContext, PipelineDraft, DraftPoseEntry } from './types'
 import type {
-  SessionContext,
-  PipelineDraft,
-  DraftPoseEntry,
   Pose,
   BodyPosition,
   ModeType,
   IntensityCurve,
   SequencingPosition,
   ExperienceLevel,
-} from './types'
+} from '@/lib/pose-types'
 import { getAllPoses, filterPoses } from '@/lib/pose-library'
 import { getMeridianSlugsForElement } from '@/lib/meridians'
 import { pickContent } from './content'

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import type { Style } from '@/lib/pipeline/types'
+import type { Style } from '@/lib/pose-types'
 import type { ReferenceSequence } from '@/lib/reference-sequences'
 import SequenceArc from '@/components/sequence/SequenceArc'
 

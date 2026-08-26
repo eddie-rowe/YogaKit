@@ -1,10 +1,5 @@
-import type {
-  ConstrainedSequence,
-  ValidatedSequence,
-  SequenceItem,
-  SafetyNote,
-  Pose,
-} from './types'
+import type { ConstrainedSequence, ValidatedSequence, SequenceItem, SafetyNote } from './types'
+import type { Pose } from '@/lib/pose-types'
 import { getPoseBySlug, filterPoses } from '@/lib/pose-library'
 
 // Safety layer — always returns ValidatedSequence, never throws (RULE-S1, RULE-S2)

@@ -2,7 +2,7 @@
 // specs/001-krama-mvp-spec/data-model.md § Validator-Lite Types
 
 import type { Flow } from '@/lib/flow/types'
-import type { Pose } from '@/lib/pipeline/types'
+import type { Pose } from '@/lib/pose-types'
 import { isStillnessNode } from '@/lib/flow/types'
 
 export interface ValidatorWarning {

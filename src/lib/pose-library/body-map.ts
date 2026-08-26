@@ -1,4 +1,4 @@
-import type { MuscleGroup, JointName, FiveElement, ChakraName } from '@/lib/pipeline/types'
+import type { MuscleGroup, JointName, FiveElement, ChakraName } from '@/lib/pose-types'
 
 export type SvgView = 'front' | 'back' | 'both'
 

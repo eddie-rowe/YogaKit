@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { friction, tierFor, buildFrictionMatrix, WEIGHTS } from '@/lib/friction'
-import type { Pose } from '@/lib/pipeline/types'
+import type { Pose } from '@/lib/pose-types'
 
 function makePose(overrides: Partial<Pose> = {}): Pose {
   return {

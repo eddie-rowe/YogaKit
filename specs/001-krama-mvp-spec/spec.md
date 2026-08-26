@@ -406,8 +406,8 @@ built-ins are visible and openable in the read view without first duplicating th
   view.
 - **SC-009**: No user-authored content (pose names, notes, flow titles) appears in
   telemetry payloads.
-- **SC-010**: All 63 poses in the corpus (per `DECISIONS.md`) pass Tier-1 schema
-  validation by the Sept 30 gate.
+- **SC-010**: All 67 poses in the corpus (grew past the original ~63 estimate during
+  entry, per `DECISIONS.md`) pass Tier-1 schema validation by the Sept 30 gate.
 
 ---
 

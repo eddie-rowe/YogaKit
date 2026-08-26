@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
-import type { Pose } from '@/lib/pipeline/types'
+import type { Pose } from '@/lib/pose-types'
 import type { Flow } from '@/lib/flow/types'
 import { isStillnessNode } from '@/lib/flow/types'
 import { resolveDisplayName } from '@/lib/pose-library/display-name'

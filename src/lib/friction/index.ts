@@ -3,7 +3,7 @@
 // Governs constitution RULE-H4 (weights live in one exported constant) and RULE-E3
 // (reasons derived only from measured deltas).
 
-import type { Pose, CogHeight } from '@/lib/pipeline/types'
+import type { Pose, CogHeight } from '@/lib/pose-types'
 
 export type FrictionTier = 1 | 2 | 3
 

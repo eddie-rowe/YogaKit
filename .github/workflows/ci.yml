@@ -29,8 +29,8 @@ jobs:
       - name: Validate pose library
         run: npm run validate:poses
 
-      - name: Unit tests
-        run: npx vitest run
+      - name: Unit tests (with coverage)
+        run: npx vitest run --coverage
 
       - name: Build
         run: npx next build

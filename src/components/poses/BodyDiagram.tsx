@@ -8,7 +8,7 @@ import {
   getDeepRegions,
   getActiveJointIds,
 } from '@/lib/pose-library/body-map'
-import type { MuscleGroup, JointName, FiveElement, ChakraName } from '@/lib/pipeline/types'
+import type { MuscleGroup, JointName, FiveElement, ChakraName } from '@/lib/pose-types'
 
 type TabId = 'muscles' | 'meridians' | 'joints' | 'chakras'
 type ViewId = 'front' | 'back'

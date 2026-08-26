@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import type { SessionContext, Pose } from '@/lib/pipeline/types'
+import type { SessionContext } from '@/lib/pipeline/types'
+import type { Pose } from '@/lib/pose-types'
 
 vi.mock('@/lib/pose-library', () => ({
   getAllPoses: vi.fn(() => []),
