@@ -2,6 +2,17 @@
 *Spec-lock target: Aug 31, 2026 · Working build: Sept 30 · Teacher feedback: Oct 31*
 *Companions: `krama-atlas.md`, `krama-guardrails.md`, pose/transition schemas.*
 
+> **Historical, as of 2026-08-26.** This document describes the local-first, no-auth,
+> no-database v0.1 product. Following stakeholder feedback (`docs/mvp-spec-suggestions.md`),
+> the constitution was amended to v3.0.0 and the product was expanded into a multi-tenant,
+> authenticated, billed platform (spec-kit features `002-auth-tenancy-billing` through
+> `006-profile-settings`). This spec is retained as the historical record of the original
+> local-first scope and the "6am test" it introduced — which remains a north star for the
+> v1.0 read view — but it no longer describes the shipping product's full scope. See
+> `.specify/memory/constitution.md` (v3.0.0) and
+> `/Users/eddie.rowe/.claude/plans/i-met-with-giaconda-declarative-dewdrop.md` for the
+> current plan.
+
 ---
 
 ## 1 · Product statement
