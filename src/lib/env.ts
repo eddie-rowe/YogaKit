@@ -11,8 +11,10 @@ const envSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
   STRIPE_SECRET_KEY: z.string().min(1),
   STRIPE_WEBHOOK_SECRET: z.string().min(1),
-  // 32-byte key, base64 or hex encoded, for the AES-256-GCM envelope in src/lib/crypto.ts.
-  ENCRYPTION_KEY: z.string().min(32),
+  // 32-byte key for the AES-256-GCM envelope in src/lib/crypto.ts, hex-encoded (64
+  // chars) — not base64. Hex has one canonical form; base64 has multiple (+/ vs -_)
+  // that can silently decode to the wrong byte length, per NextMove's crypto.ts.
+  ENCRYPTION_KEY: z.string().regex(/^[0-9a-f]{64}$/i, 'must be 64 hex characters (32 bytes)'),
 })
 
 export type Env = z.infer<typeof envSchema>
