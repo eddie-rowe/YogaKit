@@ -1,4 +1,4 @@
-import type { FiveElement, Season, Style } from './types'
+import type { FiveElement, Season, Style } from '@/lib/pose-types'
 
 export interface SequenceContent {
   themeStatement: string

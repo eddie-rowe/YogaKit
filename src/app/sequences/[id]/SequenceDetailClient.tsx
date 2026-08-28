@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import type { Pose } from '@/lib/pipeline/types'
+import type { Pose } from '@/lib/pose-types'
 import type { ReferenceSequence, ReferenceSequencePose } from '@/lib/reference-sequences'
 import SequenceArc from '@/components/sequence/SequenceArc'
 import SequenceAnalytics from '@/components/sequence/SequenceAnalytics'

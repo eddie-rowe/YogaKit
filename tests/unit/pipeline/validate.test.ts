@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import type { ConstrainedSequence, SequenceItem, Pose, SessionContext } from '@/lib/pipeline/types'
+import type { ConstrainedSequence, SequenceItem, SessionContext } from '@/lib/pipeline/types'
+import type { Pose } from '@/lib/pose-types'
 
 // Mock the pose library — validate.ts must not touch the filesystem in tests
 vi.mock('@/lib/pose-library', () => ({

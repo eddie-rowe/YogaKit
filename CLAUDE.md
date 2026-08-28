@@ -1,46 +1,56 @@
 # Yoga Kit — Development Guide
 
 <!-- SPECKIT START -->
-The locked human-facing spec for v0.1 is `docs/krama-v0.1-spec.md` — read it first.
-For additional context about technologies to be used, project structure,
-shell commands, and other important information, read the current plan at:
-`specs/001-krama-mvp-spec/plan.md`
+`docs/krama-v0.1-spec.md` is the historical, human-facing spec for the original
+local-first v0.1 product — it is superseded (not deleted) by the v1.0 platform pivot.
+For the current plan, read: `specs/002-auth-tenancy-billing/plan.md`
+
+The v1.0 platform pivot (multi-tenant, authenticated, billed) ships as five spec-kit
+features, in dependency order: `002-auth-tenancy-billing` → `003-pose-library` →
+`004-sequencing-composer` → `005-daily-sadhana` → `006-profile-settings`. The full
+approved plan (schema design, reference-implementation patterns, verification checklist)
+lives at `/Users/eddie.rowe/.claude/plans/i-met-with-giaconda-declarative-dewdrop.md`.
 
 Key artifacts:
-- Locked spec (v0.1, human-facing):  `docs/krama-v0.1-spec.md`
-- Pose field dictionary + tiers:     `docs/krama-atlas.md`
-- UI/testid guardrails:              `docs/krama-guardrails.md`
-- Constitution (non-negotiables): `.specify/memory/constitution.md`
-- Spec (what & why, derived):     `specs/001-krama-mvp-spec/spec.md`
-- Plan (how, stack, structure):   `specs/001-krama-mvp-spec/plan.md`
-- Data model (TypeScript types):  `specs/001-krama-mvp-spec/data-model.md`
-- Friction engine contract:       `specs/001-krama-mvp-spec/contracts/friction-engine.md`
-- Flow file format:               `specs/001-krama-mvp-spec/contracts/flow-file-format.md`
-- Pose library schema:            `specs/001-krama-mvp-spec/contracts/pose-library-schema.md`
-- Tasks:                          `specs/001-krama-mvp-spec/tasks.md`
-- Quickstart:                     `specs/001-krama-mvp-spec/quickstart.md`
-- Running friction log:           `FRICTION.md`
-- Why-we-chose log:               `DECISIONS.md`
+- Constitution (non-negotiables):       `.specify/memory/constitution.md` (v3.0.0)
+- Historical v0.1 spec (superseded):    `docs/krama-v0.1-spec.md`
+- Pose field dictionary + tiers:        `docs/krama-atlas.md`
+- UI/testid guardrails:                 `docs/krama-guardrails.md`
+- v0.1 spec/plan (machine-facing, historical): `specs/001-krama-mvp-spec/`
+- 002 spec (auth/tenancy/billing):       `specs/002-auth-tenancy-billing/spec.md`
+- 002 plan + schema design:              `specs/002-auth-tenancy-billing/plan.md`,
+  `docs/design/002-schema.md`
+- Running friction log:                 `FRICTION.md`
+- Why-we-chose log:                     `DECISIONS.md`
 <!-- SPECKIT END -->
 
-## Non-negotiables (from constitution v2.0.0)
+## Non-negotiables (from constitution v3.0.0)
 
-- v0.1 is fully deterministic: no AI call anywhere in the critical path. The AI proposal
-  stage from the prior spec is parked (not deleted) for v0.2 — see `DECISIONS.md`.
+- The friction engine and validator-lite stay fully deterministic and client-side, no
+  matter what else moves to a server: no AI call, no database read/write, no network
+  call, anywhere in their path (Principle III, RULE-H6). The parked AI-proposal stage
+  from v0.2 remains parked — see `DECISIONS.md`.
 - The friction engine is a pure function over Tier-1 pose geometry; its weights live in
   one exported constant (tuning is data, not code).
 - The engine derives structure with reasoning; it never authors cues, movement names, or
   teacher voice.
-- Friction engine and validator-lite: 100% unit test line coverage, mandatory.
+- Friction engine and validator-lite: 100% unit test line coverage, mandatory (CI-enforced
+  via `vitest run --coverage`).
 - Pose library lives in `data/poses/` as version-controlled JSON, tagged by entry tier
   (Tier-1 required, Tier-2 backfilled opportunistically). CI validates schema and Tier-1
-  completeness.
-- No auth, no database, no login in v1. Local-first (localStorage/IndexedDB), with
-  `.krama.json` export/import as the portability story.
-- No student-identifying information anywhere — v0.1 has no constraint/roster input at
-  all, and this stays true if/when it's added in v0.2.
+  completeness. This data stays readable with no account, subscription, or entitlement,
+  even though the application is commercial as of v1.0 (RULE-O6/O7).
+- v1.0 introduces accounts, organizations, and Postgres as the source of truth for
+  user-authored data — but auth is required only to *write*; reading a flow already in
+  the client-side cache MUST work offline, with no login (RULE-L3/L4, the "6am test").
+- Practice *content* (journal, reflections, mood/energy, flow notes) is visible only to
+  its author, enforced at the table/RLS layer, never by application code. Practice
+  *signals* (check-in dates, streaks, milestones) may be visible to a cohort teacher by
+  default, revocable in one interaction (Principle VIII).
+- No streak may reset to zero; no lapse copy may use guilt, shame, urgency, or a
+  countdown (Principle VII, CI-enforced by copy-lint).
 - Telemetry (Datadog RUM) carries page views, errors, and web vitals only — never
-  pose/flow/note content.
+  pose/flow/note/journal content.
 
 ## Commands
 

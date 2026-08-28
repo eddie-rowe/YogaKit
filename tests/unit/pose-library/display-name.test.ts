@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import type { Pose } from '@/lib/pipeline/types'
+import type { Pose } from '@/lib/pose-types'
 import { resolveDisplayName, allSearchableNames, appliesToStyle } from '@/lib/pose-library/display-name'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

@@ -29,10 +29,66 @@ jobs:
       - name: Validate pose library
         run: npm run validate:poses
 
-      - name: Unit tests
-        run: npx vitest run
+      - name: Unit tests (with coverage)
+        run: npx vitest run --coverage
 
       - name: Build
         run: npx next build
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'sk-ant-placeholder' }}
+
+  db-verify:
+    # RLS-assertion harness (T022, docs/design/002-schema.md §A/§D). Runs
+    # against a bare Postgres service container — no Docker-in-Docker, no
+    # Supabase CLI — since the script itself stubs the `auth` schema and
+    # roles it needs (see scripts/verify-migrations.sh header comment).
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify migrations (RLS assertions)
+        run: bash scripts/verify-migrations.sh
+
+  db-types-check:
+    # Generated-types drift check (T016, research.md item 5). Needs a real
+    # local Supabase stack (Docker), unlike db-verify's bare-Postgres harness,
+    # because `supabase gen types` reads from the Supabase CLI's own project
+    # state, not just a plain Postgres connection.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start Supabase and apply migrations
+        run: npx supabase start
+
+      - name: Check generated types for drift
+        run: bash scripts/db-types-check.sh

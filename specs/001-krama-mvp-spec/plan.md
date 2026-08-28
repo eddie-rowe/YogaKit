@@ -43,7 +43,8 @@ auth.
   handling is moot — there is no AI call in v0.1; pose and flow library bundled at build
   time (not runtime fetch)
 **Scale/Scope**: Single-user local-first; no concurrent user requirements; pose library
-  ~63 poses (superset per `DECISIONS.md`); flows up to ~30 items across 6 phases
+  67 poses as of 2026-08-26 (superset per `DECISIONS.md`, grew past the original ~63
+  estimate during entry); flows up to ~30 items across 6 phases
 
 ## Constitution Check
 
@@ -111,7 +112,7 @@ specs/001-krama-mvp-spec/
 
 ```text
 data/
-├── poses/               # Pose library JSON files, one per pose (~63)
+├── poses/               # Pose library JSON files, one per pose (67 as of 2026-08-26)
 ├── flows/               # Built-in flows as .krama.json (3 in v0.1)
 ├── meridians/           # Meridian/Five-Element mapping data (Tier-2, parked from lenses UI)
 ├── quotes/              # Quote collection with attribution

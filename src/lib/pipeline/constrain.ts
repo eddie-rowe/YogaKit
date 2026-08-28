@@ -3,11 +3,8 @@ import type {
   PipelineDraft,
   ConstrainedSequence,
   SequenceItem,
-  Pose,
-  ModeType,
-  IntensityCurve,
-  PoseDifficulty,
 } from './types'
+import type { Pose, ModeType, IntensityCurve, PoseDifficulty } from '@/lib/pose-types'
 import { getAllPoses, getPoseBySlug, filterPoses, rankAlternatesForPose } from '@/lib/pose-library'
 import { getMeridianSlugsForElement } from '@/lib/meridians'
 import { bufferMinutesPerPose } from './propose'

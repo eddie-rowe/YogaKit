@@ -1,7 +1,7 @@
 // Flow entity types — the canonical end-to-end entity name (renamed from "Sequence",
 // see specs/001-krama-mvp-spec/data-model.md and DECISIONS.md).
 
-import type { DefaultMeasure, EnergeticDirection, ModeType, Pose } from '@/lib/pipeline/types'
+import type { DefaultMeasure, EnergeticDirection, ModeType, Pose } from '@/lib/pose-types'
 
 export type LayerName = 'simple' | 'advanced' | 'expert' | 'custom'
 

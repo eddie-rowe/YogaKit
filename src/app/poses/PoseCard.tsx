@@ -1,6 +1,6 @@
 'use client'
 
-import type { Pose, FiveElement } from '@/lib/pipeline/types'
+import type { Pose, FiveElement } from '@/lib/pose-types'
 import { resolveDisplayName } from '@/lib/pose-library/display-name'
 
 interface Props {

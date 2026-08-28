@@ -1,4 +1,4 @@
-import type { Style, FiveElement, IntensityCurve, SequencingPosition } from '@/lib/pipeline/types'
+import type { Style, FiveElement, IntensityCurve, SequencingPosition } from '@/lib/pose-types'
 
 export interface ReferenceSequencePose {
   slug: string

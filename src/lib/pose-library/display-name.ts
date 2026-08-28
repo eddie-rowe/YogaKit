@@ -1,7 +1,7 @@
 // Helpers for resolving tradition-aware pose display names.
 // Pure functions — no `fs`, importable by both server and client components.
 
-import type { Pose, Style } from '@/lib/pipeline/types'
+import type { Pose, Style } from '@/lib/pose-types'
 
 /**
  * Resolve the display name for a pose, optionally biased to a teaching style.

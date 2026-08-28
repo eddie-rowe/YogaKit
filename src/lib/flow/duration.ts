@@ -1,4 +1,4 @@
-import type { DefaultMeasure } from '@/lib/pipeline/types'
+import type { DefaultMeasure } from '@/lib/pose-types'
 import type { FlowItem } from './types'
 
 // One breath ≈ 5 seconds at a teaching pace. Rough, display-only — never used for

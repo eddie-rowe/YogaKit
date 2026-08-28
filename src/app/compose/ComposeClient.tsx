@@ -16,7 +16,7 @@ import {
   arrayMove,
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable'
-import type { Pose } from '@/lib/pipeline/types'
+import type { Pose } from '@/lib/pose-types'
 import type { Flow, FlowItem, LayerName, Phase } from '@/lib/flow/types'
 import { isStillnessNode } from '@/lib/flow/types'
 import { resolveDisplayName } from '@/lib/pose-library/display-name'

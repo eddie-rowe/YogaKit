@@ -1,41 +1,53 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.0.0 → 2.0.0 (MAJOR — principle III redefined, principle removed
-  its mandatory-AI framing, safety/explainability rules rescoped)
-Rationale: docs/krama-v0.1-spec.md (locked spec, 2026-08-17) reframes v0.1 as a
-  deterministic, teacher-authored tool. No AI runs at generation time in v0.1; the
-  three-stage AI pipeline built for the prior spec is parked for v0.2 ("Suggest").
-  This amendment makes the constitution match the spec that is actually shipping.
+Version change: 2.0.0 → 3.0.0 (MAJOR — two principles redefined, one retired-and-renamed,
+  two principles added)
+Rationale: Giaconda's MVP feedback (docs/mvp-spec-suggestions.md) expands Krama from a
+  single-user local tool into a multi-tenant, authenticated, billed platform whose primary
+  persona is a newly-graduated YTT-200 teacher using the app as a guru/accountabilibuddy.
+  This directly contradicts v2.0.0's no-database (RULE-L3), no-accounts (RULE-L4), and
+  no-paywall-ever (RULE-O1) rules. Rather than let the app be built against a constitution
+  that forbids it, this amendment brings the constitution to the product the team has
+  committed to building — captured in the plan at
+  /Users/eddie.rowe/.claude/plans/i-met-with-giaconda-declarative-dewdrop.md.
 Modified principles:
-  - III renamed "Hybrid Generation with a Fixed Authority Order" →
-    "Deterministic Authority, AI Optional" — the friction engine, not an AI proposal
-    stage, is now the mandatory pipeline; AI returns in v0.2 as an untrusted proposer.
-  - I "Safety is Sovereign" — RULE-S2 rescoped: v0.1 ships no teacher-stated
-    constraint input (no roster), so the hard-constraint removal rule applies only
-    once that input exists (v0.2). Validator-lite's two warnings are craft
-    guidance, not safety enforcement, and MAY surface without blocking.
-  - II "The Teacher Decides; the App Proposes" — RULE-T1/T3 rescoped to apply to
-    app-generated content (friction reasons, template reasoning lines), not to
-    teacher-authored notes/cues, which the app never generates in v0.1. RULE-T2
-    (alternates) deferred to v0.2.
-  - IV "Embodied Intelligence" — E1/E2/E3 rescoped the same way; added a rule that
-    friction weights live in one exported constant.
-  - VI "Lightweight and Accessible" — RULE-L6 retargets from "sequence-delivery
-    view" to the v0.1 read view (the actual in-class artifact).
-Added principles: none (six principles retained, three re-scoped, one redefined)
-Added sections: none structural; added a v0.2 Carryover note under Governance
-Removed sections: none
+  - V "Free, Open, and Contributable" → "Open Data, Sustainable Product" — the
+    free-forever clause and RULE-O1 are retired; the pose/meridian/quote data stays open,
+    version-controlled, and CI-validated (RULE-O2–O5 kept verbatim) even though the
+    application itself is commercial. New RULE-O6 states the data/schema openness survives
+    monetization; new RULE-O7 requires entitlement/paywall logic to gate application
+    features only, never the data files themselves.
+  - VI "Lightweight and Accessible" — RULE-L3 and RULE-L4 rewritten. L3: the pose library
+    stays bundled static data, but user-authored data (flows, sadhana, profile) now lives
+    in Postgres and MUST be cached client-side so the read view still works offline. L4:
+    v1 now requires an account to write; it MUST NOT require an account, login, or network
+    round-trip to read a flow the user already has cached. RULE-L7 (telemetry carries no
+    user content) is explicitly called out as more load-bearing than before, now that a
+    server is in the loop.
+Added principles:
+  - VII "Compassion Over Compliance" — the non-punitive gamification design contract for
+    Daily Sadhana: streaks pause and never zero, no guilt/shame/urgency/countdown copy,
+    every lapse response offers a smaller re-entry, rest is a first-class recordable state,
+    enforced by a CI copy-lint.
+  - VIII "Consent-Scoped Visibility" — replaces the v2.0.0 blanket "no student-identifying
+    information" posture, which cannot survive cohorts. Splits practice *content* (author-only,
+    forever) from practice *signals* (teacher-visible by default within a cohort, revocable in
+    one interaction), enforced structurally (table/RLS separation), never in application code.
+Removed sections: RULE-O1 (no-paywall-ever) — retired, not replaced; monetization is now
+  a first-class, constitutionally-sanctioned part of the product.
 Templates reviewed:
-  ✅ .specify/memory/constitution.md (this file)
-  ⚠ plan-template.md — Constitution Check gates should be re-derived from principles
-    below when specs/001-krama-mvp-spec/plan.md is next rewritten (tracked in
-    docs/DECISIONS.md)
-  ⚠ spec-template.md — hard/soft constraint section still accurate; P1 stories are
-    being rewritten in specs/001-krama-mvp-spec/spec.md to match this amendment
-  ⚠ tasks-template.md — safety-layer/rules-engine task framing needs updating to
-    friction-engine/validator-lite framing when tasks.md is next regenerated
-Deferred TODOs: re-derive Constitution Check table in plan.md; regenerate tasks.md
+  ✅ .specify/templates/plan-template.md — generic ("[Gates determined based on
+    constitution file]"), no principle-specific text to update; Constitution Check gates
+    for `002`–`006` will be authored fresh against this version when their plan.md files
+    are generated.
+  ✅ .specify/templates/spec-template.md — generic placeholder structure, no changes needed.
+  ✅ .specify/templates/tasks-template.md — generic placeholder structure, no changes needed.
+  ✅ DECISIONS.md — amendment entry recorded.
+  ✅ docs/krama-v0.1-spec.md — annotated as historical, superseded by the v1.0 feature set.
+Deferred TODOs: none. The v0.2 carryover rules (RULE-S1/S2, RULE-T2, RULE-H2/H3/H4,
+  RULE-E1/E3) are untouched by this amendment — they still describe the AI-proposal
+  surface parked per DECISIONS.md, and remain non-binding until that surface ships.
 -->
 
 # Yoga Kit Constitution
@@ -110,6 +122,11 @@ any safety layer remain downstream, authoritative, and unconditionally in contro
 reaches the teacher. This order is immutable — no configuration, feature flag, or future
 addition may let an AI proposal reach the UI unfiltered.
 
+This principle is unaffected by the platform expansion in v1.0: the friction engine
+remains a pure client-side TypeScript module with no database dependency and no network
+call. Moving flows and sadhana data into Postgres does not move the engine — it stays
+precomputable, testable in isolation, and free of I/O.
+
 **Testable rules:**
 
 - RULE-H1: The friction/seam calculation MUST be a pure function over Tier-1 pose fields,
@@ -124,6 +141,10 @@ addition may let an AI proposal reach the UI unfiltered.
   well-formed.
 - RULE-H5: The engine's tunable weights (e.g. friction term weights) MUST live in one
   exported constant, not be scattered through logic — tuning is data, not code.
+- RULE-H6: The friction engine and validator-lite MUST NOT read from or write to
+  Postgres, IndexedDB, or any network resource. They accept pose/flow data as typed
+  in-memory arguments and return typed in-memory results, regardless of where that data
+  is persisted upstream.
 
 ### IV. Embodied Intelligence
 
@@ -152,17 +173,21 @@ app-generated thematic content.
   orientation, cog, spine, plane), never from arbitrary or random ordering, even if
   individually safe.
 
-### V. Free, Open, and Contributable
+### V. Open Data, Sustainable Product
 
-Yoga Kit is free to use with no paywall, ever. The pose library, meridian/element
-mappings, and quote collection live in the open-source repository as version-controlled
-data, structured so the community can extend them via pull requests. All content MUST
-be properly attributed; copyrighted translations MUST NOT be reproduced without license.
+*(formerly "Free, Open, and Contributable")*
+
+Yoga Kit's pose library, meridian/element mappings, and quote collection live in the
+open-source repository as version-controlled data, structured so the community can
+extend them via pull requests, regardless of whether the application built on top of
+that data is free or paid. All content MUST be properly attributed; copyrighted
+translations MUST NOT be reproduced without license. As of v3.0.0, the application is a
+commercial, entitlement-gated product — the data stays open anyway. Openness of the
+underlying knowledge and monetization of the product built on it are not in tension:
+this principle exists precisely to keep them separable in perpetuity.
 
 **Testable rules:**
 
-- RULE-O1: The application MUST be deployable and fully functional without a paid
-  subscription, account, or license key.
 - RULE-O2: The pose library, meridian data, and quotes MUST reside in the repository
   as plaintext (JSON, MDX, or YAML) with a schema documented for contributors.
 - RULE-O3: Every pose record MUST include a `source` or `lineage` attribution field.
@@ -172,6 +197,15 @@ be properly attributed; copyrighted translations MUST NOT be reproduced without 
   MUST NOT appear in the data files without explicit license documentation.
 - RULE-O5: The contributing guide MUST document the schema for adding poses and quotes,
   and CI MUST validate new contributions against that schema.
+- RULE-O6: The pose, meridian, and quote data files, and their JSON schemas, MUST remain
+  readable and forkable without an account, a subscription, or any entitlement check —
+  regardless of what the hosted application charges for. A server-side mirror of this
+  data (e.g. a generated `poses` table for query performance) MUST be derived from these
+  files, never the other way around, and MUST carry no write policy other than the
+  generation job itself.
+- RULE-O7: Entitlement and billing logic MUST gate application *features* (composing,
+  cloud sync, teacher dashboards, org seats) — never the underlying open data files, and
+  never a person's ability to read a flow or practice record they already own.
 
 ### VI. Lightweight and Accessible
 
@@ -180,22 +214,102 @@ The app MUST be mobile-first (teachers use phones in the studio, and read their 
 Infrastructure MUST be minimized: prefer local-first storage and static data over servers
 and databases wherever it does not compromise the principles above.
 
+**v1.0 scope note:** v1.0 introduces Supabase as the source of truth for user-authored
+data (flows, sadhana, profile, org membership). This principle is not repealed by that
+change — it is re-scoped from "no server, ever" to "the server is never a precondition
+for reading what you already have." RULE-L3 and RULE-L4 below carry that distinction.
+
 **Testable rules:**
 
 - RULE-L1: The app MUST be installable as a Progressive Web App on iOS and Android.
 - RULE-L2: Core functionality (composing, saving, and reading a flow) MUST work offline
-  without a network connection.
-- RULE-L3: The pose library and flow data MUST be bundled/persisted client-side (static
-  generation plus local storage), not fetched at runtime from a database.
-- RULE-L4: v1 MUST NOT require a user account, login, or server-side session to use any
-  P1 or P2 feature.
+  without a network connection, using the client-side cache described in RULE-L3.
+- RULE-L3: The pose library MUST remain bundled/static client-side data (unchanged from
+  v0.1). User-authored data (flows, sadhana check-ins, intentions, profile) is persisted
+  server-side in Postgres as the source of truth, and MUST be mirrored into a
+  client-side cache (IndexedDB) on every sync, so that reading previously-synced data
+  never depends on a live network connection.
+- RULE-L4: Authentication MUST be required to *write* new user data (create or modify a
+  flow, record a check-in, join an org) but MUST NOT be required to *read* a flow or
+  practice record already present in the client-side cache. The read view of a saved
+  flow MUST work with no network and no re-authentication, exactly as in v0.1's 6am
+  test.
 - RULE-L5: If any AI API call exists (v0.2+), it MUST fail gracefully with a
   deterministic-engine-only fallback; the app MUST remain fully usable without it.
 - RULE-L6: The app MUST achieve a Lighthouse mobile performance score >= 90 on the read
   view (the 6am, in-class use case).
 - RULE-L7: Telemetry (e.g. Datadog RUM) MUST record page views, errors, and web vitals
-  only. No pose names, flow titles, notes, or any other user-authored content MAY be
-  transmitted to a telemetry service.
+  only. No pose names, flow titles, notes, check-in content, or any other
+  user-authored content MAY be transmitted to a telemetry service. This rule is more
+  load-bearing than in v0.1, now that a real backend and real accounts exist to
+  accidentally instrument.
+
+### VII. Compassion Over Compliance
+
+*(new in v3.0.0)*
+
+Daily Sadhana exists to increase the odds that a newly-graduated teacher keeps a
+practice going through their first, hardest months — not to gamify attendance through
+guilt. Every mechanic in the sadhana surface MUST be designed so that a person who lapses
+feels invited back, never penalized for having stopped. This principle is the
+behavioral-design non-negotiable that makes Daily Sadhana specifiable rather than vibes.
+
+**Testable rules:**
+
+- RULE-C1: No streak MAY be reset to zero as a consequence of a missed day. Streaks
+  pause when a user's grace budget is exhausted; they never zero.
+- RULE-C2: No notification, empty state, streak display, or lapse prompt MAY use guilt,
+  shame, loss framing, urgency language, or a countdown. Absence of practice MUST be met
+  with an invitation, never a penalty or a warning of loss.
+- RULE-C3: Every lapse-response prompt (triggered after a user's declared lapse
+  threshold) MUST offer re-entry at a commitment *smaller* than the one that was missed
+  — e.g. a single breath, a single pose, or revisiting the original "why" — never a
+  prompt to simply "catch up" or repeat the missed commitment.
+- RULE-C4: Rest MUST be a valid, first-class practice state, distinct from a lapse, and
+  MUST be recordable by the user as a deliberate choice, not merely inferred from
+  absence.
+- RULE-C5: User-facing copy in the Daily Sadhana surface MUST pass an automated CI
+  copy-lint against a maintained banned-phrase list (guilt/shame/urgency/loss
+  vocabulary). A PR introducing a banned phrase MUST fail CI, not merely warn.
+- RULE-C6: Every milestone or streak celebration MUST be presented as an invitation to
+  continue, never as a threshold the user must now defend against losing.
+
+### VIII. Consent-Scoped Visibility
+
+*(new in v3.0.0, replaces the v2.0.0 blanket "no student-identifying information" posture)*
+
+v2.0.0 forbade any student-identifying information because v0.1 had no concept of a
+student at all. v1.0 introduces cohorts, and a certifying body's legitimate need to see
+whether its graduates are practicing. Those two facts are reconciled by drawing a hard
+line between practice *content* and practice *signals*, and by enforcing that line
+structurally — in the database schema and its row-level security policies — never as an
+application-code check that a future refactor could quietly bypass.
+
+**Testable rules:**
+
+- RULE-V1: Practice *content* — journal entries, reflections, mood/energy notes, and
+  free-text flow notes — MUST be visible only to the user who authored it. No role
+  (teacher, org admin, or otherwise) may be granted read access to this content, at any
+  visibility setting, under any configuration.
+- RULE-V2: Practice content MUST be stored in tables with no column a policy could join
+  against an org, cohort, or teacher role. The absence of that column, not application
+  logic, is what makes RULE-V1 true. A schema reviewer MUST be able to verify RULE-V1
+  by inspecting table structure alone.
+- RULE-V3: Practice *signals* — check-in dates, streak state, practice counts, and
+  milestone achievements — MAY be visible to a student's cohort teacher by default upon
+  cohort enrollment. The student MUST be able to see, in plain language, exactly what is
+  shared and with whom, and MUST be able to revoke that visibility in a single
+  interaction, reachable from the primary practice screen (not only from settings).
+- RULE-V4: Every visibility grant (e.g. a cohort enrollment's signal-sharing flag) MUST
+  be represented as a row a user can directly modify or delete — never a derived or
+  implicit permission with no corresponding record.
+- RULE-V5: CI MUST include an automated test proving that a cohort teacher account,
+  querying practice content tables for an enrolled student, receives zero rows or a
+  permission-denied error — not merely that the application's UI omits displaying it.
+- RULE-V6: Because a visibility grant may persist indefinitely until revoked, the
+  discoverability of the revoke control is itself a compliance requirement: it MUST name
+  the org/cohort in plain language and MUST NOT be buried more than one interaction deep
+  from where the user reviews their own practice.
 
 ## Constraint Classification
 
@@ -217,26 +331,37 @@ Once the safety layer exists (v0.2), it operates on hard constraints only; any r
 proposal layer optimizes soft preferences. Misclassifying a hard constraint as soft is a
 constitution violation.
 
+**v3.0.0 addendum:** The content/signal distinction in Principle VIII is a parallel hard
+line, drawn for privacy rather than safety, and MUST be enforced the same way — in table
+structure and RLS policy, not in application-layer conditionals. Misclassifying practice
+content as a signal (or vice versa) is a constitution violation of equal severity to
+misclassifying a hard safety constraint as soft.
+
 ## Governance
 
 - This constitution supersedes all other specifications, design documents, feature
   requests, and AI suggestions. When any artifact conflicts with a principle here, the
-  constitution wins. `docs/krama-v0.1-spec.md` is the locked human-facing spec for v0.1;
-  `specs/001-krama-mvp-spec/` is its derived, machine-facing form and MUST NOT contradict
-  it or this constitution.
+  constitution wins. `docs/krama-v0.1-spec.md` is the locked human-facing spec for v0.1
+  and is retained as a historical record of the original local-first product; it is
+  superseded, not deleted, by the v1.0 feature set (`specs/002-*` through `specs/006-*`)
+  built under this constitution. `specs/001-krama-mvp-spec/` remains the machine-facing
+  form of the v0.1 scope and MUST NOT be read as describing v1.0's scope.
 - Amendments require: a documented rationale, an updated Sync Impact Report comment
   block, a version bump (MAJOR for principle removal or redefinition; MINOR for new
   principle or material expansion; PATCH for clarifications), and a review of all
   dependent templates.
-- All PRs touching the friction engine, pose library schema, validator, or UI MUST
-  include a note confirming which constitution rules were verified.
+- All PRs touching the friction engine, pose library schema, validator, RLS policies, or
+  the Daily Sadhana UI MUST include a note confirming which constitution rules were
+  verified. PRs touching RLS or any table under Principle VIII MUST link to the
+  corresponding CI assertion (RULE-V5).
 - Testable rules (RULE-*) MUST have corresponding automated tests or CI checks before
   the feature that touches them ships. Rules marked "deferred to v0.2" or "binding once
-  AI returns" are recorded now for traceability but do not gate v0.1 CI.
+  AI returns" are recorded now for traceability but do not gate current CI.
 - **v0.2 carryover:** RULE-S1/S2, RULE-T2, RULE-H2/H3/H4, and RULE-E1/E3 are written now
   so the AI-proposal surface, when it returns, is built against an authority order that
   is already agreed — not re-litigated. See `docs/DECISIONS.md` for the record of why
-  the AI pipeline was parked rather than deleted.
+  the AI pipeline was parked rather than deleted, and for the record of the v3.0.0
+  platform-expansion decision.
 - Runtime development guidance lives in `CLAUDE.md` at the repository root.
 
-**Version**: 2.0.0 | **Ratified**: 2026-06-22 | **Last Amended**: 2026-08-17
+**Version**: 3.0.0 | **Ratified**: 2026-06-22 | **Last Amended**: 2026-08-26

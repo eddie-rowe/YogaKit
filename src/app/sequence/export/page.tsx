@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import type { ValidatedSequence, SequenceItem, PoseMode } from '@/lib/pipeline/types'
+import type { ValidatedSequence, SequenceItem } from '@/lib/pipeline/types'
+import type { PoseMode } from '@/lib/pose-types'
 import { resolveDisplayName } from '@/lib/pose-library/display-name'
 import './print.css'
 

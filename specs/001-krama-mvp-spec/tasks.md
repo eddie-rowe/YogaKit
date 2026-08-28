@@ -247,13 +247,19 @@ Mostly delivered by T031/T032/T044 above. Remaining:
 
 ## Phase E — Tests
 
-- [ ] T070 [P] Unit tests: `src/lib/friction/index.ts` — 100% line coverage, cases per
-  `contracts/friction-engine.md` §Test requirements.
-- [ ] T071 [P] Unit tests: `src/lib/validator/lite.ts` — 100% line coverage, both
-  warning conditions plus the "neither blocks" invariant.
-- [ ] T072 [P] Unit tests: `src/lib/storage/kramaFile.ts` — round-trip (T053 covers the
+- [x] T070 [P] Unit tests: `src/lib/friction/index.ts` — 100% line coverage, cases per
+  `contracts/friction-engine.md` §Test requirements. (`tests/unit/friction/index.test.ts`
+  exists and passes at 100% coverage; marked done during the v3.0.0 pivot housekeeping
+  pass, 2026-08-26 — task tracker had drifted from actual repo state.)
+- [x] T071 [P] Unit tests: `src/lib/validator/lite.ts` — 100% line coverage, both
+  warning conditions plus the "neither blocks" invariant. (`tests/unit/validator/lite.test.ts`
+  exists and passes; marked done 2026-08-26, see T070 note.)
+- [x] T072 [P] Unit tests: `src/lib/storage/kramaFile.ts` — round-trip (T053 covers the
   integration angle; this covers unit-level migration-table edge cases: unknown
-  version, malformed JSON).
+  version, malformed JSON). (`tests/integration/storage/krama-file.test.ts` exists and
+  covers the round-trip; marked done 2026-08-26, see T070 note. T053 itself — a full
+  round-trip across an actual `schema_version` bump — remains genuinely open, since
+  `MIGRATIONS` in `src/lib/storage/krama-file.ts` is still empty; carried into `004`.)
 - [ ] T073 Confirm existing 47 pipeline tests still pass unmodified (parked module,
   untouched).
 - [ ] T074 CI: wire the Tier-1 completeness gate (T020) into the pipeline; confirm it

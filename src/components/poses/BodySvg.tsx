@@ -1,7 +1,7 @@
 'use client'
 
 import { MERIDIAN_PATH_MAP, CHAKRA_DOTS, ELEMENT_COLORS } from '@/lib/pose-library/body-map'
-import type { FiveElement, ChakraName } from '@/lib/pipeline/types'
+import type { FiveElement, ChakraName } from '@/lib/pose-types'
 
 interface BodySvgProps {
   view: 'front' | 'back'

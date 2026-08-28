@@ -112,3 +112,54 @@ localStorage keys.
 data. Renaming them would silently break existing `.krama.json` exports and in-browser
 state with no user-facing benefit — the rename is a branding change, not a data model
 change.
+
+---
+
+## 2026-08-26 — Constitution amended to v3.0.0: multi-tenant platform pivot
+
+**Context:** Giaconda reviewed the v0.1 build and loved it, then proposed expanding it
+into a multi-tenant platform (`docs/mvp-spec-suggestions.md`): a sequencing composer,
+pose library, and a DuoLingo-inspired but explicitly non-punitive "Daily Sadhana"
+feature; a Supabase-backed schema with schools/studios/certifying-bodies tenancy,
+Supabase auth, and a personal profile area; and a named persona — a newly-graduated
+YTT-200 teacher, given a 3-month post-graduation membership so the app acts as a
+guru/accountabilibuddy through their first 90 days. The first paying customer is named
+and concrete: **One Om School of Yoga**, a certification body that wants cohort-level
+analytics on whether its graduates keep a practice going.
+
+This directly contradicted five load-bearing points in constitution v2.0.0: RULE-L3 (no
+database), RULE-L4 (no accounts/login), RULE-O1 (no paywall, ever), and the locked
+`docs/krama-v0.1-spec.md`'s explicit scope exclusions (accounts, sync, sharing) and
+persona (Eddie's own 6am practice, not a cohort of new teachers).
+
+**Decision:** Amend the constitution to v3.0.0 (MAJOR) rather than build the new MVP
+against a constitution that forbids it. Key changes:
+- Principle V "Free, Open, and Contributable" → "Open Data, Sustainable Product": the
+  free-forever clause and RULE-O1 are retired; the pose/meridian/quote data stays open
+  and CI-validated regardless of the application being commercial.
+- Principle VI "Lightweight and Accessible": RULE-L3/L4 rewritten so user data lives in
+  Postgres as source of truth but MUST be cached client-side (IndexedDB) so the offline
+  read view — the "6am test" — still works with no network and no re-auth.
+- New Principle VII "Compassion Over Compliance": streaks pause, never zero; no
+  guilt/shame/urgency copy; every lapse response offers a smaller re-entry; rest is a
+  recordable practice state; enforced by a CI copy-lint.
+- New Principle VIII "Consent-Scoped Visibility": replaces the blanket "no
+  student-identifying information" rule (which cannot survive cohorts) with a structural
+  split — practice *content* (journal, mood, notes) is author-only forever, enforced by
+  table/RLS separation; practice *signals* (check-in dates, streaks, milestones) are
+  visible to a cohort teacher by default, revocable in one interaction, with a CI test
+  proving a teacher cannot read a student's journal.
+
+The full execution plan — five new spec-kit features (`002-auth-tenancy-billing` through
+`006-profile-settings`), schema design (normalized flows, generated pose mirror, RLS
+helper functions, entitlement resolution), and verification strategy — lives in
+`/Users/eddie.rowe/.claude/plans/i-met-with-giaconda-declarative-dewdrop.md`.
+
+**Why:** A repo whose constitution actively forbids the product it is building would
+either get amended informally feature-by-feature (eroding the document's authority) or
+ignored outright. Doing the amendment first, explicitly, with a Sync Impact Report,
+keeps the constitution meaningful as the single source of non-negotiables through a
+much larger and more consequential expansion than any prior change. `docs/krama-v0.1-spec.md`
+is kept as a historical record rather than deleted, per this repo's established pattern
+of parking rather than discarding superseded work (see the AI-pipeline parking decision
+above).

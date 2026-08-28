@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import type { FiveElement } from '@/lib/pipeline/types'
+import type { FiveElement } from '@/lib/pose-types'
 
 // filterPoses and rankAlternatesForPose are pure-ish filter functions that call getAllPoses()
 // internally. We test them against the real 43-pose dataset loaded from disk,

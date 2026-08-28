@@ -5,6 +5,7 @@ import Link from 'next/link'
 import type { Flow } from '@/lib/flow/types'
 import { getAllFlows } from '@/lib/storage/flow-store'
 import { formatDuration, totalSeconds } from '@/lib/flow/duration'
+import ClaimFlowsPrompt from '@/app/onboarding/ClaimFlowsPrompt'
 
 interface Props {
   builtins: Flow[]
@@ -31,6 +32,8 @@ export default function HomeClient({ builtins }: Props) {
             Compose a class by hand. Read it on the mat.
           </p>
         </div>
+
+        <ClaimFlowsPrompt />
 
         {loaded && todaysFlow && (
           <Link data-testid="home-todays-flow" href={`/flows/${todaysFlow.id}`} className="kk-card block px-4 py-3">

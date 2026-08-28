@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { X } from 'lucide-react'
-import type { Pose, FiveElement } from '@/lib/pipeline/types'
+import type { Pose, FiveElement } from '@/lib/pose-types'
 import { resolveDisplayName } from '@/lib/pose-library/display-name'
 import PoseDetailContent, { useDetailLayer, DetailLayerChips, CustomFieldChecklist } from './PoseDetailContent'
 import * as haptics from '@/lib/haptics'

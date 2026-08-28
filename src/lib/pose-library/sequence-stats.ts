@@ -1,4 +1,4 @@
-import type { Pose, MuscleGroup, ChakraName } from '@/lib/pipeline/types'
+import type { Pose, MuscleGroup, ChakraName } from '@/lib/pose-types'
 import { CHAKRA_DOTS, MERIDIAN_PATH_MAP, ELEMENT_COLORS } from '@/lib/pose-library/body-map'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
