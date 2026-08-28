@@ -168,25 +168,25 @@ organization/teacher/billing-seat references.
 
 ### Tests for User Story 1
 
-- [ ] T024 [P] [US1] RLS assertion: a user with zero memberships can read/write their own
+- [x] T024 [P] [US1] RLS assertion: a user with zero memberships can read/write their own
   `profiles` row and nothing else, in `scripts/verify-migrations.sh`
-- [ ] T025 [P] [US1] Component test for the claim-existing-flows prompt appearing exactly
+- [x] T025 [P] [US1] Component test for the claim-existing-flows prompt appearing exactly
   once in `tests/unit/onboarding/claim-flow-prompt.test.tsx`
-- [ ] T026 [P] [US1] E2E: sign up with no pre-existing flows → land in a fully personal,
+- [x] T026 [P] [US1] E2E: sign up with no pre-existing flows → land in a fully personal,
   org-free experience, in `tests/e2e-qa/auth-org-invite.spec.ts` (first scenario in this
   spec file; later phases extend the same file)
 
 ### Implementation for User Story 1
 
-- [ ] T027 [US1] Create `src/app/auth/callback/route.ts` — PKCE `exchangeCodeForSession`
+- [x] T027 [US1] Create `src/app/auth/callback/route.ts` — PKCE `exchangeCodeForSession`
   + open-redirect guard on `next` (contracts/auth-flows.md)
-- [ ] T028 [US1] Create `src/app/auth/confirm/route.ts` — OTP `verifyOtp({token_hash,
+- [x] T028 [US1] Create `src/app/auth/confirm/route.ts` — OTP `verifyOtp({token_hash,
   type})` (contracts/auth-flows.md)
-- [ ] T029 [US1] Create `src/app/auth/sign-in/page.tsx` — Google + email sign-in UI
-- [ ] T030 [US1] Implement the "claim your existing flows" prompt (new component under
+- [x] T029 [US1] Create `src/app/auth/sign-in/page.tsx` — Google + email sign-in UI
+- [x] T030 [US1] Implement the "claim your existing flows" prompt (new component under
   `src/app/onboarding/` or equivalent) — reads existing IndexedDB v1 flows, offers
   explicit claim/decline, never silent (FR-020, Appendix E of the platform-pivot plan)
-- [ ] T031 [US1] Ensure every personal-feature surface (compose, read, poses) renders
+- [x] T031 [US1] Ensure every personal-feature surface (compose, read, poses) renders
   identically whether or not the signed-in user belongs to any organization — audit and
   fix any component that assumes an org exists
 

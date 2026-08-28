@@ -169,6 +169,23 @@ Modeled only; no live API calls in this feature.
 | `status` | text | `disconnected` (the only status reachable in this feature — `connected` requires a live call, out of scope) |
 | `created_at` | timestamptz | |
 
+## ClaimedFlow
+
+A deliberately temporary landing table (T030, appendix §E "Migrating existing local
+data"). Not the normalized `flows`/`flow_items`/`phases` schema — that belongs to feature
+`004`. Exists only so a "bring your local flows into your account?" prompt has somewhere
+to land the whole flow payload at sign-up time, without designing `004`'s document-write
+schema early. `004` reads out of `payload` when building its real rows, and may then keep
+this table as an audit trail or drop it — that decision belongs to `004`.
+
+| Field | Type | Notes |
+|---|---|---|
+| `id` | uuid | |
+| `user_id` | uuid | `references auth.users`, self-only RLS on all four verbs |
+| `source_flow_id` | text | the IndexedDB `Flow.id`, preserved for `004`'s reshape/dedupe pass |
+| `payload` | jsonb | the whole `.krama.json`-shape export (`exportKramaFile()`) of the claimed `Flow` |
+| `claimed_at` | timestamptz | |
+
 ## EntitlementGrant
 
 A time-boxed grant of paid-feature access, independent of subscription state.

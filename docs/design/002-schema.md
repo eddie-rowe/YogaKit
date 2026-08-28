@@ -166,6 +166,17 @@ because `flow_items.pose_slug` will eventually carry a real FK into the `poses` 
 and because entitlement gates on flow limits (§Entitlements below) will reference
 `flows.user_id`, which this feature's `profiles`/`memberships` graph must support.
 
+**`claimed_flows` (IN SCOPE for 002, deliberately temporary)** — added in Phase 3 (T030)
+because the user chose to migrate a device's IndexedDB v1 flows at sign-up time rather
+than only record a claim/decline decision. `004`'s normalized schema above doesn't exist
+yet, and designing it early to receive one claim-time write would mean designing it
+twice — so `002` gets a minimal landing table instead: `id`, `user_id references
+auth.users`, `source_flow_id text` (the IndexedDB `Flow.id`), `payload jsonb` (the whole
+`.krama.json`-shape export via `exportKramaFile()`), `claimed_at timestamptz`. Self-only
+RLS on all four verbs, same pattern as every other self-scoped table in §C. No FK to
+`flows` — `004` reads straight out of `payload` when it builds the real normalized rows,
+then may retire this table or keep it as an audit trail; that decision belongs to `004`.
+
 ### Sadhana (OUT OF SCOPE for 002 — documented for context only)
 
 `intentions`, `practice_checkins`, `practice_reflections`, `practice_ritual_state`,

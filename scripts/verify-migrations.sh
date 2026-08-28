@@ -181,6 +181,73 @@ END $do$;
 RESET ROLE;
 EOF
 
+# --- Solo practitioner (T024): a brand-new user with zero memberships can read/update
+# their own profile, and sees zero rows in memberships/organizations — the solo path
+# needs no org row to exist at all, not just isolation across orgs.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+INSERT INTO auth.users (id, email, email_confirmed_at) VALUES
+  ('a0000000-0000-0000-0000-000000000004', 'solo@example.com', now());
+INSERT INTO profiles (id, display_name, timezone) VALUES
+  ('a0000000-0000-0000-0000-000000000004', 'Solo Practitioner', 'America/Denver');
+EOF
+
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000004';
+DO $do$
+DECLARE
+  v_own_count int;
+  v_membership_count int;
+  v_org_count int;
+BEGIN
+  SELECT count(*) INTO v_own_count FROM profiles WHERE id = (SELECT auth.uid());
+  IF v_own_count <> 1 THEN
+    RAISE EXCEPTION 'solo user cannot read their own profile row';
+  END IF;
+
+  UPDATE profiles SET display_name = 'Solo Practitioner Updated'
+    WHERE id = (SELECT auth.uid());
+
+  SELECT count(*) INTO v_membership_count FROM memberships
+    WHERE user_id = (SELECT auth.uid());
+  SELECT count(*) INTO v_org_count FROM organizations
+    WHERE id = ANY (app_org_ids());
+  IF v_membership_count <> 0 OR v_org_count <> 0 THEN
+    RAISE EXCEPTION 'solo user with no membership rows sees non-zero org/membership counts';
+  END IF;
+
+  RAISE NOTICE 'PASS solo practitioner: reads/updates own profile, zero org/membership rows';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- claimed_flows isolation (T030): a second user gets zero rows from another user's
+# claimed_flows, same pattern as every other self-scoped table above.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000004';
+INSERT INTO claimed_flows (user_id, source_flow_id, payload)
+  VALUES ('a0000000-0000-0000-0000-000000000004', 'local-flow-1', '{"id":"local-flow-1"}'::jsonb);
+RESET ROLE;
+EOF
+
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
+DO $do$
+DECLARE
+  v_other_count int;
+BEGIN
+  SELECT count(*) INTO v_other_count FROM claimed_flows
+    WHERE user_id = 'a0000000-0000-0000-0000-000000000004';
+  IF v_other_count <> 0 THEN
+    RAISE EXCEPTION 'RLS leak: caller sees % rows of another user''s claimed_flows', v_other_count;
+  END IF;
+  RAISE NOTICE 'PASS claimed_flows isolation: caller sees zero of another user''s rows';
+END $do$;
+RESET ROLE;
+EOF
+
 export PGDATABASE=postgres
 psql -q -c "DROP DATABASE yogakit_mig_verify"
 echo "MIGRATION VERIFICATION PASSED"
