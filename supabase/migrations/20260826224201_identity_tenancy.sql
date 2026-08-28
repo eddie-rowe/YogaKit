@@ -4,6 +4,15 @@
 -- integration_connections. Plus the app_create_organization / app_accept_invitation
 -- RPCs (contracts/org-membership-api.md) — grouped here per tasks.md T010/T011 since
 -- both need the tables this migration creates.
+--
+-- Policies that call a SECURITY DEFINER helper (app_org_ids, app_has_org_role,
+-- app_co_member_ids) are deferred to 20260826224203_identity_policies.sql, which runs
+-- after 20260826224202_helper_functions.sql — those helpers are LANGUAGE SQL
+-- functions parse-analyzed at creation time, so they can't be defined until
+-- `memberships` (created below) exists, but `memberships` can't gain a policy that
+-- calls a helper that doesn't exist yet either. Tables here get RLS enabled with no
+-- policy in the interim (equivalent to zero rows, same effect as this file's
+-- deliberate no-policy `invitations` table).
 
 -- ---------------------------------------------------------------------------
 -- profiles — 1:1 with auth.users. Self-only.
@@ -47,13 +56,8 @@ create table profile_cards (
 
 alter table profile_cards enable row level security;
 
-create policy profile_cards_select_self_or_co_member on profile_cards
-  for select to authenticated
-  using (
-    user_id = (select auth.uid())
-    or user_id = any (app_co_member_ids())
-  );
-
+-- Its SELECT policy needs app_co_member_ids(), which needs `memberships` to exist —
+-- added in 20260826224203_identity_policies.sql, after the helper-functions migration.
 -- No insert/update/delete policy for any role — this table is written only by the
 -- sync trigger below, which runs as the trigger owner (bypasses RLS on this table).
 
@@ -99,10 +103,8 @@ create table organizations (
 
 alter table organizations enable row level security;
 
-create policy organizations_select_member on organizations
-  for select to authenticated
-  using (id = any (app_org_ids()));
-
+-- Its SELECT policy needs app_org_ids(), which needs `memberships` to exist — added
+-- in 20260826224203_identity_policies.sql, after the helper-functions migration.
 -- No direct insert/update/delete policy — organization creation goes through
 -- app_create_organization() below; type widening/renaming is deferred to a later
 -- feature's authorized-role RPC, not a blanket policy.
@@ -132,15 +134,8 @@ comment on table memberships is
 
 alter table memberships enable row level security;
 
-create policy memberships_select_co_member on memberships
-  for select to authenticated
-  using (org_id = any (app_org_ids()));
-
-create policy memberships_update_authorized_role on memberships
-  for update to authenticated
-  using (app_has_org_role(org_id, array['owner', 'admin']))
-  with check (app_has_org_role(org_id, array['owner', 'admin']));
-
+-- Its SELECT/UPDATE policies need app_org_ids()/app_has_org_role(), added in
+-- 20260826224203_identity_policies.sql, after the helper-functions migration.
 -- No delete policy — membership removal is a status change (suspended), not a row
 -- delete, so history and the last-owner trigger guard stay meaningful. No direct
 -- insert policy — rows are created by app_create_organization() and
@@ -189,10 +184,8 @@ create table integration_connections (
 
 alter table integration_connections enable row level security;
 
-create policy integration_connections_select_authorized on integration_connections
-  for select to authenticated
-  using (app_has_org_role(org_id, array['owner', 'admin']));
-
+-- Its SELECT policy needs app_has_org_role(), added in
+-- 20260826224203_identity_policies.sql, after the helper-functions migration.
 revoke select (encrypted_credentials) on integration_connections from authenticated;
 
 -- ---------------------------------------------------------------------------

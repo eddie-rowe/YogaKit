@@ -84,8 +84,13 @@ BEGIN
   SELECT id INTO v_org_a FROM organizations WHERE name = 'Org A';
   SELECT id INTO v_org_b FROM organizations WHERE name = 'Org B';
 
+  -- Role must include 'admin', not just 'student': the self-escalation trigger
+  -- test below updates this row as this same user, which only passes
+  -- memberships_update_authorized_role's USING clause (owner/admin) if they
+  -- already hold one of those roles — a plain student's UPDATE would be
+  -- silently filtered to zero rows by RLS before the trigger ever runs.
   INSERT INTO memberships (org_id, user_id, roles, status)
-  VALUES (v_org_a, 'a0000000-0000-0000-0000-000000000002', array['student'], 'active');
+  VALUES (v_org_a, 'a0000000-0000-0000-0000-000000000002', array['admin'], 'active');
 END $do$;
 EOF
 
@@ -134,12 +139,8 @@ BEGIN
   UPDATE memberships SET status = 'suspended'
     WHERE org_id = v_org_a AND user_id = 'a0000000-0000-0000-0000-000000000001';
   RAISE EXCEPTION 'trigger failed to block removing the last owner';
-EXCEPTION WHEN sqlstate '23514' OR OTHERS THEN
-  IF sqlstate = 'P0001' OR sqlstate = '23514' THEN
-    RAISE NOTICE 'PASS last-owner removal blocked';
-  ELSE
-    RAISE;
-  END IF;
+EXCEPTION WHEN restrict_violation THEN
+  RAISE NOTICE 'PASS last-owner removal blocked';
 END $do$;
 RESET ROLE;
 EOF
@@ -153,7 +154,7 @@ DECLARE
   v_org_a uuid;
 BEGIN
   SELECT id INTO v_org_a FROM organizations WHERE name = 'Org A';
-  UPDATE memberships SET roles = array['student', 'owner']
+  UPDATE memberships SET roles = array['admin', 'owner']
     WHERE org_id = v_org_a AND user_id = 'a0000000-0000-0000-0000-000000000002';
   RAISE EXCEPTION 'trigger failed to block self-escalation to owner';
 EXCEPTION WHEN insufficient_privilege THEN

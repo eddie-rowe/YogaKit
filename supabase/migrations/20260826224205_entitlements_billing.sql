@@ -138,7 +138,11 @@ declare
   -- named-argument contract (contracts/entitlements-api.md).
   v_user_id uuid := user_id;
 begin
-  is_service_role := (select auth.role()) = 'service_role';
+  -- coalesce, not a bare comparison: if the `role` JWT claim is ever unset,
+  -- `auth.role()` returns NULL, `NULL = 'service_role'` is NULL (not false),
+  -- and `IF NULL THEN` silently skips the guard below in plpgsql — the
+  -- escalation check must fail closed, never fail open on an unknown role.
+  is_service_role := coalesce((select auth.role()), '') = 'service_role';
 
   if not is_service_role and v_user_id <> (select auth.uid()) then
     raise exception 'cannot read another user''s entitlements'
