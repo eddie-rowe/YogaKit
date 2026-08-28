@@ -9,5 +9,5 @@ import { getEnv } from '@/lib/env'
 // wire `createBrowserClient<Database>(...)` here.
 export function createClient() {
   const env = getEnv()
-  return createBrowserClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+  return createBrowserClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY)
 }

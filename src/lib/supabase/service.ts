@@ -28,7 +28,7 @@ if (typeof window !== 'undefined') {
 // instance). Wire `createSupabaseClient<Database>(...)` once it lands.
 export function createServiceClient() {
   const env = getEnv()
-  return createSupabaseClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
+  return createSupabaseClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SECRET_KEY, {
     auth: {
       persistSession: false,
     },

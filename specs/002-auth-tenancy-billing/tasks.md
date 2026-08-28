@@ -45,8 +45,8 @@ exact matches to that section.
   `additional_redirect_urls` listing localhost + Vercel preview-URL pattern (research.md
   item 4)
 - [ ] T003 [P] Create `src/lib/env.ts` — zod schema for
-  `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
-  `SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
+  `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`,
+  `SUPABASE_SECRET_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
   `ENCRYPTION_KEY`; fails fast at boot, never logs values (ported per research.md)
 - [ ] T004 [P] Create `src/lib/utils/logger.ts` — structured logger, no user-content
   fields ever (RULE-L7), ported pattern

@@ -18,8 +18,8 @@ npm run db:types:check  # CI-equivalent drift check, run it locally before commi
 
 # 5. Env vars (see src/lib/env.ts for the full zod schema — fails fast at boot if missing)
 cp .env.example .env.local
-# Fill in: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY,
-# SUPABASE_SERVICE_ROLE_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, ENCRYPTION_KEY
+# Fill in: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+# SUPABASE_SECRET_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, ENCRYPTION_KEY
 
 # 6. Run the app
 npm run dev
