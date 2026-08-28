@@ -71,7 +71,7 @@
   "injury_risk": 4,
   "breathing_cues": {
     "entering": "Step the foot forward on an exhale and lower the back knee on the next exhale. Let the breath guide the hips gently downward rather than pushing.",
-    "holding": "Direct the breath into the front of the hip and the crease of the groin on the back-leg side. Each exhale is an invitation for the psoas to release its grip — the inhale creates space, the exhale releases tension.",
+    "holding": "Direct the breath into the front of the hip and the crease of the groin on the back-leg side. Each exhale is an invitation for the psoas to release its grip: the inhale creates space, the exhale releases tension.",
     "exiting": "Inhale to firm the front foot into the floor and float the torso upright. Step back to all fours or to standing on the exhale."
   },
   "before_poses": [
@@ -146,7 +146,7 @@
     {
       "emotion": "trust",
       "tcm_organ": "kidney",
-      "notes": "As the psoas gradually yields, many students experience a shift from guardedness to groundedness — the somatic correlate of kidney-water moving from fear toward trust and willingness."
+      "notes": "As the psoas gradually yields, many students experience a shift from guardedness to groundedness, the somatic correlate of kidney-water moving from fear toward trust and willingness."
     }
   ],
   "sequencing_position": [

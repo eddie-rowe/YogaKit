@@ -76,7 +76,7 @@
   "injury_risk": 3,
   "breathing_cues": {
     "entering": "Inhale to stand tall, then exhale to slowly hinge forward at the hips and bend the knees generously. Let the torso hang heavy on the next exhale, releasing the neck completely.",
-    "holding": "Allow the breath to move naturally in the back body. Each exhale lengthens the spine downward through gravity. The head and arms remain completely passive — no muscular effort in the neck or shoulders.",
+    "holding": "Allow the breath to move naturally in the back body. Each exhale lengthens the spine downward through gravity. The head and arms remain completely passive: no muscular effort in the neck or shoulders.",
     "exiting": "Inhale to firm the feet into the floor and begin to roll slowly up through the spine, stacking one vertebra at a time. Keep the knees soft and the head the last to rise."
   },
   "before_poses": [
@@ -113,7 +113,7 @@
   "modifications": [
     {
       "name": "Knees More Bent",
-      "description": "Bend the knees generously — even deeply — to completely release the hamstrings and low back from any stretch tension. This converts the pose from a hamstring stretch into a pure spinal decompression.",
+      "description": "Bend the knees generously, even deeply, to completely release the hamstrings and low back from any stretch tension. This converts the pose from a hamstring stretch into a pure spinal decompression.",
       "props_used": [],
       "accessibility_level": "accessible"
     },
@@ -126,7 +126,7 @@
       "accessibility_level": "accessible"
     },
     {
-      "name": "Rag Doll — Hold Opposite Elbows",
+      "name": "Rag Doll - Hold Opposite Elbows",
       "description": "Clasp opposite elbows overhead and allow the entire arm girdle to hang passively. The added weight of the arms deepens the gravitational traction on the cervical and thoracic spine.",
       "props_used": [],
       "accessibility_level": "intermediate"
@@ -147,7 +147,7 @@
     {
       "emotion": "letting go",
       "tcm_organ": "bladder",
-      "notes": "The complete surrender of the posterior body to gravity — head, neck, arms all hanging — is one of the most direct somatic expressions of releasing control. The bladder meridian runs the entire back body from head to heel."
+      "notes": "The complete surrender of the posterior body to gravity - head, neck, arms all hanging - is one of the most direct somatic expressions of releasing control. The bladder meridian runs the entire back body from head to heel."
     },
     {
       "emotion": "grief",

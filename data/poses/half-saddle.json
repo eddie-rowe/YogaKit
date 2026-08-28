@@ -62,7 +62,7 @@
   "injury_risk": 5,
   "breathing_cues": {
     "entering": "Exhale as you lower yourself back onto your forearms, softening the front of the bent-leg thigh with each breath out. Move only on exhalations and pause to breathe if you encounter strong resistance.",
-    "holding": "Breathe fully into the belly and the front of the thigh. Each exhale can invite a small additional release in the quadriceps and hip flexor without muscling deeper. Let the breath be your guide — shallow or held breath signals too much intensity.",
+    "holding": "Breathe fully into the belly and the front of the thigh. Each exhale can invite a small additional release in the quadriceps and hip flexor without muscling deeper. Let the breath be your guide: shallow or held breath signals too much intensity.",
     "exiting": "Inhale to prepare, then press into the hands and rise slowly, keeping the weight evenly distributed as you return to upright."
   },
   "before_poses": [

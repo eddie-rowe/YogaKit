@@ -15,7 +15,7 @@
         "min": 2,
         "max": 5
       },
-      "cue_notes": "Sit with legs spread wide apart. Allow the spine to round forward in a C-curve and walk the hands forward between or beyond the legs. Head hangs. Feel the inner thighs, hamstrings, and posterior spine receiving the stretch. Do not force the legs wider — gravity does the work over time. Can also fold toward each leg individually to target one hamstring at a time."
+      "cue_notes": "Sit with legs spread wide apart. Allow the spine to round forward in a C-curve and walk the hands forward between or beyond the legs. Head hangs. Feel the inner thighs, hamstrings, and posterior spine receiving the stretch. Do not force the legs wider: gravity does the work over time. Can also fold toward each leg individually to target one hamstring at a time."
     }
   ],
   "body_position": "seated",
@@ -67,7 +67,7 @@
   "breathing_cues": {
     "entering": "Inhale to sit tall with legs wide, then on a slow exhale walk the hands forward and allow the spine to drape forward in a long C-curve. Let the inner thighs and posterior spine receive the weight of the torso.",
     "holding": "Breathe easily. With each exhale, release any gripping in the inner thighs and lower back. Visualize the adductor fascia softening and lengthening without any muscular effort pulling the legs apart.",
-    "exiting": "On an inhale, walk the hands back toward the pelvis and press up to sitting, then bring the legs slowly together — one at a time — to avoid strain on the sacroiliac joints."
+    "exiting": "On an inhale, walk the hands back toward the pelvis and press up to sitting, then bring the legs slowly together, one at a time, to avoid strain on the sacroiliac joints."
   },
   "before_poses": [
     "butterfly",
@@ -98,7 +98,7 @@
   "modifications": [
     {
       "name": "Legs Less Wide",
-      "description": "Reduce the angle between the legs to a comfortable range — 60 to 90 degrees — so the inner thigh and hamstring receive a therapeutic load without overstretching the adductor attachments at the ischium.",
+      "description": "Reduce the angle between the legs to a comfortable range, 60 to 90 degrees, so the inner thigh and hamstring receive a therapeutic load without overstretching the adductor attachments at the ischium.",
       "props_used": [],
       "accessibility_level": "accessible"
     },
@@ -134,7 +134,7 @@
     {
       "emotion": "vulnerability",
       "tcm_organ": "liver",
-      "notes": "The wide-legged position exposes the inner groin — an area associated with vulnerability, intimacy, and boundaries; the liver meridian runs this line."
+      "notes": "The wide-legged position exposes the inner groin: an area associated with vulnerability, intimacy, and boundaries; the liver meridian runs this line."
     },
     {
       "emotion": "confidence",

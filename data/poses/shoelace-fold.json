@@ -63,7 +63,7 @@
   "injury_risk": 6,
   "breathing_cues": {
     "entering": "From Shoelace, inhale to find length in the spine. On a slow, complete exhale, walk the hands forward and allow the torso to drape over the stacked knees, rounding the entire spine.",
-    "holding": "Breathe into the back of the outer hips. Each exhale invites the gallbladder meridian line — lateral hip, IT band, outer knee — to release incrementally. Soften the jaw, throat, and hands completely.",
+    "holding": "Breathe into the back of the outer hips. Each exhale invites the gallbladder meridian line, lateral hip, IT band, outer knee, to release incrementally. Soften the jaw, throat, and hands completely.",
     "exiting": "On an inhale, press the palms into the floor and slowly unwind the spine to upright. Release the legs and take a brief rebound in constructive rest before switching sides."
   },
   "before_poses": [
@@ -98,7 +98,7 @@
   "modifications": [
     {
       "name": "Stay Upright",
-      "description": "Remain in Shoelace without adding the forward fold — this is the prop-free variation and appropriate when the outer hip is already at capacity.",
+      "description": "Remain in Shoelace without adding the forward fold. This is the prop-free variation and appropriate when the outer hip is already at capacity.",
       "props_used": [],
       "accessibility_level": "accessible"
     },
@@ -131,7 +131,7 @@
     {
       "emotion": "control",
       "tcm_organ": "gallbladder",
-      "notes": "The combination of compression and forward fold asks the body to completely yield — a direct confrontation with the psychological tendency to hold on and resist release."
+      "notes": "The combination of compression and forward fold asks the body to completely yield, a direct confrontation with the psychological tendency to hold on and resist release."
     }
   ],
   "sequencing_position": [

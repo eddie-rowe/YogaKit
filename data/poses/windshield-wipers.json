@@ -69,9 +69,9 @@
   "complexity": 3,
   "injury_risk": 2,
   "breathing_cues": {
-    "entering": "Exhale to let the knees fall to one side — the exhale is what releases the rotation; avoid using muscular effort to push the knees down.",
+    "entering": "Exhale to let the knees fall to one side: the exhale is what releases the rotation; avoid using muscular effort to push the knees down.",
     "holding": "Each inhale gently lifts the ribs and creates a small counter-rotation in the thorax; each exhale allows the lumbar and sacral region to soften deeper into the twist. Notice the space between each vertebra opening.",
-    "exiting": "Inhale the knees back to center on the breath — use the core rather than momentum — then exhale and allow them to fall to the opposite side."
+    "exiting": "Inhale the knees back to center on the breath, use the core rather than momentum, then exhale and allow them to fall to the opposite side."
   },
   "before_poses": [
     "constructive-rest",
@@ -115,7 +115,7 @@
     },
     {
       "name": "Dynamic sweeping",
-      "description": "Use the pose dynamically — sweep knees from side to side with the breath — as a warming or transitional movement rather than a static yin hold.",
+      "description": "Use the pose dynamically, sweep knees from side to side with the breath, as a warming or transitional movement rather than a static yin hold.",
       "props_used": [],
       "accessibility_level": "accessible"
     },
@@ -140,7 +140,7 @@
     {
       "emotion": "adaptability",
       "tcm_organ": "liver",
-      "notes": "The fluid, yielding quality of this pose — letting the legs drop by their own weight — teaches the nervous system to trust surrender over control, a key theme of wood-element work."
+      "notes": "The fluid, yielding quality of this pose, letting the legs drop by their own weight, teaches the nervous system to trust surrender over control, a key theme of wood-element work."
     }
   ],
   "sequencing_position": [

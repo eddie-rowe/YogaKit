@@ -14,6 +14,11 @@
   --warning: #92400e;
   --warning-bg: #fef3c7;
   --warning-border: #fde68a;
+  /* Motion tokens (guardrails §2 — ≤200ms, ease only, no spring/bounce). Every
+     transition in the app should reference one of these two, not a magic number. */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --ease-standard: ease;
 }
 
 @theme inline {
@@ -78,17 +83,32 @@ a, button, [role="button"] {
 }
 
 input[type=range] {
-  accent-color: #3d3530;
+  accent-color: var(--accent);
 }
 
-@keyframes fadeIn {
+@keyframes kk-fade-in {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
 
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+@keyframes kk-scale-in {
+  from { opacity: 0; transform: scale(0.98); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Full-screen overlay entrance/exit (Poses detail). Backdrop fades, panel fades +
+   scales in very slightly — no bounce, ≤200ms (guardrails §2). */
+.kk-overlay-backdrop {
+  animation: kk-fade-in var(--duration-base) var(--ease-standard);
+}
+.kk-overlay-backdrop.kk-overlay-closing {
+  animation: kk-fade-in var(--duration-base) var(--ease-standard) reverse;
+}
+.kk-overlay-panel {
+  animation: kk-scale-in var(--duration-base) var(--ease-standard);
+}
+.kk-overlay-panel.kk-overlay-closing {
+  animation: kk-scale-in var(--duration-base) var(--ease-standard) reverse;
 }
 
 /* Shared surfaces for the v0.1 app (Compose/Flows/Read/Home) — token-driven so dark
@@ -181,3 +201,23 @@ input[type=range] {
 }
 .kk-seam[data-tier="2"] .kk-seam-line { height: 2px; }
 .kk-seam[data-tier="3"] .kk-seam-line { height: 2px; background: var(--muted); }
+
+/* Compose drag-reorder: a quiet, certain lift — never a bounce (guardrails §2). */
+.kk-drag-item {
+  transition: box-shadow var(--duration-fast) var(--ease-standard),
+    background-color 160ms ease, border-color 160ms ease;
+}
+.kk-drag-item[data-dragging="true"] {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: scale(1.01);
+  position: relative;
+  z-index: 10;
+}
+.kk-drag-handle {
+  touch-action: none;
+  cursor: grab;
+  color: var(--muted);
+}
+.kk-drag-handle:active {
+  cursor: grabbing;
+}

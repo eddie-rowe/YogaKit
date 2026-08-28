@@ -1,4 +1,4 @@
-# Krama v0.1 — Locked MVP Specification
+# YogaKit v0.1 — Locked MVP Specification
 *Spec-lock target: Aug 31, 2026 · Working build: Sept 30 · Teacher feedback: Oct 31*
 *Companions: `krama-atlas.md`, `krama-guardrails.md`, pose/transition schemas.*
 
@@ -145,4 +145,4 @@ Next.js (app router) on Vercel · TypeScript · poses as JSON validated against 
 
 ---
 
-*krama · v0.1 spec · locked when Eddie says so*
+*yogakit · v0.1 spec · locked when Eddie says so*

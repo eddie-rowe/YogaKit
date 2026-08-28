@@ -16,16 +16,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Krama — Yoga Sequence Builder",
+  title: "YogaKit: Yoga Sequence Builder",
   description: "A free, open-source yoga sequencing tool for teachers.",
   manifest: "/manifest.json",
-  appleWebApp: { capable: true, statusBarStyle: "default", title: "Krama" },
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "YogaKit" },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: "#1c1917",
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

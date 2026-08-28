@@ -59,8 +59,8 @@
   "complexity": 5,
   "injury_risk": 6,
   "breathing_cues": {
-    "entering": "From a prone or Sphinx position, inhale. On your exhale, bend one knee and slowly draw the heel toward the glute — pause if you feel any sharp sensation in the knee or thigh. Allow the hip to remain grounded as you settle into the shape.",
-    "holding": "Breathe steadily and direct attention to the front of the bent-leg thigh. Each exhale is an invitation for the quadriceps fascia to release; do not pull harder on the ankle — let the breath do the releasing. If the lumbar feels compressed, soften the supporting forearm and allow the chest to drop slightly.",
+    "entering": "From a prone or Sphinx position, inhale. On your exhale, bend one knee and slowly draw the heel toward the glute, pausing if you feel any sharp sensation in the knee or thigh. Allow the hip to remain grounded as you settle into the shape.",
+    "holding": "Breathe steadily and direct attention to the front of the bent-leg thigh. Each exhale is an invitation for the quadriceps fascia to release; do not pull harder on the ankle; let the breath do the releasing. If the lumbar feels compressed, soften the supporting forearm and allow the chest to drop slightly.",
     "exiting": "On an inhale, release the grip on the ankle and slowly extend the bent leg back to the floor. Exhale and rest in Crocodile or transition directly to the second side."
   },
   "before_poses": [
@@ -134,7 +134,7 @@
     {
       "emotion": "frustration",
       "tcm_organ": "stomach",
-      "notes": "The stomach meridian runs along the anterior thigh — the primary tissue targeted here. Stored frustration, undigested experiences, and rumination associated with the stomach organ can arise during sustained holds."
+      "notes": "The stomach meridian runs along the anterior thigh, the primary tissue targeted here. Stored frustration, undigested experiences, and rumination associated with the stomach organ can arise during sustained holds."
     },
     {
       "emotion": "control",

@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props) {
   const seq = getReferenceSequenceById(id)
   if (!seq) return {}
   return {
-    title: `${seq.title} — Yoga Kit`,
+    title: `${seq.title} | YogaKit`,
     description: seq.description,
   }
 }

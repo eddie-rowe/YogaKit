@@ -166,7 +166,7 @@ export default function SequenceDetailClient({ sequence: seq, resolvedPoses }: P
           <div>
             <div className="flex items-baseline justify-between mb-3">
               <p className="text-xs font-semibold text-stone-400 uppercase tracking-widest">
-                Sequence — {resolvedPoses.length} poses
+                Sequence: {resolvedPoses.length} poses
               </p>
               <p className="text-xs text-stone-400">{totalMinutes} min mat time</p>
             </div>

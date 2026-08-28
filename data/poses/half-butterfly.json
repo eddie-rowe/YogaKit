@@ -72,7 +72,7 @@
   "injury_risk": 3,
   "breathing_cues": {
     "entering": "Inhale to sit tall, then exhale and fold forward over the extended leg, releasing the spine into a C-curve without forcing. Let the bent leg remain heavy and passive.",
-    "holding": "Allow the breath to be easy and unhurried. On each exhale, feel the back of the extended leg soften a little more. There is no rush — the connective tissue responds to time, not effort.",
+    "holding": "Allow the breath to be easy and unhurried. On each exhale, feel the back of the extended leg soften a little more. There is no rush: the connective tissue responds to time, not effort.",
     "exiting": "On an inhale, walk the hands back toward the hips and slowly unwind the spine to upright before switching sides."
   },
   "before_poses": [
@@ -122,7 +122,7 @@
     },
     {
       "name": "Strap Around Extended Foot",
-      "description": "Loop a strap around the foot of the extended leg so the hands can hold the strap without rounding the upper back excessively — useful when hamstrings are very tight.",
+      "description": "Loop a strap around the foot of the extended leg so the hands can hold the strap without rounding the upper back excessively, useful when hamstrings are very tight.",
       "props_used": [
         "strap"
       ],
@@ -149,7 +149,7 @@
     {
       "emotion": "anger",
       "tcm_organ": "liver",
-      "notes": "One-sided tension in the inner thigh or groin crease may reflect suppressed anger or frustration stored asymmetrically in the fascial system — the liver's primary emotional domain in TCM."
+      "notes": "One-sided tension in the inner thigh or groin crease may reflect suppressed anger or frustration stored asymmetrically in the fascial system: the liver's primary emotional domain in TCM."
     }
   ],
   "sequencing_position": [
