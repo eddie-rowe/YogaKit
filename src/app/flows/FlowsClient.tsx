@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import type { Flow } from '@/lib/flow/types'
 import { getAllFlows, deleteFlow, saveFlow } from '@/lib/storage/flow-store'
-import { exportKramaFile, importKramaFile } from '@/lib/storage/krama-file'
+import { CURRENT_SCHEMA_VERSION, exportKramaFile, importKramaFile } from '@/lib/storage/krama-file'
 import { formatDuration, totalSeconds } from '@/lib/flow/duration'
 
 interface Props {
@@ -91,6 +91,19 @@ export default function FlowsClient({ builtins }: Props) {
             </Link>
           </div>
         </div>
+
+        {/* The export format already carries its schema version and an export
+            timestamp; naming the version here makes the portability contract
+            visible before a file is written rather than only inside it
+            (docs/design-research/21-portability-export-share.md). */}
+        <p
+          data-testid="flows-format-caption"
+          className="text-xs"
+          style={{ color: 'var(--muted)' }}
+        >
+          Exports are plain <code>.krama.json</code> files, schema v{CURRENT_SCHEMA_VERSION},
+          stamped with the time they were written.
+        </p>
 
         {importError && <div className="kk-warning px-3 py-2 text-sm">{importError}</div>}
 

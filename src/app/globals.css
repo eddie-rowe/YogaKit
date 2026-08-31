@@ -152,6 +152,19 @@ input[type=range] {
   border: 1px solid var(--border);
   border-radius: 999px;
   transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+  /* Chips are tap targets first. Text-sized padding alone left the Advanced-panel
+     chips around 20px tall (docs/design-research/05-catalog-search-filter.md), so the
+     minimum lives here rather than in each call site's padding utilities. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+}
+/* Touch pointers get the full 40px; mice keep the denser filter panel. */
+@media (pointer: coarse) {
+  .kk-chip {
+    min-height: 2.5rem;
+  }
 }
 .kk-chip[data-active="true"] {
   background: var(--accent);

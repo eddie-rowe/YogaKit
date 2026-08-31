@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, PenLine, ListTree, Flower2, GraduationCap } from 'lucide-react'
+import AccountMenu from './AccountMenu'
 
 // v0.1 five-tab nav (docs/krama-guardrails.md §1.3, spec §3). /dimensions, /sequence,
 // /sequences and /api/generate are parked for v0.2 — unlinked here, not deleted.
@@ -40,26 +41,31 @@ export default function AppHeader() {
         >
           YogaKit
         </Link>
-        <nav className="hidden sm:flex items-center gap-1">
-          {NAV_LINKS.map(({ href, label, testId }) => {
-            const active = isActive(pathname, href)
-            return (
-              <Link
-                key={href}
-                href={href}
-                data-testid={testId}
-                className="px-3 py-1.5 text-sm rounded-md transition-colors duration-150"
-                style={
-                  active
-                    ? { color: 'var(--accent-foreground)', background: 'var(--accent)', fontWeight: 500 }
-                    : { color: 'var(--muted)' }
-                }
-              >
-                {label}
-              </Link>
-            )
-          })}
-        </nav>
+        <div className="flex items-center gap-1">
+          <nav className="hidden sm:flex items-center gap-1">
+            {NAV_LINKS.map(({ href, label, testId }) => {
+              const active = isActive(pathname, href)
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  data-testid={testId}
+                  className="px-3 py-1.5 text-sm rounded-md transition-colors duration-150"
+                  style={
+                    active
+                      ? { color: 'var(--accent-foreground)', background: 'var(--accent)', fontWeight: 500 }
+                      : { color: 'var(--muted)' }
+                  }
+                >
+                  {label}
+                </Link>
+              )
+            })}
+          </nav>
+          {/* Account lives beside the nav, not inside NAV_LINKS — 005 collapses
+              that array from five tabs to three. */}
+          <AccountMenu />
+        </div>
       </header>
 
       <nav

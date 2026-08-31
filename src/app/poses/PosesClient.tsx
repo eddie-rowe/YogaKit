@@ -231,15 +231,28 @@ export default function PosesClient({ poses }: Props) {
 
           {viewMode === 'filter' && (
           <>
-          {/* Search bar */}
-          <input
-            type="search"
-            data-testid="poses-search-input"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search poses by name, Sanskrit, or alias…"
-            className="kk-input w-full"
-          />
+          {/* Search bar. "Clear all" sits here rather than inside the Advanced panel so
+              it is reachable whenever a filter is active, even with the panel collapsed
+              (docs/design-research/05-catalog-search-filter.md). */}
+          <div className="flex items-center gap-2">
+            <input
+              type="search"
+              data-testid="poses-search-input"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search poses by name, Sanskrit, or alias…"
+              className="kk-input w-full"
+            />
+            {hasActiveFilters ? (
+              <button
+                onClick={clearFilters}
+                data-testid="poses-clear-all-filters"
+                className="kk-chip px-3 py-1 text-xs whitespace-nowrap"
+              >
+                Clear all
+              </button>
+            ) : null}
+          </div>
 
           {/* Body position chips */}
           <div className="flex flex-wrap gap-1 mt-2" data-testid="poses-category-filter">
@@ -378,7 +391,7 @@ export default function PosesClient({ poses }: Props) {
                       key={tag}
                       onClick={() => toggleTypeTag(tag)}
                       data-active={filterTypeTags.includes(tag)}
-                      className="kk-chip px-2 py-0.5 text-xs"
+                      className="kk-chip px-3 py-1 text-xs"
                     >
                       {tag}
                     </button>
@@ -395,7 +408,7 @@ export default function PosesClient({ poses }: Props) {
                       key={m}
                       onClick={() => toggleMuscleGroup(m)}
                       data-active={filterMuscleGroups.includes(m)}
-                      className="kk-chip px-2 py-0.5 text-xs"
+                      className="kk-chip px-3 py-1 text-xs"
                     >
                       {m}
                     </button>
@@ -403,15 +416,6 @@ export default function PosesClient({ poses }: Props) {
                 </div>
               </div>
 
-              {hasActiveFilters && (
-                <button
-                  onClick={clearFilters}
-                  className="text-xs underline transition-colors"
-                  style={{ color: 'var(--warning)', transitionDuration: '150ms' }}
-                >
-                  Clear all filters
-                </button>
-              )}
             </div>
           )}
           </>

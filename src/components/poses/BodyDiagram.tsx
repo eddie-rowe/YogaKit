@@ -138,10 +138,43 @@ export default function BodyDiagram({
 
       {/* Legend */}
       {activeTab === 'muscles' && hasMuscles && (
-        <div className="flex flex-wrap gap-1">
-          {muscleGroups.map(m => (
-            <span key={m} className="text-[11px] px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-full">{m}</span>
-          ))}
+        <div className="flex flex-col gap-1">
+          {/* The diagram encodes tissue depth as fill vs. dashed outline. That
+              convention was previously left for the reader to infer
+              (docs/design-research/04-pose-detail-anatomy.md). */}
+          <div
+            className="flex items-center gap-3 text-[11px] text-stone-500"
+            data-testid="body-diagram-depth-legend"
+          >
+            <span className="flex items-center gap-1">
+              <svg width="12" height="12" aria-hidden="true">
+                <rect width="12" height="12" rx="3" fill="#818cf8" opacity={0.5} />
+              </svg>
+              superficial
+            </span>
+            <span className="flex items-center gap-1">
+              <svg width="12" height="12" aria-hidden="true">
+                <rect
+                  x="0.75"
+                  y="0.75"
+                  width="10.5"
+                  height="10.5"
+                  rx="3"
+                  fill="none"
+                  stroke="#818cf8"
+                  strokeWidth="1.5"
+                  strokeDasharray="3 2"
+                  opacity={0.7}
+                />
+              </svg>
+              deep
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-1">
+            {muscleGroups.map(m => (
+              <span key={m} className="text-[11px] px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-full">{m}</span>
+            ))}
+          </div>
         </div>
       )}
       {activeTab === 'meridians' && hasMeridians && (

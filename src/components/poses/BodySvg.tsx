@@ -191,7 +191,7 @@ export default function BodySvg({
             strokeWidth={isDeep ? 1.5 : 0}
             strokeDasharray={isDeep ? '3 2' : undefined}
             opacity={isDeep ? 0.7 : 0.5}
-            style={{ transition: 'opacity 0.3s' }}
+            style={{ transition: 'opacity var(--duration-base) var(--ease-standard)' }}
           >
             {pathNode}
           </g>
@@ -213,7 +213,7 @@ export default function BodySvg({
               strokeLinecap="round"
               strokeLinejoin="round"
               opacity={0.85}
-              style={{ transition: 'opacity 0.3s' }}
+              style={{ transition: 'opacity var(--duration-base) var(--ease-standard)' }}
             />
           ))
       })}
@@ -227,7 +227,7 @@ export default function BodySvg({
           r="5"
           fill="#475569"
           opacity={0.8}
-          style={{ transition: 'opacity 0.3s' }}
+          style={{ transition: 'opacity var(--duration-base) var(--ease-standard)' }}
         />
       ))}
 
@@ -235,7 +235,7 @@ export default function BodySvg({
       {showChakras && CHAKRA_DOTS.map(dot => {
         const isActive = activeChakras.includes(dot.name)
         return (
-          <g key={dot.name} style={{ transition: 'opacity 0.3s' }} opacity={isActive ? 1 : 0.15}>
+          <g key={dot.name} style={{ transition: 'opacity var(--duration-base) var(--ease-standard)' }} opacity={isActive ? 1 : 0.15}>
             <circle
               cx={dot.cx}
               cy={dot.cy}
