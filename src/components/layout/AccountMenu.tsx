@@ -88,14 +88,17 @@ export default function AccountMenu() {
 
   return (
     <div className="flex items-center gap-2">
-      <span
+      {/* The only navigational path to /account, and through it to any /org/*
+          route — those are otherwise reachable only by typing a URL. */}
+      <Link
+        href="/account"
         data-testid="account-email"
-        className="hidden sm:inline text-xs max-w-[12rem] truncate"
+        className="hidden sm:inline text-xs max-w-[12rem] truncate transition-colors duration-150"
         style={{ color: 'var(--muted)' }}
-        title={email}
+        title={`${email} — account settings`}
       >
         {email}
-      </span>
+      </Link>
       <button
         type="button"
         data-testid="account-sign-out"
