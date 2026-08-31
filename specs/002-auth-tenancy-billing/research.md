@@ -161,3 +161,44 @@ Confirmed exclusion list, each with why it matters for this feature specifically
 - NextMove's `get_user_business_id()` single-tenant assumption → addressed by item 1;
   this is the one gap that would have caused a silent correctness bug (not just a missing
   feature) had it been ported as-is.
+
+## 10. UI/UX design research (2026-08-28)
+
+**Decision**: The billing UI this feature has not yet built (checkout, pricing, manage/
+cancel) should follow five concrete moves drawn from `docs/design-research/17-billing-
+paywall.md`, a research pass covering how Linear, Stripe's own Customer Portal, Figma, and
+Spotify's entitlement-misfire bug handle paywall UI:
+- Build a `/pricing` page that renders `plan_features` directly as a comparison table
+  (features as rows, tiers as columns) with no hardcoded tier copy, since `plan_features` is
+  already schema-driven.
+- Add Stripe Checkout entry points from `/pricing` and from any in-app feature gate — gating
+  only application features (composing, sync, org seats) per RULE-O7, never the pose library,
+  meridian data, or a flow/practice record the user already owns.
+- Use the Stripe Customer Portal (a hosted redirect) for "manage billing" and cancellation,
+  rather than building custom plan-management or cancel UI.
+- Wire `app_entitlements()` resolution into `src/lib/entitlements/index.ts` (already
+  specified in this feature's plan) so any upgrade prompt checks live entitlement state
+  before rendering — the concrete guard against Spotify's 2026 bug, where a Premium
+  subscriber was repeatedly shown an upgrade prompt for a feature they already owned.
+- Cancellation should preserve access through the period already paid for, matching FR-015
+  and the Stripe portal's own default behavior — no additional implementation needed here,
+  just confirmation the default is not overridden.
+
+**Rationale**: This feature's schema and entitlement resolver are built with zero UI in
+front of them (see this feature's own status in `docs/design-research/17-billing-
+paywall.md`: "schema only"). The research crystallizes the engineering rule this feature's
+plan and constitution (RULE-O6/O7) already imply but don't spell out for the UI layer
+specifically: **fail open on read, fail closed only on new writes gated by a feature, never
+on data.** Entitlement checks must never be cached client-side for enforcement — an offline
+user who lapses or hits a billing hiccup keeps what they already had rather than losing
+access to their own practice log over an expired card.
+
+**Cross-feature dependency noted, not created here**: `docs/design-research/14-privacy-
+consent-controls.md` and `docs/design-research/15-cohort-signals-dashboard.md` (both routed
+to `005-daily-sadhana`) depend on `cohort_enrollments.share_signals`, which this feature
+creates as a column but does not build a join/enrollment UI for — that UI is `005`'s scope,
+not a gap in this feature.
+
+**Full detail**: `docs/design-research/17-billing-paywall.md`. This appended section records
+the decision and rationale; it does not change this feature's FRs, `spec.md`, `plan.md`, or
+`tasks.md` — none of which are modified by this entry.

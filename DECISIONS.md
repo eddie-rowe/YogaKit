@@ -163,3 +163,69 @@ much larger and more consequential expansion than any prior change. `docs/krama-
 is kept as a historical record rather than deleted, per this repo's established pattern
 of parking rather than discarding superseded work (see the AI-pipeline parking decision
 above).
+
+---
+
+## 2026-08-28 — Design-research corpus added: best-in-class UI/UX per feature
+
+**Context:** With specs 003–006 about to build a large surface of currently-unbuilt or
+half-built UI (daily sadhana, settings, billing, offline sync UX, navigation restructure),
+there was no reference library of how excellent products actually solve the same
+interaction problems YogaKit faces — only the guardrails' typographic/motion constraints,
+with no grounding in what "good" looks like in practice.
+
+**Decision:** Ran a 21-agent research fan-out, one report per feature (13 differentiators,
+8 implicit/table-stakes features), each independently web-searched and citing ≥3 verified,
+current-2026 exemplar apps. Per explicit product direction, exemplars are drawn from
+popular/successful apps generally — not limited to yoga or fitness — whenever a non-yoga
+app solves the interaction problem better (e.g. Grammarly for advisory warnings, Notion for
+progressive depth layers, Apple Find My for revocable sharing). Output lives entirely in
+`docs/design-research/` (`README.md` index + synthesis, `01`–`21` per-feature reports); no
+`src/` files were touched. Each report ends with an explicit constitution-check section and
+tags every concrete proposal `quick win` / `spec 00X` / `needs decision`.
+
+**Why:** Building specs 003–006 from a blank page risks re-deriving, by trial and error,
+interaction patterns the industry has already converged on (ambient save-state, threshold-
+gated sync indicators, structural rest/pause states, one-interaction-deep revocation). A
+one-time research pass, scoped and cited, gives every future spec a concrete design floor
+to build from or explicitly deviate from — cheaper up front than discovering the same
+lessons live in production. The research also surfaced several real implementation gaps
+in already-shipped code (breath cues rendered as text instead of the spec-mandated glyphs
+in `ReadView.tsx`; a 300ms transition in `BodySvg.tsx` exceeding the ≤200ms motion budget;
+a scope gap in the built phase-structure vs. the full v0.1 spec) — tracked in the README's
+"Real implementation gaps" section rather than fixed silently as a side effect of this
+research pass.
+
+---
+
+## 2026-08-28 — Design research folded into `003`–`006` as `design-input.md`, not into specs
+
+**Context:** With the design-research corpus in hand (see the entry above), the next step
+was to fold its "Fold into YogaKit" findings into `specs/003-pose-library` through
+`specs/006-profile-settings`. Those four directories don't exist yet — only
+`specs/001-krama-mvp-spec/` and `specs/002-auth-tenancy-billing/` are scaffolded, despite
+`CLAUDE.md`, the constitution's Governance section, and the platform-pivot plan all
+referencing `003`–`006` by name as the remaining features in dependency order.
+
+**Decision:** Rather than hand-author `spec.md`/`plan.md`/`tasks.md` for four features ahead
+of the spec-kit workflow generating them, write one `design-input.md` per feature
+(`specs/00X-*/design-input.md`), each with candidate `UX-NNN` requirements (a distinct ID
+space from `FR-NNN`, so a generated spec can renumber freely), a constitution-constraints
+section, and an open-decisions table with a recommended default stated but left open for
+sign-off. All 21 research reports' "Fold into YogaKit" items are routed to exactly one
+feature (three previously-unassigned `spec 00X` placeholders were resolved during routing:
+01's seam-hover affordance and 02's per-item warning anchor both went to `004` rather than
+`003`, since `003` owns no Compose code; 05's multi-select chip-treatment placeholder went to
+`003`, since it first surfaces on `/poses`). `specs/002-auth-tenancy-billing/research.md`
+got one appended numbered section (billing/paywall UI) rather than new FRs, since `002` is
+already merged (commit `a479e4a`) and mid-flight requirement changes there are riskier than
+additive research notes. No `src/` file, and no `002` `spec.md`/`plan.md`/`tasks.md`, was
+touched.
+
+**Why:** Pre-writing full specs for features that haven't been through `/speckit.specify`
+would fork the spec-kit workflow's authority over those documents; a `design-input.md`
+staging file gets the research in front of whoever runs that command next without
+pre-empting it. Keeping `UX-NNN` distinct from `FR-NNN` means the eventual generated spec
+isn't stuck renumbering around IDs written a step early. Appending to `002`'s `research.md`
+rather than reopening its merged `spec.md` keeps a shipped feature's requirements stable
+while still recording the design intent for its unbuilt billing UI.
