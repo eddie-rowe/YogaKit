@@ -31,7 +31,9 @@ export PGDATABASE=yogakit_mig_verify
 
 psql -v ON_ERROR_STOP=1 -q <<'EOF'
 CREATE SCHEMA auth;
-CREATE TABLE auth.users (id uuid PRIMARY KEY, email text, email_confirmed_at timestamptz);
+-- raw_user_meta_data is what app_handle_new_user() derives display_name from
+-- (20260831190000_profile_bootstrap.sql); without the column the migration won't apply.
+CREATE TABLE auth.users (id uuid PRIMARY KEY, email text, email_confirmed_at timestamptz, raw_user_meta_data jsonb);
 CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$
   SELECT NULLIF(current_setting('request.jwt.claim.sub', true), '')::uuid
 $$;
@@ -63,10 +65,14 @@ INSERT INTO auth.users (id, email, email_confirmed_at) VALUES
   ('a0000000-0000-0000-0000-000000000002', 'member-a@example.com', now()),
   ('a0000000-0000-0000-0000-000000000003', 'owner-b@example.com', now());
 
+-- The bootstrap trigger already created these rows; overwrite with the deliberate
+-- test names the assertions below refer to.
 INSERT INTO profiles (id, display_name, timezone) VALUES
   ('a0000000-0000-0000-0000-000000000001', 'Owner A', 'America/Denver'),
   ('a0000000-0000-0000-0000-000000000002', 'Member A', 'America/Denver'),
-  ('a0000000-0000-0000-0000-000000000003', 'Owner B', 'America/Denver');
+  ('a0000000-0000-0000-0000-000000000003', 'Owner B', 'America/Denver')
+ON CONFLICT (id) DO UPDATE
+  SET display_name = excluded.display_name, timezone = excluded.timezone;
 
 SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
 SELECT app_create_organization('Org A', array['certifying_body']);
@@ -189,7 +195,9 @@ psql -v ON_ERROR_STOP=1 -q <<'EOF'
 INSERT INTO auth.users (id, email, email_confirmed_at) VALUES
   ('a0000000-0000-0000-0000-000000000004', 'solo@example.com', now());
 INSERT INTO profiles (id, display_name, timezone) VALUES
-  ('a0000000-0000-0000-0000-000000000004', 'Solo Practitioner', 'America/Denver');
+  ('a0000000-0000-0000-0000-000000000004', 'Solo Practitioner', 'America/Denver')
+ON CONFLICT (id) DO UPDATE
+  SET display_name = excluded.display_name, timezone = excluded.timezone;
 EOF
 
 psql -v ON_ERROR_STOP=1 -q <<'EOF'
@@ -382,6 +390,86 @@ BEGIN
   END;
 END $do$;
 RESET ROLE;
+EOF
+
+# --- Profile bootstrap: an auth.users insert alone must produce the profiles row (and,
+# through trg_sync_profile_card, the profile_cards row) — and that user must then be able
+# to create an organization with NO manual profiles insert anywhere. That last assertion
+# is the actual regression this guards: memberships.user_id references profiles (id), so
+# a missing bootstrap makes app_create_organization() raise foreign_key_violation for
+# every new account, which is exactly what shipped before 20260831190000.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+INSERT INTO auth.users (id, email, email_confirmed_at, raw_user_meta_data) VALUES
+  ('a0000000-0000-0000-0000-000000000005', 'Bootstrap.User@example.com', now(), NULL),
+  ('a0000000-0000-0000-0000-000000000006', 'oauth@example.com', now(),
+   '{"full_name":"OAuth Person"}'::jsonb);
+
+DO $do$
+DECLARE
+  v_otp_name  text;
+  v_otp_tz    text;
+  v_oauth_name text;
+  v_card      text;
+BEGIN
+  SELECT display_name, timezone INTO v_otp_name, v_otp_tz
+    FROM profiles WHERE id = 'a0000000-0000-0000-0000-000000000005';
+  IF v_otp_name IS DISTINCT FROM 'Bootstrap.User' THEN
+    RAISE EXCEPTION 'bootstrap did not derive display_name from the email local part: %', v_otp_name;
+  END IF;
+  IF v_otp_tz IS NULL THEN
+    RAISE EXCEPTION 'bootstrap left timezone null, violating the NOT NULL contract';
+  END IF;
+
+  SELECT display_name INTO v_oauth_name
+    FROM profiles WHERE id = 'a0000000-0000-0000-0000-000000000006';
+  IF v_oauth_name IS DISTINCT FROM 'OAuth Person' THEN
+    RAISE EXCEPTION 'bootstrap did not prefer raw_user_meta_data full_name: %', v_oauth_name;
+  END IF;
+
+  SELECT display_name INTO v_card
+    FROM profile_cards WHERE user_id = 'a0000000-0000-0000-0000-000000000006';
+  IF v_card IS DISTINCT FROM 'OAuth Person' THEN
+    RAISE EXCEPTION 'trg_sync_profile_card did not populate profile_cards from the bootstrapped row';
+  END IF;
+
+  RAISE NOTICE 'PASS profile bootstrap creates profiles + profile_cards for both OAuth and OTP users';
+END $do$;
+EOF
+
+# The whole point: a brand-new user creates an org with no manual profiles insert.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000006';
+DO $do$
+BEGIN
+  PERFORM app_create_organization('Bootstrap Org', array['studio']);
+  RAISE NOTICE 'PASS a freshly bootstrapped user can create an organization (no FK violation)';
+EXCEPTION WHEN foreign_key_violation THEN
+  RAISE EXCEPTION 'REGRESSION: app_create_organization raises foreign_key_violation — the profiles bootstrap is missing';
+END $do$;
+RESET ROLE;
+EOF
+
+# Re-inserting the same auth.users id must not error — sign-in happens many times,
+# and the trigger's ON CONFLICT DO NOTHING is what keeps that true.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+DO $do$
+DECLARE v_count int;
+BEGIN
+  BEGIN
+    INSERT INTO auth.users (id, email, email_confirmed_at, raw_user_meta_data)
+    VALUES ('a0000000-0000-0000-0000-000000000006', 'oauth@example.com', now(), NULL);
+    RAISE EXCEPTION 'expected a duplicate auth.users insert to fail on its own primary key';
+  EXCEPTION WHEN unique_violation THEN
+    NULL;  -- auth.users' own PK rejected it, which is the real-world behaviour
+  END;
+
+  SELECT count(*) INTO v_count FROM profiles WHERE id = 'a0000000-0000-0000-0000-000000000006';
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'expected exactly one profiles row after a repeat signup, got %', v_count;
+  END IF;
+  RAISE NOTICE 'PASS bootstrap is idempotent: repeat signup leaves exactly one profiles row';
+END $do$;
 EOF
 
 export PGDATABASE=postgres
