@@ -249,6 +249,141 @@ END $do$;
 RESET ROLE;
 EOF
 
+# --- T032: a member of Org A gets zero rows querying Org B's memberships/invitations.
+# Owner B first creates a real invitation on Org B via the RPC, so the isolation check
+# below proves something (a non-empty table Org A can't see), not just an empty table.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000003';
+SELECT app_create_invitation(
+  (SELECT id FROM organizations WHERE name = 'Org B'),
+  'invitee-b@example.com',
+  array['student']
+);
+RESET ROLE;
+EOF
+
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
+DO $do$
+DECLARE
+  v_org_b uuid;
+  v_membership_count int;
+  v_invitation_count int;
+BEGIN
+  SELECT id INTO v_org_b FROM organizations WHERE name = 'Org B';
+
+  SELECT count(*) INTO v_membership_count FROM memberships WHERE org_id = v_org_b;
+  SELECT count(*) INTO v_invitation_count FROM invitations WHERE org_id = v_org_b;
+
+  IF v_membership_count <> 0 OR v_invitation_count <> 0 THEN
+    RAISE EXCEPTION 'RLS leak: Org A member sees % Org B memberships and % Org B invitations',
+      v_membership_count, v_invitation_count;
+  END IF;
+  RAISE NOTICE 'PASS T032 cross-org isolation: Org A member sees zero Org B memberships/invitations';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- T033: an invitation has zero SELECT visibility for any role prior to acceptance —
+# including the org owner who created it. invitations has zero policies for any role
+# (20260826224201_identity_tenancy.sql) by design; acceptance is a definer RPC keyed on
+# the raw token, never a row read.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000003';
+DO $do$
+DECLARE
+  v_count int;
+BEGIN
+  SELECT count(*) INTO v_count FROM invitations WHERE email = 'invitee-b@example.com';
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'RLS leak: invitations has % rows visible via a direct SELECT', v_count;
+  END IF;
+  RAISE NOTICE 'PASS T033 invitations: zero SELECT visibility for any role, even the creator';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- T034: app_accept_invitation unions roles onto an existing membership rather than
+# duplicating. Member A already holds {'admin'} in Org A; invite the same email with a
+# disjoint role and confirm the accepted result is the union with no duplicates.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
+DO $do$
+DECLARE
+  v_token text;
+BEGIN
+  SELECT raw_token INTO v_token FROM app_create_invitation(
+    (SELECT id FROM organizations WHERE name = 'Org A'),
+    'member-a@example.com',
+    array['teacher']
+  );
+  PERFORM set_config('app.test_token', v_token, false);
+END $do$;
+RESET ROLE;
+
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000002';
+DO $do$
+DECLARE
+  v_roles text[];
+BEGIN
+  SELECT roles INTO v_roles FROM app_accept_invitation(current_setting('app.test_token'));
+  IF NOT ('admin' = ANY(v_roles) AND 'teacher' = ANY(v_roles) AND cardinality(v_roles) = 2) THEN
+    RAISE EXCEPTION 'role union incorrect: got %', v_roles;
+  END IF;
+  RAISE NOTICE 'PASS T034 app_accept_invitation unions roles without duplication: %', v_roles;
+END $do$;
+RESET ROLE;
+EOF
+
+# --- T035: the Phase 2 escalation triggers still fire under Phase 4's new RPC access
+# paths (app_set_membership_roles/app_set_membership_status), not just via a raw UPDATE.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+-- A non-owner (admin) is rejected by the RPC's own authorization check, before the
+-- trigger even runs.
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000002';
+DO $do$
+DECLARE
+  v_membership_id uuid;
+BEGIN
+  SELECT id INTO v_membership_id FROM memberships
+    WHERE org_id = (SELECT id FROM organizations WHERE name = 'Org A')
+      AND user_id = (SELECT auth.uid());
+  BEGIN
+    PERFORM app_set_membership_roles(v_membership_id, array['owner']);
+    RAISE EXCEPTION 'expected insufficient_privilege from app_set_membership_roles for a non-owner caller';
+  EXCEPTION WHEN insufficient_privilege THEN
+    RAISE NOTICE 'PASS T035 app_set_membership_roles rejects a non-owner caller';
+  END;
+END $do$;
+RESET ROLE;
+
+-- The org's sole owner cannot suspend their own (last owner) membership via the RPC —
+-- trg_prevent_last_owner_removal still fires underneath app_set_membership_status.
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
+DO $do$
+DECLARE
+  v_membership_id uuid;
+BEGIN
+  SELECT id INTO v_membership_id FROM memberships
+    WHERE org_id = (SELECT id FROM organizations WHERE name = 'Org A')
+      AND user_id = (SELECT auth.uid());
+  BEGIN
+    PERFORM app_set_membership_status(v_membership_id, 'suspended');
+    RAISE EXCEPTION 'expected restrict_violation from app_set_membership_status removing the last owner';
+  EXCEPTION WHEN restrict_violation THEN
+    RAISE NOTICE 'PASS T035 app_set_membership_status still hits the last-owner-removal trigger';
+  END;
+END $do$;
+RESET ROLE;
+EOF
+
 export PGDATABASE=postgres
 psql -q -c "DROP DATABASE yogakit_mig_verify"
 echo "MIGRATION VERIFICATION PASSED"

@@ -569,6 +569,18 @@ export type Database = {
         }
       }
       app_co_member_ids: { Args: never; Returns: string[] }
+      app_create_invitation: {
+        Args: {
+          target_email: string
+          target_org_id: string
+          target_roles: string[]
+        }
+        Returns: {
+          expires_at: string
+          invitation_id: string
+          raw_token: string
+        }[]
+      }
       app_create_organization: {
         Args: { name: string; org_types: string[] }
         Returns: {
@@ -628,6 +640,40 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "cohort_enrollments"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      app_set_membership_roles: {
+        Args: { membership_id: string; new_roles: string[] }
+        Returns: {
+          created_at: string
+          id: string
+          org_id: string
+          roles: string[]
+          status: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "memberships"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      app_set_membership_status: {
+        Args: { membership_id: string; new_status: string }
+        Returns: {
+          created_at: string
+          id: string
+          org_id: string
+          roles: string[]
+          status: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "memberships"
           isOneToOne: true
           isSetofReturn: false
         }
