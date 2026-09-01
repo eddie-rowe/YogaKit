@@ -1,0 +1,115 @@
+{
+  "$comment": "The copy-lint's rule set (009 FR-017). Data, not code: tuning voice is a reviewable diff, not an edit to a checker. Every rule cites the constitution rule it derives from, or states that it derives from VOICE.md instead. Patterns are deliberately narrow — 009's assumption is precision over recall, because a check that cries wolf gets bypassed, and a bypassed check is worse than a narrow one.",
+  "languageScope": "en",
+  "languageScopeNote": "English only (FR-025). These patterns are language-specific and would not transfer. Localised copy is out of scope and this check does not cover it — it must not be read as though it did.",
+  "rules": [
+    {
+      "id": "VOICE-GUILT",
+      "source": "RULE-C2",
+      "title": "Copy must not motivate through guilt or shame",
+      "rationale": "Absence of practice must be met with an invitation, never a penalty. A person who lapsed is the person this product exists for.",
+      "patterns": [
+        "\\byou (?:failed|neglected|abandoned)\\b",
+        "\\byou(?:'ve| have) (?:failed|fallen behind|let \\w+ down|slipped)\\b",
+        "\\byou should(?:'ve| have) \\w+",
+        "\\b(?:no more )?excuses\\b",
+        "\\bslacking\\b",
+        "\\b(?:feel|feeling) guilty\\b",
+        "\\bdon't let (?:yourself|your \\w+) down\\b",
+        "\\bdisappointed\\b",
+        "\\byou only managed\\b",
+        "\\bget back on track\\b"
+      ],
+      "compliantExample": "Whenever you're ready, there's a single breath waiting.",
+      "violatingExample": "You failed to practice yesterday. No more excuses."
+    },
+    {
+      "id": "VOICE-URGENCY",
+      "source": "RULE-C2",
+      "title": "Copy must not apply urgency",
+      "rationale": "Urgency borrows motivation from anxiety. A practice that needs pressure to happen today will not still be happening in a year.",
+      "patterns": [
+        "\\bact now\\b",
+        "\\bhurry\\b",
+        "\\bdon't (?:wait|miss out)\\b",
+        "\\blast chance\\b",
+        "\\bbefore it(?:'s| is) too late\\b",
+        "\\bonly \\d+ (?:\\w+ )?(?:left|remaining)\\b",
+        "\\brunning out\\b",
+        "\\bwhile you still can\\b",
+        "\\bimmediately\\b"
+      ],
+      "compliantExample": "There's no schedule to keep. Come back when it suits you.",
+      "violatingExample": "Last chance — practice now before it's too late."
+    },
+    {
+      "id": "VOICE-COUNTDOWN",
+      "source": "RULE-C2",
+      "title": "Copy must not present a countdown toward losing something",
+      "rationale": "A countdown makes the practice about defending a number. RULE-C6 says the same thing from the other side: a celebration must never become a threshold to defend.",
+      "patterns": [
+        "\\b\\d+ days? (?:left|remaining|to go)\\b",
+        "\\byou(?:'ll| will) lose\\b",
+        "\\babout to lose\\b",
+        "\\bbefore you lose\\b",
+        "\\bexpires? in\\b",
+        "\\bcountdown\\b",
+        "\\bdon't lose your\\b",
+        "\\bkeep it (?:alive|going) or\\b"
+      ],
+      "compliantExample": "Twelve days of practice so far. It stays yours.",
+      "violatingExample": "2 days left before you lose your progress."
+    },
+    {
+      "id": "VOICE-STREAK-RESET",
+      "source": "RULE-C1",
+      "title": "A streak must never be shown returning to zero",
+      "rationale": "RULE-C1 is structural: streaks pause, they never zero. Copy that says otherwise describes a product we did not build, and teaches the reader to fear a missed day.",
+      "patterns": [
+        "\\bstreak (?:is )?(?:reset|broken|lost|gone)\\b",
+        "\\bstreak (?:is |back )?(?:to |at )?(?:0|zero)\\b",
+        "\\b(?:reset|back) to zero\\b",
+        "\\b(?:lost|broke) your streak\\b",
+        "\\bstart(?:ing)? (?:over|again from scratch)\\b",
+        "\\bstreak ended\\b"
+      ],
+      "compliantExample": "Your streak is paused. It picks up where it left off.",
+      "violatingExample": "You missed a day — your streak is back to zero."
+    },
+    {
+      "id": "VOICE-REST-LAPSE",
+      "source": "RULE-C4",
+      "title": "Rest must not be described as a lapse",
+      "rationale": "RULE-C4 makes rest a first-class, deliberately recordable state. Copy that reaches for lapse vocabulary to describe it collapses the distinction the data model was built to keep. Only the co-occurrence is mechanically detectable; the rest is VOICE.md's.",
+      "coOccurrence": {
+        "left": ["\\brest\\b", "\\brest day\\b", "\\bresting\\b"],
+        "right": ["\\blapse[sd]?\\b", "\\bmissed\\b", "\\bskipped\\b", "\\bfailed\\b", "\\bbroke\\b", "\\bfell off\\b"]
+      },
+      "compliantExample": "Rest is practice. Mark today as rest.",
+      "violatingExample": "Rest day or missed day? Either way the streak lapses."
+    },
+    {
+      "id": "VOICE-AI-TELLS",
+      "source": "VOICE.md",
+      "title": "Copy must not carry the vocabulary that marks generated text",
+      "rationale": "Not a constitution rule — this one is VOICE.md's own. These constructions are the register of a marketing page, and the product speaks as a teacher in a room. Each pattern is scoped to its giveaway phrase rather than the bare word, because 'unlock the hips' and 'elevate the ribs' are real cues a teacher gives.",
+      "patterns": [
+        "\\bdelve\\b",
+        "\\bseamless(?:ly)?\\b",
+        "\\bstands as a testament\\b",
+        "\\bin today's fast-paced\\b",
+        "\\bunlock (?:your|the) (?:potential|secrets|power|full)\\b",
+        "\\belevate your (?:practice|journey|experience)\\b",
+        "\\bembark on (?:a|your)\\b",
+        "\\bnavigate the complexities\\b",
+        "\\brich tapestry\\b",
+        "\\bit(?:'s| is) important to note\\b",
+        "\\bdive deep(?:er)? into\\b",
+        "\\bgame[- ]chang(?:er|ing)\\b",
+        "\\bharness the power\\b"
+      ],
+      "compliantExample": "Three poses, six breaths each.",
+      "violatingExample": "Embark on a journey to unlock your potential with our seamless practice experience."
+    }
+  ]
+}

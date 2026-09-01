@@ -63,6 +63,28 @@ without anyone reading what they said — the failure is a real content gap on t
 teacher reads from a mat, not a flaky test. Found while writing the offline read test, which
 initially copied walk4's assertion and inherited its failure. Belongs to `004` US1.
 
+2026-09-01 — The copy-lint's first real hit was a false one, and the fix for it found a
+limit in the mechanism. `src/app/api/org/invitations/route.ts` says "This link expires in
+7 days" — a factual statement of a security token's lifetime, not a practice countdown, so
+`VOICE-COUNTDOWN` is right to see it and wrong to fail on it. That is what the FR-016
+exception marker is for. But the string sat inside a **multi-line template literal**, and
+the marker is a comment on the preceding line — inside a template, the preceding line is
+string content, so writing the marker there would have shipped the words
+`copy-lint-ignore-next-line` into a customer's invitation email. The fix was to hoist the
+fragment to a named constant and mark that, which is fine, but it is a real constraint:
+**an exception can only be granted to a string that has a line of code above it.** Anyone
+adding a marker inside a template will discover this the same way.
+
+2026-09-01 — `react/no-unescaped-entities` silently disarmed half the copy-lint's rules.
+JSX text cannot carry a bare apostrophe, so real copy is written `Don&apos;t let yourself
+down` — and every rule pattern containing an apostrophe therefore matched nothing on the
+surface where most copy actually lives. Cost: nothing, because it was caught within
+minutes; found only by seeding a **two**-violation test string and noticing the report said
+one. A single-violation fixture would have passed and the gap would have shipped. The
+lesson is the fixture, not the entity: a check that is verified with one seeded hit only
+proves one path works. `decodeEntities()` now runs before matching and typographic
+apostrophes are normalised at match time.
+
 2026-09-02 — The walk4 entry above is **wrong**, and the entry stands only because this log
 forbids editing old ones. The vinyasa flow has 34 items and every one carries a measure;
 `[data-testid^="read-item-"]` also matched the 19 `read-item-note-{i}` nodes, and 34 + 19 =

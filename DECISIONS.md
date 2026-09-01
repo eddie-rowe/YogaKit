@@ -301,3 +301,43 @@ worker too, which was verified rather than assumed. `tests/unit/sw/service-worke
 loads `public/sw.js` into a fake worker global and fails on 7 of 12 cases against the old
 one. The Playwright spec is kept for what it *can* prove: that the 6am read works offline
 and the page is interactive, which is the constitutional claim rather than the mechanism.
+
+## 2026-09-01 — The copy-lint parses instead of grepping, and prints its own limits
+
+**Context.** RULE-C5 has required a CI-gating copy-lint since constitution v3.0.0 and none
+existed. It is a hard prerequisite for `005`, and two features immediately downstream —
+`003` US5's thirteen theme subheads and `004`'s fifty-nine FRs — write the most
+voice-sensitive copy in the backlog. Built now, out of ladder order, so that copy is linted
+as it is authored rather than retrofitted.
+
+**Decision.** Three choices, each of which had an easier alternative.
+
+*Parse the TypeScript AST, do not grep.* FR-014 requires ignoring identifiers, comments,
+and technical strings. A regex over raw text cannot do that structurally — it flags a
+commented-out string, an import path, and a Tailwind class list, and each fix is another
+exclusion regex. An AST walk gets it for free: a comment is not a node. `typescript` was
+already a devDependency, so the more correct option was also the cheaper one.
+
+*The rules are data, not code.* `data/voice/voice-rules.json`, each rule carrying the
+constitution rule it derives from, a rationale, and a matched compliant/violating example
+pair that a unit test asserts against. Same argument the constitution makes for the
+friction engine's weights: changing what the product's voice forbids should be a reviewable
+diff against a file of rules, not an edit buried inside a checker.
+
+*The check states what it cannot do, on every run, passing or failing.* Five limits, from
+`coverageLimits()`, mirroring `VOICE.md` §6.
+
+**Why the last one matters most.** A gate trusted for more than it does is worse than no
+gate: it converts "nobody checked the copy" into "the copy was checked", and the second is
+much harder to argue with in review. This check cannot read interpolated copy, cannot judge
+tone, cannot see a coercive *structure* built from individually compliant sentences, and
+covers English only. The only durable defence against being over-trusted is to say so at
+the moment somebody is watching it go green. Same reasoning as `validate:poses` printing a
+Tier-1 coverage figure rather than a pass mark.
+
+**Also decided.** Precision over recall, deliberately: `VOICE-AI-TELLS` matches
+`unlock your potential`, never bare `unlock`, because **"unlock the hips" and "elevate the
+ribs" are real cues a teacher gives**. A voice check that flags correct teaching language
+gets bypassed, and a bypassed check is worse than a narrow one. And the em-dash ban from
+`docs/BEST_PRACTICES_FROM_NEXTMOVE.md` is **not** adopted — that rule belongs to a briefing
+voice; this product speaks out loud, and an em dash is how a spoken aside sounds.

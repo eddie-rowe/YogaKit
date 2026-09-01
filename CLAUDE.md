@@ -34,6 +34,8 @@ Key artifacts:
   `specs/003-pose-library/contracts/score-explanation.md`
 - UX design research (21 reports):      `docs/design-research/README.md`
 - Per-feature staged UX decisions:      `specs/00{3,4,5,6}-*/design-input.md`
+- Voice standard (product + ops copy): `VOICE.md` — the authority the copy-lint encodes;
+  checked rules live as data in `data/voice/voice-rules.json`
 - Ported operating patterns:            `docs/BEST_PRACTICES_FROM_NEXTMOVE.md`
 - Running friction log:                 `FRICTION.md`
 - Why-we-chose log:                     `DECISIONS.md`
