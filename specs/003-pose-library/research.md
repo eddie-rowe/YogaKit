@@ -165,6 +165,10 @@ noticing the problem.
 **If the build reveals a reason the directive must stay**, record that reason here rather
 than silently leaving it in place.
 
+**Outcome (Phase 3):** it did not. With the directive removed, `next build` moves `/poses`
+from `ƒ` to `○` and the 67 `/poses/[slug]` pages stay `●`. Nothing else in the route table
+changed.
+
 ---
 
 ## 7. What "Tier-1 present" means for a nullable field — **correction, found in implementation**

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import type { Pose } from '@/lib/pose-types'
 import BodyDiagram from '@/components/poses/BodyDiagram'
 import { CHAKRA_DOTS } from '@/lib/pose-library/body-map'
+import { describeEnergeticDirection } from '@/lib/pose-library/energetic-direction'
 import * as haptics from '@/lib/haptics'
 
 interface Props {
@@ -152,6 +153,7 @@ interface ContentProps extends Props {
 
 export default function PoseDetailContent({ pose, layer, customFields }: ContentProps) {
   const yinMode = pose.modes.find(m => m.type === 'yin') ?? pose.modes[0]
+  const energeticDirection = describeEnergeticDirection(pose.energetic_direction)
   const rank = LAYER_RANK[layer]
   const showAdvanced = layer === 'custom' || rank >= LAYER_RANK.advanced
   const showExpert = layer === 'custom' || rank >= LAYER_RANK.expert
@@ -188,6 +190,20 @@ export default function PoseDetailContent({ pose, layer, customFields }: Content
         {/* Meta tags */}
         <div className="flex flex-wrap gap-1.5">
           <span className="capitalize px-2.5 py-1 rounded-full text-xs" style={{ background: 'var(--surface-raised)', color: 'var(--foreground)' }}>{pose.body_position}</span>
+          {/* FR-012. At the simple layer, not behind a disclosure: FR-012 says readable,
+              not gated, and this is Tier-1 on every pose. Neutral surface tokens rather
+              than the purple ComposeFlowItem gives the same field — purple is the
+              sanctioned chakra hue, and spending it a second time here is the palette
+              migration FR-040/SC-014 exist to prevent. */}
+          {energeticDirection && (
+            <span
+              data-testid="poses-detail-energetic-direction"
+              className="px-2.5 py-1 rounded-full text-xs"
+              style={{ background: 'var(--surface-raised)', color: 'var(--foreground)' }}
+            >
+              {energeticDirection}
+            </span>
+          )}
           {yinMode && (
             <span className="px-2.5 py-1 rounded-full text-xs" style={{ background: 'var(--surface-raised)', color: 'var(--foreground)' }}>
               {yinMode.hold_range.min}–{yinMode.hold_range.max} min

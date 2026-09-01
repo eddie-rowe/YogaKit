@@ -126,25 +126,25 @@ today rendered only as an unglossed Sanskrit token in a composer surface `003` m
 **Independent test**: Open `/poses/camel` (a `brahmana` pose) at 390px and read the
 direction with its English gloss.
 
-- [ ] T022 [US2] Create `src/lib/pose-library/energetic-direction.ts` — one exported map
+- [X] T022 [US2] Create `src/lib/pose-library/energetic-direction.ts` — one exported map
   from the three enum values to `{ label, gloss }`: `langhana` → reducing, `brahmana` →
   building, `samana` → balancing (FR-010's own wording). Sanskrit stays visible alongside
   the English; it is traditional vocabulary, not invented UI copy, and `004` will want the
   same map
-- [ ] T023 [US2] Render it in `src/app/poses/PoseDetailContent.tsx`'s meta block at
+- [X] T023 [US2] Render it in `src/app/poses/PoseDetailContent.tsx`'s meta block at
   `:187-208` (FR-012), at the `simple` layer — FR-012 says "readable", not "gated". Use
   `var(--surface-raised)` / `var(--foreground)` like its siblings. **Not purple**: purple is
   the sanctioned chakra hue and re-spending it here is the FR-040 / SC-014 palette migration
   the spec guards against
-- [ ] T024 [US2] Delete `export const dynamic = 'force-dynamic'` from
+- [X] T024 [US2] Delete `export const dynamic = 'force-dynamic'` from
   `src/app/poses/page.tsx:5` (`research.md` §6) and confirm in the `next build` route table
   that `/poses` becomes static. If the build reveals a reason it must stay, record that
   reason in `research.md` rather than silently reverting
-- [ ] T025 [P] [US2] Unit test: the map is exhaustive over the schema's enum, so adding a
+- [X] T025 [P] [US2] Unit test: the map is exhaustive over the schema's enum, so adding a
   fourth value fails the test rather than rendering blank
-- [ ] T026 [P] [US2] Playwright assertion at 390px on `/poses/camel` that
+- [X] T026 [P] [US2] Playwright assertion at 390px on `/poses/camel` that
   `poses-detail-energetic-direction` is present
-- [ ] T027 [US2] **Do not touch** `ComposeFlowItem.tsx` or `ComposeClient.tsx` — every
+- [X] T027 [US2] **Do not touch** `ComposeFlowItem.tsx` or `ComposeClient.tsx` — every
   composer render is `004`'s. `research.md`'s "Note for 004" already records that its
   purple chip should adopt this map and drop the chakra-hue collision
 

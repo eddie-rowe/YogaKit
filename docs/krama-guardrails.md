@@ -70,6 +70,7 @@ carries a `data-testid`. Naming: `{area}-{element}`, kebab-case, stable across r
 | Poses | `poses-overlay-close` | Close button on the pose detail overlay |
 | Poses | `poses-detail-layer-{l}` | Detail depth chip (`simple`/`advanced`/`expert`/`custom`), on `/poses/{slug}` and in the overlay |
 | Poses | `poses-detail-custom-field-{group}` | Field-group checkbox shown when the `custom` depth layer is active |
+| Poses | `poses-detail-energetic-direction` | Energetic-direction badge on pose detail — "Brahmana — building" (003 FR-012) |
 | Validator | `validator-warning-laterality`, `validator-warning-closing-stillness` | The two v0.1 warnings, wherever they render |
 | Nav | `nav-home`, `nav-compose`, `nav-flows`, `nav-poses`, `nav-learn` | Five-tab nav (spec §3) |
 
