@@ -56,3 +56,42 @@ describe('BodyDiagram tab construction (FR-016, FR-017, SC-005)', () => {
     expect(container.textContent).not.toMatch(/data for this pose/i)
   })
 })
+
+describe('the caller and the diagram agree about emptiness (FR-017)', () => {
+  it('never opens a column the diagram then declines to fill, for any real pose', async () => {
+    // research.md §10: the "is there anything to draw" condition lives in two places —
+    // PoseDetailContent, which decides whether to open a 2fr grid column, and BodyDiagram,
+    // which returns null. Duplicated deliberately; the alternative is the child reporting
+    // its own emptiness upward after render. This is the safety net for that duplication,
+    // and it runs against all 67 poses rather than a fixture.
+    const { getAllPoses } = await import('@/lib/pose-library')
+    const poses = getAllPoses()
+    expect(poses.length).toBeGreaterThan(0)
+
+    for (const pose of poses) {
+      // The caller's condition, at the expert layer where chakras are shown.
+      const callerWouldOpen =
+        (pose.muscle_groups?.length ?? 0) > 0 ||
+        (pose.meridians?.length ?? 0) > 0 ||
+        (pose.primary_joints_involved?.length ?? 0) > 0 ||
+        (pose.chakras?.length ?? 0) > 0
+
+      const { container, unmount } = render(
+        <BodyDiagram
+          muscleGroups={pose.muscle_groups ?? []}
+          meridians={pose.meridians ?? []}
+          jointsInvolved={pose.primary_joints_involved ?? []}
+          chakras={pose.chakras ?? []}
+          element={pose.element ?? null}
+          bilateral={pose.bilateral}
+        />
+      )
+      const diagramRendered = !(container.childElementCount === 0)
+      expect({ slug: pose.slug, diagramRendered }).toEqual({
+        slug: pose.slug,
+        diagramRendered: callerWouldOpen,
+      })
+      unmount()
+    }
+  })
+})

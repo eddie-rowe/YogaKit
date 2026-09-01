@@ -186,7 +186,7 @@ export default function BodySvg({
   // spends a second accent or promotes a data hue to mean "selected" (guardrails §2).
   const ringProps = (id: string) =>
     hasSelection && highlighted?.has(id)
-      ? { stroke: 'var(--foreground)', strokeWidth: 1.5, strokeDasharray: undefined }
+      ? { stroke: 'var(--foreground)', strokeWidth: 2 }
       : null
 
   return (
@@ -225,7 +225,10 @@ export default function BodySvg({
             fill={isDeep ? 'none' : '#818cf8'}
             stroke={ring ? ring.stroke : isDeep ? '#818cf8' : 'none'}
             strokeWidth={ring ? ring.strokeWidth : isDeep ? 1.5 : 0}
-            strokeDasharray={ring ? undefined : isDeep ? '3 2' : undefined}
+            // The dash survives selection. It is the depth encoding the legend directly
+            // below explains, and dropping it while the reader inspects that very region
+            // would contradict the key at the moment they are reading it.
+            strokeDasharray={isDeep ? '3 2' : undefined}
             opacity={isLit(id) ? base : DIMMED}
             onClick={onSelectRegion ? () => onSelectRegion(id) : undefined}
             style={{
