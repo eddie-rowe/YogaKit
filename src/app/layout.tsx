@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Cormorant_Garamond, Geist, Geist_Mono } from "next/font/google";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 import { DatadogRum } from "@/components/DatadogRum";
 import AppHeader, { MobileNavSpacer } from "@/components/layout/AppHeader";
@@ -14,6 +14,22 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+// globals.css has mapped --font-serif to var(--font-cormorant) since 001, but the
+// font was never loaded, so every `font-serif` heading — page titles across Read,
+// Flows, Settings — silently fell back to the sans stack. The serif treatment the
+// design calls for had never actually rendered. See FRICTION.md, 2026-08-31.
+//
+// display: 'swap' rather than 'optional': these are headings on the read view, held
+// at arm's length on a mat, and the typeface is the point. A first paint in the
+// fallback that reflows to Cormorant is better than one that silently keeps the
+// fallback forever on a slow connection.
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -38,7 +54,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {/* First child of <body> so it runs before anything paints. This layout

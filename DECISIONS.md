@@ -265,3 +265,39 @@ This is also forward-safe rather than a stopgap: there is no sync target yet, ev
 today reads back `pending` via `withSyncState()`, so the new behaviour is "keep everything"
 until the outbox lands — correct for a user who has never synced, and correct afterwards
 without a second decision.
+
+---
+
+## 2026-09-01 — Service worker: strategy per request type, and two caches rather than one
+
+**Context:** `public/sw.js` answered every same-origin GET cache-first out of a single
+`krama-v2` cache holding both documents and `/_next/static/*` chunks. That serves one
+build's HTML against another build's hashed chunks, so React never hydrates and the page
+renders as bare, dead server HTML — and it makes a deploy invisible until someone bumps
+`CACHE_VERSION` by hand. Logged in `FRICTION.md` on 2026-08-31 and deliberately deferred
+out of the 006 PR because it sits on the RULE-L2/L3/L4 offline read path.
+
+**Decision:** Choose the strategy from the request type — navigations network-first,
+`/_next/static/*` cache-first, other same-origin stale-while-revalidate, cross-origin and
+`/api/`, `/auth/` not intercepted at all — and split the store into `krama-shell-v3` and
+`krama-assets-v3`.
+
+**Why:** Cache-first is correct for exactly one class of URL and wrong for the rest.
+Content-hashed asset URLs cannot go stale, because the URL changes when the bytes do; a
+document URL says nothing about which build answered it. So the single blanket strategy was
+never a simplification, it was two different problems sharing one branch.
+
+The two caches matter more than they look. The tempting version of this fix bumps one
+version and wipes everything on each deploy — which trades a hydration bug for a worse
+offline one, because a practitioner who is offline *after* a deploy would have no document
+and no chunks. Hashed URLs are safe to carry across deploys and are what make that load
+work; documents are not, and are replaced on every successful navigation. Keeping them in
+one cache forces a single eviction policy onto two things with opposite lifetimes.
+
+**Also decided:** the guarantee is asserted at the strategy level, not in a browser. A
+Playwright test in a fresh context has only one build and therefore cannot reproduce a
+cross-build mismatch — the offline spec written for this change passes against the broken
+worker too, which was verified rather than assumed. `tests/unit/sw/service-worker.test.ts`
+loads `public/sw.js` into a fake worker global and fails on 7 of 12 cases against the old
+one. The Playwright spec is kept for what it *can* prove: that the 6am read works offline
+and the page is interactive, which is the constitutional claim rather than the mechanism.
