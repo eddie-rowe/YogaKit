@@ -1,8 +1,9 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
 import type { ElementRecord, FiveElement, MeridianRecord } from '@/lib/pose-types'
 
 function loadMeridianData(): Record<FiveElement, ElementRecord> {
-  const fs = require('fs') as typeof import('fs')
-  const path = require('path') as typeof import('path')
   const dir = path.join(process.cwd(), 'data', 'meridians')
   const elements: FiveElement[] = ['wood', 'fire', 'earth', 'metal', 'water']
   const result = {} as Record<FiveElement, ElementRecord>

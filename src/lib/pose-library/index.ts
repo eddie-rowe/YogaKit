@@ -1,14 +1,16 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
 import type { Pose, BodyPosition, EnergeticQ, FiveElement, PoseDifficulty, ModeType } from '@/lib/pose-types'
 
-// Build-time static imports — bundled at compile time, never fetched at runtime (RULE-L3)
-// Dynamically require all pose JSON files from data/poses/
+// Reads data/poses/*.json from disk with fs, at whatever time this module is first
+// evaluated. This is server-only, and the comment that used to sit here claimed the
+// opposite — "bundled at compile time, never fetched at runtime (RULE-L3)" — directly
+// above a runtime readdirSync of process.cwd(). RULE-L3 is satisfied for the *reader*
+// by the pose pages being SSG (generateStaticParams over all 67 slugs) and by the
+// service worker caching them, not by this function. Anything that would make a pose
+// route dynamic re-runs this per request.
 function loadPoseLibrary(): Pose[] {
-  // In Next.js, we use require.context or dynamic require patterns.
-  // For server-side static import, we read the files directly at build time.
-  // This module runs server-side only (in the API route handler).
-  const fs = require('fs') as typeof import('fs')
-  const path = require('path') as typeof import('path')
-
   const posesDir = path.join(process.cwd(), 'data', 'poses')
 
   if (!fs.existsSync(posesDir)) {

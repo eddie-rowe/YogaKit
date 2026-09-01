@@ -115,3 +115,20 @@ shipped code, not as new requirements:
   true, independent of the Advanced panel being open.
 - Audit `DetailLayerChips`/`compose-layer-*` for scroll-position preservation on layer switch
   (shared component also used by Compose).
+
+---
+
+## Correction recorded in 003 (Phase 5)
+
+This document's **"Testid contract impact: None identified"** was already inaccurate when it
+was written, before 003 added anything. `poses-clear-all-filters` and
+`body-diagram-depth-legend` shipped in 001 and appear nowhere in `docs/krama-guardrails.md`
+§1.3, which declares itself the source of truth and requires the table be updated in the
+same change.
+
+Both rows are backfilled in the Phase 4/5 commit and marked **drifted** there, rather than
+being quietly inserted as though they had always been present — the same treatment UX-011
+got in the previous pass. US3 then adds seven rows of its own (`poses-body-diagram`,
+`body-diagram-tab-*`, `body-diagram-single-*`, `body-diagram-view-*`,
+`body-diagram-legend-*`, `body-diagram-region-*`), so the correct impact line for this
+document is *nine rows*, not none.

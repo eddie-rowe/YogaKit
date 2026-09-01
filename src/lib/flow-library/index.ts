@@ -1,13 +1,13 @@
 // Built-in flow library — the 3 shipped .krama.json templates in data/flows/.
-// Mirrors src/lib/pose-library/index.ts's build-time fs read pattern (RULE-L3).
+// Mirrors src/lib/pose-library/index.ts's server-only fs read pattern.
+
+import fs from 'node:fs'
+import path from 'node:path'
 
 import type { Flow } from '@/lib/flow/types'
 import type { KramaFile } from '@/lib/flow/types'
 
 function loadBuiltInFlows(): Flow[] {
-  const fs = require('fs') as typeof import('fs')
-  const path = require('path') as typeof import('path')
-
   const flowsDir = path.join(process.cwd(), 'data', 'flows')
   if (!fs.existsSync(flowsDir)) return []
 

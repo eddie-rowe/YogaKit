@@ -14,7 +14,19 @@ export default defineConfig({
       reporter: ['text', 'lcov'],
       // Coverage mandate transferred from the (now parked) rules engine + safety layer
       // to the friction engine + validator-lite — constitution v2.0.0, RULE-S3.
-      include: ['src/lib/friction/index.ts', 'src/lib/validator/lite.ts'],
+      include: [
+        'src/lib/friction/index.ts',
+        'src/lib/validator/lite.ts',
+        // 003 US1: the Tier-1 reporting logic. Not constitutionally mandated, but the
+        // whole point of extracting it was that "Tier-1 completeness is enforced" should
+        // be a tested claim rather than an asserted one — an untested reporter would put
+        // us back where we started with a different file name.
+        'scripts/lib/tier1-report.mjs',
+      ],
+      // One threshold for all three files. The plan allowed the new module its own,
+      // lower number; it turned out not to need one — a pure function over parsed JSON
+      // has nothing in it that is hard to reach, so a separate threshold would only have
+      // documented an exemption nobody was using.
       thresholds: {
         lines: 100,
         functions: 100,
