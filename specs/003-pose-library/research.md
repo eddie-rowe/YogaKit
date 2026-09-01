@@ -167,6 +167,40 @@ than silently leaving it in place.
 
 ---
 
+## 7. What "Tier-1 present" means for a nullable field — **correction, found in implementation**
+
+**Decision**: A `null` counts as a gap only where the schema forbids `null`. Nullability is
+derived from the schema, never listed by hand.
+
+**Why this needed deciding at all**: the first implementation of `tier1Coverage` treated
+"present" as `!== undefined && !== null`, which is the obvious reading, and it reported the
+library as **17/67 poses complete (25.4%)**. The library is in fact complete. The culprit is
+`prop_free_variation`: it is Tier-1 and in the schema's `required` array, but its schema is
+`oneOf: [string, null]`, and 50 of the 67 poses carry `null` — which is an authored answer
+("this pose needs no prop-free variation"), not an omission.
+
+So there are two kinds of `null` in the data and only one of them is a gap. The distinction
+lives in the schema, so `deriveNullableFields(schema)` reads it from there — the same
+argument as `deriveTier1Fields`: a hand-maintained list of nullable fields is a second
+authority that will eventually disagree with the first.
+
+Worth recording because a 25.4% figure in CI output is *worse than no figure*. It would have
+been read either as a real regression, costing someone an afternoon, or — after the second
+time — as noise, which is how a coverage gate stops being read at all.
+
+---
+
+## 8. The new module's coverage threshold — **deviation from the plan**
+
+The plan gave `scripts/lib/tier1-report.mjs` "its own threshold" in `vitest.config.ts`,
+below the 100% the constitution mandates for the friction engine and validator-lite. It
+turned out not to need one: it is a pure function over parsed JSON with nothing hard to
+reach, and it sits at 100% on all four metrics. A separate, lower threshold would have
+documented an exemption nobody was using — so all three files share the one threshold
+block, and RULE-S3's mandate for the two constitutional files is unchanged.
+
+---
+
 ## Note for `004`
 
 `src/app/compose/ComposeFlowItem.tsx:172` already renders `energetic_direction`, as a raw

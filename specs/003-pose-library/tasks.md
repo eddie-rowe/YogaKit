@@ -74,41 +74,41 @@ enum failure, and has a seam a test can reach.
 **Independent test**: Delete a Tier-1 field from one pose locally and run
 `npm run validate:poses` — exit 1, naming the pose and the field.
 
-- [ ] T010 [US1] Create `scripts/lib/tier1-report.mjs` — pure, no `fs`:
+- [X] T010 [US1] Create `scripts/lib/tier1-report.mjs` — pure, no `fs`:
   `deriveTier1Fields(schema)` (`required` minus `x-tier2-properties`, so the script cannot
   drift from the schema), `formatAjvError(err, data)`, `tier1Coverage(poses, fields)` →
   `{ perField, overall, gaps }`
-- [ ] T011 [US1] Rename `scripts/validate-poses.js` → `.mjs`, update `package.json`'s
+- [X] T011 [US1] Rename `scripts/validate-poses.js` → `.mjs`, update `package.json`'s
   `validate:poses`, and import the above
-- [ ] T012 [US1] Replace the error loop at the old `:39-41` with `formatAjvError` — FR-005,
+- [X] T012 [US1] Replace the error loop at the old `:39-41` with `formatAjvError` — FR-005,
   FR-006. Ajv's bare *"must be equal to one of the allowed values"* must become a message
   naming both the offending value and `err.params.allowedValues`
-- [ ] T013 [US1] Emit the FR-007 coverage figure above the existing Tier-2 block, plus a
+- [X] T013 [US1] Emit the FR-007 coverage figure above the existing Tier-2 block, plus a
   per-field line for any field below 100%. The Tier-2 report stays verbatim and still never
   fails CI
-- [ ] T014 [US1] Add an optional `--dir <path>`, defaulting to `data/poses`, for the
+- [X] T014 [US1] Add an optional `--dir <path>`, defaulting to `data/poses`, for the
   spawn-level test below
-- [ ] T015 [P] [US1] Create `docs/design/003-tier1-review.md` — the FR-009 attributable
+- [X] T015 [P] [US1] Create `docs/design/003-tier1-review.md` — the FR-009 attributable
   review record (slug, reviewer, date, verdict, corrections). Carries forward `001`'s T027,
   which is owner-blocked: the review is Gioconda & Tavo's, the *record* is buildable here
-- [ ] T016 [US1] Make T015 mechanical rather than decorative: the script **warns, never
+- [X] T016 [US1] Make T015 mechanical rather than decorative: the script **warns, never
   fails**, when a reviewed pose's geometry fields have changed since its recorded review
   date
-- [ ] T017 [US1] Create `tests/unit/pose-library/tier1-report.test.ts` — the SC-001 / `001`
+- [X] T017 [US1] Create `tests/unit/pose-library/tier1-report.test.ts` — the SC-001 / `001`
   T074 proof, which has never existed. In-memory: a pose missing `base_of_support` appears
   in `gaps` naming slug and field; `energetic_direction: "yang"` produces a message
   containing `"yang"` and all three permitted values (FR-006, US2/AS3); a pose missing
   `source` appears in `gaps` (FR-004); a complete set gives `overall === 1`
-- [ ] T018 [US1] One spawn-level case, because SC-001 is about the *gate* failing: run the
+- [X] T018 [US1] One spawn-level case, because SC-001 is about the *gate* failing: run the
   script with `--dir` against a one-file fixture directory and assert **exit code 1**
-- [ ] T019 [P] [US1] Convert the 9 `require()` calls to top-level `node:fs` / `node:path`
+- [X] T019 [P] [US1] Convert the 9 `require()` calls to top-level `node:fs` / `node:path`
   imports — `src/lib/pose-library/index.ts:9-10`, `src/lib/flow-library/index.ts:8-9`,
   `src/lib/meridians/index.ts:4-5`, and the three in `scripts/validate-poses.js` cleared by
   T011. All are server-only
-- [ ] T020 [P] [US1] Correct the false comment at `src/lib/pose-library/index.ts:3`, which
+- [X] T020 [P] [US1] Correct the false comment at `src/lib/pose-library/index.ts:3`, which
   claims "never fetched at runtime (RULE-L3)" directly above a runtime
   `fs.readdirSync(process.cwd())`
-- [ ] T021 [US1] Add `scripts/lib/tier1-report.mjs` to `vitest.config.ts`'s
+- [X] T021 [US1] Add `scripts/lib/tier1-report.mjs` to `vitest.config.ts`'s
   `coverage.include` with its own threshold, leaving `src/lib/friction/index.ts` and
   `src/lib/validator/lite.ts` at their mandated 100
 
