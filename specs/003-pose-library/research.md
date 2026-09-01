@@ -213,3 +213,43 @@ touch it — every composer render is `004`'s per the spec's Assumptions. Two th
 `004` to pick up: adopt `src/lib/pose-library/energetic-direction.ts` so the gloss is
 shared, and note that the purple chip collides with the sanctioned *chakra* hue in
 FR-040's palette.
+
+---
+
+## §9 — FR-015 is not violated by a meridian-first pose (Phase 4)
+
+Making the default tab data-derived (FR-016) surfaces an apparent conflict with FR-015's
+"visible without interaction": the depth legend is scoped to the muscle layer, so a pose
+carrying meridians but no muscle data now opens with no depth legend at all.
+
+That is correct, not a regression. The depth legend explains how the diagram encodes
+**muscle** tissue depth — filled for superficial, dashed outline for deep. Where a pose has
+no muscle data there is no depth encoding on screen to explain, and rendering the key anyway
+would be a legend for an absent convention. SC-006 should be read as *the encoding in view is
+always explained*, not *this particular legend is always present*. Asserted as a negative in
+`tests/unit/poses/body-diagram.test.tsx` so a later reader does not re-litigate it.
+
+The per-category zero-data counts, for anyone writing fixtures: meridians 25, chakras 23,
+joints 16, muscles 2.
+
+## §10 — the two-column grid was the real empty frame (Phase 4)
+
+FR-017's "absent rather than empty" was implemented in `BodyDiagram` by returning `null`, but
+that alone left a worse artifact: `PoseDetailContent` wraps the diagram in the first column of
+`md:grid-cols-[2fr_3fr]`, so on the two poses with no anatomy data (`rebound-supine`,
+`seated-stillness`) desktop reserved an empty 2fr column beside the prose — an absence framed
+as a gap, which is exactly what FR-017 forbids. The caller therefore evaluates the same
+condition and drops to a single-column layout. The condition is duplicated in two places on
+purpose; the alternative is the diagram reporting its own emptiness back up to the parent
+after render, which is a worse trade than four lines of `?.length`.
+
+## §11 — two `useMemo` calls removed rather than added (Phase 4)
+
+`getLegendEntries` and `resolveSelection` are called on every render without memoization.
+This is deliberate and lint-enforced: memoizing them tripped
+`react-hooks/preserve-manual-memoization` ("Compilation Skipped: Existing memoization could
+not be preserved"), because their input is read out of an object literal rebuilt each render.
+The React Compiler then declines to optimize the *whole component*. Trading a real
+optimization for a nominal one over two pure passes across at most a dozen strings is the
+wrong way round. The three pre-existing `useMemo`s over `body-map` lookups keep stable prop
+dependencies and are untouched.

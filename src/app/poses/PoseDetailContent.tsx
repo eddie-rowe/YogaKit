@@ -167,12 +167,23 @@ export default function PoseDetailContent({ pose, layer, customFields }: Content
   const showContraindicationsProps = layer !== 'custom' || customFields['contraindications-props']
   const showTypeTags = layer === 'custom' ? customFields['muscles-joints'] : showAdvanced
 
+  // FR-017: BodyDiagram returns null when no category holds data, and a two-column grid
+  // would then reserve an empty 2fr column beside the prose — an absent diagram framed as
+  // a gap. The same condition has to be known here, so the column never opens. Two poses
+  // reach it: rebound-supine and seated-stillness.
+  const hasAnatomyData =
+    (pose.muscle_groups?.length ?? 0) > 0 ||
+    (pose.meridians?.length ?? 0) > 0 ||
+    (pose.primary_joints_involved?.length ?? 0) > 0 ||
+    (showChakras ? (pose.chakras?.length ?? 0) : 0) > 0
+  const showDiagram = showMusclesJoints && hasAnatomyData
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[2fr_3fr] gap-8">
+    <div className={showDiagram ? 'grid grid-cols-1 md:grid-cols-[2fr_3fr] gap-8' : 'max-w-2xl'}>
 
       {/* Left: body diagram */}
-      {showMusclesJoints && (
-        <div className="md:sticky md:top-6 md:self-start">
+      {showDiagram && (
+        <div className="md:sticky md:top-6 md:self-start" data-testid="poses-body-diagram">
           <BodyDiagram
             muscleGroups={pose.muscle_groups ?? []}
             meridians={pose.meridians ?? []}

@@ -1,6 +1,7 @@
 'use client'
 
 import { MERIDIAN_PATH_MAP, CHAKRA_DOTS, ELEMENT_COLORS } from '@/lib/pose-library/body-map'
+import type { ActiveJoint } from '@/lib/pose-library/body-map'
 import type { FiveElement, ChakraName } from '@/lib/pose-types'
 
 interface BodySvgProps {
@@ -8,16 +9,31 @@ interface BodySvgProps {
   activeTab: 'muscles' | 'meridians' | 'joints' | 'chakras'
   activeRegions: Set<string>
   deepRegions: Set<string>
-  activeJoints: Array<{ cx: number; cy: number }>
+  activeJoints: ActiveJoint[]
   activeMeridians: string[]
   activeChakras: ChakraName[]
   element: FiveElement | null
+  /** Element ids currently highlighted by a selection on either side of the link.
+   *  Empty means "nothing selected" — everything draws at full strength. */
+  highlighted?: Set<string>
+  /** Called with the element id when a drawn shape is tapped.
+   *
+   *  Keyboard and assistive-tech users reach the same link through the legend buttons,
+   *  which are real <button>s with aria-pressed; these shapes are the pointer affordance
+   *  for the same state, not a second, less accessible control. */
+  onSelectRegion?: (id: string) => void
 }
+
+/** Opacity for a shape that exists but is not part of the current selection.
+ *  Dimming rather than hiding: the reader needs to see that there is more to tap. */
+const DIMMED = 0.18
 
 // Shared body silhouette — same outline for front and back
 function BodySilhouette() {
-  const fill = '#f5f4f2'
-  const stroke = '#dcd8d3'
+  // The silhouette is chrome, not pose data, so guardrails §2's data-hue exception does
+  // not cover it. Hardcoded, it rendered as a bright slab against the dark token set.
+  const fill = 'var(--surface-raised)'
+  const stroke = 'var(--border)'
   const sw = '1.2'
   const props = { fill, stroke, strokeWidth: sw }
 
@@ -85,7 +101,11 @@ function BodySilhouette() {
 }
 
 // All muscle region paths — keyed by region ID
-const MUSCLE_PATHS: Record<string, React.ReactNode> = {
+// Exported so tests can assert the round trip against body-map.ts's REGION_TO_MUSCLES: a
+// region id with no path here draws nothing, and a path here with no map entry can never
+// light up. Both are silent failures in the browser, so SC-004 is asserted in a test
+// instead of noticed by a reader.
+export const MUSCLE_PATHS: Record<string, React.ReactNode> = {
   // FRONT VIEW — lower body
   'region-quadriceps-l': <path key="qL" d="M 74,232 L 62,244 L 60,290 L 61,330 C 61,337 67,341 74,341 L 89,341 C 96,341 101,337 101,330 L 101,244 L 95,232 Z" />,
   'region-quadriceps-r': <path key="qR" d="M 126,232 L 101,244 L 101,330 C 101,337 104,341 111,341 L 126,341 C 133,341 139,337 139,330 L 140,290 L 138,244 Z" />,
@@ -152,11 +172,22 @@ export default function BodySvg({
   activeMeridians,
   activeChakras,
   element,
+  highlighted,
+  onSelectRegion,
 }: BodySvgProps) {
   const showMuscles   = activeTab === 'muscles'
   const showMeridians = activeTab === 'meridians'
   const showJoints    = activeTab === 'joints'
   const showChakras   = activeTab === 'chakras'
+
+  const hasSelection = (highlighted?.size ?? 0) > 0
+  const isLit = (id: string) => !hasSelection || !!highlighted?.has(id)
+  // A selection ring, drawn in the foreground token so it reads in both themes and never
+  // spends a second accent or promotes a data hue to mean "selected" (guardrails §2).
+  const ringProps = (id: string) =>
+    hasSelection && highlighted?.has(id)
+      ? { stroke: 'var(--foreground)', strokeWidth: 1.5, strokeDasharray: undefined }
+      : null
 
   return (
     <svg
@@ -182,16 +213,25 @@ export default function BodySvg({
       {showMuscles && Object.entries(MUSCLE_PATHS).map(([id, pathNode]) => {
         const isActive = activeRegions.has(id)
         const isDeep   = deepRegions.has(id)
+        // Inactive regions render nothing, which is what keeps SC-004's "zero regions that
+        // highlight nothing" true by construction: only a mapped, present muscle is tappable.
         if (!isActive) return null
+        const ring = ringProps(id)
+        const base = isDeep ? 0.7 : 0.5
         return (
           <g
             key={id}
+            data-testid={`body-diagram-region-${id}`}
             fill={isDeep ? 'none' : '#818cf8'}
-            stroke={isDeep ? '#818cf8' : 'none'}
-            strokeWidth={isDeep ? 1.5 : 0}
-            strokeDasharray={isDeep ? '3 2' : undefined}
-            opacity={isDeep ? 0.7 : 0.5}
-            style={{ transition: 'opacity var(--duration-base) var(--ease-standard)' }}
+            stroke={ring ? ring.stroke : isDeep ? '#818cf8' : 'none'}
+            strokeWidth={ring ? ring.strokeWidth : isDeep ? 1.5 : 0}
+            strokeDasharray={ring ? undefined : isDeep ? '3 2' : undefined}
+            opacity={isLit(id) ? base : DIMMED}
+            onClick={onSelectRegion ? () => onSelectRegion(id) : undefined}
+            style={{
+              transition: 'opacity var(--duration-fast) var(--ease-standard)',
+              cursor: onSelectRegion ? 'pointer' : undefined,
+            }}
           >
             {pathNode}
           </g>
@@ -201,41 +241,75 @@ export default function BodySvg({
       {/* Layer 3: meridian lines */}
       {showMeridians && activeMeridians.map(slug => {
         const paths = MERIDIAN_PATH_MAP[slug] ?? []
-        return paths
-          .filter(p => p.view === view || p.view === 'both')
-          .map((p, i) => (
-            <path
-              key={`${slug}-${i}`}
-              d={p.d}
-              fill="none"
-              stroke={ELEMENT_COLORS[p.element]}
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              opacity={0.85}
-              style={{ transition: 'opacity var(--duration-base) var(--ease-standard)' }}
-            />
-          ))
+        const id = `meridian-${slug}`
+        const visible = paths.filter(p => p.view === view || p.view === 'both')
+        if (visible.length === 0) return null
+        return (
+          <g
+            key={slug}
+            data-testid={`body-diagram-region-${id}`}
+            opacity={isLit(id) ? 1 : DIMMED}
+            onClick={onSelectRegion ? () => onSelectRegion(id) : undefined}
+            style={{
+              transition: 'opacity var(--duration-fast) var(--ease-standard)',
+              cursor: onSelectRegion ? 'pointer' : undefined,
+            }}
+          >
+            {visible.map((p, i) => (
+              <path
+                key={i}
+                d={p.d}
+                fill="none"
+                stroke={ELEMENT_COLORS[p.element]}
+                strokeWidth={highlighted?.has(id) ? '4' : '2.5'}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                opacity={0.85}
+                style={{ transition: 'stroke-width var(--duration-fast) var(--ease-standard)' }}
+              />
+            ))}
+          </g>
+        )
       })}
 
       {/* Layer 4: joint dots */}
-      {showJoints && activeJoints.map(({ cx, cy }, i) => (
-        <circle
-          key={i}
-          cx={cx}
-          cy={cy}
-          r="5"
-          fill="#475569"
-          opacity={0.8}
-          style={{ transition: 'opacity var(--duration-base) var(--ease-standard)' }}
-        />
-      ))}
+      {showJoints && activeJoints.map(({ id, key, cx, cy }) => {
+        const ring = ringProps(key)
+        return (
+          <circle
+            key={id}
+            data-testid={`body-diagram-region-${id}`}
+            cx={cx}
+            cy={cy}
+            r="5"
+            fill="#475569"
+            stroke={ring ? ring.stroke : undefined}
+            strokeWidth={ring ? ring.strokeWidth : undefined}
+            opacity={isLit(key) ? 0.8 : DIMMED}
+            onClick={onSelectRegion ? () => onSelectRegion(key) : undefined}
+            style={{
+              transition: 'opacity var(--duration-fast) var(--ease-standard)',
+              cursor: onSelectRegion ? 'pointer' : undefined,
+            }}
+          />
+        )
+      })}
 
       {/* Layer 5: chakra dots */}
       {showChakras && CHAKRA_DOTS.map(dot => {
         const isActive = activeChakras.includes(dot.name)
+        const id = `chakra-${dot.name}`
         return (
-          <g key={dot.name} style={{ transition: 'opacity var(--duration-base) var(--ease-standard)' }} opacity={isActive ? 1 : 0.15}>
+          <g
+            key={dot.name}
+            data-testid={isActive ? `body-diagram-region-${id}` : undefined}
+            style={{
+              transition: 'opacity var(--duration-fast) var(--ease-standard)',
+              cursor: isActive && onSelectRegion ? 'pointer' : undefined,
+            }}
+            opacity={isActive ? (isLit(id) ? 1 : DIMMED) : 0.15}
+            onClick={isActive && onSelectRegion ? () => onSelectRegion(id) : undefined}
+          >
             <circle
               cx={dot.cx}
               cy={dot.cy}

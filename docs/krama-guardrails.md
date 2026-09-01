@@ -71,6 +71,14 @@ carries a `data-testid`. Naming: `{area}-{element}`, kebab-case, stable across r
 | Poses | `poses-detail-layer-{l}` | Detail depth chip (`simple`/`advanced`/`expert`/`custom`), on `/poses/{slug}` and in the overlay |
 | Poses | `poses-detail-custom-field-{group}` | Field-group checkbox shown when the `custom` depth layer is active |
 | Poses | `poses-detail-energetic-direction` | Energetic-direction badge on pose detail — "Brahmana — building" (003 FR-012) |
+| Poses | `poses-clear-all-filters` | Clear-all affordance in the filter panel — **drifted**: shipped in 001, added to this table in 003 |
+| Poses | `poses-body-diagram` | Wrapper for the anatomy column on pose detail. Absent entirely when no anatomy category holds data (003 FR-017) |
+| Poses | `body-diagram-tab-{muscles\|meridians\|joints\|chakras}` | Anatomy layer tab. Only rendered for categories holding data, and only when two or more do (003 FR-016) |
+| Poses | `body-diagram-single-{category}` | Heading shown in place of the tab set when exactly one category holds data |
+| Poses | `body-diagram-view-{front\|back}` | Front/back view toggle, sharing one control row with the tabs (003 FR-018) |
+| Poses | `body-diagram-legend-{key}` | Legend entry, a `<button>` with `aria-pressed`. Key is the muscle group, meridian slug, `joint-{name}`, or `chakra-{name}` (003 FR-014) |
+| Poses | `body-diagram-region-{id}` | A drawn, tappable shape in the SVG: a muscle region id, `meridian-{slug}`, `joint-{name}`(`-mirror`), or `chakra-{name}` (003 FR-013) |
+| Poses | `body-diagram-depth-legend` | Superficial/deep encoding key — **drifted**: shipped in 001, added to this table in 003. Muscle layer only, because it explains a muscle encoding |
 | Validator | `validator-warning-laterality`, `validator-warning-closing-stillness` | The two v0.1 warnings, wherever they render |
 | Nav | `nav-home`, `nav-compose`, `nav-flows`, `nav-poses`, `nav-learn` | Five-tab nav (spec §3) |
 

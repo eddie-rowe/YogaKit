@@ -163,69 +163,69 @@ and diagram chrome that survives dark mode.
 **Write T035 first.** It is the mechanical form of SC-004, it passes against real data
 today, and it fails the day someone adds a region path with no map entry.
 
-- [ ] T028 [US3] `BodyDiagram.tsx`: filter `TABS` to categories holding data and derive
+- [X] T028 [US3] `BodyDiagram.tsx`: filter `TABS` to categories holding data and derive
   `activeTab` from the first survivor. `:40` hardcodes `'muscles'`, which is wrong for a
   pose with no muscle data. Three cases: **zero** → return `null`; **one** → a labelled
   heading, not a degenerate one-tab `Tabs.Root`; **two or more** → tabs minus the empty ones
   (FR-016, FR-017)
-- [ ] T029 [US3] Guard the caller at `PoseDetailContent.tsx:170-183` so the zero case leaves
+- [X] T029 [US3] Guard the caller at `PoseDetailContent.tsx:170-183` so the zero case leaves
   no orphaned heading above nothing. Two poses hit this path: `rebound-supine` and
   `seated-stillness`
-- [ ] T030 [US3] Delete the absolute-positioned "No {activeTab} data for this pose" overlay
+- [X] T030 [US3] Delete the absolute-positioned "No {activeTab} data for this pose" overlay
   at `BodyDiagram.tsx:129-136` — unreachable after T028, and FR-017 wants an absent frame
   rather than an empty one
-- [ ] T031 [US3] Derive `REGION_TO_MUSCLES` in `src/lib/pose-library/body-map.ts` from
+- [X] T031 [US3] Derive `REGION_TO_MUSCLES` in `src/lib/pose-library/body-map.ts` from
   `MUSCLE_REGION_MAP` at module load — derived, never hand-maintained, so the two cannot
   disagree. The many-to-many case is real: `region-psoas` is reached from both `psoas` and
   `hip-flexors` (FR-013, FR-014)
-- [ ] T032 [US3] Widen `getActiveJointIds` (`body-map.ts:179`) to carry the `JointName`; it
+- [X] T032 [US3] Widen `getActiveJointIds` (`body-map.ts:179`) to carry the `JointName`; it
   returns `Array<{cx, cy}>` and discards the name that joint-legend linking needs. Breaking
   signature change — grep every call site first
-- [ ] T033 [US3] Add `getLegendEntries(…, view)` returning
+- [X] T033 [US3] Add `getLegendEntries(…, view)` returning
   `{ key, label, category, regionIds, primaryView }`, so a cross-view legend tap has
   something to switch *to*
-- [ ] T034 [US3] Lift `selected: { source: 'region' | 'legend'; key: string } | null` into
+- [X] T034 [US3] Lift `selected: { source: 'region' | 'legend'; key: string } | null` into
   `BodyDiagram` and pass it to both `BodySvg` and the legend. Legend chips become `<button>`s
   with `aria-pressed` (plain `<span>`s today at `:175/183/190/197`) and the `kk-chip`
   min-height, so FR-026's 40px floor reaches them. Highlighting is set-to-set in both
   directions (SC-004). A back-only entry tapped from the front view sets `view` and the
   highlight in **one** state update — otherwise the tap is a silent no-op. Express selection
   with border weight and a ring, **never** by promoting a data hue to an active background
-- [ ] T035 [US3] Create `tests/unit/pose-library/body-map.test.ts` — `REGION_TO_MUSCLES`
+- [X] T035 [US3] Create `tests/unit/pose-library/body-map.test.ts` — `REGION_TO_MUSCLES`
   inverts losslessly; `region-psoas` → both `psoas` and `hip-flexors`; **every id in
   `REGION_TO_MUSCLES` exists as a key in `BodySvg`'s `MUSCLE_PATHS` and vice versa**;
   `getActiveJointIds` returns distinct ids for a bilateral pair
-- [ ] T036 [P] [US3] Create `tests/unit/poses/body-diagram.test.tsx` — muscles-only fixture:
+- [X] T036 [P] [US3] Create `tests/unit/poses/body-diagram.test.tsx` — muscles-only fixture:
   one heading, no `Tabs.Root`; muscles+joints: exactly two triggers; all-empty: empty
   container, and `No … data for this pose` appears nowhere
-- [ ] T037 [P] [US3] Create `tests/unit/poses/body-diagram-linking.test.tsx` — region click
+- [X] T037 [P] [US3] Create `tests/unit/poses/body-diagram-linking.test.tsx` — region click
   → matching legend button `aria-pressed="true"`; a back-only entry clicked from the front
   view flips the view *and* highlights; a region with two legend entries highlights both
-- [ ] T038 [US3] Combine `Tabs.List` and the front/back toggle into one control row at 390px
+- [X] T038 [US3] Combine `Tabs.List` and the front/back toggle into one control row at 390px
   — two stacked rows today, the toggle `self-end` below the tabs. Scroll-snap if four tabs
   plus a toggle will not fit (FR-018)
-- [ ] T039 [US3] Replace hardcoded chrome in `BodyDiagram.tsx:81,86,90,107-108,117,132`:
+- [X] T039 [US3] Replace hardcoded chrome in `BodyDiagram.tsx:81,86,90,107-108,117,132`:
   `bg-stone-100` → `var(--surface)`, `bg-stone-50` → `var(--surface-raised)`,
   `bg-stone-800 text-white` → `var(--accent)` / `var(--accent-foreground)`, `text-stone-500`
   → `var(--muted)`, borders → `var(--border)` (guardrails §2)
-- [ ] T040 [US3] `BodySvg.tsx:19-21` is the worse offender — `BodySilhouette` hardcodes
+- [X] T040 [US3] `BodySvg.tsx:19-21` is the worse offender — `BodySilhouette` hardcodes
   `#f5f4f2` / `#dcd8d3`, so the body renders as a bright slab in dark mode. The silhouette is
   chrome, not pose data, so §2's hue exception does not cover it → `var(--surface-raised)` /
   `var(--border)`
-- [ ] T041 [US3] Leave the four data hues exactly as they are — `#818cf8`, `ELEMENT_COLORS`,
+- [X] T041 [US3] Leave the four data hues exactly as they are — `#818cf8`, `ELEMENT_COLORS`,
   `#475569`, the chakra colours. They encode pose *content* and are §2's explicit exception
   (FR-040). Verify the depth legend's `fill="#818cf8"` swatches read correctly against dark
   rather than assuming, but do not tokenize them
-- [ ] T042 [P] [US3] Create `tests/unit/poses/motion-budget.test.ts` — a source scan over
+- [X] T042 [P] [US3] Create `tests/unit/poses/motion-budget.test.ts` — a source scan over
   `src/components/poses/**` and `src/app/poses/**` rejecting `\d{3,}ms`, `cubic-bezier`,
   `spring`, `bounce`. `BodySvg.tsx` already uses the duration tokens, so this *keeps* FR-019
   true rather than establishing it, and is SC-007's "measured rather than assumed" for about
   fifteen lines
-- [ ] T043 [P] [US3] Create `tests/e2e-qa/poses-anatomy.spec.ts` at 390px —
+- [X] T043 [P] [US3] Create `tests/e2e-qa/poses-anatomy.spec.ts` at 390px —
   `/poses/seated-stillness` has zero `poses-body-diagram` nodes; visible trigger count equals
   the categories holding data (SC-005); the tab row and front/back toggle share one
   `boundingBox().y`
-- [ ] T044 [US3] Check the keyboard path through the Radix `Tabs` group and the new legend
+- [X] T044 [US3] Check the keyboard path through the Radix `Tabs` group and the new legend
   buttons at 390px — T034 puts the legend in the tab order for the first time
 
 **Checkpoint**: the diagram is correct in both themes, and every region and chip highlights
@@ -237,13 +237,13 @@ something.
 
 Ships in the same commit as Phase 4.
 
-- [ ] T045 Backfill the two already-drifted rows in `docs/krama-guardrails.md` §1.3:
+- [X] T045 Backfill the two already-drifted rows in `docs/krama-guardrails.md` §1.3:
   `poses-clear-all-filters` and `body-diagram-depth-legend` are in `src/` and absent from the
   table that declares itself the source of truth
-- [ ] T046 Add the new rows: `body-diagram-tab-{muscles|meridians|joints|chakras}`,
+- [X] T046 Add the new rows: `body-diagram-tab-{muscles|meridians|joints|chakras}`,
   `body-diagram-view-{front|back}`, `body-diagram-legend-{item}`, `body-diagram-region-{id}`,
   `poses-detail-energetic-direction`
-- [ ] T047 Note in `design-input.md` that its "Testid contract impact: None identified" line
+- [X] T047 Note in `design-input.md` that its "Testid contract impact: None identified" line
   was already inaccurate before `003` added anything, rather than silently correcting the
   table — the same treatment UX-011 got last pass
 

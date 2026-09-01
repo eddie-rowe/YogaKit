@@ -176,16 +176,168 @@ export function getDeepRegions(muscleGroups: MuscleGroup[], view: SvgView): Set<
   return deep
 }
 
-export function getActiveJointIds(joints: JointName[], view: SvgView, bilateral: boolean): Array<{ cx: number; cy: number }> {
-  const dots: Array<{ cx: number; cy: number }> = []
+/** Which muscle groups reach a given SVG region — the inverse of MUSCLE_REGION_MAP.
+ *
+ *  Derived at module load rather than written out, because the two cannot then disagree.
+ *  The relation is genuinely many-to-many in both directions: `region-psoas` is reached
+ *  from both `psoas` and `hip-flexors`, and `hip-flexors` reaches three regions. FR-014's
+ *  "without appearing to select the wrong thing" is about exactly that overlap, so the
+ *  inverse has to be a list, not a lookup. */
+export const REGION_TO_MUSCLES: Map<string, MuscleGroup[]> = (() => {
+  const inverse = new Map<string, MuscleGroup[]>()
+  for (const [muscle, regions] of Object.entries(MUSCLE_REGION_MAP) as [MuscleGroup, SvgRegion[]][]) {
+    for (const region of regions) {
+      const existing = inverse.get(region.id)
+      if (existing) existing.push(muscle)
+      else inverse.set(region.id, [muscle])
+    }
+  }
+  return inverse
+})()
+
+export interface ActiveJoint {
+  /** The SVG element id, and the region key the legend links against. A mirrored dot
+   *  carries the same key: both dots are the same joint, so tapping either highlights the
+   *  one chip, and tapping the chip lights both dots. */
+  id: string
+  key: string
+  joint: JointName
+  cx: number
+  cy: number
+}
+
+/** The joint dots to draw, carrying the joint name.
+ *
+ *  This used to return bare `{cx, cy}` and discard the name, which made joint-legend
+ *  linking impossible: a dot at (80, 341) is not something a legend chip can find. */
+export function getActiveJointIds(joints: JointName[], view: SvgView, bilateral: boolean): ActiveJoint[] {
+  const dots: ActiveJoint[] = []
   for (const joint of joints) {
     const dot = JOINT_DOT_MAP[joint]
     if (!dot) continue
     if (dot.view !== view && dot.view !== 'both') continue
-    dots.push({ cx: dot.cx, cy: dot.cy })
+    dots.push({ id: `joint-${joint}`, key: `joint-${joint}`, joint, cx: dot.cx, cy: dot.cy })
     if (dot.bilateral && bilateral) {
-      dots.push({ cx: 200 - dot.cx, cy: dot.cy })
+      dots.push({ id: `joint-${joint}-mirror`, key: `joint-${joint}`, joint, cx: 200 - dot.cx, cy: dot.cy })
     }
   }
   return dots
+}
+
+export type LegendCategory = 'muscles' | 'meridians' | 'joints' | 'chakras'
+
+export interface LegendEntry {
+  /** Stable identity for the chip — the muscle group, meridian slug, joint name, or
+   *  chakra name. Doubles as the testid suffix. */
+  key: string
+  label: string
+  category: LegendCategory
+  /** The SVG element ids this entry highlights. */
+  regionIds: string[]
+  /** Which view those ids live in, so a legend tap has something to switch *to*.
+   *  'both' means the entry is visible either way and no switch is needed. */
+  primaryView: SvgView
+}
+
+function collapseViews(views: SvgView[]): SvgView {
+  if (views.length === 0) return 'both'
+  if (views.every(v => v === 'front')) return 'front'
+  if (views.every(v => v === 'back')) return 'back'
+  return 'both'
+}
+
+/** The legend for one category, with each entry told where its regions live.
+ *
+ *  The view is what makes this necessary rather than cosmetic. Regions are front- or
+ *  back-scoped, so tapping the `hamstrings` chip while the front view is showing would
+ *  highlight nothing at all — MUSCLE_REGION_MAP.hamstrings is back-only. A legend tap has
+ *  to be able to set the view and the highlight in one update, and for that it needs to
+ *  know the view before the tap happens. */
+export function getLegendEntries(
+  category: LegendCategory,
+  values: string[],
+  chakraDots: ChakraDot[] = CHAKRA_DOTS
+): LegendEntry[] {
+  if (category === 'muscles') {
+    return values.map(value => {
+      const regions = MUSCLE_REGION_MAP[value as MuscleGroup] ?? []
+      return {
+        key: value,
+        label: value,
+        category,
+        regionIds: regions.map(region => region.id),
+        primaryView: collapseViews(regions.map(region => region.view)),
+      }
+    })
+  }
+
+  if (category === 'meridians') {
+    return values.map(value => {
+      const paths = MERIDIAN_PATH_MAP[value] ?? []
+      return {
+        key: value,
+        label: value.replace(/-/g, ' '),
+        category,
+        regionIds: [`meridian-${value}`],
+        primaryView: collapseViews(paths.map(path => path.view)),
+      }
+    })
+  }
+
+  if (category === 'joints') {
+    return values.map(value => {
+      const dot = JOINT_DOT_MAP[value as JointName]
+      return {
+        key: `joint-${value}`,
+        label: value,
+        category,
+        regionIds: [`joint-${value}`, `joint-${value}-mirror`],
+        primaryView: dot ? dot.view : 'both',
+      }
+    })
+  }
+
+  return values.map(value => {
+    const dot = chakraDots.find(candidate => candidate.name === value)
+    return {
+      key: `chakra-${value}`,
+      label: dot ? dot.english : value,
+      category,
+      // Chakras sit on the midline and are drawn in both views.
+      regionIds: [`chakra-${value}`],
+      primaryView: 'both' as SvgView,
+    }
+  })
+}
+
+export interface Selection {
+  source: 'region' | 'legend'
+  key: string
+}
+
+/** What a selection lights up, on both sides at once.
+ *
+ *  Asymmetric on purpose. A **legend** tap highlights that chip and the regions it maps to
+ *  — the reader asked about one muscle. A **region** tap highlights that region and *every*
+ *  chip that reaches it, because the question "what is this shape?" has more than one true
+ *  answer where the map overlaps: tapping `region-psoas` is answered by both `psoas` and
+ *  `hip-flexors`, and showing only one of them would be showing the wrong thing. */
+export function resolveSelection(
+  selection: Selection | null,
+  entries: LegendEntry[]
+): { regionIds: Set<string>; keys: Set<string> } {
+  if (!selection) return { regionIds: new Set(), keys: new Set() }
+
+  if (selection.source === 'legend') {
+    const entry = entries.find(candidate => candidate.key === selection.key)
+    return entry
+      ? { regionIds: new Set(entry.regionIds), keys: new Set([entry.key]) }
+      : { regionIds: new Set(), keys: new Set() }
+  }
+
+  const keys = entries
+    .filter(entry => entry.regionIds.includes(selection.key))
+    .map(entry => entry.key)
+
+  return { regionIds: new Set([selection.key]), keys: new Set(keys) }
 }
