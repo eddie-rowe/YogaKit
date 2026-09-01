@@ -26,7 +26,11 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-serif: var(--font-cormorant);
+  /* The var() fallback is deliberate. This line pointed at an undefined
+     --font-cormorant from 001 until 2026-09-01, and the failure was silent:
+     headings fell through to the sans stack and nobody noticed. If the font
+     ever fails to load again, a real serif is the floor. */
+  --font-serif: var(--font-cormorant, ui-serif), Georgia, "Times New Roman", serif;
 }
 
 /* Dark palette, defined once and applied from two directions (006 FR-032/033).
