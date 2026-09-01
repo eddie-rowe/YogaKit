@@ -61,12 +61,38 @@ export async function deleteFlow(id: string): Promise<void> {
   await db.delete(STORE_NAME, id)
 }
 
-/** Drops every locally-cached flow.
+/** Drops every locally-cached flow, synced or not.
  *
- *  Sign-out must call this: the cache outlives the session, so without it the
- *  next person to sign in on a shared device reads the previous user's flows
- *  (specs/004-sequencing-composer, UX-011). */
+ *  Sign-out does NOT call this — see `clearSyncedFlows` below for why. This is
+ *  the primitive for a deliberate "forget everything on this device" action,
+ *  where destroying unsynced local work is the whole point. */
 export async function clearAllFlows(): Promise<void> {
   const db = await getDb()
   await db.clear(STORE_NAME)
+}
+
+/** Drops flows that came from the account, keeping work authored on this device.
+ *
+ *  `clearAllFlows` above is the blunt instrument, and sign-out used to call it.
+ *  That satisfied specs/004-sequencing-composer UX-011 (shared-device safety) by
+ *  violating RULE-L4 and docs/design-research/16-auth-onboarding-claim.md, which
+ *  is explicit: "signing out must never clear or hide the IndexedDB-cached flows
+ *  that were working offline before any account existed." An anonymous
+ *  practitioner who signs in once to try it and signs out lost every flow they
+ *  had made. See DECISIONS.md for the reconciliation.
+ *
+ *  Only `synced` records came from the server, so only those can leak to the next
+ *  person on a shared device. `pending` and `failed` were authored here and have
+ *  no other copy anywhere — deleting them destroys the only one.
+ *
+ *  There is no sync target yet, so every record today reads back `pending` and
+ *  this is a no-op. That is the correct behaviour for someone who has never
+ *  synced, and it starts doing real work the moment the outbox lands.
+ *
+ *  @returns how many flows were dropped. */
+export async function clearSyncedFlows(): Promise<number> {
+  const flows = await getAllFlows()
+  const synced = flows.filter(flow => flow.syncState === 'synced')
+  await Promise.all(synced.map(flow => deleteFlow(flow.id)))
+  return synced.length
 }

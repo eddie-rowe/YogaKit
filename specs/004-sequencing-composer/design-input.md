@@ -71,9 +71,14 @@ a DB or network dependency to `src/lib/friction/` or `src/lib/validator/`.
 - **UX-010**: On permanent sync failure, the system MUST show exactly one non-blocking banner
   with a manual retry action — never an automatic retry loop. *(source: 18; tagged `spec
   004`)*
-- **UX-011**: Sign-out MUST clear the flow cache and outbox from IndexedDB, not just
-  application state — a shared device must not leak the previous user's flows to whoever
-  signs in next. *(source: 18, flagged gap; tagged `spec 004`)*
+- **UX-011**: Sign-out MUST clear **account-derived** flows and the outbox from IndexedDB,
+  not just application state — a shared device must not leak the previous user's flows to
+  whoever signs in next. It MUST NOT clear flows authored locally and never synced: those
+  have no other copy, and destroying them would break RULE-L4 and contradict research 16
+  ("signing out must never clear or hide the IndexedDB-cached flows that were working
+  offline before any account existed"). *(source: 18, flagged gap; tagged `spec 004`;
+  amended — the original wording said "the flow cache", which shipped as an unconditional
+  wipe. See DECISIONS.md, "Sign-out clears synced flows only".)*
 - **UX-012**: Sharing a flow within an org/cohort MUST offer a one-click "duplicate into my
   library" affordance producing an independent copy, with `.krama.json` export/import
   retained as the offline fallback path, not the only path. *(source: 21; tagged `spec 004`)*

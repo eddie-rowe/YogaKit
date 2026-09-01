@@ -229,3 +229,39 @@ pre-empting it. Keeping `UX-NNN` distinct from `FR-NNN` means the eventual gener
 isn't stuck renumbering around IDs written a step early. Appending to `002`'s `research.md`
 rather than reopening its merged `spec.md` keeps a shipped feature's requirements stable
 while still recording the design intent for its unbuilt billing UI.
+
+## Sign-out clears synced flows only
+
+**Date:** 2026-08-31
+
+**Context:** Two staged decisions gave directly opposite instructions about what sign-out
+does to the IndexedDB flow cache. `specs/004-sequencing-composer/design-input.md` UX-011
+said "Sign-out MUST clear the flow cache and outbox from IndexedDB" — shared-device safety,
+sourced from research 18. `docs/design-research/16-auth-onboarding-claim.md` said the
+opposite in its constitution check: "signing out must never clear or hide the
+IndexedDB-cached flows that were working offline before any account existed." RULE-L3/L4
+back the second: reading a flow already in the client-side cache must work with no login.
+
+The code had already picked a side. `AccountMenu.handleSignOut` called `clearAllFlows()`
+unconditionally, so an anonymous practitioner with local flows who signed in once to see
+what an account did, then signed out, lost every flow they had ever made — with no warning
+and no undo.
+
+**Decision:** Sign-out clears only flows whose `syncState` is `synced`. Locally-authored
+`pending` and `failed` records survive. Implemented as `clearSyncedFlows()` in
+`src/lib/storage/flow-store.ts`; `clearAllFlows()` stays as the primitive for a future,
+explicit "forget everything on this device". UX-011 is amended to match. The sign-out
+confirmation dialog states the split in plain language rather than leaving it implicit.
+
+**Why:** Both requirements are about protecting a person, and only one of them is about
+protecting them from data they still have elsewhere. A `synced` flow exists on the server;
+deleting the local copy costs its owner nothing and is exactly what shared-device safety
+asks for. A `pending` flow exists nowhere else, so deleting it is destruction, not hygiene
+— and it is precisely the flow RULE-L4's 6am test is about. Reading UX-011 as "clear what
+came from the account" satisfies its actual intent (don't leak the previous user's practice)
+without the collateral damage its literal wording caused.
+
+This is also forward-safe rather than a stopgap: there is no sync target yet, every record
+today reads back `pending` via `withSyncState()`, so the new behaviour is "keep everything"
+until the outbox lands — correct for a user who has never synced, and correct afterwards
+without a second decision.

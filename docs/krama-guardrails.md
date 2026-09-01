@@ -81,9 +81,47 @@ carries a `data-testid`. Naming: `{area}-{element}`, kebab-case, stable across r
 | Poses | `body-diagram-depth-legend` | Superficial/deep encoding key — **drifted**: shipped in 001, added to this table in 003. Muscle layer only, because it explains a muscle encoding |
 | Validator | `validator-warning-laterality`, `validator-warning-closing-stillness` | The two v0.1 warnings, wherever they render |
 | Nav | `nav-home`, `nav-compose`, `nav-flows`, `nav-poses`, `nav-learn` | Five-tab nav (spec §3) |
+| Account | `account-sign-in` | Header sign-in link, shown when there is no session |
+| Account | `account-avatar` | Header initials monogram; opens the account menu (005 FR-063/064) |
+| Account | `account-avatar-pending` | Fixed-size placeholder holding the avatar's space while the session resolves |
+| Account | `account-menu` | The open dropdown panel |
+| Account | `account-menu-name`, `account-menu-email` | Identity lines in the menu (non-interactive) |
+| Account | `account-menu-settings` | Route to `/settings` |
+| Account | `account-menu-sign-out` | Opens the sign-out confirmation |
+| Account | `account-sign-out-dialog`, `account-sign-out-confirm`, `account-sign-out-cancel` | The confirmation dialog and its two actions |
+| Auth | `auth-error` | Sign-in failure message |
+| Auth | `auth-sign-in-google` | Google OAuth button |
+| Auth | `auth-email-form`, `auth-email-input`, `auth-sign-in-email` | Email OTP form, field, submit |
+| Auth | `auth-otp-sent` | Confirmation that a sign-in link was sent |
+| Settings | `settings-index` | The section index (006 FR-002) |
+| Settings | `settings-section-{id}` | Each section, `id` one of `profile`, `appearance`, `notifications`, `privacy`, `security`, `data`, `billing`, `orgs`, `studio` |
+| Settings | `settings-profile-form` | Profile form container |
+| Settings | `settings-display-name-input`, `settings-timezone-input` | Profile fields |
+| Settings | `settings-timezone-detect` | One-click fix offering the browser's IANA zone |
+| Settings | `settings-profile-save`, `settings-profile-saved`, `settings-profile-error` | Save action and its two outcomes |
+| Settings | `settings-theme-{light,dark,system}` | Theme choice chips (006 FR-032) |
+| Settings | `settings-email`, `settings-provider` | Read-only identity facts |
+| Settings | `settings-claim-flows-reopen` | Re-entry point for a dismissed claim prompt |
+| Settings | `settings-data-export` | Link to the per-flow `.krama.json` export on `/flows` |
+| Settings | `settings-orgs-list`, `settings-org-{orgId}` | Membership list, present only with ≥1 org (006 FR-003) |
+| Settings | `settings-org-new` | "Create an organization" entry point |
+| Org | `org-new-form`, `org-new-name-input`, `org-new-type-{value}`, `org-new-error`, `org-new-submit` | Organization creation |
+| Org | `org-members-list`, `org-member-row` | Roster |
+| Org | `org-invite-form`, `org-invite-email-input`, `org-invite-role-select`, `org-invite-message`, `org-invite-submit` | Invitation form |
+| Org | `invitation-accept-error` | Invitation acceptance failure |
+| Onboarding | `onboarding-claim-flows`, `onboarding-claim-flows-claim`, `onboarding-claim-flows-decline` | One-time prompt to claim flows already on this device |
 
 This table is the source of truth; when a `data-testid` in code doesn't match a row here,
 either the code or this table is wrong — fix whichever is stale, don't let them diverge.
+
+**Deliberate renames.** The `/account` stopgap became `/settings` (006 FR-001), and its
+testids moved with it: `account-page-email` → `settings-email`, `account-profile-*` →
+`settings-profile-*`, `account-display-name-input` / `account-timezone-input` /
+`account-timezone-detect` → `settings-*`, `account-orgs-list` / `account-org-{id}` /
+`account-org-new` → `settings-*`. `account-email` and `account-orgs-empty` are retired
+outright — the header email link became the avatar, and the empty-orgs case is now an
+absent section rather than an empty one. The `account-*` namespace still exists, but it
+now means the header element only.
 
 ## 2 · Beauty guardrails (operationalizing spec §10)
 

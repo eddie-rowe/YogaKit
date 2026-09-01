@@ -5,11 +5,15 @@ import { useEffect, useState } from 'react'
 import { exportKramaFile } from '@/lib/storage/krama-file'
 import { getAllFlows } from '@/lib/storage/flow-store'
 import { createClient } from '@/lib/supabase/client'
+import { CLAIM_DECISION_KEY } from '@/lib/storage/claim-decision'
 
 // Shown once per device after sign-in when local flows exist and no claim
 // decision has been recorded yet (T030, appendix §E "Migrating existing
 // local data" — never silent adoption, never silent loss).
-const CLAIM_DECISION_KEY = 'krama-claim-flows-decided'
+//
+// The key moved to @/lib/storage/claim-decision so /settings can clear it: this
+// prompt records a decision and never revisits it, which left anyone who
+// dismissed it with no way back.
 
 export default function ClaimFlowsPrompt() {
   const [visible, setVisible] = useState(false)
