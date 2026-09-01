@@ -29,8 +29,17 @@
   --font-serif: var(--font-cormorant);
 }
 
+/* Dark palette, defined once and applied from two directions (006 FR-032/033).
+   The light palette above stays on bare :root so a corrupt or unknown cookie value
+   can never land on a broken theme — it just falls through to the system default.
+
+   1. System preference, but only when the person hasn't explicitly chosen light.
+   2. An explicit data-theme="dark", which the pre-paint script in layout.tsx stamps
+      from the krama-theme cookie before first paint.
+
+   Token *values* are identical in both blocks; edit them together. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --background: #1a1612;
     --surface: #242018;
     --surface-raised: #2c2620;
@@ -43,6 +52,20 @@
     --warning-bg: #3d2f0f;
     --warning-border: #5c4a1a;
   }
+}
+
+:root[data-theme="dark"] {
+  --background: #1a1612;
+  --surface: #242018;
+  --surface-raised: #2c2620;
+  --foreground: #f5ede3;
+  --border: #3d342c;
+  --muted: #8a7d73;
+  --accent: #d8cabb;
+  --accent-foreground: #1a1612;
+  --warning: #fbbf24;
+  --warning-bg: #3d2f0f;
+  --warning-border: #5c4a1a;
 }
 
 html, body {
@@ -109,6 +132,47 @@ input[type=range] {
 }
 .kk-overlay-panel.kk-overlay-closing {
   animation: kk-scale-in var(--duration-base) var(--ease-standard) reverse;
+}
+
+/* Header account menu (Radix DropdownMenu). Enters at --duration-fast rather than
+   --duration-base: a menu anchored to the thing you just tapped shouldn't take as
+   long to arrive as a full-screen overlay. Ease only, no bounce (guardrails §2). */
+.kk-menu {
+  min-width: 13rem;
+  max-width: min(18rem, calc(100vw - 1.5rem));
+  padding: 0.25rem;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+  z-index: 30;
+  animation: kk-scale-in var(--duration-fast) var(--ease-standard);
+  transform-origin: var(--radix-dropdown-menu-content-transform-origin);
+}
+
+.kk-menu-separator {
+  height: 1px;
+  margin: 0.25rem 0;
+  background: var(--border);
+}
+
+.kk-menu-item {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  text-align: left;
+  color: var(--foreground);
+  cursor: pointer;
+  outline: none;
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+/* Radix drives both hover and keyboard focus through data-highlighted, so arrow
+   keys and the pointer land on the same visual state. */
+.kk-menu-item[data-highlighted] {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 /* Shared surfaces for the v0.1 app (Compose/Flows/Read/Home) — token-driven so dark
