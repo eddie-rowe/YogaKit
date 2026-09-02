@@ -62,3 +62,33 @@ of the four e2e failures that have been carried as "pre-existing" for three feat
 without anyone reading what they said — the failure is a real content gap on the surface a
 teacher reads from a mat, not a flaky test. Found while writing the offline read test, which
 initially copied walk4's assertion and inherited its failure. Belongs to `004` US1.
+
+2026-09-02 — The walk4 entry above is **wrong**, and the entry stands only because this log
+forbids editing old ones. The vinyasa flow has 34 items and every one carries a measure;
+`[data-testid^="read-item-"]` also matched the 19 `read-item-note-{i}` nodes, and 34 + 19 =
+53. There was never a content gap. Two lessons, and the second is the one that generalises.
+First, **no testid may be a prefix of another** — a prefix selector is a normal thing to
+write, so the note testid is now `read-note-{index}` and the rule is in
+`docs/krama-guardrails.md` §1.3. The `compose-item-*` family still violates it, which is why
+`tests/e2e-qa/walk2-compose.spec.ts:22` carries a hardcoded index list instead of a prefix
+selector; that rename belongs to `004` US4. Second, **a failing assertion is a claim about
+the test as much as about the code** — this one was carried as "pre-existing" across three
+features and then written up as a defect in the product on the strength of a count, without
+anyone asking why the count differed. Reading the flow JSON took two minutes and would have
+found it at any point in those three features.
+
+2026-09-02 — The fourth long-running e2e failure ("bottom tab bar … nav is instant") had two
+independent causes, and neither was the >200ms transition assertion the failure looked like
+it was about. **One:** Playwright's `page.screenshot()` defaults to `caret: 'hide'`, which it
+implements by writing `style="caret-color: transparent"` onto inputs. A screenshot taken
+immediately after `goto` lands *before* React hydrates, so React reports an attribute
+mismatch on `poses-search-input`, the Next dev error overlay opens full-screen, and
+`<nextjs-portal>` then intercepts every click for the rest of the test. `caret: 'initial'` is
+now on all 20 screenshot calls in `tests/e2e-qa/`. **Two:** the Next dev tools indicator
+renders at `[20, 788, 36, 36]`, which at 390×844 sits on top of the bottom tab bar's first
+tab — so in dev you also cannot tap Home by hand. `devIndicators: false` in `next.config.ts`;
+every corner collides with something on a mobile-first layout, so it is off rather than
+moved. Verified by putting it back: 1 of 2 runs failed with the caret fix already in place.
+The generalisable part: **a test-harness convenience can author a hydration error**, and a
+dev-only overlay that swallows pointer events reports itself as "element is visible, enabled
+and stable" followed by 58 silent retries — the symptom is nowhere near the cause.

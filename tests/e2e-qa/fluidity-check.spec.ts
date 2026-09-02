@@ -4,7 +4,14 @@ const NAV_TABS = ['nav-home', 'nav-compose', 'nav-flows', 'nav-poses', 'nav-lear
 
 test('Fluidity: bottom tab bar touch targets are >=40px and nav is instant', async ({ page }) => {
   await page.goto('/poses')
-  await page.screenshot({ path: 'qa-screenshots/fluidity-01-poses.png' })
+  // `caret: 'initial'` on every screenshot in this suite, and it is load-bearing, not
+  // cosmetic. Playwright's default is `caret: 'hide'`, which writes
+  // `style="caret-color: transparent"` onto inputs — and a screenshot taken this soon
+  // after `goto` lands before React has hydrated, so React reports an attribute
+  // mismatch on `poses-search-input`. In dev that opens the full-screen error overlay,
+  // and `<nextjs-portal>` then intercepts every click for the rest of the test. The
+  // symptom (a nav tab that will not take a click) is nowhere near the cause.
+  await page.screenshot({ caret: 'initial', path: 'qa-screenshots/fluidity-01-poses.png' })
 
   const bottomNav = page.getByRole('navigation').filter({ has: page.getByTestId('nav-home') })
 
@@ -30,26 +37,31 @@ test('Fluidity: card touch targets and expandable content on Poses', async ({ pa
   const box = await firstCard.boundingBox()
   expect(box).not.toBeNull()
   expect(box!.height).toBeGreaterThanOrEqual(40)
-  await page.screenshot({ path: 'qa-screenshots/fluidity-02-poses-cards.png' })
+  await page.screenshot({ caret: 'initial', path: 'qa-screenshots/fluidity-02-poses-cards.png' })
 })
 
 test('Fluidity: pose detail layer chips are quick to switch, no layout jank', async ({ page }) => {
   await page.goto('/poses')
   await page.getByTestId('poses-search-input').fill('mountain')
   await page.locator('[data-testid^="poses-card-"]').first().click()
-  await page.getByRole('link', { name: /view anatomy diagram/i }).click()
-  await page.waitForURL('**/poses/mountain')
+  // The chips live in PoseDetailContent, which the overlay renders directly. This
+  // walk used to hop to /poses/{slug} through a "view anatomy diagram" link; 003 US3
+  // removed that link when it folded the diagram and its legend into one view, so the
+  // overlay is now the surface these chips are actually switched on.
+  await expect(page.getByTestId('poses-overlay')).toBeVisible()
 
   const chips = ['poses-detail-layer-simple', 'poses-detail-layer-advanced', 'poses-detail-layer-expert']
   for (const chip of chips) {
+    // No `count() === 0 && continue` here: the chips are unconditional in
+    // DetailLayerChips, so skipping absent ones let this walk pass vacuously the whole
+    // time the link above it was dead.
     const locator = page.getByTestId(chip)
-    if (await locator.count() === 0) continue
     const box = await locator.boundingBox()
     expect(box).not.toBeNull()
     await locator.click()
     await page.waitForTimeout(50)
   }
-  await page.screenshot({ path: 'qa-screenshots/fluidity-03-pose-detail-chips.png' })
+  await page.screenshot({ caret: 'initial', path: 'qa-screenshots/fluidity-03-pose-detail-chips.png' })
 })
 
 test('Fluidity: no transition/animation on the page exceeds 200ms or uses spring/bounce easing', async ({ page }) => {

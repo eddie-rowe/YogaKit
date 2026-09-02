@@ -63,6 +63,7 @@ carries a `data-testid`. Naming: `{area}-{element}`, kebab-case, stable across r
 | Read | `read-phase-{phase-id}` | Phase section in the read view |
 | Read | `read-item-{index}` | Each pose entry in the read view |
 | Read | `read-breath-mark` | A breath-notation mark (↑ ↓ ~) — asserted for presence, not content |
+| Read | `read-note-{index}` | A teacher's per-item note, when present. **Not** `read-item-note-*` — see the prefix rule below |
 | Poses | `poses-search-input`, `poses-category-filter`, `poses-card-{slug}` | Unchanged from the existing Poses tab |
 | Poses | `poses-view-toggle-filter`, `poses-view-toggle-theme` | "By filter" / "By theme" view mode toggle chips |
 | Poses | `poses-theme-section-{emotion-slug}` | Theme section heading + pose list, in "By theme" view |
@@ -113,6 +114,18 @@ carries a `data-testid`. Naming: `{area}-{element}`, kebab-case, stable across r
 
 This table is the source of truth; when a `data-testid` in code doesn't match a row here,
 either the code or this table is wrong — fix whichever is stale, don't let them diverge.
+
+**No testid may be a prefix of another.** `[data-testid^="read-item-"]` is a normal thing
+to write, and it matched `read-item-note-3` as well as `read-item-3` — a walk asserting
+"every item carries a breath mark" counted 53 items where there are 34, and the failure was
+read for three features as a content gap in the flow rather than an over-match in the
+selector (see `FRICTION.md`, 2026-09-01 and the correction that follows it). That is why
+the note testid is `read-note-{index}` and not `read-item-note-{index}`. When a new testid
+would extend an existing one, give it a sibling name instead. One family still violates
+this: `compose-item-{index}` is a prefix of `compose-item-measure-*`,
+`compose-item-notes-*`, `compose-item-reorder-*`, and `compose-item-drag-handle-*`, which
+is why `tests/e2e-qa/walk2-compose.spec.ts:22` carries a hardcoded index list instead of a
+prefix selector. Renaming that family belongs to `004` US4.
 
 **Deliberate renames.** The `/account` stopgap became `/settings` (006 FR-001), and its
 testids moved with it: `account-page-email` → `settings-email`, `account-profile-*` →
