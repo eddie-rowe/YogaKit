@@ -22,6 +22,11 @@ export default defineConfig({
         // be a tested claim rather than an asserted one — an untested reporter would put
         // us back where we started with a different file name.
         'scripts/lib/tier1-report.mjs',
+        // 009 US1: the copy-lint's matching logic. Same argument as above, with more
+        // force — this module is the mechanism behind a constitutional rule (RULE-C5),
+        // and a voice gate nobody has tested is exactly the kind of check that quietly
+        // stops matching and lets the thing it guards through.
+        'scripts/lib/copy-lint.mjs',
       ],
       // One threshold for all three files. The plan allowed the new module its own,
       // lower number; it turned out not to need one — a pure function over parsed JSON

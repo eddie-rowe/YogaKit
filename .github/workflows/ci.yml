@@ -26,6 +26,12 @@ jobs:
       - name: Lint
         run: npx next lint --dir src || true
 
+      # Blocking, and deliberately with no `|| true` — unlike the step above it, which
+      # 007 owns. RULE-C5 says the copy-lint gates the build; a copy-lint that cannot
+      # fail is a claim, not a gate. See VOICE.md §6 for what it does not cover.
+      - name: Copy-lint (voice)
+        run: npm run lint:copy
+
       - name: Validate pose library
         run: npm run validate:poses
 

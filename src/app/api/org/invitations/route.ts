@@ -55,13 +55,16 @@ export async function POST(request: NextRequest) {
   const acceptUrl = new URL('/org/invitations/accept', request.url)
   acceptUrl.searchParams.set('token', raw_token)
 
+  // copy-lint-ignore-next-line VOICE-COUNTDOWN — states a security token's actual lifetime, not a practice countdown; the link genuinely stops working and saying so is the honest thing
+  const expiryNote = '<p>This link expires in 7 days.</p>'
+
   try {
     await sendEmail({
       to: email,
       subject: `You're invited to join ${org?.name ?? 'an organization'} on Krama`,
       html: `<p>You've been invited to join <strong>${org?.name ?? 'an organization'}</strong> on Krama.</p>
 <p><a href="${acceptUrl.toString()}">Accept the invitation</a></p>
-<p>This link expires in 7 days.</p>`,
+${expiryNote}`,
     })
   } catch (err) {
     logger.error('org.invitation.email_failed', {
