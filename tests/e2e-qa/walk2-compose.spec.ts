@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test'
 test('Walk 2: Build a short class from scratch', async ({ page }) => {
   await page.goto('/compose')
   await page.waitForSelector('[data-testid="compose-search-input"]')
-  await page.screenshot({ path: 'qa-screenshots/05-compose-empty.png' })
+  await page.screenshot({ caret: 'initial', path: 'qa-screenshots/05-compose-empty.png' })
 
   async function addPose(query: string) {
     await page.getByTestId('compose-search-input').fill(query)
@@ -17,7 +17,7 @@ test('Walk 2: Build a short class from scratch', async ({ page }) => {
   await addPose('mountain')
   await addPose('down dog')
   await addPose('savasana')
-  await page.screenshot({ path: 'qa-screenshots/06-compose-items-added.png' })
+  await page.screenshot({ caret: 'initial', path: 'qa-screenshots/06-compose-items-added.png' })
 
   const items = page.locator('[data-testid^="compose-item-"][data-testid*="compose-item-0"], [data-testid="compose-item-0"], [data-testid="compose-item-1"], [data-testid="compose-item-2"]')
   await expect(page.getByTestId('compose-item-0')).toBeVisible()
@@ -48,7 +48,7 @@ test('Walk 2: Build a short class from scratch', async ({ page }) => {
   // reorder by button: move item 2 (savasana) up
   await page.getByTestId('compose-item-reorder-up-2').click()
   await page.waitForTimeout(150)
-  await page.screenshot({ path: 'qa-screenshots/07-compose-reordered.png' })
+  await page.screenshot({ caret: 'initial', path: 'qa-screenshots/07-compose-reordered.png' })
 
   // re-fetch total after reorder to confirm it recalculates/stays live
   const totalText2 = await page.getByTestId('compose-total-duration').innerText()
@@ -62,7 +62,7 @@ test('Walk 2: Build a short class from scratch', async ({ page }) => {
 
   // Now end the flow on a non-stillness pose to trigger validator note — actually savasana
   // was moved earlier; check for validator warnings appearing (amber note)
-  await page.screenshot({ path: 'qa-screenshots/08-compose-with-stillness.png' })
+  await page.screenshot({ caret: 'initial', path: 'qa-screenshots/08-compose-with-stillness.png' })
 
   const warnings = page.locator('[data-testid^="validator-warning-"]')
   const warningCount = await warnings.count()
@@ -74,7 +74,7 @@ test('Walk 2: Build a short class from scratch', async ({ page }) => {
   const warnings2 = page.locator('[data-testid^="validator-warning-"]')
   const warningCount2 = await warnings2.count()
   console.log('warning count after ending on non-stillness pose:', warningCount2)
-  await page.screenshot({ path: 'qa-screenshots/09-compose-validator-warning.png' })
+  await page.screenshot({ caret: 'initial', path: 'qa-screenshots/09-compose-validator-warning.png' })
   expect(warningCount2).toBeGreaterThan(0)
 
   // Save should not be blocked

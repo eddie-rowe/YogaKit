@@ -5,7 +5,7 @@ test('Walk 1: Meet the poses', async ({ page }) => {
   await expect(page.getByTestId('poses-search-input')).toBeVisible()
   const cards = page.locator('[data-testid^="poses-card-"]')
   await expect(cards.first()).toBeVisible()
-  await page.screenshot({ path: 'qa-screenshots/01-poses-list.png' })
+  await page.screenshot({ caret: 'initial', path: 'qa-screenshots/01-poses-list.png' })
 
   // open a pose commonly taught
   await page.getByTestId('poses-search-input').fill('butterfly')
@@ -21,7 +21,7 @@ test('Walk 1: Meet the poses', async ({ page }) => {
     await page.goto('/poses/butterfly')
   }
   await page.waitForURL(/\/poses\//)
-  await page.screenshot({ path: 'qa-screenshots/02-pose-detail-simple.png' })
+  await page.screenshot({ caret: 'initial', path: 'qa-screenshots/02-pose-detail-simple.png' })
 
   // chips exist
   const simple = page.getByTestId('poses-detail-layer-simple')
@@ -35,13 +35,13 @@ test('Walk 1: Meet the poses', async ({ page }) => {
   await advanced.click()
   await page.waitForTimeout(250)
   const bodyTextAdvanced = await page.locator('body').innerText()
-  await page.screenshot({ path: 'qa-screenshots/03-pose-detail-advanced.png' })
+  await page.screenshot({ caret: 'initial', path: 'qa-screenshots/03-pose-detail-advanced.png' })
   expect(bodyTextAdvanced).not.toEqual(bodyTextSimple)
 
   await expert.click()
   await page.waitForTimeout(250)
   const bodyTextExpert = await page.locator('body').innerText()
-  await page.screenshot({ path: 'qa-screenshots/04-pose-detail-expert.png' })
+  await page.screenshot({ caret: 'initial', path: 'qa-screenshots/04-pose-detail-expert.png' })
   expect(bodyTextExpert).not.toEqual(bodyTextAdvanced)
 
   // rarely-taught pose

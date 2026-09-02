@@ -32,7 +32,7 @@ test('Walk 4: Teach from it (read view legibility at mat viewport)', async ({ pa
   )
   expect(firstNameFontSize).toBeGreaterThanOrEqual(20)
 
-  await page.screenshot({ path: 'qa-screenshots/w4-01-read-top.png', fullPage: false })
+  await page.screenshot({ caret: 'initial', path: 'qa-screenshots/w4-01-read-top.png', fullPage: false })
 
   // Scroll through ~10 min worth of the sequence and confirm no jank / horizontal overflow
   const bodyScrollWidth = await page.evaluate(() => document.documentElement.scrollWidth)
@@ -41,9 +41,9 @@ test('Walk 4: Teach from it (read view legibility at mat viewport)', async ({ pa
 
   await page.mouse.wheel(0, 1200)
   await page.waitForTimeout(200)
-  await page.screenshot({ path: 'qa-screenshots/w4-02-read-scrolled.png', fullPage: false })
+  await page.screenshot({ caret: 'initial', path: 'qa-screenshots/w4-02-read-scrolled.png', fullPage: false })
 
   await page.mouse.wheel(0, 1200)
   await page.waitForTimeout(200)
-  await page.screenshot({ path: 'qa-screenshots/w4-03-read-scrolled-more.png', fullPage: false })
+  await page.screenshot({ caret: 'initial', path: 'qa-screenshots/w4-03-read-scrolled-more.png', fullPage: false })
 })

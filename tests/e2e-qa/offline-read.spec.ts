@@ -58,10 +58,9 @@ test('the 6am test: a flow read once opens offline, and is interactive', async (
   await expect(page.locator('[data-testid^="read-item-"]').first()).toBeVisible()
 
   // The online baseline. Offline should render exactly this, whatever it is —
-  // deliberately not a fixed number and not "every item has a breath mark",
-  // because that invariant is currently false online too (53 items, 34 marks) and
-  // belongs to walk4-read.spec.ts, which is where it already fails. Asserting it
-  // here would make an offline regression indistinguishable from that one.
+  // deliberately not a fixed number and not "every item has a breath mark". That
+  // invariant belongs to walk4-read.spec.ts; asserting it here too would make an
+  // offline regression indistinguishable from a content regression.
   const online = await countRendered(page)
   expect(online.items).toBeGreaterThan(10)
 

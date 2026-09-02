@@ -147,7 +147,7 @@ export default function ReadView({ flow, poses }: Props) {
                     </div>
                     {item.note && (
                       <p
-                        data-testid={`read-item-note-${globalIndex}`}
+                        data-testid={`read-note-${globalIndex}`}
                         className="text-sm mt-1"
                         style={{ color: 'var(--muted)' }}
                       >
