@@ -341,3 +341,71 @@ ribs" are real cues a teacher gives**. A voice check that flags correct teaching
 gets bypassed, and a bypassed check is worse than a narrow one. And the em-dash ban from
 `docs/BEST_PRACTICES_FROM_NEXTMOVE.md` is **not** adopted — that rule belongs to a briefing
 voice; this product speaks out loud, and an em dash is how a spoken aside sounds.
+
+---
+
+## 2026-09-03 — FR-001's breath glyphs describe a transition, so they belong on the seam
+
+**Context:** `docs/krama-v0.1-spec.md:141` mandates "breath notation as marks (↑ ↓ ~), never
+paragraphs"; `docs/krama-guardrails.md:65` already claims `read-breath-mark` carries those
+glyphs; `docs/design-research/09-mat-side-read-view.md:46` calls the text rendering the
+single highest-priority quick win in the corpus; and `004` FR-001/SC-001 require it. The
+code does none of it: `FlowItem` has no breath-cue field, only `measure`, and `breathMark()`
+renders that measure as text.
+
+**Decision:** Satisfy FR-001 by rendering the authored duration in compressed, scannable
+notation with the count dominant, and fix the contrast and size of that rendering. Do not
+render ↑ ↓ ~. Defer an authored inhale/exhale cue to its own story, and put it on the
+**seam** — the boundary between two adjacent items — not on the item.
+
+**Why:** The glyphs mean inhale, exhale, free breath. That vocabulary describes movement
+*between* two shapes, not a hold; a yin hold is timed and has no inhale to mark. So the
+missing field is not an oversight in the data model — the spec put it on the wrong entity,
+and FR-042 already mandates the right one for every adjacent pair. And research 09 contains
+the evidence against its own prescription: line 53, writing up the 6am test, names the real
+failure as breath-mark text rendering "too low-contrast or too small in a genuinely dark
+room." That is a contrast finding, not a text-versus-glyph one. At low brightness a glyph the
+reader has to learn is strictly worse than a word they can read — the number is the
+actionable datum, and an unfamiliar symbol costs a pause. Full argument in
+`specs/004-sequencing-composer/research.md` §1.
+
+---
+
+## 2026-09-03 — `claimed_flows` is kept as a write-once audit trail
+
+**Context:** `supabase/migrations/20260826224207_claimed_flows.sql` hands its own fate to
+`004`: read `payload` to build the normalized rows, then "retire this table or keep it as an
+audit trail — that decision belongs to 004, not here."
+
+**Decision:** Keep it. The claim path writes normalized `flows` rows in addition to the
+payload snapshot, a one-time backfill materializes rows for existing records, and nothing
+reads `payload` after that.
+
+**Why:** A claimed flow is a teacher's irreplaceable work arriving from a store the server
+has never seen, and the shred from one jsonb blob into four tables is the riskiest write in
+`004` — run exactly once per flow. Keeping the source snapshot makes a bad backfill
+re-runnable; retiring the table makes it unrecoverable. The cost is one dormant table nobody
+queries. What the decision does forbid is ambiguity: after the `004` schema lands, a flow
+lives in `flows`/`phases`/`flow_items`, and `claimed_flows` is provenance only.
+
+---
+
+## 2026-09-03 — The author boundary is a table split, not a filtered column
+
+**Context:** An earlier draft of the `004` approach proposed enforcing `FR-022` — author-only
+notes excluded from anything crossing to a recipient — with "a view without a `note` column
+plus column grants."
+
+**Decision:** `FlowItem.note` does not become a column on `flow_items`. It becomes a row in
+`flow_item_notes`, a table with no org, cohort, role, or visibility column, whose only policy
+is `user_id = (select auth.uid())`. This supersedes the column-grant idea, which was never
+built.
+
+**Why:** `docs/design/002-schema.md` §B had already worked it out: RLS is row-level and
+Postgres column grants are role-level, so a grant that hides the note from a colleague hides
+it from its author too — both are `authenticated`. And SC-009 asks a reviewer to confirm the
+exclusion from the schema and query alone; a query over `flows → phases → flow_items` cannot
+return a note because those tables have no column holding one. That is a property of the
+query's shape rather than of a condition someone remembered to write. `003` reached the same
+place independently for `pose_notes`. Contract:
+`specs/004-sequencing-composer/contracts/flow-sharing.md`.
