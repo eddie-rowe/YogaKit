@@ -409,3 +409,29 @@ return a note because those tables have no column holding one. That is a propert
 query's shape rather than of a condition someone remembered to write. `003` reached the same
 place independently for `pose_notes`. Contract:
 `specs/004-sequencing-composer/contracts/flow-sharing.md`.
+
+## 2026-09-03 — The `flow_item_notes` write policies check flow ownership, not just the caller
+
+`flow_item_notes.flow_item_id` is the primary key, which makes the row's identity guessable
+by anyone who has seen a shared flow. An insert policy of the canonical shape —
+`user_id = (select auth.uid())` and nothing more — would have let a second account insert a
+note row against another teacher's item id, and the primary key would then have locked the
+real owner out of writing a note on their own placement. Not a read leak (the SELECT policy
+is still the caller alone, so neither party can read the other's row), but a denial of
+service against the author's own work.
+
+The insert and update policies therefore also require that the item belongs to a flow the
+caller owns. That predicate reaches `flows.user_id` — still the caller, still nothing
+joinable to an org, cohort, or role — so the Principle VIII guarantee is unchanged. What
+changed is the wording of invariant I2 in `contracts/flow-sharing.md`, from "each
+`user_id = (select auth.uid())`" to "keyed on the caller alone", with the SELECT policy
+still asserted as the literal expression.
+
+## 2026-09-03 — The claimed-flows backfill shreds inline instead of calling `app_save_flow`
+
+`app_save_flow` is `SECURITY INVOKER` precisely so RLS applies inside it, which means it
+takes the owner from `auth.uid()`. In a migration there is no `auth.uid()`. Rather than
+weaken the function — a `p_user_id` parameter, or `SECURITY DEFINER` — the one-time backfill
+in `20260903091000_backfill_claimed_flows.sql` repeats the shred and takes the owner from
+`claimed_flows.user_id`. Duplicated SQL in a migration that runs once is cheaper than a
+permanent hole in the function every authenticated session calls.

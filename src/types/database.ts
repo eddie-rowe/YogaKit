@@ -206,6 +206,116 @@ export type Database = {
           },
         ]
       }
+      flow_item_notes: {
+        Row: {
+          flow_item_id: string
+          note: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          flow_item_id: string
+          note: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          flow_item_id?: string
+          note?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flow_item_notes_flow_item_id_fkey"
+            columns: ["flow_item_id"]
+            isOneToOne: true
+            referencedRelation: "flow_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      flow_items: {
+        Row: {
+          flow_id: string
+          id: string
+          measure_breaths: number | null
+          measure_seconds: number | null
+          mode: string
+          phase_id: string | null
+          pose_slug: string
+          position: number
+        }
+        Insert: {
+          flow_id: string
+          id: string
+          measure_breaths?: number | null
+          measure_seconds?: number | null
+          mode: string
+          phase_id?: string | null
+          pose_slug: string
+          position: number
+        }
+        Update: {
+          flow_id?: string
+          id?: string
+          measure_breaths?: number | null
+          measure_seconds?: number | null
+          mode?: string
+          phase_id?: string | null
+          pose_slug?: string
+          position?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flow_items_flow_id_fkey"
+            columns: ["flow_id"]
+            isOneToOne: false
+            referencedRelation: "flows"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "flow_items_phase_id_fkey"
+            columns: ["phase_id"]
+            isOneToOne: false
+            referencedRelation: "phases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      flows: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          id: string
+          schema_version: string
+          synced_at: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at: string
+          deleted_at?: string | null
+          id: string
+          schema_version: string
+          synced_at?: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          schema_version?: string
+          synced_at?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       integration_connections: {
         Row: {
           created_at: string
@@ -365,6 +475,38 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      phases: {
+        Row: {
+          flow_id: string
+          id: string
+          intent_tag: string
+          name: string
+          position: number
+        }
+        Insert: {
+          flow_id: string
+          id: string
+          intent_tag: string
+          name: string
+          position: number
+        }
+        Update: {
+          flow_id?: string
+          id?: string
+          intent_tag?: string
+          name?: string
+          position?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "phases_flow_id_fkey"
+            columns: ["flow_id"]
+            isOneToOne: false
+            referencedRelation: "flows"
             referencedColumns: ["id"]
           },
         ]
@@ -597,6 +739,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      app_delete_flow: { Args: { flow_id: string }; Returns: undefined }
       app_entitlements: { Args: { user_id: string }; Returns: Json }
       app_grant_ytt_completion: {
         Args: { cohort_id: string; user_id: string }
@@ -644,6 +787,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      app_save_flow: { Args: { payload: Json }; Returns: undefined }
       app_set_membership_roles: {
         Args: { membership_id: string; new_roles: string[] }
         Returns: {
