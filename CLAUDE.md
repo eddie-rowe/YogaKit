@@ -3,7 +3,7 @@
 <!-- SPECKIT START -->
 `docs/krama-v0.1-spec.md` is the historical, human-facing spec for the original
 local-first v0.1 product — it is superseded (not deleted) by the v1.0 platform pivot.
-For the current plan, read: `specs/003-pose-library/plan.md`
+For the current plan, read: `specs/004-sequencing-composer/plan.md`
 
 The v1.0 platform pivot (multi-tenant, authenticated, billed) ships as five product
 features, in dependency order: `002-auth-tenancy-billing` → `003-pose-library` →
@@ -15,9 +15,9 @@ Three further features carry the operating patterns ported from
 `docs/BEST_PRACTICES_FROM_NEXTMOVE.md`, and are not part of the product ladder above:
 `007-autonomous-operations` (headless-session done-gates and work consumption),
 `008-observability-as-code` (monitors/SLOs as version-controlled manifests), and
-`009-voice-and-copy-lint` (the RULE-C5 copy-lint, which has no implementation yet).
-**`009` is a hard prerequisite for `005`** — every string in Daily Sadhana is subject to a
-copy-lint that must be CI-gating before that feature can honestly ship.
+`009-voice-and-copy-lint` (the RULE-C5 copy-lint). **`009` US1/US2 shipped in `448ee6a`**:
+`npm run lint:copy` is a blocking CI job, which clears the hard prerequisite it held over
+`005`. `009` US3 (operational-writing checks, P2) is still open.
 
 Key artifacts:
 - Constitution (non-negotiables):       `.specify/memory/constitution.md` (v3.0.0)
@@ -32,6 +32,10 @@ Key artifacts:
   `specs/003-pose-library/plan.md`, `specs/003-pose-library/tasks.md`
 - 003 copy awaiting sign-off:            `specs/003-pose-library/contracts/theme-taxonomy.md`,
   `specs/003-pose-library/contracts/score-explanation.md`
+- 004 spec + plan (sequencing composer):  `specs/004-sequencing-composer/spec.md`,
+  `specs/004-sequencing-composer/plan.md`, `specs/004-sequencing-composer/research.md`,
+  `specs/004-sequencing-composer/data-model.md`, `specs/004-sequencing-composer/tasks.md`
+- 004 author-boundary contract:           `specs/004-sequencing-composer/contracts/flow-sharing.md`
 - UX design research (21 reports):      `docs/design-research/README.md`
 - Per-feature staged UX decisions:      `specs/00{3,4,5,6}-*/design-input.md`
 - Voice standard (product + ops copy): `VOICE.md` — the authority the copy-lint encodes;
