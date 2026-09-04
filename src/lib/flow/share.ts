@@ -25,6 +25,12 @@ import type { Flow } from './types'
 export function stripAuthorOnly(flow: Flow): Flow {
   return {
     ...flow,
-    items: flow.items.map(({ note, ...rest }) => rest),
+    items: flow.items.map(item => {
+      // `delete` rather than a destructured omit: the omit leaves an unused binding,
+      // and the lint config counts it (29 problems is a ceiling this may not raise).
+      const copy = { ...item }
+      delete copy.note
+      return copy
+    }),
   }
 }

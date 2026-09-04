@@ -150,23 +150,42 @@ Met: **20 pass / 0 fail** (`tests/e2e-qa/offline-edit.spec.ts` is the new walk),
 recipient can obtain by each of the three routes in `contracts/flow-sharing.md` for the
 absence of those fields.
 
-- [ ] T030 [US3] Migration `<ts>_flow_sharing.sql` — `flows.shared_org_id`, its index, and the
+- [X] T030 [US3] Migration `<ts>_flow_sharing.sql` — `flows.shared_org_id`, its index, and the
   org-member read policies on `flows`, `phases`, `flow_items`. **Nothing on
   `flow_item_notes`**
-- [ ] T031 [US3] Append the I3–I7 assertions to `scripts/verify-migrations.sh`: two accounts,
+- [X] T031 [US3] Append the I3–I7 assertions to `scripts/verify-migrations.sh`: two accounts,
   one org, the admin case included
-- [ ] T032 [US3] Regenerate `src/types/database.ts`
-- [ ] T033 [US3] The share surface: set and revoke `shared_org_id`, and the org-visible list
-- [ ] T034 [US3] One-click duplicate — read the shared structure, `app_save_flow` under new
+- [X] T032 [US3] Regenerate `src/types/database.ts`
+- [X] T033 [US3] The share surface: set and revoke `shared_org_id`, and the org-visible list
+- [X] T034 [US3] One-click duplicate — read the shared structure, `app_save_flow` under new
   ids (FR-025). Independence in both directions falls out of that (FR-026)
-- [ ] T035 [P] [US3] `src/lib/flow/share.ts` — `stripAuthorOnly(flow)`, pure, plus I8's unit
+- [X] T035 [P] [US3] `src/lib/flow/share.ts` — `stripAuthorOnly(flow)`, pure, plus I8's unit
   tests. Wire it into the export-for-sharing path only (`data-model.md` §6)
-- [ ] T036 [P] [US3] I10: an item whose `pose_slug` no longer resolves renders legibly rather
+- [X] T036 [P] [US3] I10: an item whose `pose_slug` no longer resolves renders legibly rather
   than failing the flow (FR-031)
 - [ ] T037 [US3] Sharing and revoke copy, through the copy-lint, stating that existing
   duplicates are unaffected (FR-032) **[OWNER SIGN-OFF]**
 
-**Gate**: every row of the invariant table in `contracts/flow-sharing.md` proven.
+**Gate**: every row of the invariant table in `contracts/flow-sharing.md` proven. ✅ **met**
+— I1–I7 and I9 against real Postgres in `scripts/verify-migrations.sh` (the `004 US3`
+section), I8 in `tests/unit/flow/share.test.ts`, I10 in
+`tests/unit/flow/unresolved-pose.test.tsx`. SC-009 is enforced from the client side by
+`tests/unit/architecture/notes-table-unreferenced.test.ts`, which walks all of `src/`.
+
+Two deviations from `data-model.md` §4, both because writing the policy as specified left a
+hole, and both asserted:
+
+- The shared read policies also require `deleted_at is null`. Without it a flow its author
+  had deleted stayed in the organization's list — soft delete is a replication requirement
+  (C1), so the recipient's view has to filter what the owner's view must not.
+- `flows_insert_own` / `flows_update_own` were **replaced**, not supplemented, so their
+  `WITH CHECK` also requires `shared_org_id is null or app_is_org_member(shared_org_id)`.
+  `user_id = auth.uid()` alone let an author publish their own flow into an organization they
+  had never belonged to. It had to go inside the existing policies: permissive policies are
+  OR'd, so a third policy would have widened the boundary it was meant to narrow.
+
+T037 remains open on the owner: the strings are drafted in `FlowShare.tsx` and
+`SharedFlowsClient.tsx` and pass `npm run lint:copy`, but the contract holds the sign-off.
 
 ---
 
