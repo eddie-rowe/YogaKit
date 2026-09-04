@@ -114,3 +114,48 @@ moved. Verified by putting it back: 1 of 2 runs failed with the caret fix alread
 The generalisable part: **a test-harness convenience can author a hydration error**, and a
 dev-only overlay that swallows pointer events reports itself as "element is visible, enabled
 and stable" followed by 58 silent retries — the symptom is nowhere near the cause.
+
+## `supabase gen types --local` fails on macOS: "client password must be a string"
+
+**2026-09-03, regenerating `src/types/database.ts` for the 004 C1 migration; resolved
+2026-09-04.** `npx supabase gen types typescript --local` starts its generator container,
+resolves the database host on the project's docker network (`Connecting to
+supabase_db_YogaKit 5432`), and then dies inside `pg-meta` with `SASL:
+SCRAM-SERVER-FIRST-MESSAGE: client password must be a string`. The container never receives
+a password, and `--debug` adds nothing but a missing `~/.supabase/profile`.
+
+Three things it is *not*, each ruled out rather than assumed. **Not authentication** — the
+CLI is logged in and linked, and `migration list --linked` works. **Not stale local state** —
+`stop --no-backup` + `rm -rf supabase/.temp` + `start` changes nothing (and costs you the
+project link, which `supabase link --project-ref` restores). **Not a regression in the
+current CLI** — 2.113.0, 2.115.0 and 2.116.0 fail identically. `--db-url` is not a way out
+either: that generator container is *not* attached to the project network, so every host
+spelling — `db`, `host.docker.internal`, the container name, with or without `--network-id` —
+fails with `getaddrinfo ENOTFOUND`.
+
+The way through, since the running stack already contains the exact generator the CLI would
+have shelled out to, is to query it over HTTP instead of through the broken hand-off. That is
+now `npm run db:types` (`scripts/db-types-local.sh`), and it produces byte-identical output —
+given two things that cost an hour between them. `included_schemas` must carry
+`graphql_public` as well as `public`, or the diff comes back with 28 deleted lines and looks
+like a regression. And the CLI appends one trailing newline the raw pg-meta response does
+not, so the script finishes with `printf '\n' >>` — otherwise the local diff is clean and CI
+fails on a single blank line, which is exactly what happened on #13.
+
+**CI is unaffected and stays on the official `--local` path.** `scripts/db-types-check.sh` is
+green on GitHub's runners, so this is a local-only shim, and repointing the check at the shim
+would mean CI no longer verifies the command a developer is told to run.
+
+2026-09-04 — The `supabase-preview` gate added in #14 passes, and gates nothing. Two
+distinct causes both surface as the same `skipped` conclusion, and only one of them is
+benign. On #14 (config change, no migration) the integration correctly had nothing to apply.
+On #13 — two new files under `supabase/migrations/`, exactly the case the gate exists for —
+it also came back `skipped`, and the check's own summary says why: *"This git branch is not
+associated with any Supabase Branch."* No preview branch was created, because **automatic
+branching is off**, so there was nothing to migrate and nothing to fail. `supabase branches
+list` shows only the default `main`. The generalisable part: **a gate that returns the same
+verdict when it is working and when it is disabled is not yet a gate**, and the first PR that
+should have exercised it is the only place that shows the difference. The job now emits a
+`::warning::` on any skip and names both causes, because the alternative — treating `skipped`
+as a hard failure — would block every PR until the setting is changed, and the setting is not
+in this repo. Cheap to have caught here; expensive to discover the day a migration is broken.
