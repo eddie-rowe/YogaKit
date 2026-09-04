@@ -24,6 +24,7 @@ import { allSearchableNames } from '@/lib/pose-library/display-name'
 import { buildFrictionMatrix } from '@/lib/friction'
 import { validateLite } from '@/lib/validator/lite'
 import { saveFlow, getFlow, getAllFlows } from '@/lib/storage/flow-store'
+import { queueUpsert } from '@/lib/storage/sync'
 import { CURRENT_SCHEMA_VERSION } from '@/lib/storage/krama-file'
 import { formatDuration, totalSeconds } from '@/lib/flow/duration'
 import ComposeFlowItem from './ComposeFlowItem'
@@ -255,6 +256,11 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
     try {
       await saveFlow(flow)
       setSaveState('saved')
+      // Enqueued only after the local write resolves. Not awaited, and its failure
+      // is not the save's failure: the flow is durable on this device either way,
+      // and `saveState` speaks for the local write alone. Signed out, this is a
+      // no-op — an anonymous teacher's work is claimed at sign-in instead.
+      void queueUpsert(flow).catch(err => console.error('Failed to queue flow for sync', err))
     } catch (err) {
       // The only copy of the teacher's work — a silent failure here (e.g. quota
       // exceeded, private-mode IndexedDB) must surface, not vanish (Phase 1).
@@ -299,6 +305,7 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
         <div className="flex items-center justify-between gap-3">
           <input
+            data-testid="compose-title-input"
             value={flow.title}
             onChange={e => updateFlow(f => ({ ...f, title: e.target.value, updatedAt: nowIso() }))}
             className="kk-input px-3 py-2 text-lg font-serif font-medium flex-1"

@@ -98,40 +98,47 @@ structural before anything writes across it. **Story: US2 (foundation), US3 (pre
 **Independent test**: Edit a flow with `context.setOffline(true)`, reload still offline,
 confirm the edit survived, go online, confirm it flushed with no user action.
 
-- [ ] T017 [US2] `src/lib/storage/flow-store.ts` — bump `DB_VERSION` to 2, add the `outbox`
+- [X] T017 [US2] `src/lib/storage/flow-store.ts` — bump `DB_VERSION` to 2, add the `outbox`
   store keyed on `flowId`. The upgrade must leave existing `flows` records untouched
-- [ ] T018 [US2] `src/lib/storage/outbox.ts` — `OutboxEntry` per `data-model.md` §5, and the
+  — *done in `src/lib/storage/db.ts` instead: `flow-store` reads the outbox and the outbox
+  opens the same database, so the connection had to leave both. See `DECISIONS.md`*
+- [X] T018 [US2] `src/lib/storage/outbox.ts` — `OutboxEntry` per `data-model.md` §5, and the
   queue operations. One entry per flow, replaced on each write
-- [ ] T019 [P] [US2] Unit tests for the queue: replacement collapses two writes to one entry
+- [X] T019 [P] [US2] Unit tests for the queue: replacement collapses two writes to one entry
   (FR-017); a rejection moves an entry to `dead` and stops retries (FR-016); `attempts`
   distinguishes "not yet" from "never"
-- [ ] T020 [US2] `src/lib/storage/sync.ts` — flush orchestration. One `app_save_flow` per
+- [X] T020 [US2] `src/lib/storage/sync.ts` — flush orchestration. One `app_save_flow` per
   queued entry, then delete the entry. Triggers: `online`, `visibilitychange`, 60s interval.
   Authenticated sessions only (`research.md` §7)
-- [ ] T021 [US2] Derive `SyncState` from the outbox on read rather than writing it twice
+- [X] T021 [US2] Derive `SyncState` from the outbox on read rather than writing it twice
   (`data-model.md` §5). `saveFlow`'s signature keeps its default so existing callers are
   unaffected
-- [ ] T022 [US2] `src/app/compose/ComposeClient.tsx` — `handleSave` enqueues after the local
+- [X] T022 [US2] `src/app/compose/ComposeClient.tsx` — `handleSave` enqueues after the local
   write succeeds, never before. An edit that could not be recorded durably is not reported as
   saved (FR-008)
-- [ ] T023 [US2] `src/components/layout/SyncLabel.tsx` + mount in `AppHeader.tsx` — one small
+- [X] T023 [US2] `src/components/layout/SyncLabel.tsx` + mount in `AppHeader.tsx` — one small
   label, no hue (guardrails §2: a sync label is chrome), nothing rendered when settled
   (FR-011), no visible polling (FR-013)
-- [ ] T024 [US2] FR-015's single non-blocking banner with a manual retry on a `dead` entry. No
+- [X] T024 [US2] FR-015's single non-blocking banner with a manual retry on a `dead` entry. No
   automatic retry loop behind it
-- [ ] T025 [US2] Sign-out sweep: drop outbox entries whose flow is `synced`, alongside the
+- [X] T025 [US2] Sign-out sweep: drop outbox entries whose flow is `synced`, alongside the
   existing `clearSyncedFlows()`. Do not touch entries for locally-authored flows
   (`research.md` §3)
-- [ ] T026 [P] [US2] `npm run lint:copy` over every new string on this path. A sync-failure
+  — *done as `clearOutbox()`, which empties the queue rather than picking a subset: every
+  entry belonged to the session that just ended, and an entry removes no flow. See
+  `DECISIONS.md`*
+- [X] T026 [P] [US2] `npm run lint:copy` over every new string on this path. A sync-failure
   notice is where urgency vocabulary creeps in
-- [ ] T027 [P] [US2] SC-013: a Vitest test walking the transitive static import graph of
+- [X] T027 [P] [US2] SC-013: a Vitest test walking the transitive static import graph of
   `src/lib/friction/` and `src/lib/validator/`, failing on any resolution into
   `src/lib/supabase/`, `@supabase/*`, `src/lib/storage/`, or a bare `fetch`
-- [ ] T028 [US2] Playwright: the offline-edit walk described in the independent test above
-- [ ] T029 [US2] Confirm `tests/e2e-qa/offline-read.spec.ts` passes **unmodified**. A read must
+- [X] T028 [US2] Playwright: the offline-edit walk described in the independent test above
+- [X] T029 [US2] Confirm `tests/e2e-qa/offline-read.spec.ts` passes **unmodified**. A read must
   never wait on sync state (FR-014). If it needed a change, the design is wrong
 
 **Gate**: 19 pass / 0 fail plus the new walk; `offline-read.spec.ts` untouched in the diff.
+Met: **20 pass / 0 fail** (`tests/e2e-qa/offline-edit.spec.ts` is the new walk), and
+`git diff --stat -- tests/e2e-qa/offline-read.spec.ts` is empty.
 
 ---
 
