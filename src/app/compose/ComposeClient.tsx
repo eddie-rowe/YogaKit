@@ -19,7 +19,7 @@ import {
 import type { Pose } from '@/lib/pose-types'
 import type { Flow, FlowItem, LayerName, Phase } from '@/lib/flow/types'
 import { isStillnessNode } from '@/lib/flow/types'
-import { resolveDisplayName } from '@/lib/pose-library/display-name'
+import { resolveDisplayName, resolveItemName } from '@/lib/pose-library/display-name'
 import { allSearchableNames } from '@/lib/pose-library/display-name'
 import { buildFrictionMatrix } from '@/lib/friction'
 import { validateLite } from '@/lib/validator/lite'
@@ -461,7 +461,7 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
                   <option value="">Assign item…</option>
                   {sortedItems.map((item, idx) => (
                     <option key={item.id} value={item.id}>
-                      {idx + 1}. {poseBySlug.get(item.poseSlug)?.english ?? item.poseSlug}
+                      {idx + 1}. {resolveItemName(poseBySlug.get(item.poseSlug), item.poseSlug)}
                     </option>
                   ))}
                 </select>
