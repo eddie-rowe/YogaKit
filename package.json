@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test --config=playwright.config.qa.ts",
-    "validate:poses": "node scripts/validate-poses.mjs"
+    "validate:poses": "node scripts/validate-poses.mjs",
+    "db:types": "bash scripts/db-types-local.sh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.105.0",

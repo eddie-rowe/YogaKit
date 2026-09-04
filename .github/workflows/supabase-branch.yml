@@ -1,0 +1,60 @@
+name: Supabase branch
+
+# Makes the Supabase platform's migration result gate the merge.
+#
+# Branching is enabled on the `yogakit` project, so the migrations in supabase/migrations
+# are applied by Supabase itself — to a preview branch on every pull request, and to
+# production when this repo's `main` is pushed. That is why there is no `supabase db push`
+# job anywhere in this repo: the "Managing environments" guide's push workflow is the
+# alternative for repos *without* the GitHub integration, and running both would race two
+# writers against one schema_migrations table.
+#
+# What the platform does not do is fail the pull request. It publishes its result as a
+# Check Run named "Supabase Preview", which is advisory. This job waits for that check and
+# adopts its verdict, so a migration that will not apply cannot be merged.
+#
+# Marking "Supabase Preview" itself as a required status check is the trap this wrapper
+# exists to avoid: with the integration's "Supabase changes only" option on, the check never
+# posts for a pull request that touches nothing under supabase/, and such a pull request
+# would then be unmergeable forever. The `paths` filter below is the same condition, so this
+# job simply does not run on those.
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths:
+      - 'supabase/**'
+
+jobs:
+  supabase-preview:
+    runs-on: ubuntu-latest
+    steps:
+      # Community action, but the one Supabase's own branching docs specify, pinned to the
+      # version they name.
+      - uses: fountainhead/action-wait-for-check@v1.2.0
+        id: check
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          checkName: Supabase Preview
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          # The platform clones the base project, applies every migration from scratch, and
+          # seeds — several minutes on a cold start. The action's 600s default has been
+          # observed to expire first.
+          timeoutSeconds: 1800
+          intervalSeconds: 20
+
+      # `timed_out` is treated as a failure on purpose. A gate that cannot tell you whether
+      # the migrations applied is not a gate, and the cost of being wrong in each direction
+      # is not symmetric: a false block costs a re-run, a false pass costs a broken
+      # production deploy. The known cause of a spurious timeout is the platform skipping
+      # branch creation for a pull request, which re-running this job resolves.
+      - name: Fail if the preview branch could not be built
+        if: steps.check.outputs.conclusion != 'success'
+        run: |
+          echo "Supabase Preview concluded: ${{ steps.check.outputs.conclusion }}" >&2
+          echo >&2
+          echo "'failure' almost always means a migration in supabase/migrations does not" >&2
+          echo "apply cleanly from empty — open the Supabase Preview check for the SQL" >&2
+          echo "error. 'timed_out' more often means no preview branch was created for this" >&2
+          echo "pull request; re-run this job." >&2
+          exit 1

@@ -114,3 +114,23 @@ moved. Verified by putting it back: 1 of 2 runs failed with the caret fix alread
 The generalisable part: **a test-harness convenience can author a hydration error**, and a
 dev-only overlay that swallows pointer events reports itself as "element is visible, enabled
 and stable" followed by 58 silent retries — the symptom is nowhere near the cause.
+
+2026-09-04 — `supabase gen types typescript --local` fails on macOS with `Error: SASL:
+SCRAM-SERVER-FIRST-MESSAGE: client password must be a string`, and the CLI is not the thing
+to fix. The CLI runs the generator in an ephemeral `postgres-meta` container; the container
+resolves the database host fine (`Connecting to supabase_db_YogaKit 5432`) and then never
+receives a password. `--debug` adds nothing but a missing `~/.supabase/profile`. Ruled out,
+in order: authentication (the CLI is logged in and linked — `migration list --linked`
+works), stale local state (`stop --no-backup` + `rm -rf supabase/.temp` + `start`), and a
+version regression (identical failure on 2.113.0, 2.115.0 and 2.116.0). `--db-url` is not a
+way around it: that generator container is not attached to the project network, so `db`,
+`host.docker.internal`, `supabase_db_YogaKit` and `--network-id` all give `ENOTFOUND`.
+`npm run db:types` (`scripts/db-types-local.sh`) now curls the pg-meta container the stack
+is already running, which is the same generator over HTTP instead of through the broken
+hand-off, and produces byte-identical output — given two things that cost an hour between
+them. `included_schemas` must be `public,graphql_public`; omitting the second silently drops
+28 lines. And the CLI appends a trailing newline the raw pg-meta response does not, which
+surfaced as CI failing on a one-line diff of a blank line. **CI is unaffected and stays on
+the official `--local` path** — `scripts/db-types-check.sh` is green on GitHub's runners, so
+this is a local-only shim and repointing the check at the shim would mean CI no longer
+verifies the command a developer is told to run.
