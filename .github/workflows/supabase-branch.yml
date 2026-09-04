@@ -19,11 +19,19 @@ name: Supabase branch
 # would then be unmergeable forever. The `paths` filter below is the same condition, so this
 # job simply does not run on those.
 #
-# One load-bearing setting lives in the Supabase dashboard and is invisible from this repo:
-# Integrations -> GitHub -> "Deploy to production". With it off, merging to `main` applies
-# nothing and this whole file gates a deploy that never happens. Confirmed **on** by the repo
-# owner, 2026-09-04. If migrations ever stop reaching production, check that before anything
-# in here.
+# Two load-bearing settings live in the Supabase dashboard and are invisible from this repo.
+#
+#   "Deploy to production" — with it off, merging to `main` applies nothing and this whole
+#   file gates a deploy that never happens. Confirmed **on** by the repo owner, 2026-09-04.
+#
+#   "Automatic branching" — with it off, no preview branch is created for a pull request, so
+#   the platform has nothing to migrate and publishes `skipped`. Observed **off** on
+#   2026-09-04: pull request #13 changed two files under supabase/migrations/ and the check
+#   came back skipped with "This git branch is not associated with any Supabase Branch."
+#   Until it is turned on, this job passes everything and gates nothing.
+#
+# If migrations stop reaching production, or this job goes quiet on a pull request that
+# clearly changes schema, check those two before anything in here.
 
 on:
   pull_request:
@@ -69,8 +77,12 @@ jobs:
               echo "Migrations applied to the preview branch."
               ;;
             skipped)
-              echo "The integration found nothing to apply on this pull request." >&2
-              echo "Expected when supabase/ changed but supabase/migrations/ did not." >&2
+              echo "::warning::Supabase Preview was skipped — this job gated nothing." >&2
+              echo "Two causes, and they are not equally benign:" >&2
+              echo "  1. supabase/ changed but supabase/migrations/ did not. Expected." >&2
+              echo "  2. No preview branch exists, so there was nothing to migrate." >&2
+              echo "     Check 'Automatic branching' in the Supabase GitHub integration." >&2
+              echo "The check's own summary on the commit distinguishes them." >&2
               ;;
             failure)
               echo "A migration in supabase/migrations does not apply cleanly from" >&2

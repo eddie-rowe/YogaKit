@@ -145,3 +145,17 @@ fails on a single blank line, which is exactly what happened on #13.
 **CI is unaffected and stays on the official `--local` path.** `scripts/db-types-check.sh` is
 green on GitHub's runners, so this is a local-only shim, and repointing the check at the shim
 would mean CI no longer verifies the command a developer is told to run.
+
+2026-09-04 — The `supabase-preview` gate added in #14 passes, and gates nothing. Two
+distinct causes both surface as the same `skipped` conclusion, and only one of them is
+benign. On #14 (config change, no migration) the integration correctly had nothing to apply.
+On #13 — two new files under `supabase/migrations/`, exactly the case the gate exists for —
+it also came back `skipped`, and the check's own summary says why: *"This git branch is not
+associated with any Supabase Branch."* No preview branch was created, because **automatic
+branching is off**, so there was nothing to migrate and nothing to fail. `supabase branches
+list` shows only the default `main`. The generalisable part: **a gate that returns the same
+verdict when it is working and when it is disabled is not yet a gate**, and the first PR that
+should have exercised it is the only place that shows the difference. The job now emits a
+`::warning::` on any skip and names both causes, because the alternative — treating `skipped`
+as a hard failure — would block every PR until the setting is changed, and the setting is not
+in this repo. Cheap to have caught here; expensive to discover the day a migration is broken.
