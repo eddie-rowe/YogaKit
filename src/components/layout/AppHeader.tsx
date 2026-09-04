@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, PenLine, ListTree, Flower2, GraduationCap } from 'lucide-react'
 import AccountMenu from './AccountMenu'
+import SyncLabel from './SyncLabel'
 
 // v0.1 five-tab nav (docs/krama-guardrails.md §1.3, spec §3). /dimensions, /sequence,
 // /sequences and /api/generate are parked for v0.2 — unlinked here, not deleted.
@@ -42,6 +43,7 @@ export default function AppHeader() {
           YogaKit
         </Link>
         <div className="flex items-center gap-1">
+          <SyncLabel />
           <nav className="hidden sm:flex items-center gap-1">
             {NAV_LINKS.map(({ href, label, testId }) => {
               const active = isActive(pathname, href)

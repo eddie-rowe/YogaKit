@@ -6,6 +6,7 @@ import type { Pose } from '@/lib/pose-types'
 import type { Flow } from '@/lib/flow/types'
 import { isStillnessNode } from '@/lib/flow/types'
 import { getFlow, deleteFlow } from '@/lib/storage/flow-store'
+import { queueDelete } from '@/lib/storage/sync'
 import { resolveDisplayName } from '@/lib/pose-library/display-name'
 import { formatDuration, formatMeasure, totalSeconds } from '@/lib/flow/duration'
 
@@ -87,6 +88,7 @@ export default function FlowDetailClient({ id, poses, builtins }: Props) {
             data-testid={`flows-delete-${flow.id}`}
             onClick={async () => {
               await deleteFlow(flow.id)
+              await queueDelete(flow.id)
               window.location.href = '/flows'
             }}
             className="text-xs px-2 py-1"

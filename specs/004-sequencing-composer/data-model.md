@@ -224,6 +224,14 @@ not a connectivity problem) stops being retried and surfaces once, via FR-015's 
 with no entry is `synced`, with a `queued` entry is `pending`, with a `dead` entry is
 `failed`. Two fields that can disagree about the same fact is the bug this avoids.
 
+> **Amended in implementation (2026-09-04).** "A flow with no entry is `synced`" is wrong,
+> and the correction is recorded in `DECISIONS.md`. The outbox is authenticated-only, so a
+> signed-out teacher never has an entry — and this rule would mark every flow they ever made
+> `synced`, at which point `clearSyncedFlows()` deletes work that has never left the device
+> (RULE-L4). `synced` therefore requires positive evidence: with no entry, the *stored*
+> field decides and defaults to `pending`; it is written `synced` by a flush the server
+> acknowledged, and by nothing else. `deriveSyncState` in `src/lib/storage/flow-store.ts`.
+
 ### Flush and sweep
 
 - Triggers: `online`, `visibilitychange`, and a 60s interval (FR-010, UX-009). Authenticated
@@ -232,6 +240,9 @@ with no entry is `synced`, with a `queued` entry is `pending`, with a `dead` ent
   increments `attempts` and records `lastError`; a rejection moves the entry to `dead`.
 - Sign-out drops entries whose flow is `synced`, alongside `clearSyncedFlows()`. Entries for
   locally-authored flows survive, because their flow does (`research.md` §3).
+  **Amended in implementation:** the whole queue is dropped. An entry removes no flow, and
+  every entry belonged to the session that just ended — leaving one would flush this
+  account's flow into the next account on a shared device. See `DECISIONS.md`.
 
 ---
 

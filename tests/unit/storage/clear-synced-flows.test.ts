@@ -1,25 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
-// idb talks to a real IndexedDB, which jsdom doesn't provide. The behaviour under
-// test is the *selection* rule — which records sign-out is allowed to destroy —
-// not the storage layer, so an in-memory store is the honest boundary here.
-const { store } = vi.hoisted(() => ({ store: new Map<string, Record<string, unknown>>() }))
+// The behaviour under test is the *selection* rule — which records sign-out is allowed to
+// destroy — not the storage engine, so `idb` is the honest boundary. The fake is
+// store-aware because `flow-store` now reads the outbox to derive a flow's sync state; a
+// single flat map would let a flow and its outbox entry overwrite each other.
+vi.mock('idb', async () => (await import('./fake-idb')).idbModuleMock)
 
-vi.mock('idb', () => ({
-  openDB: async () => ({
-    get: async (_s: string, id: string) => store.get(id),
-    getAll: async () => [...store.values()],
-    put: async (_s: string, value: Record<string, unknown>) => {
-      store.set(value.id as string, value)
-    },
-    delete: async (_s: string, id: string) => {
-      store.delete(id)
-    },
-    clear: async () => store.clear(),
-    objectStoreNames: { contains: () => true },
-  }),
-}))
-
+import { fakeIdb } from './fake-idb'
 import { clearAllFlows, clearSyncedFlows, getAllFlows, saveFlow } from '@/lib/storage/flow-store'
 import type { Flow } from '@/lib/flow/types'
 
@@ -36,7 +23,7 @@ function flow(id: string): Flow {
 }
 
 describe('clearSyncedFlows', () => {
-  beforeEach(() => store.clear())
+  beforeEach(() => fakeIdb.reset())
 
   it('drops only the flows that came from the account', async () => {
     await saveFlow(flow('from-server'), 'synced')
@@ -57,10 +44,9 @@ describe('clearSyncedFlows', () => {
   })
 
   it('is a no-op on records written before syncState existed', async () => {
-    // Legacy rows read back as `pending` via withSyncState, so signing out must
-    // not touch them. This is the RULE-L4 case: flows that worked offline before
-    // any account existed survive a sign-out.
-    store.set('legacy', { ...flow('legacy') })
+    // Legacy rows read back as `pending`, so signing out must not touch them. This is
+    // the RULE-L4 case: flows that worked offline before any account existed survive.
+    fakeIdb.raw('flows').set('legacy', { ...flow('legacy') })
 
     expect(await clearSyncedFlows()).toBe(0)
     expect(await getAllFlows()).toHaveLength(1)
@@ -76,5 +62,17 @@ describe('clearSyncedFlows', () => {
     await clearAllFlows()
 
     expect(await getAllFlows()).toHaveLength(0)
+  })
+
+  it('keeps a synced flow that has been edited since', async () => {
+    // The stored field still says `synced`, but a queued entry means the edit has not
+    // reached the server. Reading the stored field alone would delete the edit on
+    // sign-out — the exact RULE-L4 failure the derivation rule exists to prevent.
+    await saveFlow(flow('edited-since'), 'synced')
+    const { enqueueUpsert } = await import('@/lib/storage/outbox')
+    await enqueueUpsert(flow('edited-since'))
+
+    expect(await clearSyncedFlows()).toBe(0)
+    expect(await getAllFlows()).toHaveLength(1)
   })
 })

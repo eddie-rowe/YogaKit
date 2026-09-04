@@ -25,10 +25,18 @@ name: Supabase branch
 #   file gates a deploy that never happens. Confirmed **on** by the repo owner, 2026-09-04.
 #
 #   "Automatic branching" — with it off, no preview branch is created for a pull request, so
-#   the platform has nothing to migrate and publishes `skipped`. Observed **off** on
-#   2026-09-04: pull request #13 changed two files under supabase/migrations/ and the check
-#   came back skipped with "This git branch is not associated with any Supabase Branch."
-#   Until it is turned on, this job passes everything and gates nothing.
+#   the platform has nothing to migrate and publishes `skipped`. It is **off, deliberately**:
+#   branching is not on the Supabase free plan, which is the plan this project is on as of
+#   2026-09-04. Observed on pull request #13, which changed two files under
+#   supabase/migrations/ and still came back skipped with "This git branch is not associated
+#   with any Supabase Branch."
+#
+#   So this job passes everything and gates nothing today, and that is a known, priced
+#   decision rather than a misconfiguration — do not go looking for a broken setting. What it
+#   still buys is that the day the project moves to a paid plan, the gate is already wired and
+#   starts working with no code change. Until then the real check on a migration is
+#   scripts/verify-migrations.sh in the db-verify job, which applies every migration to a bare
+#   Postgres from empty on every pull request.
 #
 # If migrations stop reaching production, or this job goes quiet on a pull request that
 # clearly changes schema, check those two before anything in here.

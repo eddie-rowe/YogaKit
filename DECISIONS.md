@@ -435,3 +435,62 @@ weaken the function — a `p_user_id` parameter, or `SECURITY DEFINER` — the o
 in `20260903091000_backfill_claimed_flows.sql` repeats the shred and takes the owner from
 `claimed_flows.user_id`. Duplicated SQL in a migration that runs once is cheaper than a
 permanent hole in the function every authenticated session calls.
+
+## 2026-09-04 — `synced` requires positive evidence, not the absence of an outbox entry
+
+`specs/004-sequencing-composer/data-model.md` §5 states the derivation rule as "a flow with
+no outbox entry is `synced`". Implemented literally, that is a data-loss bug.
+
+The outbox is authenticated-only (decision 3 of the phase plan: a signed-out edit enqueues
+nothing, because work made without an account is claimed at sign-in instead). So a teacher
+who has never signed in never has an entry for anything — and under §5's rule every flow
+they have ever made reads back `synced`. `clearSyncedFlows()` exists to drop exactly the
+records that came from the server and keep the ones authored on the device, and it would
+have deleted all of them on the next sign-out. That is RULE-L4, precisely: the flows that
+worked offline before any account existed are the ones with no other copy anywhere.
+
+`deriveSyncState(stored, entry)` in `src/lib/storage/flow-store.ts` inverts the default. A
+`dead` entry reads `failed`; any other entry reads `pending` whatever the stored field says,
+because an edit made after a successful flush is genuinely unsent again; and with no entry
+the *stored* field decides, defaulting to `pending`. The stored field is written `synced` by
+exactly one thing — a flush the server acknowledged — so absence of an entry only confirms
+that nothing is outstanding, never that the work arrived.
+
+The write order inside that one writer matters too, and it is: mark the flow `synced`, then
+delete the entry. A crash between the two leaves an entry for a flow already on the server
+and the next flush sends it again, which `app_save_flow` absorbs idempotently at the cost of
+one round trip. The other order loses the entry while the flow still reads `pending`, with
+nothing left to retry from.
+
+## 2026-09-04 — The IndexedDB connection moved out of `flow-store` into `src/lib/storage/db.ts`
+
+T017 said to bump `DB_VERSION` inside `flow-store.ts` and add the store there. That does not
+compose: `flow-store` has to read the outbox to derive a flow's sync state, and the outbox
+has to open the same database, so whichever of the two owned `openDB` would have been
+imported by the other and by itself.
+
+`db.ts` holds the connection, the version, and the two store names, and nothing else —
+neither storage module imports the other's storage. It is a file that exists to break a
+cycle, not a layer that exists to be extended.
+
+The v1 → v2 upgrade creates the missing stores and does not read, rewrite, or migrate a
+single existing `flows` record. Every field C2 adds is derived at read time, so a v1 database
+becomes a valid v2 database by gaining an empty store. A teacher's flows are the only copy of
+their work, and the safest migration over them is the one that does not touch them.
+
+## 2026-09-04 — Sign-out empties the whole outbox, and removes no flow
+
+`clearSyncedFlows()` picks a subset of flows deliberately (RULE-L4, above). `clearOutbox()`
+does not pick: every entry goes.
+
+The two are not inconsistent, because they are protecting against different things. A flow is
+possibly the only copy of the teacher's work, so deleting one is a decision. An outbox entry
+is only a note that the server has not been told yet — deleting it destroys nothing, and the
+flow it describes stays on disk and reads `pending`, which is exactly true. What an entry
+*can* do is flush one person's flow into the next person's account on a shared device, since
+every entry was enqueued by the session that just ended. That is UX-011 pointing the other
+way, and the cheap fix is the correct one.
+
+The cost is that a queued flow does not resume syncing by itself if the same person signs
+back in; it re-queues on the next save. Automatically re-queueing at sign-in would be a
+second claim mechanism competing with `ClaimFlowsPrompt`, which decision 3 already rules out.

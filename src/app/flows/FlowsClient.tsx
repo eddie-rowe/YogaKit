@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import type { Flow } from '@/lib/flow/types'
 import { getAllFlows, deleteFlow, saveFlow } from '@/lib/storage/flow-store'
+import { queueDelete } from '@/lib/storage/sync'
 import { CURRENT_SCHEMA_VERSION, exportKramaFile, importKramaFile } from '@/lib/storage/krama-file'
 import { formatDuration, totalSeconds } from '@/lib/flow/duration'
 
@@ -43,6 +44,10 @@ export default function FlowsClient({ builtins }: Props) {
 
   async function handleDelete(id: string) {
     await deleteFlow(id)
+    // Same ordering rule as a save: the local delete is what happened, the queued
+    // entry is a record that the server has not been told yet. A delete replaces
+    // any queued upsert for the flow, so the server never revives it.
+    await queueDelete(id)
     refresh()
   }
 
