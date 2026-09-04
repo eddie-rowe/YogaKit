@@ -18,6 +18,12 @@ name: Supabase branch
 # posts for a pull request that touches nothing under supabase/, and such a pull request
 # would then be unmergeable forever. The `paths` filter below is the same condition, so this
 # job simply does not run on those.
+#
+# One load-bearing setting lives in the Supabase dashboard and is invisible from this repo:
+# Integrations -> GitHub -> "Deploy to production". With it off, merging to `main` applies
+# nothing and this whole file gates a deploy that never happens. Confirmed **on** by the repo
+# owner, 2026-09-04. If migrations ever stop reaching production, check that before anything
+# in here.
 
 on:
   pull_request:
