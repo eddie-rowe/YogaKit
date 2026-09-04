@@ -43,18 +43,38 @@ jobs:
           timeoutSeconds: 1800
           intervalSeconds: 20
 
+      # Three outcomes, not two — established empirically on the pull request that added
+      # this file (run 33887394914). It changed supabase/config.toml and no migration, and
+      # the integration published the check with conclusion `skipped`: its own change
+      # detection is narrower than the `paths` filter above, which is as coarse as
+      # GitHub's path filters get. A skip is the platform saying there was nothing to
+      # apply, so it passes.
+      #
       # `timed_out` is treated as a failure on purpose. A gate that cannot tell you whether
-      # the migrations applied is not a gate, and the cost of being wrong in each direction
-      # is not symmetric: a false block costs a re-run, a false pass costs a broken
-      # production deploy. The known cause of a spurious timeout is the platform skipping
-      # branch creation for a pull request, which re-running this job resolves.
-      - name: Fail if the preview branch could not be built
-        if: steps.check.outputs.conclusion != 'success'
+      # the migrations applied is not a gate, and the cost of being wrong is not symmetric:
+      # a false block costs a re-run, a false pass costs a broken production deploy. Since
+      # the platform posts `skipped` rather than nothing when it declines to build a
+      # branch, a timeout now means something actually went wrong.
+      - name: Report the platform's verdict
         run: |
-          echo "Supabase Preview concluded: ${{ steps.check.outputs.conclusion }}" >&2
-          echo >&2
-          echo "'failure' almost always means a migration in supabase/migrations does not" >&2
-          echo "apply cleanly from empty — open the Supabase Preview check for the SQL" >&2
-          echo "error. 'timed_out' more often means no preview branch was created for this" >&2
-          echo "pull request; re-run this job." >&2
-          exit 1
+          echo "Supabase Preview concluded: ${{ steps.check.outputs.conclusion }}"
+          case "${{ steps.check.outputs.conclusion }}" in
+            success)
+              echo "Migrations applied to the preview branch."
+              ;;
+            skipped)
+              echo "The integration found nothing to apply on this pull request." >&2
+              echo "Expected when supabase/ changed but supabase/migrations/ did not." >&2
+              ;;
+            failure)
+              echo "A migration in supabase/migrations does not apply cleanly from" >&2
+              echo "empty — open the Supabase Preview check for the SQL error." >&2
+              exit 1
+              ;;
+            *)
+              echo "Could not establish whether the migrations apply. If this is" >&2
+              echo "timed_out, no preview branch was created for this pull request;" >&2
+              echo "re-run this job." >&2
+              exit 1
+              ;;
+          esac
