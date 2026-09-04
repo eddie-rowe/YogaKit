@@ -80,7 +80,7 @@ These are the statements the US3 PR must prove in tests, not describe in prose.
 | # | Invariant | Source | How it is proven |
 |---|---|---|---|
 | I1 | `flow_item_notes` has no column referencing an org, cohort, role, or visibility | RULE-V1/V2, SC-009 | Assertion over `information_schema.columns` in `verify-migrations.sh`. Mechanical, and survives future migrations. |
-| I2 | `flow_item_notes` carries exactly one policy per verb, each `user_id = (select auth.uid())` | Principle VIII | Assertion over `pg_policies`: four rows, and no `qual` mentioning `org`, `cohort`, or `role`. |
+| I2 | `flow_item_notes` carries exactly one policy per verb, and every one of them is keyed on the caller alone | Principle VIII | Assertion over `pg_policies`: four rows; no `qual` or `with_check` mentioning `org`, `cohort`, `team`, or `role`; and the SELECT policy is `user_id = (select auth.uid())` with no join. |
 | I3 | A recipient in the same org, reading a shared flow by every route in the list above, receives zero note rows | FR-024, SC-008 | Two accounts, one org, one shared flow with notes. Three selects, three empty results. |
 | I4 | An org **admin** is not an exception to I3 | RULE-V5 | The same test with the recipient holding the admin role. |
 | I5 | A recipient's duplicate contains zero note rows belonging to the original author | FR-025, SC-008 | Duplicate, then count `flow_item_notes` for the new flow's items. |
@@ -89,6 +89,14 @@ These are the statements the US3 PR must prove in tests, not describe in prose.
 | I8 | An export produced for sharing carries no `note` key on any item | FR-029 | Unit test on `stripAuthorOnly`, plus a test that the sharing export path calls it. |
 | I9 | Revoking `shared_org_id` leaves existing duplicates readable by their owners | FR-032 | Set to null, recipient reads their duplicate. |
 | I10 | A duplicate referencing a pose absent from the library opens and renders that item legibly | FR-031 | Unit test on the render path with a fabricated slug. |
+
+The write policies are the one place the predicate is more than `user_id`: because
+`flow_item_id` is the primary key, an insert policy checking only the caller's own
+`user_id` would let anyone guess another teacher's item id, claim the row, and lock the
+real owner out of writing a note on their own item. Those policies therefore also require
+that the item belongs to a flow the caller owns. That reaches `flows.user_id` — still the
+caller, still nothing joinable to an org — which is why I2 is stated as "keyed on the
+caller alone" rather than as one literal expression.
 
 **I1 and I2 are the two worth writing first**, and both belong in `scripts/verify-migrations.sh`
 rather than in Vitest. They are the only invariants that hold against a migration nobody has

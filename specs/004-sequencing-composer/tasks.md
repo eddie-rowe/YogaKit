@@ -61,26 +61,30 @@ structural before anything writes across it. **Story: US2 (foundation), US3 (pre
 **Independent test**: `bash scripts/verify-migrations.sh` passes with the new assertions, and
 `npx tsc --noEmit` is clean against the regenerated types. No user-visible change.
 
-- [ ] T008 [US2] New migration `supabase/migrations/<ts>_flows.sql` — `flows`, `phases`,
+- [X] T008 [US2] New migration `supabase/migrations/<ts>_flows.sql` — `flows`, `phases`,
   `flow_items`, `flow_item_notes` exactly as `data-model.md` §2, with the indexes
-- [ ] T009 [US2] RLS on all four tables: four policies each, `user_id = (select auth.uid())`,
+- [X] T009 [US2] RLS on all four tables: four policies each, `user_id = (select auth.uid())`,
   update carrying both `using` and `with check`. `phases` and `flow_items` reach `user_id`
   through `flow_id`; `flow_item_notes` carries its own
-- [ ] T010 [US2] `app_save_flow(payload jsonb)` per `data-model.md` §3 — `SECURITY INVOKER`,
+- [X] T010 [US2] `app_save_flow(payload jsonb)` per `data-model.md` §3 — `SECURITY INVOKER`,
   `set search_path = public, pg_temp`, `REVOKE EXECUTE FROM public`, `GRANT TO authenticated`
-- [ ] T011 [US3] Append the I1 and I2 assertions to `scripts/verify-migrations.sh` —
+- [X] T011 [US3] Append the I1 and I2 assertions to `scripts/verify-migrations.sh` —
   `information_schema.columns` and `pg_policies` over `flow_item_notes`. These are the two
   that hold against migrations nobody has written yet
-- [ ] T012 [P] [US2] Append a `verify-migrations.sh` block proving a second account reads zero
+- [X] T012 [P] [US2] Append a `verify-migrations.sh` block proving a second account reads zero
   rows of another's `flows`, `phases`, `flow_items`, and `flow_item_notes`
-- [ ] T013 [P] [US2] Append a block proving `app_save_flow` writes nothing when the payload
+- [X] T013 [P] [US2] Append a block proving `app_save_flow` writes nothing when the payload
   names another user's flow id — the `SECURITY INVOKER` claim, tested rather than asserted
-- [ ] T014 [US2] Regenerate `src/types/database.ts` via `scripts/db-types-check.sh` (needs a
+- [X] T014 [US2] Regenerate `src/types/database.ts` via `scripts/db-types-check.sh` (needs a
   local Supabase stack / Docker)
-- [ ] T015 [US2] Backfill: `app_save_flow` from every existing `claimed_flows.payload`, once.
-  `claimed_flows` is kept as provenance and nothing reads `payload` after this
-  (`research.md` §4)
-- [ ] T016 [US2] `src/app/onboarding/ClaimFlowsPrompt.tsx` — the claim path writes normalized
+- [X] T015 [US2] Backfill: every existing `claimed_flows.payload`, once, in
+  `20260903091000_backfill_claimed_flows.sql`. Not a loop over `app_save_flow` after all —
+  that function is `SECURITY INVOKER` and takes its owner from `auth.uid()`, which is null
+  in a migration, so the backfill shreds inline and takes the owner from
+  `claimed_flows.user_id`. Idempotent, and it steps over a payload whose flow id is not a
+  uuid rather than dropping it. `claimed_flows` is kept as provenance and nothing reads
+  `payload` after this (`research.md` §4)
+- [X] T016 [US2] `src/app/onboarding/ClaimFlowsPrompt.tsx` — the claim path writes normalized
   rows in addition to the payload snapshot
 
 **Gate**: `bash scripts/verify-migrations.sh` → `MIGRATION VERIFICATION PASSED`.
