@@ -115,10 +115,19 @@ synthetic's hourly tick.
 **A green synthetic here is not proof RUM is firing.** This synthetic asserts the page
 returns 200 — it says nothing about whether the RUM SDK actually started a session on
 that load. Confirmed live 2026-09-08: RUM was dark in production for days despite this
-synthetic passing every hour, because `app/layout.tsx` never mounted `<DatadogAppRouter
-/>` (see `DECISIONS.md`, 2026-09-08 entry). The only trustworthy check that RUM is
-actually producing sessions is `POST /api/v2/rum/events/search` itself, not this
-synthetic's status.
+synthetic passing every hour (now every 15 minutes), because `app/layout.tsx` never
+mounted `<DatadogAppRouter />` (see `DECISIONS.md`, 2026-09-08 entry). The only
+trustworthy check that RUM is actually producing sessions is `POST
+/api/v2/rum/events/search` itself, not this synthetic's status.
+
+**View *count* is its own separate check, once sessions exist at all.** Same day: after
+the mount was fixed, one navigation to `/poses` produced ~90 duplicate view events in a
+production session — a real second bug in `@datadog/browser-rum-nextjs`'s
+`DatadogAppRouter`, replaced by `src/components/DatadogRumView.tsx` (see `DECISIONS.md`'s
+next entry). Verify view-count sanity by capturing actual `browser-intake` beacon bodies
+in a Playwright script across several fresh loads, never by polling
+`getInternalContext()` — internal context only ever shows the *current* view, so it is
+blind to a churn burst that starts and ends within a single render pass.
 
 ## 5. Manual setup checklist (lives outside this repo)
 

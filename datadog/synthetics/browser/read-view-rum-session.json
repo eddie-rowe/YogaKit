@@ -6,7 +6,7 @@
     "variables": []
   },
   "options": {
-    "tick_every": 3600,
+    "tick_every": 900,
     "min_failure_duration": 0,
     "min_location_failed": 1,
     "retry": { "count": 2, "interval": 300 },
@@ -16,5 +16,5 @@
   "locations": ["aws:us-east-1"],
   "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:read-view-rum-session"],
   "status": "live",
-  "message": "Bare page load, no steps — its only purpose is to generate a real RUM session on the read view every hour so 008's RUM-dependent monitors and SLOs have data pre-launch, before organic traffic exists. Not an uptime check (synthetics/api/read-view-200.json already covers that at a 5-minute cadence) and not an offline-behavior check (synthetics/browser/read-flow-offline.json covers that, paused pending step recording). @syntheticstesting@gmail.com"
+  "message": "Bare page load, no steps — its only purpose is to generate a real RUM session on the read view every 15 minutes so 008's RUM-dependent monitors and SLOs have data pre-launch, before organic traffic exists. Not an uptime check (synthetics/api/read-view-200.json already covers that at a 5-minute cadence) and not an offline-behavior check (synthetics/browser/read-flow-offline.json covers that, paused pending step recording). @syntheticstesting@gmail.com"
 }

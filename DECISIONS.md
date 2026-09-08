@@ -707,3 +707,59 @@ contract, not a design choice — recorded here because the *symptom* (green syn
 dark RUM) is the kind of thing worth a future reader recognizing quickly rather than
 re-diagnosing: a passing uptime-style check on a page that hosts a JS SDK is not evidence
 the SDK's client-side behavior works.
+
+---
+
+## 2026-09-08 — `DatadogAppRouter` itself spammed duplicate views; replaced with a
+commit-phase view starter
+
+**Context:** Verifying the mount above (this file's previous entry) surfaced a second
+bug. A single navigation to `/poses` produced ~90 RUM view events in a 35ms window, all
+`loading_type: route_change`, all named `/poses`, each with 0-1ms `time_spent`, under one
+session — one real navigation, ninety views. `PosesClient.tsx` does no URL manipulation
+at all (no `useRouter`, `useSearchParams`, or `replaceState`; its state is entirely
+local), so the cause could not be app code.
+
+**Root cause:** `@datadog/browser-rum-nextjs`'s `DatadogAppRouter` (v7.12.0) calls
+`startView` **during render**, guarded only by a per-instance `useRef`:
+```
+if (previousPathname.current !== pathname) {
+  previousPathname.current = pathname
+  startNextjsView(computeViewNameFromParams(pathname, params))
+}
+```
+A `useRef` is stable only across *committed* renders. A discarded concurrent render
+attempt, or a remount of the root layout during hydration recovery, gets a fresh ref and
+fires again for the same pathname. Since `nextjsPlugin()` sets `trackViewsManually =
+true`, `startView` is the only thing that creates a view — N render attempts means N
+views. `/poses` triggers this more than other routes because it serializes 67 pose
+objects into one client component; the root layout's pre-paint theme script (which
+mutates `documentElement` before hydration) is a plausible hydration-recovery trigger.
+It is intermittent by nature — a clean load can produce exactly 1 view — which is why it
+survived the previous entry's verification: that fix was tested by checking a view
+existed, not by counting how many were created.
+
+**Decision:** Replace the `<DatadogAppRouter />` mount with a small in-repo
+`<DatadogRumView />` (`src/components/DatadogRumView.tsx`) that starts the view in a
+`useEffect` — which only ever runs after a render commits — guarded by **module-scoped**
+state rather than a `useRef`, so a remount of the component cannot restart a view that
+already started. `onRouterTransitionStart` in `src/instrumentation-client.ts` now feeds
+this component's `recordNavigationUrl` instead of the SDK's own `startNextjsView`. The
+view name reuses `scrubViewUrl` (`src/lib/telemetry/scrub.ts`) rather than reimplementing
+the SDK's unexported `computeViewNameFromParams` — one privacy-relevant code path instead
+of two, and it was already 100%-covered. `beforeSend` also now scrubs `view.name` in
+addition to `view.url`, closing a latent RULE-L7 gap: an unrecognized path would
+otherwise reach Datadog as a raw view name.
+
+Verified with a 20-iteration Playwright loop against a real production build hitting
+`/poses` in a fresh browser context each time, capturing actual `browser-intake` beacon
+bodies (not `getInternalContext()` polling, which is blind to a sub-40ms burst) — 20/20
+runs produced exactly one `view` event. The same investigation also cleared a suspected
+third bug: `/read/[id]` appeared to emit zero view events in a short capture window, but
+forcing a real navigation-away showed the view flushes correctly — it was RUM's normal
+batch-size-driven flush timing on a lighter page, not a missing event.
+
+**Why:** Recorded because diverging from Datadog's own documented `DatadogAppRouter`
+mount looks like a mistake against the official integration unless the reason is written
+down — the SDK component's render-phase `startView` call is the churn mechanism, not an
+implementation detail safe to copy.

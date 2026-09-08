@@ -23,8 +23,9 @@
  */
 
 import { datadogRum } from '@datadog/browser-rum'
-import { nextjsPlugin, onRouterTransitionStart } from '@datadog/browser-rum-nextjs'
+import { nextjsPlugin } from '@datadog/browser-rum-nextjs'
 
+import { recordNavigationUrl } from '@/components/DatadogRumView'
 import { scrubErrorMessage, scrubViewUrl } from '@/lib/telemetry/scrub'
 
 const applicationId = process.env.NEXT_PUBLIC_DD_RUM_APPLICATION_ID
@@ -61,6 +62,13 @@ if (applicationId && clientToken && !datadogRum.getInternalContext()) {
       if (event.view?.url) {
         event.view.url = scrubViewUrl(event.view.url)
       }
+      // DatadogRumView.tsx already scrubs the name it passes to startView(), but this
+      // is the enforcement point for RULE-L7, not a place that trusts a caller got it
+      // right — a name that somehow arrives unscrubbed (a future call site, a plugin
+      // default) must not reach Datadog raw.
+      if (event.view?.name) {
+        event.view.name = scrubViewUrl(event.view.name)
+      }
       if (event.type === 'error' && event.error?.message) {
         event.error.message = scrubErrorMessage(event.error.message)
       }
@@ -71,5 +79,10 @@ if (applicationId && clientToken && !datadogRum.getInternalContext()) {
 
 // FR-020: App Router transitions are RUM "views" only via this hook. Next.js's
 // client-instrumentation convention calls a function of this exact name on every
-// router transition — nothing in this file invokes it directly.
-export { onRouterTransitionStart }
+// router transition — nothing in this file invokes it directly. Unlike the SDK's own
+// @datadog/browser-rum-nextjs re-export, this feeds DatadogRumView.tsx's commit-phase
+// view starter instead of the SDK's render-phase DatadogAppRouter — see that
+// component's doc comment.
+export function onRouterTransitionStart(url: string) {
+  recordNavigationUrl(url)
+}
