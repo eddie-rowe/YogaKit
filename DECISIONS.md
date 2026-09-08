@@ -341,3 +341,33 @@ ribs" are real cues a teacher gives**. A voice check that flags correct teaching
 gets bypassed, and a bypassed check is worse than a narrow one. And the em-dash ban from
 `docs/BEST_PRACTICES_FROM_NEXTMOVE.md` is **not** adopted — that rule belongs to a briefing
 voice; this product speaks out loud, and an em dash is how a spoken aside sounds.
+
+---
+
+## 2026-09-04 — 008 widens to full NextMove manifest parity; dashboards, synthetics,
+service-catalog, and logs-metrics are in scope after all
+
+**Context:** `specs/008-observability-as-code/spec.md`'s Assumptions section states
+dashboards are "deliberately excluded: they are read surfaces for humans, they change
+often for cosmetic reasons, and managing them as code has a poor ratio of review value to
+churn," and scopes the feature to monitors and SLOs. NextMove's reference implementation
+(`docs/BEST_PRACTICES_FROM_NEXTMOVE.md` §B5) ships all six object types —
+monitors, SLOs, synthetics, dashboards, logs-metrics, and a service-catalog entry.
+
+**Decision:** Port the full set. `datadog/` gets `monitors/`, `slos/`, `synthetics/`,
+`dashboards/`, `logs-metrics/`, and `service-catalog/`, all through the same sync tool.
+
+**Why:** Owner direction, given the choice explicitly between "follow 008 as written"
+and "full parity," and full parity was chosen. The spec's own argument against
+dashboards-as-code is not wrong — a dashboard changes for cosmetic reasons and reviewing
+every pixel move has a poor cost/value ratio — but it's a cost the owner chose to accept
+for this branch in exchange for one coherent, complete port rather than a
+narrower-but-truer-to-spec one. Two things keep the cost bounded: dashboards are matched
+by title, not diffed field-by-field on layout, and NextMove's own two-divergent-systems
+mistake (a second, undocumented monitors-as-code path that was likely never applied) is
+explicitly *not* ported — see `specs/008-observability-as-code/research.md` §3 and §5.
+
+FR-009's "at least one monitor... at least one objective" is satisfied as a floor by this
+scope, not narrowed by it. No constitution rule is touched by this change — it is a scope
+amendment to one feature's stated assumptions, not a Principle violation, which is why
+this entry lives here rather than in a Complexity Tracking table.

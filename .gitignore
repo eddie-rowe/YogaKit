@@ -14,6 +14,7 @@
 /coverage
 /qa-screenshots/
 /test-results/
+junit.xml
 
 # next.js
 /.next/

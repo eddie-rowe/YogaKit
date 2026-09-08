@@ -35,13 +35,50 @@ jobs:
       - name: Validate pose library
         run: npm run validate:poses
 
+      # Blocking, deliberately with no `|| true` — 008 US4/FR-021: RULE-L7 (telemetry
+      # carries page views, errors, and web vitals only, never practice content) had no
+      # automated test before this feature. See coverageLimits() in
+      # scripts/lib/telemetry-check.mjs for what it does not catch.
+      - name: Telemetry content-free check
+        run: npm run lint:telemetry
+
       - name: Unit tests (with coverage)
-        run: npx vitest run --coverage
+        run: npx vitest run --coverage --reporter=default --reporter=junit --outputFile=junit.xml
 
       - name: Build
         run: npx next build
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'sk-ant-placeholder' }}
+
+      # Uploads whatever JUnit output the test run produced, purely for visibility in
+      # Datadog Test Optimization. `continue-on-error: true` because an absent
+      # DD_API_KEY (e.g. a fork PR with no repo secrets) must not fail the build over an
+      # optional upload — NextMove learned this the hard way (docs/OBSERVABILITY.md).
+      - name: Upload test results to Datadog
+        if: always()
+        continue-on-error: true
+        run: npx @datadog/datadog-ci junit upload --service yogakit ./junit.xml
+        env:
+          DD_API_KEY: ${{ secrets.DD_API_KEY }}
+          DD_SITE: us5.datadoghq.com
+
+  datadog-validate:
+    # Manifest-only validation (FR-004) — never applies. Applying stays a deliberate
+    # local `npm run datadog:apply`, per 008's plan: "No auto-apply from CI."
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate Datadog manifests
+        run: npm run datadog:validate
 
   db-verify:
     # RLS-assertion harness (T022, docs/design/002-schema.md §A/§D). Runs

@@ -1,0 +1,15 @@
+{
+  "name": "[YogaKit] RUM Error Rate > 5%",
+  "type": "query alert",
+  "query": "sum(last_15m):sum:rum.error.count{service:yogakit,env:prod}.as_rate() / sum:rum.session.count{service:yogakit,env:prod}.as_rate() * 100 > 10",
+  "message": "Client-side error rate exceeded threshold for YogaKit. @syntheticstesting@gmail.com",
+  "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:rum-error-rate"],
+  "options": {
+    "notify_audit": false,
+    "require_full_window": false,
+    "new_host_delay": 300,
+    "evaluation_delay": 0,
+    "notify_no_data": false,
+    "thresholds": { "critical": 10, "warning": 5 }
+  }
+}
