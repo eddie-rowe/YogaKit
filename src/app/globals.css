@@ -7,6 +7,12 @@
   --foreground: #1c1714;
   --border: #e2dbd4;
   --muted: #8a7d73;
+  /* `--muted` is 3.54:1 on `--background` in light mode — below WCAG AA 4.5:1 for
+     text under 24px. `--muted-strong` is the same warm grey carried far enough to
+     clear AA (6.3:1 light, 6.7:1 dark, and >=4.9:1 over the current-item fill), for
+     small text that has to be *read* rather than merely noticed. Quieter than
+     `--foreground`; loud enough at 6am. See DECISIONS.md. */
+  --muted-strong: #63564e;
   /* The one accent token (guardrails §2). Every other "color" in the app is either a
      neutral (above) or a semantic data-category color on pose content, not a UI accent. */
   --accent: #3d3530;
@@ -50,6 +56,7 @@
     --foreground: #f5ede3;
     --border: #3d342c;
     --muted: #8a7d73;
+    --muted-strong: #a99c91;
     --accent: #d8cabb;
     --accent-foreground: #1a1612;
     --warning: #fbbf24;
@@ -65,6 +72,7 @@
   --foreground: #f5ede3;
   --border: #3d342c;
   --muted: #8a7d73;
+  --muted-strong: #a99c91;
   --accent: #d8cabb;
   --accent-foreground: #1a1612;
   --warning: #fbbf24;
@@ -264,6 +272,29 @@ input[type=range] {
   font-weight: 400;
   opacity: 0.85;
 }
+
+/* Read view, the one row a teacher is on right now (FR-002/FR-003). The treatment is
+   a fill plus a size step, from the single existing accent only (FR-004) — a tint of
+   `--accent` reads as a warm neutral in both themes, and `--foreground` sits at ~12:1
+   over it either way. Sizing lives here rather than in Tailwind classes on the span so
+   `read-print.css` can undo it: on paper there is no "now", and one arbitrarily larger
+   row on a sheet printed hours earlier is noise. No transform — a scaled full-bleed row
+   adds horizontal overflow at 390px. No animation: nothing on this screen moves. */
+.pose-row {
+  padding-inline: 0.75rem;
+  margin-inline: -0.75rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+.pose-row[data-current="true"] {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+.pose-row .read-pose-name { font-size: 1.5rem; }
+.pose-row.kk-stillness .read-pose-name { font-size: 1.25rem; }
+/* One step up, and no further: a current stillness node lands exactly where a
+   non-current active pose already is, never past it (guardrails §2). */
+.pose-row[data-current="true"] .read-pose-name { font-size: 1.875rem; }
+.pose-row[data-current="true"].kk-stillness .read-pose-name { font-size: 1.5rem; }
 
 /* Seam indicator between adjacent flow items — a hairline whose weight communicates
    friction tier, never color-only (accent-neutral, per the single-accent rule). */

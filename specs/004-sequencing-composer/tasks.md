@@ -193,16 +193,79 @@ T037 remains open on the owner: the strings are drafted in `FlowShare.tsx` and
 
 **Purpose**: The mat-side surface. **Story: US1.**
 
-- [ ] T038 [US1] `breathMark()` in `src/app/read/[id]/ReadView.tsx` — keep the count dominant,
+- [X] T038 [US1] `breathMark()` in `src/app/read/[id]/ReadView.tsx` — keep the count dominant,
   compress the unit, fix the contrast and size that
   `docs/design-research/09-mat-side-read-view.md:53` actually indicts (`research.md` §1)
-- [ ] T039 [US1] Amend `docs/krama-guardrails.md:65` to describe what `read-breath-mark`
+- [X] T039 [US1] Amend `docs/krama-guardrails.md:78` to describe what `read-breath-mark`
   carries, per guardrails §1.3's own change rule
-- [ ] T040 [US1] Current-item marking: exactly one item marked at any time (FR-002), a filled
+- [X] T040 [US1] Current-item marking: exactly one item marked at any time (FR-002), a filled
   background plus a size increase, **no second accent colour** (FR-004, `design-input.md` #10)
-- [ ] T041 [US1] FR-005 / SC-003: measure the read view's performance budget after the change
+- [X] T041 [US1] FR-005 / SC-003: measure the read view's performance budget after the change
   rather than assuming it
-- [ ] T042 [P] [US1] Phase headers show a summed duration in the read view (FR-049, UX-007)
+- [X] T042 [P] [US1] Phase headers show a summed duration in the read view (FR-049, UX-007)
+
+**Gate**: the measure and the marking are legible at 390px in both themes, asserted rather
+than eyeballed, and the read view's performance budget names a number. ✅ **met, with one
+number recorded as failing** — see below.
+
+Asserted, not asserted-about:
+
+- **The count is ≥20px and both halves of the measure clear WCAG AA (4.5:1)**, computed in
+  the browser from the colours it actually resolved, in the default theme
+  (`tests/e2e-qa/walk4-read.spec.ts`, "Walk 4a") and again under
+  `test.use({ colorScheme: 'dark' })` ("Walk 4b"). That dark pass is new: no spec in the suite
+  emulated a colour scheme before, so the dark-room check the guardrails mandate was
+  manual-only.
+- **Exactly one row is marked at every moment, and a tap moves it** ("Walk 4c" plus
+  `tests/unit/flow/read-legibility.test.tsx`), including that marking a row adds no horizontal
+  overflow at mat width.
+- **The half-minute rounding survives** (`tests/unit/flow/duration.test.ts` pins
+  `formatApproxDuration(90) === '~1.5 min'` against `formatDuration(90) === '2 min'`).
+- **`read-phasetotal-` is not matched by the `read-phase-` prefix selector** the offline spec
+  counts sections with.
+- **A marked stillness node stays no larger and no bolder than an active pose** (guardrails
+  §2), and **the marking is undone in print** — the fill goes, and the size step with it
+  ("Walk 4d"). Both measured from computed style, including under `emulateMedia('print')`.
+
+Four deviations from the task text, each because the task as written could not be done
+without them:
+
+- **The contrast fix needed a new token, not a changed one.** `--muted` is `#8a7d73` in
+  *both* themes: 3.54:1 on light `--background` (fails AA) but 4.51:1 on dark. Darkening it
+  for light mode would push dark mode below the line, and it has ~109 call sites across
+  `src/`. `--muted-strong` is additive and per-theme (`#63564e` / `#a99c91`), used by the read
+  view only; every other surface still resolves `--muted` exactly as before.
+- **T040's size step lives in CSS, not in Tailwind classes**, so `read-print.css` can undo it.
+  On paper there is no "now", and the fill is dropped by print defaults while a font-size
+  bump would have survived — leaving one arbitrarily larger row on a sheet printed hours
+  earlier. `read-print.css` had no reset for either; it does now.
+- **The row is a `div` with `role="button"`, not a `<button>`.** It contains `<p>` elements
+  (the note and the unresolved-pose line), and `<p>` inside `<button>` is invalid HTML that
+  React reports through `console.error` — which `offline-read.spec.ts` fails on.
+- **T042's half-minute formatter went into `src/lib/flow/duration.ts`, not into the read
+  view.** FR-049 wants the sum "in both the composer and the read view"; a formatter private
+  to the read view would guarantee the two screens print different numbers for the same phase
+  when the composer gets its half.
+
+**T041, recorded rather than passed.** `npm run perf:read` (new,
+`scripts/lighthouse-read.mjs`) is the budget: Lighthouse mobile performance ≥ 90 on the read
+view (RULE-L6), median of five runs because single-run variance is wider than most
+regressions worth catching. Measured against `npm start` on this machine, on the built-in
+flow `b79a753d-…`:
+
+| | median performance | median LCP |
+|---|---|---|
+| `305668f` (before US1) | **88** | 3904ms |
+| this branch | **88** | 3904ms |
+
+So US1 costs nothing — and the read view was already two points under its own constitutional
+floor, which nothing in the repo had ever measured. FCP is 1.2s, TBT 0ms, CLS 0; the whole
+gap is LCP. Fixing it is a performance story, not a legibility one, and it is **not** done
+here. It is also not the whole picture: this is localhost, where TTFB is ~10ms, so the real
+number is worse, and it measures the built-in path (`page.tsx` renders `ReadView` on the
+server) rather than a teacher's own flow, which goes through `ReadViewClient` → IndexedDB and
+has a later LCP still.
+
 
 ---
 

@@ -1,11 +1,12 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import type { Pose } from '@/lib/pose-types'
 import type { Flow } from '@/lib/flow/types'
 import { isStillnessNode } from '@/lib/flow/types'
 import { resolveItemName } from '@/lib/pose-library/display-name'
+import { approxDuration, formatApproxDuration, totalSeconds } from '@/lib/flow/duration'
 
 interface Props {
   flow: Flow
@@ -13,20 +14,26 @@ interface Props {
 }
 
 // A teacher glances at this mid-pose (spec §10.6, "the 6am test") — large type,
-// minimal chrome, one breath mark per phase of the hold so it reads at arm's length.
-function breathMark(measure: { breaths?: number; seconds?: number }): string {
-  if (measure.breaths != null) return `${measure.breaths} breath${measure.breaths === 1 ? '' : 's'}`
-  if (measure.seconds != null) {
-    const minutes = measure.seconds / 60
-    if (minutes >= 1) {
-      // Round to the nearest half-minute so a 90s hold reads "1.5 min", not a
-      // lossy "2 min" (spec §10, FR-017).
-      const rounded = Math.round(minutes * 2) / 2
-      return `~${rounded} min`
-    }
-    return `~${measure.seconds}s`
+// minimal chrome, one breath mark per item so it reads at arm's length.
+//
+// Split into a count and a unit rather than one string: the number is what she is
+// looking for, so it carries the size and the full-contrast colour, and the word
+// beside it can be quieter without being unreadable. Both still render inside the
+// single `read-breath-mark` element (guardrails §1.3).
+function breathMark(measure: { breaths?: number; seconds?: number }): {
+  count: string
+  unit: string
+} {
+  if (measure.breaths != null) {
+    return { count: `${measure.breaths}`, unit: measure.breaths === 1 ? 'breath' : 'breaths' }
   }
-  return ''
+  if (measure.seconds != null) {
+    // `~` stays on time-based measures and off breath counts: five breaths is five
+    // breaths, but "1.5 min" is a rounding of a hold nobody is timing to the second.
+    const { count, unit } = approxDuration(measure.seconds)
+    return { count: `~${count}`, unit }
+  }
+  return { count: '', unit: '' }
 }
 
 // Keeps the screen awake while a teacher is reading from the mat — this is the one
@@ -65,6 +72,17 @@ export default function ReadView({ flow, poses }: Props) {
   const poseBySlug = new Map(poses.map(p => [p.slug, p]))
   const items = [...flow.items].sort((a, b) => a.order - b.order)
 
+  // FR-002/SC-002: exactly one item is marked at all times, so there is no unmarked
+  // state to start from — the flow opens on its first item and a tap moves the mark.
+  // Seeded in useState from props, not in an effect: the server and the first client
+  // render have to agree or the offline reload logs a hydration error, and that is
+  // asserted (tests/e2e-qa/offline-read.spec.ts). Deliberately not persisted for the
+  // same reason.
+  const [currentId, setCurrentId] = useState<string | null>(() => items[0]?.id ?? null)
+  // A flow whose current item was deleted elsewhere, or that arrives empty, still has
+  // to show a mark. Falling back to the first item keeps "exactly one" literally true.
+  const markedId = items.some(item => item.id === currentId) ? currentId : (items[0]?.id ?? null)
+
   // Group by phaseId across the whole flow, not just adjacency — a phase whose
   // items aren't contiguous in Compose used to render as two separate sections
   // (Phase 3). Each phase renders once, at the position of its first item.
@@ -101,7 +119,7 @@ export default function ReadView({ flow, poses }: Props) {
         {/* AppHeader/MobileNavSpacer are suppressed on /read/ — this is the only way
             out short of browser-back (Phase 3), plus a print action for the 6am
             paper-copy case. */}
-        <div className="no-print flex items-center justify-between text-sm" style={{ color: 'var(--muted)' }}>
+        <div className="no-print flex items-center justify-between text-sm" style={{ color: 'var(--muted-strong)' }}>
           <Link href="/flows" data-testid="read-exit" className="hover:opacity-70 transition-opacity">
             ← Flows
           </Link>
@@ -120,29 +138,70 @@ export default function ReadView({ flow, poses }: Props) {
 
         {grouped.map((group, gi) => (
           <section key={gi} data-testid={group.phaseId ? `read-phase-${group.phaseId}` : undefined}>
-            {group.name && (
-              <h2 className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--muted)' }}>
-                {group.name}
-              </h2>
-            )}
+            {/* FR-049: how long this block runs, next to what it is called. Every
+                group carries it, named or not — a flow with no phases would otherwise
+                show a total for none of itself. The stem is `read-phasetotal-`, not
+                `read-phase-duration-`, so it isn't matched by the `read-phase-` prefix
+                selector the offline test counts sections with (guardrails §1.3). */}
+            <div className={`flex items-baseline gap-3 mb-3 ${group.name ? 'justify-between' : 'justify-end'}`}>
+              {group.name && (
+                <h2 className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--muted-strong)' }}>
+                  {group.name}
+                </h2>
+              )}
+              <span
+                data-testid={`read-phasetotal-${group.phaseId ?? `unphased-${gi}`}`}
+                className="text-xs whitespace-nowrap"
+                style={{ color: 'var(--muted-strong)' }}
+              >
+                {formatApproxDuration(totalSeconds(group.items))}
+              </span>
+            </div>
             <div className="space-y-4">
               {group.items.map(item => {
                 const globalIndex = items.indexOf(item)
                 const pose = poseBySlug.get(item.poseSlug)
                 const stillness = isStillnessNode(item.poseSlug)
+                const isCurrent = item.id === markedId
+                const mark = breathMark(item.measure)
                 return (
                   <div
                     key={item.id}
                     data-testid={`read-item-${globalIndex}`}
+                    data-current={isCurrent ? 'true' : undefined}
+                    // A row, not a <button>: it contains <p> elements, and <p> inside
+                    // <button> is invalid HTML that React reports as a hydration error
+                    // — which offline-read.spec.ts fails on.
+                    role="button"
+                    tabIndex={0}
+                    aria-current={isCurrent ? 'true' : undefined}
+                    onClick={() => setCurrentId(item.id)}
+                    onKeyDown={event => {
+                      if (event.key !== 'Enter' && event.key !== ' ') return
+                      event.preventDefault()
+                      setCurrentId(item.id)
+                    }}
                     className={`pose-row pb-2 border-b ${stillness ? 'kk-stillness' : ''}`}
                     style={{ borderColor: 'var(--border)' }}
                   >
                     <div className="flex items-baseline justify-between gap-4">
-                      <span className={`kk-nocallout ${stillness ? 'text-xl' : 'text-2xl font-medium'}`}>
+                      {/* First span in the row, and it stays first: walk4-read.spec.ts
+                          measures `.pose-row span` first for the arm's-length size. */}
+                      <span className={`kk-nocallout read-pose-name ${stillness ? '' : 'font-medium'}`}>
                         {resolveItemName(pose, item.poseSlug)}
                       </span>
-                      <span data-testid="read-breath-mark" className="text-lg whitespace-nowrap" style={{ color: 'var(--muted)' }}>
-                        {breathMark(item.measure)}
+                      <span data-testid="read-breath-mark" className="whitespace-nowrap">
+                        <span
+                          className="text-xl font-medium"
+                          style={{ color: stillness ? 'var(--muted-strong)' : 'var(--foreground)' }}
+                        >
+                          {mark.count}
+                        </span>
+                        {mark.unit && (
+                          <span className="text-sm ml-1" style={{ color: 'var(--muted-strong)' }}>
+                            {mark.unit}
+                          </span>
+                        )}
                       </span>
                     </div>
                     {/* FR-031: the library does not have this slug, and the flow still
@@ -151,7 +210,7 @@ export default function ReadView({ flow, poses }: Props) {
                       <p
                         data-testid={`read-unknown-pose-${globalIndex}`}
                         className="text-sm mt-1"
-                        style={{ color: 'var(--muted)' }}
+                        style={{ color: 'var(--muted-strong)' }}
                       >
                         This pose isn't in your library.
                       </p>
@@ -160,7 +219,7 @@ export default function ReadView({ flow, poses }: Props) {
                       <p
                         data-testid={`read-note-${globalIndex}`}
                         className="text-sm mt-1"
-                        style={{ color: 'var(--muted)' }}
+                        style={{ color: 'var(--muted-strong)' }}
                       >
                         {item.note}
                       </p>

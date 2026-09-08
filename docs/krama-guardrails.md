@@ -75,9 +75,11 @@ carries a `data-testid`. Naming: `{area}-{element}`, kebab-case, stable across r
 | Shared | `shared-open-{flow-id}` | Open the duplicate just made |
 | Read | `read-phase-{phase-id}` | Phase section in the read view |
 | Read | `read-item-{index}` | Each pose entry in the read view |
-| Read | `read-breath-mark` | A breath-notation mark (↑ ↓ ~) — asserted for presence, not content |
+| Read | `read-breath-mark` | The measure for one item: a count and its unit, both inside this one element. Reads "5 breaths", "~1.5 min", "~45s" — plain words, not the ↑ ↓ glyphs this row claimed until 004 US1 (the glyphs describe a *transition*, and belong on the seam if they ever ship — see `specs/004-sequencing-composer/research.md` §1). Asserted for presence and count, one per item |
+| Read | `read-phasetotal-{phase-id}` | How long one block runs, beside its name. `read-phasetotal-unphased-{group-index}` for items with no phase. **Not** `read-phase-duration-*`: that would be matched by `[data-testid^="read-phase-"]`, which `offline-read.spec.ts` counts sections with — see the prefix rule below |
 | Read | `read-note-{index}` | A teacher's per-item note, when present. **Not** `read-item-note-*` — see the prefix rule below |
 | Read | `read-unknown-pose-{index}` | Said once, beside an item whose `pose_slug` isn't in this build's library (FR-031) |
+| Read | *(no testid)* `data-current="true"` | The one row the teacher is on, on the `read-item-{index}` element itself. A state attribute rather than a testid, because exactly one row carries it at any moment and a testid would imply a stable target (004 FR-002/FR-003) |
 | Poses | `poses-search-input`, `poses-category-filter`, `poses-card-{slug}` | Unchanged from the existing Poses tab |
 | Poses | `poses-view-toggle-filter`, `poses-view-toggle-theme` | "By filter" / "By theme" view mode toggle chips |
 | Poses | `poses-theme-section-{emotion-slug}` | Theme section heading + pose list, in "By theme" view |

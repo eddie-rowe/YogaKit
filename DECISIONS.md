@@ -566,3 +566,72 @@ behind FR-022, because a reader who assumed otherwise would then believe the aut
 is enforced in TypeScript. It is enforced by there being no policy on `flow_item_notes`, and
 `tests/unit/architecture/notes-table-unreferenced.test.ts` fails if any file in `src/`
 outside the generated types so much as names that table.
+
+---
+
+## 2026-09-08 — Tap to set the current item, not a timer
+
+**Context:** `004` FR-002 requires exactly one item marked current in the read view at all
+times. Nothing said how it moves. The obvious alternatives were a timed walkthrough driven
+by each hold's measure, inferring it from scroll position, or a tap.
+
+**Decision:** The teacher taps a row to mark it, and taps another to move it. No timer, no
+autoplay, no scroll inference. The flow opens with its first item marked, so there is never
+an unmarked state to explain.
+
+**Why:** A timer would be the first thing in the product that runs on its own, and the read
+view is precisely the screen a teacher is *not* looking at — she is looking at the room. A
+countdown that keeps moving while she holds a pose longer than she planned is worse than no
+marking at all, and Principle VII already rules out countdown copy for a related reason.
+Scroll inference has the same failure: she scrolls ahead to see what is coming, and the mark
+follows her eyes instead of her class. A tap is the only one of the three that cannot be
+wrong without her doing it.
+
+**Cost, accepted:** a mis-tap has no undo, and the whole row is the target on a scrolling
+surface. The mark is a display state that persists nowhere, so the recovery is another tap.
+
+---
+
+## 2026-09-08 — `--muted-strong`, a new token, rather than a corrected `--muted`
+
+**Context:** `--muted` is `#8a7d73`. `docs/design-research/09-mat-side-read-view.md:53`
+suspected the mat-side measure was "too low-contrast" and deferred to a device check. The
+check turned out to be unnecessary: the token's value is identical in both themes, so it is
+3.54:1 on light `--background` — below WCAG AA's 4.5:1 for text under 24px — and 4.51:1 on
+dark, passing by five thousandths.
+
+**Decision:** Add `--muted-strong`, defined per theme (`#63564e` light, `#a99c91` dark), and
+use it for the read view's small text. Leave `--muted` exactly as it is.
+
+**Why:** The defect is light-mode-only, and it is *the same token* in both blocks. Darkening
+`--muted` to clear AA in light mode pushes dark mode the wrong way; splitting it per theme
+changes what roughly 109 `var(--muted)` call sites render as, in a change whose story is one
+screen. A new token is additive: every surface that has not been looked at keeps rendering
+what it rendered yesterday, and the ones that have been looked at opt in.
+
+**What this leaves open:** `--muted` still fails AA at small sizes everywhere else it is
+used. That is a real, now-quantified defect across the app, and it is not fixed here. The
+token exists so fixing it is a migration rather than a redesign.
+
+---
+
+## 2026-09-08 — The read view rounds to the half-minute; `formatDuration` does not
+
+**Context:** `004` FR-049 puts a summed duration on every phase header.
+`src/lib/flow/duration.ts` already had `formatDuration`, which rounds to whole minutes.
+`ReadView`'s own `breathMark` had, since `001`, rounded a 90-second hold to "1.5 min"
+specifically to avoid the lossy "2 min" (`001` FR-017).
+
+**Decision:** Add `approxDuration` / `formatApproxDuration` alongside `formatDuration`, in
+`duration.ts`, and give the read view the half-minute version. `formatDuration` is unchanged.
+
+**Why two functions rather than one:** teaching `formatDuration` half-minutes would move
+visible strings on five other surfaces in a change about the read view. Teaching the read
+view whole minutes would throw away a half a teacher wrote on purpose.
+
+**Why in `duration.ts` rather than in the read view:** FR-049 wants the sum on phase headers
+"in both the composer and the read view", and the composer's half is not built yet. A
+formatter private to the read view would guarantee that when it is, the same phase shows
+"~1.5 min" on one screen and "2 min" on the other. The number is approximate either way — a
+phase measured in breaths is converted at a teaching pace, not a clock — which is why it
+always carries a `~`.

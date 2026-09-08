@@ -442,9 +442,15 @@ level and confirming the behaviour and timing match the pose detail view's escal
 
 ### Functional Requirements
 
-- **FR-001**: The read view MUST render breath cues as the mandated notation glyphs, not
+- **FR-001**: ~~The read view MUST render breath cues as the mandated notation glyphs, not
   as text
-  strings, and MUST render nothing when an item has no breath cue.
+  strings, and MUST render nothing when an item has no breath cue.~~
+  **Amended in implementation (2026-09-08, US1).** `research.md` §1 overturned the glyphs
+  before any were written: ↑ ↓ ~ describe a *transition*, not a hold, so they belong on the
+  seam (FR-042) if they ship at all, and a glyph the reader has to learn is worse at low
+  brightness than a word she can read. What the read view MUST do instead is render the
+  measure as a count and its unit inside one element, with the count carrying the size and
+  the full-contrast colour, and render nothing when an item has no measure.
 - **FR-002**: The read view MUST mark exactly one item as current at any time.
 - **FR-003**: The current item MUST be distinguishable from its neighbours at low screen
   brightness by a filled background together with a size increase.
@@ -565,7 +571,10 @@ level and confirming the behaviour and timing match the pose detail view's escal
   unchanged.
 - **FR-049**: Every phase header MUST show the summed duration of its items, in both the
   composer
-  and the read view.
+  and the read view. **Half done as of US1**: the read view has it (including for items
+  belonging to no phase, which have no header to hang it on); the composer does not yet.
+  Both MUST read it from `formatApproxDuration` in `src/lib/flow/duration.ts` so the same
+  phase never carries two different numbers on two screens.
 - **FR-050**: Every phase header MUST show a derived energetic intent tag computed from
   its items'
   energetic-direction data, and MUST show none when that data is absent rather than
@@ -631,14 +640,22 @@ level and confirming the behaviour and timing match the pose detail view's escal
 
 ### Measurable Outcomes
 
-- **SC-001**: 100% of breath cues in the read view render as glyphs, with zero text-string
-  renderings remaining.
+- **SC-001**: ~~100% of breath cues in the read view render as glyphs, with zero text-string
+  renderings remaining.~~ **Amended with FR-001 (2026-09-08, US1).** Replaced by: 100% of
+  items in the read view carry a measure, in one `read-breath-mark` element each, with the
+  count at ≥20px and both count and unit at ≥4.5:1 against what is actually behind them, in
+  both themes. Asserted in `tests/e2e-qa/walk4-read.spec.ts` ("Walk 4a" and "Walk 4b").
 - **SC-002**: A practitioner can identify the current item in the read view at low
   brightness on
   first look, with exactly one item marked current at all times.
 - **SC-003**: The read view meets its performance budget after this feature's changes,
   measured
-  rather than assumed, with zero new accent colours introduced.
+  rather than assumed, with zero new accent colours introduced. **The budget is now a
+  number**: Lighthouse mobile performance ≥ 90 (RULE-L6), median of five runs, via
+  `npm run perf:read`. Zero new accent colours: the current-item fill is a tint of the one
+  existing `--accent`. **Measured, and not met** — 88 both before and after US1, so this
+  feature costs nothing and the floor was already breached. See the Phase 5 gate in
+  `tasks.md`.
 - **SC-004**: 100% of flow edits made offline survive a reload while still offline, and
   100%
   sync without user action once connectivity returns.

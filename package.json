@@ -13,6 +13,7 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test --config=playwright.config.qa.ts",
     "validate:poses": "node scripts/validate-poses.mjs",
+    "perf:read": "node scripts/lighthouse-read.mjs",
     "db:types": "bash scripts/db-types-local.sh"
   },
   "dependencies": {
