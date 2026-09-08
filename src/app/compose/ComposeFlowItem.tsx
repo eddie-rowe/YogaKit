@@ -138,6 +138,7 @@ export default function ComposeFlowItem({
         {(layer !== 'simple') && (
           <input
             data-testid={`compose-item-notes-${index}`}
+            data-dd-privacy="mask-user-input"
             value={item.note ?? ''}
             onChange={e => onUpdate(item.id, { note: e.target.value })}
             placeholder="Note for this pose…"

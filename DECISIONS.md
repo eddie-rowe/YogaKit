@@ -763,3 +763,43 @@ batch-size-driven flush timing on a lighter page, not a missing event.
 mount looks like a mistake against the official integration unless the reason is written
 down — the SDK component's render-phase `startView` call is the churn mechanism, not an
 implementation detail safe to copy.
+
+---
+
+## 2026-09-08 — RUM turned on for session replay, interactions, resources, and long
+tasks; deliberate departure from the constitution's telemetry floor
+
+**Context:** With the view-churn bug fixed, RUM was still limited to views, errors, and
+web vitals (`sessionReplaySampleRate: 0`, `trackUserInteractions/trackResources/
+trackLongTasks: false`) — a floor carried over unchanged from the pre-008 component this
+file's instrumentation replaces. The user asked to turn on session replay (100%),
+interaction tracking, resource timing, and long-task tracking, to get real diagnostic
+value out of RUM rather than just uptime/error/vitals signal.
+
+**Tension with the constitution:** `.specify/memory/constitution.md` / `CLAUDE.md` state
+telemetry "carries page views, errors, and web vitals only — never pose/flow/note/
+journal content." Session replay is a visual reconstruction of the screen; interaction
+tracking captures click targets and DOM context. Both are a strictly larger telemetry
+surface than the floor the constitution describes, and replay in particular is the
+highest-risk feature for a masking gap to leak practice content.
+
+**Decision:** Turn all four on (`sessionReplaySampleRate: 100`, `trackUserInteractions:
+true`, `trackResources: true`, `trackLongTasks: true`) in
+`src/instrumentation-client.ts`, but treat `defaultPrivacyLevel: 'mask'` alone as
+insufficient for the app's three user-authored free-text fields — a private flow name
+isn't a hard-to-hit edge case, it's a labeled input right next to a "Name this flow"
+placeholder. Added an explicit `data-dd-privacy="mask-user-input"` to:
+- the flow title input (`src/app/compose/ComposeClient.tsx`, `compose-title-input`)
+- the phase name input (`src/app/compose/ComposeClient.tsx`)
+- the per-pose note input (`src/app/compose/ComposeFlowItem.tsx`, `compose-item-notes-*`)
+
+This forces those three fields to stay masked in replay recording and in action/input
+event capture regardless of what `defaultPrivacyLevel` is set to elsewhere, so a later
+change to the app-wide default privacy level can't silently unmask them.
+
+**Why:** Recorded as a deliberate, explicit widening of RUM's telemetry surface — not an
+accidental drift past the constitution's "views/errors/vitals only" line — so a future
+reader knows this was a considered tradeoff (diagnostic value vs. telemetry-surface
+minimalism) and knows where the compensating control lives. Any new free-text input added
+anywhere in the app needs the same `data-dd-privacy="mask-user-input"` attribute or it
+will render in cleartext in session replay.

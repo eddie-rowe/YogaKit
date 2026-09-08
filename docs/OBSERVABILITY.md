@@ -129,6 +129,16 @@ in a Playwright script across several fresh loads, never by polling
 `getInternalContext()` — internal context only ever shows the *current* view, so it is
 blind to a churn burst that starts and ends within a single render pass.
 
+**Session replay is on at 100% (2026-09-08) — masking is enforced per-field, not just by
+the app-wide default.** `defaultPrivacyLevel: 'mask'` in `src/instrumentation-client.ts`
+is the app-wide floor, but the composer's three free-text inputs (flow title, phase name,
+per-pose note — see `DECISIONS.md`'s 2026-09-08 entry) carry an explicit
+`data-dd-privacy="mask-user-input"` so they can't be unmasked by a future change to that
+default. **Any new free-text input added anywhere in the app must carry the same
+attribute** before replay is trusted not to leak it — this is not something the copy-lint
+or telemetry-content check catches; both only see field names in structured logger/RUM
+calls, not raw replay recording.
+
 ## 5. Manual setup checklist (lives outside this repo)
 
 These are one-time, click-through steps in Vercel/Datadog that the sync tool and the
