@@ -24,6 +24,63 @@ export function shouldUpload(env) {
 }
 
 /**
+ * The environment overlay `datadog-ci` needs, on top of the ambient one.
+ *
+ * `sourcemaps upload` builds its own internal metrics logger *before* it uploads
+ * anything, and — unlike every other upload command in the CLI, each of which passes
+ * `apiKey: this.config.apiKey` — it constructs that logger with no `apiKey` at all
+ * (datadog-ci 5.23.0):
+ *
+ *     const metricsLogger = getMetricsLogger({
+ *       datadogSite: getDatadogSiteFromEnv(),
+ *       defaultTags: loggerTags,
+ *       prefix: 'datadog.ci.sourcemaps.',
+ *     })
+ *
+ * The bundled `datadog-metrics` then falls back to `process.env.DATADOG_API_KEY`
+ * *only*, and throws `DATADOG_API_KEY environment variable not set` when it is absent —
+ * even though the command resolves the key perfectly well from `DD_API_KEY` for the
+ * upload itself. The two spellings are therefore not interchangeable in this one
+ * command, and a repo standardised on `DD_API_KEY` (this one is, see
+ * docs/OBSERVABILITY.md) hits it on every build that has a key at all. Mirroring the
+ * key under the other name is the whole fix.
+ *
+ * @param {Record<string, string | undefined>} env
+ * @returns {Record<string, string>} keys to add; empty when there is nothing to mirror
+ */
+export function uploadEnv(env) {
+  const key = env.DATADOG_API_KEY || env.DD_API_KEY
+  return key ? { DATADOG_API_KEY: key } : {}
+}
+
+/**
+ * Warns when the maps would be uploaded to a different Datadog site than the one RUM
+ * reports to. Datadog looks maps up by site + service + version + path, so a site
+ * mismatch is the same class of silent failure `buildUploadArgs` guards for version —
+ * except louder to miss, because *both* halves succeed: the upload returns 200 against
+ * the wrong org and RUM keeps showing minified stacks forever.
+ *
+ * `datadog-ci` resolves its site from `DATADOG_SITE || DD_SITE`, falling back to US1
+ * (`datadoghq.com`); the browser SDK reads `NEXT_PUBLIC_DD_SITE`. This project is on
+ * `us5`, so an environment that sets the key but forgets `DD_SITE` uploads every map to
+ * the wrong region. A warning rather than a throw: a wrong guess about which of the two
+ * is authoritative must not be able to stop a deploy.
+ *
+ * @param {Record<string, string | undefined>} env
+ * @returns {string | undefined} the warning to print, or undefined when they agree
+ */
+export function siteMismatchWarning(env) {
+  const rumSite = env.NEXT_PUBLIC_DD_SITE
+  if (!rumSite) return undefined
+  const uploadSite = env.DATADOG_SITE || env.DD_SITE || 'datadoghq.com'
+  if (uploadSite === rumSite) return undefined
+  return (
+    `uploading to ${uploadSite} but RUM reports to ${rumSite} — ` +
+    'stacks will not resolve. Set DD_SITE to match NEXT_PUBLIC_DD_SITE.'
+  )
+}
+
+/**
  * Builds the `datadog-ci sourcemaps upload` argument list. `--release-version` must
  * equal what RUM itself reports as `version` (`NEXT_PUBLIC_DD_VERSION`) — a mismatch
  * here is the classic silent failure: the upload succeeds and stacks still don't

@@ -184,3 +184,45 @@ release into a failure attributed to an unrelated author. The local shim has the
 from the other side — its output comes from whatever pg-meta the running stack pulled, which
 lags until the stack is restarted — so `db-types-local.sh` now says so and gives the one-line
 `docker ps` that settles which side of a disagreement is stale.
+
+2026-09-08 — Two production deploys failed in a row, and neither build was broken. `#17`
+(008) and `#18` (004 US1) both reached `Error` on Vercel with `Command "npm run build"
+exited with 1`, after `next build` had already printed a complete, successful route table.
+What failed was the step after it: `scripts/upload-sourcemaps.mjs`, throwing
+`DATADOG_API_KEY environment variable not set`.
+
+The cause is a bug in `datadog-ci` 5.23.0, not in the configuration. `sourcemaps upload`
+resolves its API key from `DATADOG_API_KEY || DD_API_KEY` like every other command — but it
+builds its internal metrics logger *first*, and alone among the upload commands it
+constructs that logger with no `apiKey` argument at all, so the bundled `datadog-metrics`
+falls back to `process.env.DATADOG_API_KEY` only and throws. Every sibling command passes
+`apiKey: this.config.apiKey`; this one passes site, tags, and prefix and nothing else. So a
+repo that standardised on `DD_API_KEY` — this one did, deliberately and consistently — hits
+it on every build that has a key at all. Mirroring the key under the other name is the
+entire fix.
+
+Three things made this cost more than it should have.
+
+**Preview builds passed, so the gate looked green.** `DD_API_KEY` is scoped to production,
+so previews took the no-op path and every PR check was clean. The failure was only ever
+reachable on the one environment with no pre-merge signal. A secret scoped to production is
+also a *code path* scoped to production.
+
+**The failure was in the deploy, not the build.** `ci.yml` had already learned this lesson
+for the JUnit upload and marked it `continue-on-error: true`; the sourcemap upload made the
+same optional-telemetry call inside `npm run build`, which on Vercel *is* the deploy. Its
+own docstring claimed a degrade-don't-abort posture it did not implement once a key was
+present. It now exits 0 on any upload failure, and deletes the maps either way — an
+unresolved stack is degraded telemetry, a map left in `.next/static` is a disclosure.
+
+**Nothing was down.** Vercel keeps serving the last successful deployment, so the site was
+fine on a build from before either merge — which is why this surfaced as "an error after the
+merge" rather than an outage, and why it could have sat unnoticed for days while every
+merged change quietly failed to ship.
+
+The generalisable part: **a build step that is optional must be optional at the point where
+the build is also the deploy**, and the environment that runs it in anger must not be the
+only one with no pre-merge signal. A near-miss found while fixing it: datadog-ci defaults
+its upload site to US1 while this project's RUM is on `us5`, so setting `DD_API_KEY` without
+`DD_SITE` uploads every map to the wrong region, where both halves succeed and stacks never
+resolve. That one now warns.

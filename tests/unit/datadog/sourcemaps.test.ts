@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { shouldUpload, buildUploadArgs, mapFilesToDelete } from '../../../scripts/lib/sourcemaps.mjs'
+import {
+  shouldUpload,
+  buildUploadArgs,
+  mapFilesToDelete,
+  uploadEnv,
+  siteMismatchWarning,
+} from '../../../scripts/lib/sourcemaps.mjs'
 
 describe('shouldUpload', () => {
   it('does not run when DD_API_KEY is absent', () => {
@@ -16,6 +22,66 @@ describe('shouldUpload', () => {
     const result = shouldUpload({ DD_API_KEY: 'abc123' })
     expect(result.shouldRun).toBe(true)
     expect(result.reason).toBeUndefined()
+  })
+})
+
+describe('uploadEnv', () => {
+  // This is the regression: `shouldUpload` opens the gate on DD_API_KEY, but
+  // datadog-ci's sourcemaps command reads DATADOG_API_KEY for its internal metrics
+  // logger and throws without it. That mismatch failed two production deploys.
+  it('mirrors DD_API_KEY under the name datadog-ci actually reads', () => {
+    expect(uploadEnv({ DD_API_KEY: 'abc123' })).toEqual({ DATADOG_API_KEY: 'abc123' })
+  })
+
+  it('leaves an explicit DATADOG_API_KEY alone, and prefers it over DD_API_KEY', () => {
+    expect(uploadEnv({ DATADOG_API_KEY: 'explicit', DD_API_KEY: 'fallback' })).toEqual({
+      DATADOG_API_KEY: 'explicit',
+    })
+  })
+
+  it('mirrors nothing when there is no key — the gate has already skipped the upload', () => {
+    expect(uploadEnv({})).toEqual({})
+    expect(uploadEnv({ DD_API_KEY: '' })).toEqual({})
+  })
+
+  it('adds only that one key, so it can be spread over process.env safely', () => {
+    expect(Object.keys(uploadEnv({ DD_API_KEY: 'abc123' }))).toEqual(['DATADOG_API_KEY'])
+  })
+})
+
+describe('siteMismatchWarning', () => {
+  it('warns when DD_SITE is unset and datadog-ci would fall back to US1', () => {
+    // The dangerous case: both halves succeed and the stacks never resolve.
+    expect(siteMismatchWarning({ NEXT_PUBLIC_DD_SITE: 'us5.datadoghq.com' })).toMatch(
+      /uploading to datadoghq\.com but RUM reports to us5\.datadoghq\.com/,
+    )
+  })
+
+  it('warns when the two are set to different sites', () => {
+    expect(
+      siteMismatchWarning({ NEXT_PUBLIC_DD_SITE: 'us5.datadoghq.com', DD_SITE: 'datadoghq.eu' }),
+    ).toMatch(/datadoghq\.eu/)
+  })
+
+  it('is silent when they agree', () => {
+    expect(
+      siteMismatchWarning({ NEXT_PUBLIC_DD_SITE: 'us5.datadoghq.com', DD_SITE: 'us5.datadoghq.com' }),
+    ).toBeUndefined()
+  })
+
+  it('prefers DATADOG_SITE over DD_SITE, as datadog-ci does', () => {
+    expect(
+      siteMismatchWarning({
+        NEXT_PUBLIC_DD_SITE: 'us5.datadoghq.com',
+        DATADOG_SITE: 'us5.datadoghq.com',
+        DD_SITE: 'datadoghq.eu',
+      }),
+    ).toBeUndefined()
+  })
+
+  it('says nothing when RUM has no configured site — there is no mismatch to claim', () => {
+    expect(siteMismatchWarning({ DD_SITE: 'us5.datadoghq.com' })).toBeUndefined()
+    expect(siteMismatchWarning({})).toBeUndefined()
   })
 })
 
