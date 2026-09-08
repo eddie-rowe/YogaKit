@@ -85,9 +85,10 @@ this pass.
 
 ### Expected drift under `--type monitors`
 
-`npm run datadog:diff` reports four monitors tagged `service:yogakit` as
+`npm run datadog:diff` reports five monitors tagged `service:yogakit` as
 `drift | live, not in repo`, named after the synthetic tests (`[YogaKit] Synthetic:
-Homepage Returns 200`, etc., plus the browser test). These are **not** unmanaged
+Homepage Returns 200`, etc., plus the two browser tests — `Read Flow Offline` and
+`Read View RUM Session`). These are **not** unmanaged
 config — Datadog auto-creates a companion alert monitor for every synthetic test,
 inheriting its name and tags, and that monitor is not addressable as a separate
 manifest. There is nothing under `synthetics/` to add; this drift is Datadog's own

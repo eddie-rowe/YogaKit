@@ -100,6 +100,18 @@ autoobs.md` "Configuration" for the cross-check.
 Thresholds for each monitor (what counts as AT-RISK vs. BREACHED): `datadog/README.md`
 "Manifest notes" table.
 
+**Pre-launch caveat on Core Web Vitals:** `datadog/synthetics/browser/
+read-view-rum-session.json` loads the read view every hour purely to keep a real RUM
+session arriving before there is any organic traffic — otherwise the RUM-dependent
+monitors and SLOs above would read `No Data` indefinitely. Its LCP/INP will read
+**optimistically**: a datacenter browser on a stable `aws:us-east-1` connection does not
+represent a real mobile visitor, and the read view's own Lighthouse mobile score is 87
+(below the RULE-L6 ≥ 90 floor — `specs/008-observability-as-code/tasks.md` T048). A green
+`[YogaKit] Largest Contentful Paint p75 > 2.5s` monitor while this synthetic is the
+dominant traffic source is proof the RUM pipeline works, **not** proof of real-user
+performance. Re-evaluate this monitor's read once organic traffic outweighs the
+synthetic's hourly tick.
+
 ## 5. Manual setup checklist (lives outside this repo)
 
 These are one-time, click-through steps in Vercel/Datadog that the sync tool and the
