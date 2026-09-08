@@ -91,10 +91,18 @@ jobs:
 
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          # Pinned, not `latest`. This job compares committed generated types
+          # against freshly generated ones, so the generator's own version is
+          # an input to the comparison: CLI 2.117.0 ships postgres-meta v0.99.0,
+          # which parenthesizes five `extends` clauses v0.98.0 did not. On
+          # `latest` that release failed an unrelated PR (#18) with a diff
+          # containing no schema change at all. Bumping this pin and committing
+          # the regenerated file is now a deliberate change, which is what a
+          # drift check is for. See FRICTION.md.
+          version: 2.117.0
 
       - name: Start Supabase and apply migrations
-        run: npx supabase start
+        run: supabase start
 
       - name: Check generated types for drift
         run: bash scripts/db-types-check.sh

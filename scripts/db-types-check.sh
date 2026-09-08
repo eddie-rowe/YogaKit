@@ -16,7 +16,17 @@ cd "$(dirname "$0")/.."
 GENERATED="$(mktemp)"
 trap 'rm -f "$GENERATED"' EXIT
 
-npx supabase gen types typescript --local > "$GENERATED"
+# Prefer a `supabase` already on PATH over `npx supabase`. In CI that is the
+# version supabase/setup-cli pinned; `npx` would ignore the pin and fetch the
+# latest from npm, which is how a generator release once failed this job on a
+# PR with no schema change in it.
+if command -v supabase > /dev/null 2>&1; then
+  SUPABASE=(supabase)
+else
+  SUPABASE=(npx supabase)
+fi
+
+"${SUPABASE[@]}" gen types typescript --local > "$GENERATED"
 
 if ! diff -q "$GENERATED" src/types/database.ts > /dev/null 2>&1; then
   echo "src/types/database.ts is out of date with the applied migrations." >&2

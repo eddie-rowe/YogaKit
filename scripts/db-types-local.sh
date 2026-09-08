@@ -17,6 +17,16 @@
 # local ergonomics shim, and it produces byte-identical output: the pg-meta
 # container the stack already runs is the same generator the CLI would have
 # started, queried over HTTP instead of through a broken container hand-off.
+#
+# One caveat on "byte-identical": it holds only while the running stack's
+# pg-meta matches the one CI's pinned CLI starts (2.117.0 -> postgres-meta
+# v0.99.0). A stack started under an older CLI keeps its older pg-meta until
+# restarted, and the output format does change between them. If this script's
+# output disagrees with the db-types-check job, check the image version with
+#
+#   docker ps --filter 'name=supabase_pg_meta_' --format '{{.Image}}'
+#
+# and restart the stack under the pinned CLI before believing the diff.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
