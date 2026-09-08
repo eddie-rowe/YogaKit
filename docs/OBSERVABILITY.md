@@ -157,10 +157,34 @@ things in order:
    using `--service=$NEXT_PUBLIC_DD_SERVICE`,
    `--release-version=$NEXT_PUBLIC_DD_VERSION`, and
    `--minified-path-prefix=/_next/static`.
-3. **Delete every `.map` file** it uploaded from the build output. Datadog then holds
-   them server-side for stack resolution, but nothing sits publicly readable at
-   `/_next/static` in the deployed app — the trade-off of turning on
-   `productionBrowserSourceMaps` in the first place.
+3. **Delete every `.map` file** from the build output — whether or not the upload
+   succeeded. Datadog then holds them server-side for stack resolution, but nothing sits
+   publicly readable at `/_next/static` in the deployed app — the trade-off of turning on
+   `productionBrowserSourceMaps` in the first place. The two failure modes are not
+   symmetric: an unresolved stack in Datadog is degraded telemetry, while a map left in
+   `.next/static` is readable by anyone who requests it, so a failed upload takes the
+   worse telemetry rather than the disclosure.
+
+**This step never fails a build, even with a key present.** On Vercel `npm run build`
+*is* the deploy, so aborting here does not degrade observability, it stops the product
+shipping — which is exactly what happened on 2026-09-08, when two production deploys
+failed in a row over an optional telemetry upload while both builds were fine. Upload
+failures are warnings; the script exits 0. Same call `ci.yml` already makes for the JUnit
+upload with `continue-on-error: true`.
+
+**`DD_API_KEY` is mirrored into `DATADOG_API_KEY` before the child runs.** They are not
+interchangeable in this one command: `sourcemaps upload` constructs its internal metrics
+logger *before* uploading and — alone among datadog-ci's upload commands — passes it no
+`apiKey`, so the bundled `datadog-metrics` reads `DATADOG_API_KEY` only and throws
+`DATADOG_API_KEY environment variable not set`. This is a datadog-ci bug (5.23.0), not a
+configuration mistake; `uploadEnv()` works around it. If a future CLI version fixes it,
+the mirror becomes harmless rather than wrong.
+
+**Set `DD_SITE` wherever `DD_API_KEY` is set.** datadog-ci resolves its upload site from
+`DATADOG_SITE || DD_SITE` and falls back to US1 (`datadoghq.com`), while the browser SDK
+reads `NEXT_PUBLIC_DD_SITE` — and this project is on `us5`. Setting the key but not the
+site uploads every map to the wrong region, where *both* halves succeed and RUM shows
+minified stacks forever. `siteMismatchWarning()` prints a warning when the two disagree.
 
 **`--release-version` must equal `NEXT_PUBLIC_DD_VERSION` exactly** — this is also what
 RUM itself reports as its `version` attribute. A mismatch here is a silent failure: the

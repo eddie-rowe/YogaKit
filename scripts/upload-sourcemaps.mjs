@@ -10,6 +10,11 @@
  * No-ops quietly (exit 0, nothing uploaded, nothing deleted) when `DD_API_KEY` is
  * absent, so a local `npm run build` or a fork PR without repo secrets still succeeds
  * normally — the same posture as every other optional Datadog integration in 008.
+ *
+ * And when the key *is* present, this script still never fails the build: it exits 0
+ * whether the upload worked or not. On Vercel `npm run build` is the deploy, so the
+ * cost of aborting here is not degraded telemetry, it is the product not shipping.
+ * The maps are deleted either way — see the note above that deletion.
  */
 
 import fs from 'node:fs'
@@ -17,7 +22,13 @@ import path from 'node:path'
 import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 
-import { shouldUpload, buildUploadArgs, mapFilesToDelete } from './lib/sourcemaps.mjs'
+import {
+  shouldUpload,
+  buildUploadArgs,
+  mapFilesToDelete,
+  uploadEnv,
+  siteMismatchWarning,
+} from './lib/sourcemaps.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.join(here, '..')
@@ -34,19 +45,36 @@ if (!fs.existsSync(buildDir)) {
   process.exit(0)
 }
 
-const args = buildUploadArgs({
-  buildDir,
-  service: process.env.NEXT_PUBLIC_DD_SERVICE ?? 'yogakit',
-  releaseVersion: process.env.NEXT_PUBLIC_DD_VERSION,
-  minifiedPathPrefix: '/_next/static',
-})
+// Every failure from here on is a warning, never a non-zero exit. This step is
+// optional telemetry plumbing running inside `npm run build`, which on Vercel *is* the
+// deploy: a throw here does not degrade observability, it stops the product shipping.
+// That is exactly what happened — a missing `DATADOG_API_KEY` alias failed two
+// production deploys in a row while both builds themselves were completely fine (see
+// FRICTION.md). `ci.yml` already made this call for the JUnit upload with
+// `continue-on-error: true`; this is the same call, in the one place it costs a deploy.
+const mismatch = siteMismatchWarning(process.env)
+if (mismatch) console.warn(`[sourcemaps] ${mismatch}`)
 
-console.log(`[sourcemaps] npx @datadog/datadog-ci ${args.join(' ')}`)
-execFileSync('npx', ['@datadog/datadog-ci', ...args], {
-  cwd: repoRoot,
-  stdio: 'inherit',
-  env: process.env,
-})
+let uploaded = false
+try {
+  const args = buildUploadArgs({
+    buildDir,
+    service: process.env.NEXT_PUBLIC_DD_SERVICE ?? 'yogakit',
+    releaseVersion: process.env.NEXT_PUBLIC_DD_VERSION,
+    minifiedPathPrefix: '/_next/static',
+  })
+
+  console.log(`[sourcemaps] npx @datadog/datadog-ci ${args.join(' ')}`)
+  execFileSync('npx', ['@datadog/datadog-ci', ...args], {
+    cwd: repoRoot,
+    stdio: 'inherit',
+    env: { ...process.env, ...uploadEnv(process.env) },
+  })
+  uploaded = true
+} catch (err) {
+  console.warn(`[sourcemaps] upload failed, continuing the build: ${err.message}`)
+  console.warn('[sourcemaps] RUM error stacks for this release will stay minified.')
+}
 
 function walk(dir) {
   const out = []
@@ -61,6 +89,15 @@ function walk(dir) {
   return out
 }
 
+// Deleted whether or not the upload succeeded. The two failure modes are not
+// symmetric: an unresolved stack trace in Datadog is degraded telemetry, while a map
+// left in `.next/static` is readable by anyone who requests it, which the header of
+// this file rules out. So on a failed upload we accept the worse telemetry rather than
+// the disclosure — and say which of the two happened.
 const mapFiles = mapFilesToDelete(walk(buildDir))
 for (const file of mapFiles) fs.unlinkSync(file)
-console.log(`[sourcemaps] uploaded and removed ${mapFiles.length} map file(s) from the build output`)
+console.log(
+  uploaded
+    ? `[sourcemaps] uploaded and removed ${mapFiles.length} map file(s) from the build output`
+    : `[sourcemaps] upload failed; removed ${mapFiles.length} map file(s) anyway so none ship publicly`
+)
