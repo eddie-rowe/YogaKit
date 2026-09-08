@@ -2,7 +2,7 @@
 
 **Feature Branch**: `008-observability-as-code`
 **Created**: 2026-08-31
-**Status**: Draft
+**Status**: Planned
 **Input**: User description: "Port pattern B5 from `docs/BEST_PRACTICES_FROM_NEXTMOVE.md` — make production legible to a headless agent. Extend the existing content-free Datadog RUM wiring (`src/components/DatadogRum.tsx`) rather than replacing it: add monitors and service level objectives as version-controlled manifests with a dry-run-first diff/apply tool, a single observability guide that maps each routine to the telemetry it reads, and a read path that works unattended without a human completing an interactive sign-in. RULE-L7 is the ceiling: telemetry carries page views, errors, and web vitals only, never pose, flow, note, or journal content."
 
 ## User Scenarios & Testing *(mandatory)*

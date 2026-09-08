@@ -1,0 +1,15 @@
+{
+  "name": "[YogaKit] Interaction to Next Paint p75 > 500ms",
+  "type": "query alert",
+  "query": "avg(last_1h):p75:rum.view.interaction_to_next_paint{service:yogakit,env:prod} > 500",
+  "message": "Read-view INP p75 exceeded threshold for YogaKit. @syntheticstesting@gmail.com",
+  "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:web-vitals-inp"],
+  "options": {
+    "notify_audit": false,
+    "require_full_window": false,
+    "new_host_delay": 300,
+    "evaluation_delay": 0,
+    "notify_no_data": false,
+    "thresholds": { "critical": 500, "warning": 200 }
+  }
+}

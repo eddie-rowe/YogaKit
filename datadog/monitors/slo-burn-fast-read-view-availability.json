@@ -1,0 +1,12 @@
+{
+  "name": "[YogaKit] SLO Burn (breached) — Read View Availability",
+  "type": "slo alert",
+  "query": "error_budget(\"{{slo_id:yogakit:read-view-availability}}\").over(\"30d\") > 100",
+  "message": "Read-view availability SLO has fully consumed its 30-day error budget — the SLO is breached. @syntheticstesting@gmail.com",
+  "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:slo-burn-fast-read-view-availability"],
+  "options": {
+    "notify_audit": false,
+    "notify_no_data": false,
+    "thresholds": { "critical": 100 }
+  }
+}

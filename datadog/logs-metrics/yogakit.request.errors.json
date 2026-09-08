@@ -1,0 +1,11 @@
+{
+  "data": {
+    "type": "logs_metrics",
+    "id": "yogakit.request.errors",
+    "attributes": {
+      "compute": { "aggregation_type": "count" },
+      "filter": { "query": "service:yogakit level:error" },
+      "group_by": [{ "path": "@error.kind", "tag_name": "kind" }]
+    }
+  }
+}
