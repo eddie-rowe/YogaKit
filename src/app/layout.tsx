@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Geist, Geist_Mono } from "next/font/google";
+import { DatadogAppRouter } from "@datadog/browser-rum-nextjs";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 import AppHeader, { MobileNavSpacer } from "@/components/layout/AppHeader";
 import { PRE_PAINT_SCRIPT } from "@/lib/theme";
@@ -63,9 +64,13 @@ export default function RootLayout({
             cookie is read here, in the browser, instead. */}
         <script dangerouslySetInnerHTML={{ __html: PRE_PAINT_SCRIPT }} />
         <ServiceWorkerRegistration />
-        {/* RUM init lives in src/instrumentation-client.ts now (008) — Next's native
-            client instrumentation hook runs before any page code, so there is
-            nothing to mount here. */}
+        {/* RUM init lives in src/instrumentation-client.ts (008) via Next's native
+            client instrumentation hook, but the nextjsPlugin sets trackViewsManually
+            and only creates a view once DatadogAppRouter mounts and commits a
+            pathname — onRouterTransitionStart alone never starts one, on the initial
+            load or any later transition. Must render before other children so the
+            initial view starts before app content mounts. */}
+        <DatadogAppRouter />
         <AppHeader />
         {children}
         <MobileNavSpacer />

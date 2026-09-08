@@ -112,6 +112,14 @@ dominant traffic source is proof the RUM pipeline works, **not** proof of real-u
 performance. Re-evaluate this monitor's read once organic traffic outweighs the
 synthetic's hourly tick.
 
+**A green synthetic here is not proof RUM is firing.** This synthetic asserts the page
+returns 200 — it says nothing about whether the RUM SDK actually started a session on
+that load. Confirmed live 2026-09-08: RUM was dark in production for days despite this
+synthetic passing every hour, because `app/layout.tsx` never mounted `<DatadogAppRouter
+/>` (see `DECISIONS.md`, 2026-09-08 entry). The only trustworthy check that RUM is
+actually producing sessions is `POST /api/v2/rum/events/search` itself, not this
+synthetic's status.
+
 ## 5. Manual setup checklist (lives outside this repo)
 
 These are one-time, click-through steps in Vercel/Datadog that the sync tool and the

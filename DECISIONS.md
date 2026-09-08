@@ -665,3 +665,45 @@ formatter private to the read view would guarantee that when it is, the same pha
 "~1.5 min" on one screen and "2 min" on the other. The number is approximate either way — a
 phase measured in breaths is converted at a teaching pace, not a clock — which is why it
 always carries a `~`.
+
+---
+
+## 2026-09-08 — RUM never actually started a session in production; `DatadogAppRouter`
+was the missing mount
+
+**Context:** Post-merge verification of `008` (after PR #17 landed and a production
+deploy finally succeeded) found zero RUM events in Datadog beyond the 5 recorded during
+`T047`'s local Playwright harness on 2026-09-04. The hourly `[YogaKit] Read View RUM
+Session` browser synthetic had been reporting PASS every hour that whole time — but
+"pass" only meant the page returned 200, not that RUM fired. Live investigation (a
+headless Playwright load of production, then `window.DD_RUM.getInitConfiguration()` and
+`getInternalContext()`) showed `init()` running with the exact right config, but
+`getInternalContext()` returned `undefined` on every load *and* on an in-app client-side
+navigation — no view was ever created, so nothing was ever queued to send.
+
+**Root cause:** `src/instrumentation-client.ts` initializes RUM with `plugins:
+[nextjsPlugin()]` and re-exports `onRouterTransitionStart`, matching Datadog's
+App-Router setup docs for that half of it. But that hook only records the *target* of a
+transition — Datadog's own integration docs
+(https://docs.datadoghq.com/integrations/rum-next-plugin/) require a second piece: the
+`<DatadogAppRouter />` component, mounted inside `app/layout.tsx`'s `<body>`, which is
+what actually commits the pathname and starts the view (including the very first one).
+`src/app/layout.tsx` never mounted it — worse, a comment at the RUM-init callsite
+asserted the opposite ("Next's native client instrumentation hook runs before any page
+code, so there is nothing to mount here"), which is why this went unnoticed through
+`008`'s own verification: `T047` proved the *scrubber* works on an event, not that a real
+navigation produces one.
+
+**Decision:** Mount `<DatadogAppRouter />` in `src/app/layout.tsx`, first child of
+`<body>`, before `<AppHeader />`/`{children}`. Verified locally against a real production
+build (`next build && next start`) with a headless Playwright load:
+`getInternalContext()` now returns a real `session_id`/`view.id`, and a real batched
+request reaches `browser-intake-us5-datadoghq.com` on navigation/unload flush. No other
+code changed — `instrumentation-client.ts`'s `init()` config, `beforeSend` scrubbing, and
+`allowedTracingUrls` were all already correct.
+
+**Why:** This is a straightforward missing-step bug against Datadog's documented
+contract, not a design choice — recorded here because the *symptom* (green synthetic,
+dark RUM) is the kind of thing worth a future reader recognizing quickly rather than
+re-diagnosing: a passing uptime-style check on a page that hosts a JS SDK is not evidence
+the SDK's client-side behavior works.
