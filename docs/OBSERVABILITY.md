@@ -133,6 +133,11 @@ codebase cannot apply for you — check them if a signal above reads unexpectedl
 - [ ] **CI Visibility enabled for the repo** — Software Delivery → CI Visibility →
       *Add a Pipeline Provider* → GitHub → *Enable Account*, then toggle `YogaKit`.
       Nothing in this repo turns this on; without it no workflow run is recorded.
+- [ ] **`DD_API_KEY` set as a GitHub Actions repository secret** —
+      `gh secret set DD_API_KEY --repo eddie-rowe/YogaKit`. This is genuinely unset
+      today (`gh secret list` returns nothing), which is why the JUnit upload it was
+      written for had never once succeeded — see FRICTION.md. Without it the test step
+      runs the suite normally and sends Datadog nothing, silently and by design.
 - [ ] **Synthetics global variables** — if any synthetic test needs a shared
       credential (none currently do; all three live API tests hit public routes), set
       it once in Datadog Synthetics → Settings → Global Variables rather than
@@ -220,7 +225,9 @@ Three constraints on that step, each of which has a way of biting:
 - **`NODE_OPTIONS` is scoped to the step, never the job.** Every Node process reads it,
   including `npm ci`, where dd-trace does not exist yet.
 - **It is set only when `DD_API_KEY` is present**, so a fork PR runs the suite with no
-  tracer at all rather than failing over telemetry.
+  tracer at all rather than failing over telemetry. The corollary is that a *missing*
+  secret looks exactly like a fork PR: green, quiet, and sending nothing. Check the
+  step's `NODE_OPTIONS:` line in the run log — empty means no tracer loaded.
 - **`DD_ENV` is `ci`.** Every monitor in `datadog/` queries `env:prod`; test runs
   landing there would mix CI data into production signals.
 

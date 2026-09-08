@@ -258,3 +258,27 @@ fact an unchecked manual step whose stale text still described the JUnit upload 
 plan, months after it shipped. What would have caught it is asking, once, of each integration:
 what would I look at in the UI to see this working? For source maps that is a stack frame
 with a GitHub link on it — a thirty-second check that had never been run.
+
+Same day, found by the CI run on the branch that fixed the above: **the JUnit upload had
+never once succeeded.** `DD_API_KEY` is not a GitHub Actions secret and never has been —
+`gh secret list` on this repo returns nothing at all. Every run since `008` shipped ended
+that step with `Neither DATADOG_API_KEY nor DD_API_KEY is in your environment` →
+`Internal Error: API key is missing` → `Process completed with exit code 1`, swallowed by
+`continue-on-error: true`. Datadog has received zero test results for the entire life of
+the integration.
+
+Three separate things had to line up for that to stay invisible for three weeks, and all
+three were deliberate choices that were individually right. `continue-on-error: true` was
+correct — an optional telemetry upload must not fail a build. A step that fails but is
+allowed to fail renders as a green check with a small annotation nobody opens. And the
+plan for *this* change asserted "`DD_API_KEY` already exists as a repo secret (the JUnit
+step uses it) — no new secret needed", reasoning from the workflow file rather than from
+the secret store: **the YAML references a secret, therefore the secret exists.** It does
+not. The reference compiles to an empty string and everything downstream degrades politely.
+
+That last one is the generalisable part, and it is nastier than it looks, because the new
+dd-trace step inherits the exact same shape: no key means no `NODE_OPTIONS`, which means
+no tracer, which means a green build that sends nothing. The failure mode is identical;
+only the error message is gone. **A configuration claim read out of the file that consumes
+the config is not evidence** — `gh secret list` is one command, and it would have caught
+this three weeks and one incorrect plan earlier.
