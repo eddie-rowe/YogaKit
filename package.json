@@ -13,6 +13,7 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test --config=playwright.config.qa.ts",
     "validate:poses": "node scripts/validate-poses.mjs",
+    "perf:read": "node scripts/lighthouse-read.mjs",
     "datadog:validate": "node scripts/datadog/sync.mjs --validate",
     "datadog:diff": "node scripts/datadog/sync.mjs",
     "datadog:apply": "node scripts/datadog/sync.mjs --apply",

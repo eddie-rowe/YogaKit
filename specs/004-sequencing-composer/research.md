@@ -15,7 +15,7 @@ US1 inherits, and the breath-glyph quick win, which §1 below overturns.
 **Decision**: FR-001 and SC-001 are satisfied by rendering the *duration* the teacher
 authored in compressed, scannable notation, not by rendering ↑ ↓ ~. The inhale/exhale
 vocabulary is deferred to its own story and, when it arrives, it goes on the **seam**, not on
-the flow item. `docs/krama-guardrails.md:65` is amended in the US1 PR to describe what
+the flow item. `docs/krama-guardrails.md:78` is amended in the US1 PR to describe what
 `read-breath-mark` actually carries.
 
 **Rationale**, in three parts.

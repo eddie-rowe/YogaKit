@@ -159,3 +159,28 @@ should have exercised it is the only place that shows the difference. The job no
 `::warning::` on any skip and names both causes, because the alternative — treating `skipped`
 as a hard failure — would block every PR until the setting is changed, and the setting is not
 in this repo. Cheap to have caught here; expensive to discover the day a migration is broken.
+
+2026-09-08 — The generated-types drift check failed on #18, a PR that touches no schema and
+no migration. The whole diff was five `extends` clauses gaining parentheses:
+`EnumName extends DefaultSchemaEnumNameOrOptions extends { … } : never = never` became
+`EnumName extends (DefaultSchemaEnumNameOrOptions extends { … } : never) = never`. Nothing
+about this project changed; `postgres-meta` v0.99.0 emits it and v0.98.0 did not.
+
+The mechanism is worth writing down because it looked twice like something it wasn't. The job
+pinned nothing: `supabase/setup-cli@v1` was on `version: latest`, and the steps then called
+`npx supabase`, which ignores the installed binary and fetches the newest package from npm
+anyway — so **the pin would not have held even when it was written**. The check compares a
+committed file against freshly generated output, which makes the generator's version an input
+to the comparison, on a par with the migrations. Pointing it at a moving generator means any
+upstream release fails the next PR to open, whoever wrote it and whatever it contains.
+
+Now pinned to CLI 2.117.0, and `db-types-check.sh` prefers a `supabase` on PATH over
+`npx supabase` so the pin is real. Bumping it is a deliberate commit that carries the
+regenerated file — which is what a drift check is supposed to make people do.
+
+The generalisable part: **an equality check against regenerated output is only as
+deterministic as its generator**, and `latest` anywhere in that path converts an upstream
+release into a failure attributed to an unrelated author. The local shim has the same coupling
+from the other side — its output comes from whatever pg-meta the running stack pulled, which
+lags until the stack is restarted — so `db-types-local.sh` now says so and gives the one-line
+`docker ps` that settles which side of a disagreement is stale.

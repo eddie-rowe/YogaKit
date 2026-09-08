@@ -24,6 +24,25 @@
 
   .pose-row {
     page-break-inside: avoid;
+    padding-inline: 0;
+    margin-inline: 0;
+  }
+
+  /* On paper there is no "now". The fill is dropped by browsers anyway (backgrounds
+     are off by default in print, and a dark-theme-derived one would print as a band
+     under the forced-black text if they weren't), but the size step would survive —
+     leaving one arbitrarily larger row on a sheet printed hours before the class.
+     Both are reset here so a printed flow reads as a flow, not as a snapshot. */
+  .pose-row[data-current="true"] {
+    background: transparent !important;
+  }
+
+  .pose-row[data-current="true"] .read-pose-name {
+    font-size: 1.5rem !important;
+  }
+
+  .pose-row[data-current="true"].kk-stillness .read-pose-name {
+    font-size: 1.25rem !important;
   }
 
   section {
