@@ -665,3 +665,51 @@ formatter private to the read view would guarantee that when it is, the same pha
 "~1.5 min" on one screen and "2 min" on the other. The number is approximate either way — a
 phase measured in breaths is converted at a teaching pace, not a clock — which is why it
 always carries a `~`.
+
+---
+
+## 2026-09-08 — dd-trace as a pinned devDependency, and the release version is the commit SHA
+
+**Context:** CI sent Datadog nothing but a JUnit XML blob, there were no pipeline spans at
+all, and the source-map upload ran on Vercel with `No git remotes available` — Vercel builds
+from a tarball, not a clone. Pulling on that also surfaced that
+`NEXT_PUBLIC_DD_VERSION` had been hardcoded `1.0.0` since 008 shipped, so every deploy has
+been reporting as the same release.
+
+**Decision 1: `dd-trace` as an exact-pinned devDependency, not
+`datadog/test-visibility-github-action`.** The action installs the tracer out-of-band at job
+runtime.
+
+**Why:** 008's premise is that observability configuration is version-controlled and
+reviewable. A tracer that materialises from a marketplace action is neither — it is not in
+the lockfile, its version is not in a diff, and nothing local reproduces what CI ran.
+Datadog's own JavaScript setup doc leads with the devDependency; the action is a convenience
+wrapper around it. The pin is *exact*, with no caret, because dd-trace declares its framework
+support as version ranges inside the tracer itself
+(`packages/datadog-instrumentations/src/vitest-worker.js` gates vitest at `>=4.0.0 <5.0.0`),
+so a routine minor bump can silently stop instrumenting and the only symptom is test data
+that quietly stops arriving. dd-trace v6 needs Node ≥ 22, so CI moved 20 → 22 — overdue
+regardless, Node 20 hit EOL in April 2026.
+
+**Decision 2: the release version is the full commit SHA**, resolved in one place
+(`scripts/lib/dd-version.mjs`) and inlined for client and server through `next.config.ts`.
+
+**Why the SHA and not semver:** the join key. Datadog links a RUM error to a line on GitHub
+by matching the RUM `version` against the uploaded source maps' `--release-version` against
+`DD_GIT_COMMIT_SHA`. A hand-maintained semver is a fourth thing that has to be remembered,
+and `1.0.0` for eight months is what happens when it is not. High cardinality here is the
+feature, not a leak: one value per deploy is exactly what makes "which deploy introduced
+this" answerable. Verified safe first — no manifest in `datadog/` filters on `version:`.
+
+**The deliberately surprising part:** `VERCEL_GIT_COMMIT_SHA` outranks an explicitly-set
+`DD_VERSION`, which inverts the usual "explicit wins" rule. It buys two things — nobody has
+to touch the Vercel dashboard for the `1.0.0` reporting to stop, and local `npm run dev`
+keeps its `.env.local` value — at the cost that editing `DD_VERSION` in the Vercel dashboard
+appears to do nothing. That is a genuinely nasty surprise, so it is written down in
+`.env.example`, in `docs/OBSERVABILITY.md` §7, and in the function's own docstring rather
+than left to be rediscovered.
+
+**What this leaves open:** `--project-path` in the source-map upload is still
+`/vercel/path0/.next/static`, and Turbopack emits `turbopack://[project]/src/…` source paths.
+If it is wrong, frames de-minify but do not deep-link — a failure with no error message. It
+is a post-deploy UI check, not something a test can catch.

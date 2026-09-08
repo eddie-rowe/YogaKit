@@ -1,7 +1,21 @@
 import type { NextConfig } from "next";
 import path from "path";
 
+import { resolveVersion } from "./scripts/lib/dd-version.mjs";
+
 const nextConfig: NextConfig = {
+  // 008: the one place the release version is decided, for both halves of the app.
+  // Values under `env` are inlined at build time into the client bundle *and* the
+  // bundled server code, so src/instrumentation-client.ts's `NEXT_PUBLIC_DD_VERSION`
+  // and src/instrumentation.ts's `DD_VERSION` both read the same resolved string
+  // without either file changing. On Vercel that string is the commit SHA of the
+  // deploy — see scripts/lib/dd-version.mjs for why the SHA outranks an explicitly
+  // set value, and note the consequence: editing DD_VERSION in the Vercel dashboard
+  // will appear to do nothing.
+  env: {
+    NEXT_PUBLIC_DD_VERSION: resolveVersion(process.env),
+    DD_VERSION: resolveVersion(process.env),
+  },
   turbopack: {
     root: path.join(__dirname),
   },

@@ -67,10 +67,10 @@ degrade to a silent no-op, never a thrown error (FR-025/SC-011). None of them be
 | `NEXT_PUBLIC_DD_SITE` | Datadog site for the browser SDK | No | `us5.datadoghq.com` for this org |
 | `NEXT_PUBLIC_DD_SERVICE` | Service name tag on RUM events | No | `yogakit` |
 | `NEXT_PUBLIC_DD_ENV` | Env tag on RUM events | No | `prod` — **not** `production`; every query in §4 assumes `env:prod` |
-| `NEXT_PUBLIC_DD_VERSION` | Version tag on RUM events | No | `1.0.0` |
+| `NEXT_PUBLIC_DD_VERSION` | Version tag on RUM events | No | **Ignored on Vercel** — `next.config.ts` overrides it with the commit SHA (§7). Local only |
 | `DD_SERVICE` | Service name for `@vercel/otel` tracing + logger correlation | No | `yogakit`; run through `normalizeServiceName()` (`src/lib/dd-service-name.ts`) since a hyphen silently breaks `service:` queries |
 | `DD_ENV` | Env tag for server-side tracing | No | `prod` |
-| `DD_VERSION` | Version tag for server-side tracing | No | `1.0.0` |
+| `DD_VERSION` | Version tag for server-side tracing | No | Same — **ignored on Vercel**, overridden with the commit SHA (§7) |
 | `DD_API_KEY` | Datadog API key | Only for `scripts/datadog/sync.mjs` and the content-free check's live-handle validation | Never bundled into the app — read only by Node scripts, never sent to the browser |
 | `DD_APP_KEY` | Datadog application key | Same as `DD_API_KEY` | Same |
 | `DD_SITE` | Datadog site for server-side/script API calls | Same as `DD_API_KEY` | `us5.datadoghq.com` |
@@ -126,9 +126,13 @@ codebase cannot apply for you — check them if a signal above reads unexpectedl
 - [ ] **Datadog ↔ Vercel integration** enabled in Datadog's Integrations catalog, so
       deployment events and Vercel-sourced infrastructure metrics correlate with
       `service:yogakit`.
-- [ ] **Datadog ↔ GitHub integration** enabled, so a future CI JUnit upload
-      (`.github/workflows/ci.yml`'s "Upload test results to Datadog" step) and any
-      commit-correlation features work.
+- [ ] **Datadog GitHub App** created and installed on the `YogaKit` repo, with
+      **`Actions: Read`** (CI Pipeline Visibility) and **`Contents: Read`** (inline
+      source snippets on stack frames). Datadog → Integrations → GitHub →
+      *Add New GitHub Application*. One app covers both; see §7.
+- [ ] **CI Visibility enabled for the repo** — Software Delivery → CI Visibility →
+      *Add a Pipeline Provider* → GitHub → *Enable Account*, then toggle `YogaKit`.
+      Nothing in this repo turns this on; without it no workflow run is recorded.
 - [ ] **Synthetics global variables** — if any synthetic test needs a shared
       credential (none currently do; all three live API tests hit public routes), set
       it once in Datadog Synthetics → Settings → Global Variables rather than
@@ -169,8 +173,8 @@ things in order:
 *is* the deploy, so aborting here does not degrade observability, it stops the product
 shipping — which is exactly what happened on 2026-09-08, when two production deploys
 failed in a row over an optional telemetry upload while both builds were fine. Upload
-failures are warnings; the script exits 0. Same call `ci.yml` already makes for the JUnit
-upload with `continue-on-error: true`.
+failures are warnings; the script exits 0. Same call `ci.yml` makes for every optional
+Datadog step it runs.
 
 **`DD_API_KEY` is mirrored into `DATADOG_API_KEY` before the child runs.** They are not
 interchangeable in this one command: `sourcemaps upload` constructs its internal metrics
@@ -186,9 +190,77 @@ reads `NEXT_PUBLIC_DD_SITE` — and this project is on `us5`. Setting the key bu
 site uploads every map to the wrong region, where *both* halves succeed and RUM shows
 minified stacks forever. `siteMismatchWarning()` prints a warning when the two disagree.
 
-**`--release-version` must equal `NEXT_PUBLIC_DD_VERSION` exactly** — this is also what
-RUM itself reports as its `version` attribute. A mismatch here is a silent failure: the
-upload succeeds and error stacks still don't resolve, because Datadog looks up maps by
-service+version+path, not by upload time. If `DD_VERSION` (server-side tag) and
-`NEXT_PUBLIC_DD_VERSION` (browser-side tag, and the one this step uses) ever drift apart,
-this is where it would show up.
+**`--release-version` must equal what RUM reports as its `version`, exactly.** A
+mismatch is a silent failure: the upload succeeds and stacks still don't resolve,
+because Datadog looks maps up by service+version+path, not by upload time. Rather than
+trusting three env vars to stay in step, all three call sites now read one function,
+`resolveVersion()` in `scripts/lib/dd-version.mjs` — see §7.
+
+
+## 7. CI and source code integration
+
+Three things had to be true before a production error could be traced back to the line
+of source that caused it. Two of them live in this repo; one is a click-through.
+
+**Pipeline Visibility is entirely a Datadog/GitHub UI setup** — no workflow YAML, no
+tracer, nothing in this repo. The two checkboxes are in §5. Once enabled, every
+`ci.yml` run appears under Software Delivery → CI Pipeline List with a span per job and
+step. Note the list page shows only the repo's **default branch**; branch and PR runs
+are on the Executions page, which is a surprising place to lose ten minutes.
+
+**Test Optimization runs on dd-trace, not JUnit XML.** `ci.yml`'s unit-test step loads
+the tracer through `NODE_OPTIONS` (`--import dd-trace/register.js -r dd-trace/ci/init` —
+vitest is ESM-first and needs both hooks). This replaced a `datadog-ci junit upload`
+step: JUnit gives Datadog a file of pass/fail lines, while the tracer emits a span per
+test, which is what test history, flaky detection, and per-session code coverage are
+built on. Running both would double-report, so the upload step is gone.
+
+Three constraints on that step, each of which has a way of biting:
+
+- **`NODE_OPTIONS` is scoped to the step, never the job.** Every Node process reads it,
+  including `npm ci`, where dd-trace does not exist yet.
+- **It is set only when `DD_API_KEY` is present**, so a fork PR runs the suite with no
+  tracer at all rather than failing over telemetry.
+- **`DD_ENV` is `ci`.** Every monitor in `datadog/` queries `env:prod`; test runs
+  landing there would mix CI data into production signals.
+
+`dd-trace` is pinned exactly (not `^`) in `package.json`, because its vitest support is
+declared as version ranges inside the tracer — a silent minor bump is a silent loss of
+test data. It requires **Node ≥ 22**, which is why `ci.yml` pins 22 rather than 20.
+
+**The release version is the commit SHA, resolved in one place.** `resolveVersion()`
+(`scripts/lib/dd-version.mjs`) is wired through `next.config.ts`'s `env` key, which
+inlines into both the client bundle and the bundled server code, so RUM's `version`, the
+server's `service.version`, and the source-map upload's `--release-version` cannot drift.
+
+Two things about it are worth knowing before they confuse someone:
+
+- `VERCEL_GIT_COMMIT_SHA` **outranks an explicitly set `DD_VERSION`**, which is the
+  opposite of the usual convention. Editing `DD_VERSION` in the Vercel dashboard will
+  appear to do nothing. That is deliberate: the dashboard value was a stale `1.0.0` that
+  made every deploy since RUM launched report as the same release.
+- Values under `next.config.ts`'s `env` are inlined **at build time**, so the running
+  server reports the SHA of the build, not of anything it reads at runtime. That is the
+  correct behaviour here, and also why a runtime env change cannot move it.
+
+**Source maps carry git metadata explicitly, because Vercel has no git.** Vercel builds
+from a tarball: no `.git`, no remote, so datadog-ci printed `No git remotes available`
+on every deploy and uploaded maps with no repository attached — stacks de-minified, but
+no frame linked anywhere. `gitEnv()` (`scripts/lib/sourcemaps.mjs`) derives
+`DD_GIT_REPOSITORY_URL` and `DD_GIT_COMMIT_SHA` from Vercel's `VERCEL_GIT_*` variables.
+datadog-ci skips invoking git entirely when **both** are present — one alone still
+shells out and still fails, which is why the function returns both keys or neither.
+
+This depends on **"Enable access to System Environment Variables"** being on in the
+Vercel project. Without it there are no `VERCEL_GIT_*` variables, `gitEnv()` returns
+`{}`, and the upload quietly goes back to unlinked maps.
+
+Two consequences to keep in view:
+
+- In bypass mode datadog-ci reads source paths from each map's own `sources` field
+  rather than from git's tracked-file list, so a path untracked locally can still be
+  named. That is application source, not practice content — RULE-L7 is untouched — but
+  it is worth stating rather than discovering.
+- `--project-path` is stripped from source paths so they match repository paths. If
+  frames de-minify but don't link to GitHub, that flag is the thing to adjust, not the
+  git metadata.
