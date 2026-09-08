@@ -71,7 +71,7 @@ spec and the plan diverge."
 | T038 | §3 — every env var, purpose, required-ness | FR-017 | ✅ |
 | T039 | §4 — routine → signal → query map, each query's time window stated | FR-013, FR-016 | ✅ |
 | T040 | §5 — manual setup checklist (log drain, Vercel env, Datadog integrations, synthetics globals) | — | ✅ |
-| T041 | §6 — source-map upload command, closing the gap NextMove never closed | — | ✅ |
+| T041 | §6 — source-map upload command, closing the gap NextMove never closed | — | ✅ (2026-09-08: closed for real, not just documented — `next.config.ts`'s `productionBrowserSourceMaps: true` + `scripts/lib/sourcemaps.mjs`/`scripts/upload-sourcemaps.mjs` wired into `package.json`'s `build` script, so every production build generates, uploads, then deletes its own maps with no manual step; `scripts/lib/sourcemaps.mjs` unit-tested at 100% in `vitest.config.ts`'s coverage allow-list) |
 
 ## Verification (plan.md's numbered list, condensed)
 

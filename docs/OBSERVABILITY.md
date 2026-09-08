@@ -47,7 +47,7 @@ question above at PR time.
 |---|---|---|
 | `usr.*` | RUM user-identity attributes (Datadog's own convention) | not currently set — YogaKit does not identify RUM users by ID |
 | `session.*` | RUM session-scoped attributes (Datadog's own convention) | set automatically by `@datadog/browser-rum` |
-| `dd.*` | Datadog correlation IDs, always Datadog-internal identifiers, never content | `dd.trace_id`, `dd.span_id` (from `src/lib/utils/logger.ts`'s `traceContext()`) |
+| `dd.*` | Datadog correlation IDs, always Datadog-internal identifiers, never content | `dd.trace_id`, `dd.span_id` (from `src/lib/utils/logger.ts`'s `traceContext()`); also present on RUM view/resource events for same-origin requests, since `src/instrumentation-client.ts`'s `allowedTracingUrls` propagates W3C trace context (`propagatorTypes: ['tracecontext']`) into the `@vercel/otel` backend spans — a RUM session and the server span it triggered now share one `dd.trace_id` |
 | `error.*` | Top-level (not nested) error shape on a log line, so Datadog Error Tracking groups it | `error.kind`, `error.message`, `error.stack` (from `logger.error(msg, fields, err)`) |
 | `@view.*`, `@application.id` | RUM's own reserved attributes for view/app scoping | `@application.id:<rum-app-id>` — always filter RUM queries by this, not just `service:yogakit` (see §4) |
 
@@ -140,18 +140,31 @@ codebase cannot apply for you — check them if a signal above reads unexpectedl
 ## 6. Source-map upload
 
 RUM error stack traces are minified without this step — a gap NextMove repeatedly
-flagged and never closed. Run after every production build, before deploying:
+flagged and never closed. It is now wired into the build itself, not a manual follow-up:
+`next.config.ts` sets `productionBrowserSourceMaps: true`, and `package.json`'s `build`
+script is `next build && node scripts/upload-sourcemaps.mjs`. Since Vercel's project
+build command is the default `npm run build`, every production build (Vercel or local)
+runs this automatically — nothing extra to remember at deploy time.
 
-```bash
-npx @datadog/datadog-ci sourcemaps upload ./.next/static \
-  --service=yogakit \
-  --release-version="$DD_VERSION" \
-  --minified-path-prefix=/_next/static \
-  --project-path=./.next/static
-```
+`scripts/upload-sourcemaps.mjs` (thin I/O; decision logic lives in the unit-tested
+`scripts/lib/sourcemaps.mjs`, `vitest.config.ts`'s 100%-coverage allow-list) does three
+things in order:
 
-Requires `DD_API_KEY` in the environment (same key used by `scripts/datadog/sync.mjs`).
-This is not yet wired into CI/CD as an automatic post-build step — running it locally
-after a production build, or adding it to the deploy pipeline, is a follow-up outside
-this feature's scope (it depends on where the production build actually runs, which
-`007-autonomous-operations` or a future deploy-pipeline feature should decide).
+1. **Skip quietly if `DD_API_KEY` is unset.** A local `npm run build`, or a fork PR with
+   no repo secrets, must succeed normally — this is 008's degrade-don't-abort posture
+   (FR-025/SC-011) applied to the build step, not an error.
+2. **Upload** `.next/static/**/*.map` via `npx @datadog/datadog-ci sourcemaps upload`,
+   using `--service=$NEXT_PUBLIC_DD_SERVICE`,
+   `--release-version=$NEXT_PUBLIC_DD_VERSION`, and
+   `--minified-path-prefix=/_next/static`.
+3. **Delete every `.map` file** it uploaded from the build output. Datadog then holds
+   them server-side for stack resolution, but nothing sits publicly readable at
+   `/_next/static` in the deployed app — the trade-off of turning on
+   `productionBrowserSourceMaps` in the first place.
+
+**`--release-version` must equal `NEXT_PUBLIC_DD_VERSION` exactly** — this is also what
+RUM itself reports as its `version` attribute. A mismatch here is a silent failure: the
+upload succeeds and error stacks still don't resolve, because Datadog looks up maps by
+service+version+path, not by upload time. If `DD_VERSION` (server-side tag) and
+`NEXT_PUBLIC_DD_VERSION` (browser-side tag, and the one this step uses) ever drift apart,
+this is where it would show up.

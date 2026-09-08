@@ -44,6 +44,16 @@ if (applicationId && clientToken && !datadogRum.getInternalContext()) {
     trackResources: false,
     trackLongTasks: false,
     defaultPrivacyLevel: 'mask',
+    // Joins RUM sessions to the @vercel/otel backend spans (src/instrumentation.ts) so a
+    // trace id shows up on both sides. Scoped to same-origin only — third parties
+    // (Supabase, Stripe, Anthropic, Resend) are already excluded by construction here,
+    // matching instrumentation.ts's own dontPropagateContextUrls list on the server side.
+    // The propagator must be 'tracecontext' (W3C traceparent): @vercel/otel does not
+    // speak the SDK's default 'datadog' header format, so headers would otherwise be
+    // sent and silently never joined.
+    allowedTracingUrls: [
+      { match: (url: string) => url.startsWith(window.location.origin), propagatorTypes: ['tracecontext'] },
+    ],
     plugins: [nextjsPlugin()],
     // Every event, view, and error passes through the scrubber before it leaves the
     // browser — the one enforcement point for RULE-L7 on the RUM path (FR-020/022).
