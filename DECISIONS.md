@@ -344,6 +344,231 @@ voice; this product speaks out loud, and an em dash is how a spoken aside sounds
 
 ---
 
+## 2026-09-03 — FR-001's breath glyphs describe a transition, so they belong on the seam
+
+**Context:** `docs/krama-v0.1-spec.md:141` mandates "breath notation as marks (↑ ↓ ~), never
+paragraphs"; `docs/krama-guardrails.md:65` already claims `read-breath-mark` carries those
+glyphs; `docs/design-research/09-mat-side-read-view.md:46` calls the text rendering the
+single highest-priority quick win in the corpus; and `004` FR-001/SC-001 require it. The
+code does none of it: `FlowItem` has no breath-cue field, only `measure`, and `breathMark()`
+renders that measure as text.
+
+**Decision:** Satisfy FR-001 by rendering the authored duration in compressed, scannable
+notation with the count dominant, and fix the contrast and size of that rendering. Do not
+render ↑ ↓ ~. Defer an authored inhale/exhale cue to its own story, and put it on the
+**seam** — the boundary between two adjacent items — not on the item.
+
+**Why:** The glyphs mean inhale, exhale, free breath. That vocabulary describes movement
+*between* two shapes, not a hold; a yin hold is timed and has no inhale to mark. So the
+missing field is not an oversight in the data model — the spec put it on the wrong entity,
+and FR-042 already mandates the right one for every adjacent pair. And research 09 contains
+the evidence against its own prescription: line 53, writing up the 6am test, names the real
+failure as breath-mark text rendering "too low-contrast or too small in a genuinely dark
+room." That is a contrast finding, not a text-versus-glyph one. At low brightness a glyph the
+reader has to learn is strictly worse than a word they can read — the number is the
+actionable datum, and an unfamiliar symbol costs a pause. Full argument in
+`specs/004-sequencing-composer/research.md` §1.
+
+---
+
+## 2026-09-03 — `claimed_flows` is kept as a write-once audit trail
+
+**Context:** `supabase/migrations/20260826224207_claimed_flows.sql` hands its own fate to
+`004`: read `payload` to build the normalized rows, then "retire this table or keep it as an
+audit trail — that decision belongs to 004, not here."
+
+**Decision:** Keep it. The claim path writes normalized `flows` rows in addition to the
+payload snapshot, a one-time backfill materializes rows for existing records, and nothing
+reads `payload` after that.
+
+**Why:** A claimed flow is a teacher's irreplaceable work arriving from a store the server
+has never seen, and the shred from one jsonb blob into four tables is the riskiest write in
+`004` — run exactly once per flow. Keeping the source snapshot makes a bad backfill
+re-runnable; retiring the table makes it unrecoverable. The cost is one dormant table nobody
+queries. What the decision does forbid is ambiguity: after the `004` schema lands, a flow
+lives in `flows`/`phases`/`flow_items`, and `claimed_flows` is provenance only.
+
+---
+
+## 2026-09-03 — The author boundary is a table split, not a filtered column
+
+**Context:** An earlier draft of the `004` approach proposed enforcing `FR-022` — author-only
+notes excluded from anything crossing to a recipient — with "a view without a `note` column
+plus column grants."
+
+**Decision:** `FlowItem.note` does not become a column on `flow_items`. It becomes a row in
+`flow_item_notes`, a table with no org, cohort, role, or visibility column, whose only policy
+is `user_id = (select auth.uid())`. This supersedes the column-grant idea, which was never
+built.
+
+**Why:** `docs/design/002-schema.md` §B had already worked it out: RLS is row-level and
+Postgres column grants are role-level, so a grant that hides the note from a colleague hides
+it from its author too — both are `authenticated`. And SC-009 asks a reviewer to confirm the
+exclusion from the schema and query alone; a query over `flows → phases → flow_items` cannot
+return a note because those tables have no column holding one. That is a property of the
+query's shape rather than of a condition someone remembered to write. `003` reached the same
+place independently for `pose_notes`. Contract:
+`specs/004-sequencing-composer/contracts/flow-sharing.md`.
+
+## 2026-09-03 — The `flow_item_notes` write policies check flow ownership, not just the caller
+
+`flow_item_notes.flow_item_id` is the primary key, which makes the row's identity guessable
+by anyone who has seen a shared flow. An insert policy of the canonical shape —
+`user_id = (select auth.uid())` and nothing more — would have let a second account insert a
+note row against another teacher's item id, and the primary key would then have locked the
+real owner out of writing a note on their own placement. Not a read leak (the SELECT policy
+is still the caller alone, so neither party can read the other's row), but a denial of
+service against the author's own work.
+
+The insert and update policies therefore also require that the item belongs to a flow the
+caller owns. That predicate reaches `flows.user_id` — still the caller, still nothing
+joinable to an org, cohort, or role — so the Principle VIII guarantee is unchanged. What
+changed is the wording of invariant I2 in `contracts/flow-sharing.md`, from "each
+`user_id = (select auth.uid())`" to "keyed on the caller alone", with the SELECT policy
+still asserted as the literal expression.
+
+## 2026-09-03 — The claimed-flows backfill shreds inline instead of calling `app_save_flow`
+
+`app_save_flow` is `SECURITY INVOKER` precisely so RLS applies inside it, which means it
+takes the owner from `auth.uid()`. In a migration there is no `auth.uid()`. Rather than
+weaken the function — a `p_user_id` parameter, or `SECURITY DEFINER` — the one-time backfill
+in `20260903091000_backfill_claimed_flows.sql` repeats the shred and takes the owner from
+`claimed_flows.user_id`. Duplicated SQL in a migration that runs once is cheaper than a
+permanent hole in the function every authenticated session calls.
+
+## 2026-09-04 — `synced` requires positive evidence, not the absence of an outbox entry
+
+`specs/004-sequencing-composer/data-model.md` §5 states the derivation rule as "a flow with
+no outbox entry is `synced`". Implemented literally, that is a data-loss bug.
+
+The outbox is authenticated-only (decision 3 of the phase plan: a signed-out edit enqueues
+nothing, because work made without an account is claimed at sign-in instead). So a teacher
+who has never signed in never has an entry for anything — and under §5's rule every flow
+they have ever made reads back `synced`. `clearSyncedFlows()` exists to drop exactly the
+records that came from the server and keep the ones authored on the device, and it would
+have deleted all of them on the next sign-out. That is RULE-L4, precisely: the flows that
+worked offline before any account existed are the ones with no other copy anywhere.
+
+`deriveSyncState(stored, entry)` in `src/lib/storage/flow-store.ts` inverts the default. A
+`dead` entry reads `failed`; any other entry reads `pending` whatever the stored field says,
+because an edit made after a successful flush is genuinely unsent again; and with no entry
+the *stored* field decides, defaulting to `pending`. The stored field is written `synced` by
+exactly one thing — a flush the server acknowledged — so absence of an entry only confirms
+that nothing is outstanding, never that the work arrived.
+
+The write order inside that one writer matters too, and it is: mark the flow `synced`, then
+delete the entry. A crash between the two leaves an entry for a flow already on the server
+and the next flush sends it again, which `app_save_flow` absorbs idempotently at the cost of
+one round trip. The other order loses the entry while the flow still reads `pending`, with
+nothing left to retry from.
+
+## 2026-09-04 — The IndexedDB connection moved out of `flow-store` into `src/lib/storage/db.ts`
+
+T017 said to bump `DB_VERSION` inside `flow-store.ts` and add the store there. That does not
+compose: `flow-store` has to read the outbox to derive a flow's sync state, and the outbox
+has to open the same database, so whichever of the two owned `openDB` would have been
+imported by the other and by itself.
+
+`db.ts` holds the connection, the version, and the two store names, and nothing else —
+neither storage module imports the other's storage. It is a file that exists to break a
+cycle, not a layer that exists to be extended.
+
+The v1 → v2 upgrade creates the missing stores and does not read, rewrite, or migrate a
+single existing `flows` record. Every field C2 adds is derived at read time, so a v1 database
+becomes a valid v2 database by gaining an empty store. A teacher's flows are the only copy of
+their work, and the safest migration over them is the one that does not touch them.
+
+## 2026-09-04 — Sign-out empties the whole outbox, and removes no flow
+
+`clearSyncedFlows()` picks a subset of flows deliberately (RULE-L4, above). `clearOutbox()`
+does not pick: every entry goes.
+
+The two are not inconsistent, because they are protecting against different things. A flow is
+possibly the only copy of the teacher's work, so deleting one is a decision. An outbox entry
+is only a note that the server has not been told yet — deleting it destroys nothing, and the
+flow it describes stays on disk and reads `pending`, which is exactly true. What an entry
+*can* do is flush one person's flow into the next person's account on a shared device, since
+every entry was enqueued by the session that just ended. That is UX-011 pointing the other
+way, and the cheap fix is the correct one.
+
+The cost is that a queued flow does not resume syncing by itself if the same person signs
+back in; it re-queues on the next save. Automatically re-queueing at sign-in would be a
+second claim mechanism competing with `ClaimFlowsPrompt`, which decision 3 already rules out.
+
+---
+
+## 2026-09-04 — A shared read must filter soft deletes; the owner's must not
+
+**Decision.** `flows_select_shared_in_org` (and its counterparts on `phases` and
+`flow_items`) carry `deleted_at is null`. The owner's own `flows_select_own` does not, and
+should not.
+
+`data-model.md` §4 specified the policy without that clause, and it was wrong. `deleted_at`
+is a soft delete because a hard delete cannot replicate — a device that syncs a week later
+has to be told the flow is gone, and an absent row says nothing. So a deleted flow still has
+a row, still has `shared_org_id` set, and without this clause it stayed in the organization's
+list after its author deleted it. The teacher's word for that action is "delete"; anything
+still listing the flow to their students contradicts it.
+
+The asymmetry is the point: the owner's policy has to keep returning the row, because the
+delete is a state the owner's own client reconciles against. The recipient has no business
+reconciling anything. Asserted in `scripts/verify-migrations.sh` — "a soft-deleted flow
+leaves the org's list".
+
+**Alternative rejected: filter it in the query.** `sharing.ts` does also pass
+`.is('deleted_at', null)`, and that is a good query, but it is not the guarantee. Principle
+VIII says the boundary is enforced at the table layer, never by application code. A filter in
+one caller is a filter one new caller can forget.
+
+---
+
+## 2026-09-04 — The share-membership guard goes inside the existing write policies
+
+**Decision.** `flows_insert_own` and `flows_update_own` are dropped and recreated with
+`shared_org_id is null or app_is_org_member(shared_org_id)` added to their `WITH CHECK`,
+rather than adding a third policy that expresses the same requirement.
+
+As specified, the write check was `user_id = (select auth.uid())` alone. The row is the
+author's own, so that check passes for any value of `shared_org_id` — including an
+organization the author has never belonged to. Publishing your own flow into a studio you do
+not teach at is not a read leak, but it puts a row in that studio's list, and no policy
+anywhere said no.
+
+Adding a *new* permissive policy would have made it worse rather than better: permissive
+policy checks are OR'd, so a fourth `flows` policy saying "…and you must be a member" would
+have created an additional way for a write to be accepted, not a narrowing of the existing
+one. A narrowing guard has only one correct place — inside the `WITH CHECK` of every policy
+that can accept the write.
+
+The first version of the assertion for this passed for the wrong reason and hid a real bug:
+the guard read `SELECT id FROM organizations WHERE name = 'Org B'` from inside a block
+running as the author, who cannot see that row, so the UPDATE set `shared_org_id = NULL` —
+which the check rightly permits — and quietly destroyed the share the fixture had just made.
+The id is now passed in as a psql variable, the block raises if it is null, and the test
+asserts afterwards that the rejected update left the existing share intact.
+
+---
+
+## 2026-09-04 — Two export functions, not an export flag
+
+**Decision.** `exportKramaFileForSharing(flow, at)` sits beside `exportKramaFile(flow, at)`
+in `src/lib/storage/krama-file.ts`. It is not `exportKramaFile(flow, at, { forSharing: true })`.
+
+The two calls mean different things and have opposite failure modes. A file a teacher exports
+for themselves is a backup; silently dropping their per-pose notes from it would be data
+loss wearing a privacy argument. A file exported to hand to someone else must not carry
+those notes at all. A boolean puts both behaviours behind one name and lets the wrong one
+happen by default — and the default would have to be one of them.
+
+`stripAuthorOnly` in `src/lib/flow/share.ts` stays pure and knows nothing about Supabase.
+Its doc comment says explicitly that it is the file-export path and *not* the mechanism
+behind FR-022, because a reader who assumed otherwise would then believe the author boundary
+is enforced in TypeScript. It is enforced by there being no policy on `flow_item_notes`, and
+`tests/unit/architecture/notes-table-unreferenced.test.ts` fails if any file in `src/`
+outside the generated types so much as names that table.
+
+---
+
 ## 2026-09-04 — 008 widens to full NextMove manifest parity; dashboards, synthetics,
 service-catalog, and logs-metrics are in scope after all
 

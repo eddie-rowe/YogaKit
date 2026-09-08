@@ -16,7 +16,8 @@
     "datadog:validate": "node scripts/datadog/sync.mjs --validate",
     "datadog:diff": "node scripts/datadog/sync.mjs",
     "datadog:apply": "node scripts/datadog/sync.mjs --apply",
-    "lint:telemetry": "node scripts/check-telemetry-content-free.mjs"
+    "lint:telemetry": "node scripts/check-telemetry-content-free.mjs",
+    "db:types": "bash scripts/db-types-local.sh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.105.0",

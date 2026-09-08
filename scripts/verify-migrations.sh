@@ -472,6 +472,661 @@ BEGIN
 END $do$;
 EOF
 
+# --- 004 C1 / I1: flow_item_notes has no column a policy could join to an org.
+# This is the structural half of Principle VIII and the only assertion here that holds
+# against a migration nobody has written yet: I3-I7 prove today's policies behave, this
+# proves tomorrow's migration cannot quietly stop them behaving (RULE-V1,
+# specs/004-sequencing-composer/contracts/flow-sharing.md I1).
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+DO $do$
+DECLARE v_bad text;
+BEGIN
+  SELECT string_agg(column_name, ', ') INTO v_bad
+    FROM information_schema.columns
+   WHERE table_schema = 'public' AND table_name = 'flow_item_notes'
+     AND (column_name ~ '(org|cohort|team|role|visib|shared|public)');
+  IF v_bad IS NOT NULL THEN
+    RAISE EXCEPTION 'flow_item_notes gained a joinable column: % — see contracts/flow-sharing.md I1', v_bad;
+  END IF;
+  RAISE NOTICE 'PASS I1 flow_item_notes has no org/cohort/role/visibility column';
+END $do$;
+EOF
+
+# --- 004 C1 / I2: every policy on flow_item_notes is keyed on the caller alone.
+# The write policies additionally reach flows.user_id (so a user cannot squat the primary
+# key of someone else's item), which is still the caller and still not an org.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+DO $do$
+DECLARE
+  v_count int;
+  v_bad   text;
+  v_sel   text;
+BEGIN
+  SELECT count(*) INTO v_count FROM pg_policies
+   WHERE schemaname = 'public' AND tablename = 'flow_item_notes';
+  IF v_count <> 4 THEN
+    RAISE EXCEPTION 'expected exactly 4 policies on flow_item_notes, found %', v_count;
+  END IF;
+
+  SELECT string_agg(policyname, ', ') INTO v_bad FROM pg_policies
+   WHERE schemaname = 'public' AND tablename = 'flow_item_notes'
+     AND (coalesce(qual, '') || ' ' || coalesce(with_check, '')) ~ '(org|cohort|team|role)';
+  IF v_bad IS NOT NULL THEN
+    RAISE EXCEPTION 'a flow_item_notes policy mentions an org/cohort/role: %', v_bad;
+  END IF;
+
+  SELECT qual INTO v_sel FROM pg_policies
+   WHERE schemaname = 'public' AND tablename = 'flow_item_notes' AND cmd = 'SELECT';
+  IF v_sel !~ 'user_id' OR v_sel ~ 'flows' THEN
+    RAISE EXCEPTION 'the flow_item_notes SELECT policy is not the caller alone: %', v_sel;
+  END IF;
+
+  RAISE NOTICE 'PASS I2 flow_item_notes carries four caller-keyed policies and no join path';
+END $do$;
+EOF
+
+# --- 004 C1: app_save_flow is SECURITY INVOKER. If this ever flips to DEFINER, every
+# policy above stops applying inside it and the feature's whole guarantee is gone.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+DO $do$
+DECLARE v_def boolean;
+BEGIN
+  SELECT prosecdef INTO v_def FROM pg_proc WHERE proname = 'app_save_flow';
+  IF v_def IS DISTINCT FROM false THEN
+    RAISE EXCEPTION 'app_save_flow is SECURITY DEFINER — RLS no longer applies inside it';
+  END IF;
+  RAISE NOTICE 'PASS app_save_flow is SECURITY INVOKER, so RLS applies to every statement in it';
+END $do$;
+EOF
+
+# --- 004 C1: app_save_flow shreds a Flow document into four tables in one transaction,
+# and a re-save converges rather than accumulating (FR-017).
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
+DO $do$
+DECLARE
+  v_flow uuid := 'f0000000-0000-0000-0000-000000000001';
+  v_i1   uuid := 'f1000000-0000-0000-0000-000000000001';
+  v_i2   uuid := 'f1000000-0000-0000-0000-000000000002';
+  v_p1   uuid := 'f2000000-0000-0000-0000-000000000001';
+  v_items int; v_phases int; v_notes int; v_title text; v_measure int;
+BEGIN
+  PERFORM app_save_flow(jsonb_build_object(
+    'id', v_flow, 'title', 'Morning', 'schema_version', '0.1.0',
+    'createdAt', now(), 'updatedAt', now(),
+    'phases', jsonb_build_array(
+      jsonb_build_object('id', v_p1, 'name', 'Opening', 'intentTag', 'samana', 'order', 0)),
+    'items', jsonb_build_array(
+      jsonb_build_object('id', v_i1, 'poseSlug', 'mountain', 'mode', 'yang',
+                         'measure', jsonb_build_object('breaths', 5),
+                         'phaseId', v_p1, 'order', 0, 'note', 'left hip stays heavy'),
+      jsonb_build_object('id', v_i2, 'poseSlug', 'savasana', 'mode', 'yin',
+                         'measure', jsonb_build_object('seconds', 300),
+                         'phaseId', null, 'order', 1))));
+
+  SELECT count(*) INTO v_items  FROM flow_items WHERE flow_id = v_flow;
+  SELECT count(*) INTO v_phases FROM phases     WHERE flow_id = v_flow;
+  SELECT count(*) INTO v_notes  FROM flow_item_notes n JOIN flow_items i ON i.id = n.flow_item_id
+   WHERE i.flow_id = v_flow;
+  SELECT measure_breaths INTO v_measure FROM flow_items WHERE id = v_i1;
+  IF (v_items, v_phases, v_notes, v_measure) IS DISTINCT FROM (2, 1, 1, 5) THEN
+    RAISE EXCEPTION 'app_save_flow shred wrong: % items, % phases, % notes, measure %',
+      v_items, v_phases, v_notes, v_measure;
+  END IF;
+
+  -- Re-save: one item dropped, the note cleared, the title changed. A cleared note must be
+  -- a deleted row, because the share query relies on the row's absence, not on its content.
+  PERFORM app_save_flow(jsonb_build_object(
+    'id', v_flow, 'title', 'Morning, shorter', 'schema_version', '0.1.0',
+    'createdAt', now(), 'updatedAt', now(),
+    'phases', '[]'::jsonb,
+    'items', jsonb_build_array(
+      jsonb_build_object('id', v_i1, 'poseSlug', 'mountain', 'mode', 'yang',
+                         'measure', jsonb_build_object('breaths', 8),
+                         'phaseId', null, 'order', 0))));
+
+  SELECT count(*) INTO v_items  FROM flow_items WHERE flow_id = v_flow;
+  SELECT count(*) INTO v_phases FROM phases     WHERE flow_id = v_flow;
+  SELECT count(*) INTO v_notes  FROM flow_item_notes WHERE flow_item_id = v_i1;
+  SELECT title INTO v_title FROM flows WHERE id = v_flow;
+  IF (v_items, v_phases, v_notes, v_title)
+     IS DISTINCT FROM (1, 0, 0, 'Morning, shorter') THEN
+    RAISE EXCEPTION 're-save did not converge: % items, % phases, % notes, title %',
+      v_items, v_phases, v_notes, v_title;
+  END IF;
+
+  RAISE NOTICE 'PASS app_save_flow shreds a Flow into four tables and a re-save converges';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- 004 C1: a second account, in a different org, reads zero rows of any of the four
+# tables — including the notes table, by a direct select of its own.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000003';
+DO $do$
+DECLARE v_f int; v_p int; v_i int; v_n int;
+BEGIN
+  SELECT count(*) INTO v_f FROM flows;
+  SELECT count(*) INTO v_p FROM phases;
+  SELECT count(*) INTO v_i FROM flow_items;
+  SELECT count(*) INTO v_n FROM flow_item_notes;
+  IF (v_f, v_p, v_i, v_n) IS DISTINCT FROM (0, 0, 0, 0) THEN
+    RAISE EXCEPTION 'RLS leak: another account sees % flows, % phases, % items, % notes',
+      v_f, v_p, v_i, v_n;
+  END IF;
+  RAISE NOTICE 'PASS another account reads zero rows of flows/phases/flow_items/flow_item_notes';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- 004 C1: SECURITY INVOKER, tested rather than asserted. A payload naming someone
+# else's flow id writes nothing and leaves the original untouched.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000003';
+DO $do$
+DECLARE v_flow uuid := 'f0000000-0000-0000-0000-000000000001';
+BEGIN
+  BEGIN
+    PERFORM app_save_flow(jsonb_build_object(
+      'id', v_flow, 'title', 'Stolen', 'schema_version', '0.1.0',
+      'createdAt', now(), 'updatedAt', now(),
+      'phases', '[]'::jsonb, 'items', '[]'::jsonb));
+  EXCEPTION WHEN insufficient_privilege OR unique_violation THEN
+    NULL;  -- either shape is fine; what matters is the row below
+  END;
+  IF EXISTS (SELECT 1 FROM flows WHERE user_id = 'a0000000-0000-0000-0000-000000000003') THEN
+    RAISE EXCEPTION 'app_save_flow let a caller write a flow they do not own';
+  END IF;
+  RAISE NOTICE 'PASS app_save_flow writes nothing for a payload naming another account''s flow';
+END $do$;
+RESET ROLE;
+EOF
+
+# The original is unchanged, checked as its owner rather than through the attacker's
+# (empty) view.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
+DO $do$
+DECLARE v_title text;
+BEGIN
+  SELECT title INTO v_title FROM flows WHERE id = 'f0000000-0000-0000-0000-000000000001';
+  IF v_title IS DISTINCT FROM 'Morning, shorter' THEN
+    RAISE EXCEPTION 'another account overwrote the owner''s flow title: %', v_title;
+  END IF;
+  RAISE NOTICE 'PASS the owner''s flow survived the foreign app_save_flow attempt intact';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- 004 C1: the soft delete replicates, and stays the caller's own.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
+DO $do$
+DECLARE v_deleted timestamptz;
+BEGIN
+  PERFORM app_delete_flow('f0000000-0000-0000-0000-000000000001');
+  SELECT deleted_at INTO v_deleted FROM flows WHERE id = 'f0000000-0000-0000-0000-000000000001';
+  IF v_deleted IS NULL THEN
+    RAISE EXCEPTION 'app_delete_flow did not set deleted_at';
+  END IF;
+
+  -- A later save revives it: the teacher edited the flow, so they still have it.
+  PERFORM app_save_flow(jsonb_build_object(
+    'id', 'f0000000-0000-0000-0000-000000000001', 'title', 'Morning, back',
+    'schema_version', '0.1.0', 'createdAt', now(), 'updatedAt', now(),
+    'phases', '[]'::jsonb, 'items', '[]'::jsonb));
+  SELECT deleted_at INTO v_deleted FROM flows WHERE id = 'f0000000-0000-0000-0000-000000000001';
+  IF v_deleted IS NOT NULL THEN
+    RAISE EXCEPTION 'a save on a soft-deleted flow did not revive it';
+  END IF;
+  RAISE NOTICE 'PASS app_delete_flow soft-deletes and a later save revives';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- 004 C1: the claimed_flows backfill. It ran during the migration loop above against
+# an empty table, which proves only that it parses. Seed a claim and re-run the same file:
+# it is written to be idempotent, so running it twice is a legitimate test, not a hack.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+INSERT INTO claimed_flows (user_id, source_flow_id, payload) VALUES (
+  'a0000000-0000-0000-0000-000000000002',
+  'c0000000-0000-0000-0000-000000000009',
+  jsonb_build_object(
+    'schema_version', '0.1.0', 'exported_at', now(),
+    'flow', jsonb_build_object(
+      'id', 'c0000000-0000-0000-0000-000000000009', 'title', 'Claimed evening',
+      'schema_version', '0.1.0', 'createdAt', now(), 'updatedAt', now(), 'isBuiltIn', false,
+      'phases', jsonb_build_array(
+        jsonb_build_object('id', 'c2000000-0000-0000-0000-000000000001',
+                           'name', 'Settle', 'intentTag', 'langhana', 'order', 0)),
+      'items', jsonb_build_array(
+        jsonb_build_object('id', 'c1000000-0000-0000-0000-000000000001',
+                           'poseSlug', 'butterfly', 'mode', 'yin',
+                           'measure', jsonb_build_object('seconds', 180),
+                           'phaseId', 'c2000000-0000-0000-0000-000000000001', 'order', 0,
+                           'note', 'she prefers a block under the sacrum'),
+        jsonb_build_object('id', 'c1000000-0000-0000-0000-000000000002',
+                           'poseSlug', 'savasana', 'mode', 'yin',
+                           'measure', jsonb_build_object('seconds', 300),
+                           'phaseId', null, 'order', 1)))));
+-- A claim whose flow id is not a uuid: the audit trail keeps it, the backfill steps over it.
+INSERT INTO claimed_flows (user_id, source_flow_id, payload) VALUES (
+  'a0000000-0000-0000-0000-000000000002', 'legacy-flow-7',
+  jsonb_build_object('schema_version', '0.1.0', 'flow',
+    jsonb_build_object('id', 'legacy-flow-7', 'title', 'Unkeyable')));
+EOF
+
+psql -v ON_ERROR_STOP=1 -q -f supabase/migrations/20260903091000_backfill_claimed_flows.sql
+psql -v ON_ERROR_STOP=1 -q -f supabase/migrations/20260903091000_backfill_claimed_flows.sql
+
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+DO $do$
+DECLARE
+  v_id uuid := 'c0000000-0000-0000-0000-000000000009';
+  v_flows int; v_items int; v_phases int; v_notes int; v_owner uuid; v_note text;
+BEGIN
+  SELECT count(*) INTO v_flows FROM flows WHERE id = v_id;
+  SELECT count(*) INTO v_items  FROM flow_items WHERE flow_id = v_id;
+  SELECT count(*) INTO v_phases FROM phases WHERE flow_id = v_id;
+  SELECT count(*) INTO v_notes  FROM flow_item_notes n
+    JOIN flow_items i ON i.id = n.flow_item_id WHERE i.flow_id = v_id;
+  SELECT user_id INTO v_owner FROM flows WHERE id = v_id;
+  SELECT note INTO v_note FROM flow_item_notes
+   WHERE flow_item_id = 'c1000000-0000-0000-0000-000000000001';
+
+  IF (v_flows, v_items, v_phases, v_notes) IS DISTINCT FROM (1, 2, 1, 1) THEN
+    RAISE EXCEPTION 'backfill is not idempotent: % flows, % items, % phases, % notes',
+      v_flows, v_items, v_phases, v_notes;
+  END IF;
+  IF v_owner IS DISTINCT FROM 'a0000000-0000-0000-0000-000000000002'::uuid THEN
+    RAISE EXCEPTION 'backfill assigned the wrong owner: %', v_owner;
+  END IF;
+  IF v_note IS DISTINCT FROM 'she prefers a block under the sacrum' THEN
+    RAISE EXCEPTION 'backfill lost the author-only note: %', v_note;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM claimed_flows WHERE source_flow_id = 'legacy-flow-7') THEN
+    RAISE EXCEPTION 'the backfill deleted an audit-trail row it could not key';
+  END IF;
+  RAISE NOTICE 'PASS claimed_flows backfill materializes, keeps the note, and re-runs clean';
+END $do$;
+EOF
+
+# ===========================================================================
+# 004 US3 — the author boundary (specs/004-sequencing-composer/contracts/flow-sharing.md).
+#
+# I1 and I2 are asserted further up, structurally, against information_schema and
+# pg_policies: they hold against migrations nobody has written yet. I3-I7 and I9 below are
+# behavioural, and they are the ones that prove today's policies do what §4 claims.
+#
+# One more account is needed than the fixtures above provide. Member A holds `admin` in
+# Org A, which makes them the I4 case (an admin is not an exception) but not the I3 case
+# (a plain member). Member A Plain is that account.
+# ===========================================================================
+
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+INSERT INTO auth.users (id, email, email_confirmed_at) VALUES
+  ('a0000000-0000-0000-0000-000000000007', 'plain-a@example.com', now());
+INSERT INTO profiles (id, display_name, timezone) VALUES
+  ('a0000000-0000-0000-0000-000000000007', 'Member A Plain', 'America/Denver')
+ON CONFLICT (id) DO UPDATE SET display_name = excluded.display_name;
+INSERT INTO memberships (org_id, user_id, roles, status)
+SELECT id, 'a0000000-0000-0000-0000-000000000007', array['student'], 'active'
+  FROM organizations WHERE name = 'Org A';
+EOF
+
+# Owner A authors a flow carrying an author-only note on every item, then shares it with
+# Org A. The notes are what the rest of this section is about: if any of them crosses, the
+# feature has failed regardless of what the UI shows.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
+DO $do$
+DECLARE v_notes int;
+BEGIN
+  PERFORM app_save_flow(jsonb_build_object(
+    'id', 'f0000000-0000-0000-0000-000000000002', 'title', 'Standing sequence',
+    'schema_version', '0.1.0', 'createdAt', now(), 'updatedAt', now(),
+    'phases', jsonb_build_array(
+      jsonb_build_object('id', 'd2000000-0000-0000-0000-000000000001',
+                         'name', 'Warm', 'intentTag', 'brahmana', 'order', 0)),
+    'items', jsonb_build_array(
+      jsonb_build_object('id', 'd1000000-0000-0000-0000-000000000001',
+                         'poseSlug', 'tadasana', 'mode', 'yang',
+                         'measure', jsonb_build_object('breaths', 5),
+                         'phaseId', 'd2000000-0000-0000-0000-000000000001', 'order', 0,
+                         'note', 'watch her left knee here'),
+      jsonb_build_object('id', 'd1000000-0000-0000-0000-000000000002',
+                         'poseSlug', 'savasana', 'mode', 'yin',
+                         'measure', jsonb_build_object('seconds', 300),
+                         'phaseId', null, 'order', 1,
+                         'note', 'the room is cold, offer a blanket'))));
+
+  SELECT count(*) INTO v_notes FROM flow_item_notes n JOIN flow_items i ON i.id = n.flow_item_id
+   WHERE i.flow_id = 'f0000000-0000-0000-0000-000000000002';
+  IF v_notes <> 2 THEN
+    RAISE EXCEPTION 'fixture is not testing anything: % author notes, expected 2', v_notes;
+  END IF;
+
+  UPDATE flows SET shared_org_id = (SELECT id FROM organizations WHERE name = 'Org A')
+   WHERE id = 'f0000000-0000-0000-0000-000000000002';
+  IF NOT EXISTS (SELECT 1 FROM flows WHERE id = 'f0000000-0000-0000-0000-000000000002'
+                   AND shared_org_id IS NOT NULL) THEN
+    RAISE EXCEPTION 'the owner could not share their own flow with their own org';
+  END IF;
+  RAISE NOTICE 'PASS US3 fixture: a shared flow with two author-only notes exists';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- The share write guard: an author may only share into an org they belong to. Not a
+# leak of anyone else's data — it is their own flow — but an org whose members never
+# invited the flow should not find it in their list.
+#
+# Org B's id is passed in as a psql variable rather than looked up inside the block: the
+# caller here is Owner A, who cannot SELECT Org B's row, so an in-block lookup silently
+# yields NULL and the assertion passes for the wrong reason. (It did, once.)
+ORG_B_ID=$(psql -Atc "SELECT id FROM organizations WHERE name = 'Org B'")
+psql -v ON_ERROR_STOP=1 -q -v org_b="$ORG_B_ID" <<'EOF'
+-- psql does not interpolate variables inside a dollar-quoted body, so it lands in a
+-- session setting the block reads instead.
+SET krama.org_b = :'org_b';
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
+DO $do$
+DECLARE v_org_b uuid := nullif(current_setting('krama.org_b', true), '')::uuid;
+        v_shared uuid;
+BEGIN
+  IF v_org_b IS NULL THEN
+    RAISE EXCEPTION 'the guard is not testing anything: Org B id did not reach the block';
+  END IF;
+  BEGIN
+    UPDATE flows SET shared_org_id = v_org_b
+     WHERE id = 'f0000000-0000-0000-0000-000000000002';
+    RAISE EXCEPTION 'an author shared a flow into an org they do not belong to';
+  EXCEPTION WHEN insufficient_privilege THEN
+    NULL;  -- the WITH CHECK on flows_update_own, which is the intended outcome
+  END;
+
+  SELECT shared_org_id INTO v_shared FROM flows
+   WHERE id = 'f0000000-0000-0000-0000-000000000002';
+  IF v_shared IS DISTINCT FROM (SELECT id FROM organizations WHERE name = 'Org A') THEN
+    RAISE EXCEPTION 'the rejected update disturbed the existing share: %', v_shared;
+  END IF;
+  RAISE NOTICE 'PASS US3 an author cannot share a flow into an org they do not belong to';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- I3: a plain member of the same org, by every route in the contract's list. Route 1
+# (the share view) returns the structure; route 2 (a direct select on flow_item_notes with
+# their own token) returns zero rows. Route 3 is I5.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000007';
+DO $do$
+DECLARE v_flow uuid := 'f0000000-0000-0000-0000-000000000002';
+        v_title text; v_phases int; v_items int; v_notes int; v_all_notes int;
+BEGIN
+  -- Route 1: the share view, exactly as the client issues it.
+  SELECT f.title INTO v_title FROM flows f WHERE f.id = v_flow;
+  SELECT count(*) INTO v_phases FROM phases WHERE flow_id = v_flow;
+  SELECT count(*) INTO v_items  FROM flow_items WHERE flow_id = v_flow;
+  IF v_title IS DISTINCT FROM 'Standing sequence' OR (v_phases, v_items) IS DISTINCT FROM (1, 2) THEN
+    RAISE EXCEPTION 'a shared flow is not readable by an org member: %, % phases, % items',
+      v_title, v_phases, v_items;
+  END IF;
+
+  -- Route 2: a direct request against the notes table with the recipient's own token.
+  SELECT count(*) INTO v_notes FROM flow_item_notes n JOIN flow_items i ON i.id = n.flow_item_id
+   WHERE i.flow_id = v_flow;
+  SELECT count(*) INTO v_all_notes FROM flow_item_notes;
+  IF (v_notes, v_all_notes) IS DISTINCT FROM (0, 0) THEN
+    RAISE EXCEPTION 'author boundary breached: recipient sees % notes on the shared flow, % overall',
+      v_notes, v_all_notes;
+  END IF;
+  RAISE NOTICE 'PASS I3 an org member reads a shared flow''s structure and zero note rows';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- I4: the same, with the recipient holding the admin role (RULE-V5). There is no role
+# branch in any policy above for an admin to be an exception in; this proves it.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000002';
+DO $do$
+DECLARE v_flow uuid := 'f0000000-0000-0000-0000-000000000002';
+        v_is_admin boolean; v_items int; v_notes int;
+BEGIN
+  SELECT app_has_org_role((SELECT id FROM organizations WHERE name = 'Org A'), array['admin'])
+    INTO v_is_admin;
+  IF NOT v_is_admin THEN
+    RAISE EXCEPTION 'I4 is not testing an admin: the recipient does not hold the role';
+  END IF;
+
+  SELECT count(*) INTO v_items FROM flow_items WHERE flow_id = v_flow;
+  -- Scoped to the author's rows, not to the whole table: this account owns a note of its
+  -- own from the claimed_flows fixture above, and seeing that one is correct.
+  SELECT count(*) INTO v_notes FROM flow_item_notes
+   WHERE user_id = 'a0000000-0000-0000-0000-000000000001';
+  IF v_items <> 2 OR v_notes <> 0 THEN
+    RAISE EXCEPTION 'admin recipient sees % items and % of the author''s notes, expected 2 and 0',
+      v_items, v_notes;
+  END IF;
+  RAISE NOTICE 'PASS I4 an org admin is not an exception: structure yes, notes zero';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- Not an invariant in the table, but the floor under all of them: an account in a
+# different org sees nothing of the shared flow at all.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000003';
+DO $do$
+DECLARE v_flow uuid := 'f0000000-0000-0000-0000-000000000002';
+        v_f int; v_p int; v_i int;
+BEGIN
+  SELECT count(*) INTO v_f FROM flows WHERE id = v_flow;
+  SELECT count(*) INTO v_p FROM phases WHERE flow_id = v_flow;
+  SELECT count(*) INTO v_i FROM flow_items WHERE flow_id = v_flow;
+  IF (v_f, v_p, v_i) IS DISTINCT FROM (0, 0, 0) THEN
+    RAISE EXCEPTION 'a flow shared with Org A is visible outside it: %, %, %', v_f, v_p, v_i;
+  END IF;
+  RAISE NOTICE 'PASS US3 a flow shared with one org is invisible to another org''s owner';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- I5: the duplicate. Built the way the client builds it — read route 1, then
+# app_save_flow under fresh ids — so the assertion proves the copy can only contain what
+# route 1 returned, rather than proving that a hand-written payload omits notes.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000007';
+DO $do$
+DECLARE
+  v_src  uuid := 'f0000000-0000-0000-0000-000000000002';
+  v_dup  uuid := 'f0000000-0000-0000-0000-000000000003';
+  v_phase_map jsonb;
+  v_phases jsonb;
+  v_items jsonb;
+  v_notes int; v_items_n int;
+BEGIN
+  -- New ids for every child, kept in a map so items keep their phase.
+  SELECT coalesce(jsonb_object_agg(p.id, gen_random_uuid()), '{}'::jsonb)
+    INTO v_phase_map FROM phases p WHERE p.flow_id = v_src;
+
+  SELECT coalesce(jsonb_agg(jsonb_build_object(
+           'id', v_phase_map->>(p.id::text), 'name', p.name,
+           'intentTag', p.intent_tag, 'order', p.position) ORDER BY p.position), '[]'::jsonb)
+    INTO v_phases FROM phases p WHERE p.flow_id = v_src;
+
+  SELECT coalesce(jsonb_agg(jsonb_build_object(
+           'id', gen_random_uuid(), 'poseSlug', i.pose_slug, 'mode', i.mode,
+           'measure', jsonb_strip_nulls(jsonb_build_object(
+             'breaths', i.measure_breaths, 'seconds', i.measure_seconds)),
+           'phaseId', v_phase_map->>(i.phase_id::text),
+           'order', i.position) ORDER BY i.position), '[]'::jsonb)
+    INTO v_items FROM flow_items i WHERE i.flow_id = v_src;
+
+  PERFORM app_save_flow(jsonb_build_object(
+    'id', v_dup, 'title', 'Standing sequence (copy)', 'schema_version', '0.1.0',
+    'createdAt', now(), 'updatedAt', now(), 'phases', v_phases, 'items', v_items));
+
+  SELECT count(*) INTO v_items_n FROM flow_items WHERE flow_id = v_dup;
+  SELECT count(*) INTO v_notes FROM flow_item_notes n JOIN flow_items i ON i.id = n.flow_item_id
+   WHERE i.flow_id = v_dup;
+  IF v_items_n <> 2 THEN
+    RAISE EXCEPTION 'the duplicate did not carry the structure: % items', v_items_n;
+  END IF;
+  IF v_notes <> 0 THEN
+    RAISE EXCEPTION 'the duplicate carried % note rows', v_notes;
+  END IF;
+  IF EXISTS (SELECT 1 FROM flows WHERE id = v_dup AND shared_org_id IS NOT NULL) THEN
+    RAISE EXCEPTION 'the duplicate inherited the original''s share';
+  END IF;
+
+  -- The recipient's own note on their own copy. I6 checks the author cannot see it.
+  INSERT INTO flow_item_notes (flow_item_id, user_id, note)
+  SELECT i.id, (SELECT auth.uid()), 'my own reminder'
+    FROM flow_items i WHERE i.flow_id = v_dup ORDER BY i.position LIMIT 1;
+
+  RAISE NOTICE 'PASS I5 a duplicate carries the structure, zero of the author''s notes, and no share';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- I6: the recipient's own notes on their duplicate are invisible to the original
+# author. True by the single SELECT policy on flow_item_notes, with nothing added for it.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
+DO $do$
+DECLARE v_theirs int; v_dup_flow int;
+BEGIN
+  SELECT count(*) INTO v_theirs FROM flow_item_notes
+   WHERE user_id = 'a0000000-0000-0000-0000-000000000007';
+  SELECT count(*) INTO v_dup_flow FROM flows WHERE id = 'f0000000-0000-0000-0000-000000000003';
+  IF v_theirs <> 0 THEN
+    RAISE EXCEPTION 'the author sees % of the recipient''s own notes', v_theirs;
+  END IF;
+  IF v_dup_flow <> 0 THEN
+    RAISE EXCEPTION 'the author can read the recipient''s duplicate flow row';
+  END IF;
+  RAISE NOTICE 'PASS I6 the recipient''s own notes and duplicate are invisible to the author';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- I7: independence in both directions. There is no link between the copies, so this is
+# a property of the data rather than of a rule; it is asserted because FR-026 says so.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000007';
+UPDATE flows SET title = 'Standing sequence, mine' WHERE id = 'f0000000-0000-0000-0000-000000000003';
+RESET ROLE;
+EOF
+
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
+DO $do$
+DECLARE v_orig text;
+BEGIN
+  SELECT title INTO v_orig FROM flows WHERE id = 'f0000000-0000-0000-0000-000000000002';
+  IF v_orig IS DISTINCT FROM 'Standing sequence' THEN
+    RAISE EXCEPTION 'an edit to the duplicate changed the original: %', v_orig;
+  END IF;
+  UPDATE flows SET title = 'Standing sequence, revised'
+   WHERE id = 'f0000000-0000-0000-0000-000000000002';
+END $do$;
+RESET ROLE;
+EOF
+
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000007';
+DO $do$
+DECLARE v_dup text;
+BEGIN
+  SELECT title INTO v_dup FROM flows WHERE id = 'f0000000-0000-0000-0000-000000000003';
+  IF v_dup IS DISTINCT FROM 'Standing sequence, mine' THEN
+    RAISE EXCEPTION 'an edit to the original changed the duplicate: %', v_dup;
+  END IF;
+  RAISE NOTICE 'PASS I7 an edit to either copy leaves the other alone';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- I9: revoking the share closes the read path and touches no existing duplicate. This
+# is the assertion behind the sentence FR-032 requires next to the revoke control.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
+UPDATE flows SET shared_org_id = NULL WHERE id = 'f0000000-0000-0000-0000-000000000002';
+RESET ROLE;
+EOF
+
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000007';
+DO $do$
+DECLARE v_src int; v_src_items int; v_dup text; v_dup_items int; v_own_note int;
+BEGIN
+  SELECT count(*) INTO v_src FROM flows WHERE id = 'f0000000-0000-0000-0000-000000000002';
+  SELECT count(*) INTO v_src_items FROM flow_items WHERE flow_id = 'f0000000-0000-0000-0000-000000000002';
+  IF (v_src, v_src_items) IS DISTINCT FROM (0, 0) THEN
+    RAISE EXCEPTION 'a revoked share is still readable: % flows, % items', v_src, v_src_items;
+  END IF;
+
+  SELECT title INTO v_dup FROM flows WHERE id = 'f0000000-0000-0000-0000-000000000003';
+  SELECT count(*) INTO v_dup_items FROM flow_items WHERE flow_id = 'f0000000-0000-0000-0000-000000000003';
+  SELECT count(*) INTO v_own_note FROM flow_item_notes WHERE user_id = (SELECT auth.uid());
+  IF v_dup IS DISTINCT FROM 'Standing sequence, mine' OR v_dup_items <> 2 OR v_own_note <> 1 THEN
+    RAISE EXCEPTION 'revoking the share damaged the recipient''s duplicate: %, % items, % notes',
+      v_dup, v_dup_items, v_own_note;
+  END IF;
+  RAISE NOTICE 'PASS I9 revoking a share closes the read path and leaves duplicates untouched';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- A soft-deleted flow leaves the org's list. The departure from data-model.md §4 that
+# the migration header records, asserted rather than described.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
+DO $do$
+BEGIN
+  UPDATE flows SET shared_org_id = (SELECT id FROM organizations WHERE name = 'Org A')
+   WHERE id = 'f0000000-0000-0000-0000-000000000002';
+  PERFORM app_delete_flow('f0000000-0000-0000-0000-000000000002');
+END $do$;
+RESET ROLE;
+EOF
+
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000007';
+DO $do$
+DECLARE v_src int;
+BEGIN
+  SELECT count(*) INTO v_src FROM flows WHERE id = 'f0000000-0000-0000-0000-000000000002';
+  IF v_src <> 0 THEN
+    RAISE EXCEPTION 'a shared flow its author deleted is still in the org''s list';
+  END IF;
+  RAISE NOTICE 'PASS US3 a soft-deleted flow leaves the org''s list while still shared';
+END $do$;
+RESET ROLE;
+EOF
+
 export PGDATABASE=postgres
 psql -q -c "DROP DATABASE yogakit_mig_verify"
 echo "MIGRATION VERIFICATION PASSED"

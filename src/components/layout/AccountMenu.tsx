@@ -8,6 +8,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 import { createClient } from '@/lib/supabase/client'
 import { clearSyncedFlows } from '@/lib/storage/flow-store'
+import { clearOutbox } from '@/lib/storage/outbox'
 import { deriveInitials } from '@/lib/identity/initials'
 
 // The signed-in indicator. Before this, the only evidence of a session was a
@@ -91,6 +92,9 @@ export default function AccountMenu() {
       // flows go: work authored on this device has no other copy, and destroying
       // it would break RULE-L4 (see clearSyncedFlows).
       await clearSyncedFlows()
+      // The queue belonged to the session that just ended; leaving it would flush
+      // this account's flows into whoever signs in next. It never removes a flow.
+      await clearOutbox()
       window.location.assign('/')
     }
   }

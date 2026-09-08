@@ -4,8 +4,14 @@ import userEvent from '@testing-library/user-event'
 
 import AccountMenu from '@/components/layout/AccountMenu'
 
-const { getUserMock, signOutMock, onAuthStateChangeMock, clearSyncedFlowsMock, clearAllFlowsMock } =
-  vi.hoisted(() => ({
+const {
+  getUserMock,
+  signOutMock,
+  onAuthStateChangeMock,
+  clearSyncedFlowsMock,
+  clearAllFlowsMock,
+  clearOutboxMock,
+} = vi.hoisted(() => ({
     getUserMock: vi.fn(),
     signOutMock: vi.fn().mockResolvedValue({ error: null }),
     onAuthStateChangeMock: vi.fn().mockReturnValue({
@@ -13,6 +19,7 @@ const { getUserMock, signOutMock, onAuthStateChangeMock, clearSyncedFlowsMock, c
     }),
     clearSyncedFlowsMock: vi.fn().mockResolvedValue(0),
     clearAllFlowsMock: vi.fn().mockResolvedValue(undefined),
+    clearOutboxMock: vi.fn().mockResolvedValue(undefined),
   }))
 
 vi.mock('@/lib/supabase/client', () => ({
@@ -29,6 +36,8 @@ vi.mock('@/lib/storage/flow-store', () => ({
   clearSyncedFlows: clearSyncedFlowsMock,
   clearAllFlows: clearAllFlowsMock,
 }))
+
+vi.mock('@/lib/storage/outbox', () => ({ clearOutbox: clearOutboxMock }))
 
 function signedIn(metadata: Record<string, unknown> = { full_name: 'Synthetics Testing' }) {
   getUserMock.mockResolvedValue({
@@ -111,6 +120,9 @@ describe('AccountMenu', () => {
     await waitFor(() => expect(clearSyncedFlowsMock).toHaveBeenCalled())
     // RULE-L4: work authored on this device before any account existed survives.
     expect(clearAllFlowsMock).not.toHaveBeenCalled()
+    // The queue belonged to the session that just ended — it must not flush into the
+    // next account on a shared device.
+    await waitFor(() => expect(clearOutboxMock).toHaveBeenCalled())
     expect(window.location.assign).toHaveBeenCalledWith('/')
   })
 
@@ -125,5 +137,6 @@ describe('AccountMenu', () => {
 
     expect(signOutMock).not.toHaveBeenCalled()
     expect(clearSyncedFlowsMock).not.toHaveBeenCalled()
+    expect(clearOutboxMock).not.toHaveBeenCalled()
   })
 })

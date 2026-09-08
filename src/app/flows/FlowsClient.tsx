@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import type { Flow } from '@/lib/flow/types'
 import { getAllFlows, deleteFlow, saveFlow } from '@/lib/storage/flow-store'
+import { queueDelete } from '@/lib/storage/sync'
 import { CURRENT_SCHEMA_VERSION, exportKramaFile, importKramaFile } from '@/lib/storage/krama-file'
+import { listMyOrgs } from '@/lib/storage/sharing'
 import { formatDuration, totalSeconds } from '@/lib/flow/duration'
 
 interface Props {
@@ -19,6 +21,7 @@ export default function FlowsClient({ builtins }: Props) {
   const [savedFlows, setSavedFlows] = useState<Flow[]>([])
   const [loaded, setLoaded] = useState(false)
   const [importError, setImportError] = useState<string | null>(null)
+  const [hasOrgs, setHasOrgs] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   async function refresh() {
@@ -28,6 +31,15 @@ export default function FlowsClient({ builtins }: Props) {
 
   useEffect(() => {
     refresh()
+  }, [])
+
+  // A separate effect, and a swallowed failure: the flow list is the offline read path
+  // (RULE-L3), so nothing about it may wait on a session or a network call. This only
+  // decides whether one extra link appears.
+  useEffect(() => {
+    listMyOrgs()
+      .then(orgs => setHasOrgs(orgs.length > 0))
+      .catch(() => setHasOrgs(false))
   }, [])
 
   function handleExport(flow: Flow) {
@@ -43,6 +55,10 @@ export default function FlowsClient({ builtins }: Props) {
 
   async function handleDelete(id: string) {
     await deleteFlow(id)
+    // Same ordering rule as a save: the local delete is what happened, the queued
+    // entry is a record that the server has not been told yet. A delete replaces
+    // any queued upsert for the flow, so the server never revives it.
+    await queueDelete(id)
     refresh()
   }
 
@@ -86,6 +102,15 @@ export default function FlowsClient({ builtins }: Props) {
             >
               Import
             </button>
+            {hasOrgs && (
+              <Link
+                data-testid="flows-shared-link"
+                href="/flows/shared"
+                className="kk-btn-outline px-3 py-1.5 text-sm"
+              >
+                Shared with you
+              </Link>
+            )}
             <Link href="/compose" className="kk-btn px-3 py-1.5 text-sm font-medium">
               New flow
             </Link>

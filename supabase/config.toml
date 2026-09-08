@@ -152,12 +152,23 @@ site_url = "http://127.0.0.1:3000"
 # Includes local dev (http, since `next dev` is unencrypted) and the Vercel preview-URL
 # pattern, per research.md item 4 / docs/design/002-schema.md §F — a missing preview URL
 # breaks login only on preview branches, a class of bug invisible in local dev and prod.
-# Replace "yogakit" below with the actual Vercel project name once it's provisioned.
+#
+# Which is exactly what shipped. The placeholder here was "https://*-yogakit.vercel.app",
+# left behind with a note to replace it once Vercel was provisioned. It never was, and it
+# matches nothing: a real preview deployment for this project is
+# https://yoga-1ft4d1tr8-eddie-rowes-projects.vercel.app — Vercel truncates the `yoga-kit`
+# project slug to `yoga`, and appends an org segment the old pattern omitted entirely.
+#
+# Scope note, now that branching is enabled: this file is applied to Supabase *preview*
+# branches, not to production. The branching docs are explicit that Auth and API settings
+# are ignored on a production deploy — only migrations, Edge Functions and storage buckets
+# cross. Production's redirect allow-list is therefore dashboard state, and the production
+# site URL has to be added there by hand, once.
 additional_redirect_urls = [
   "http://127.0.0.1:3000",
   "https://127.0.0.1:3000",
   "http://localhost:3000",
-  "https://*-yogakit.vercel.app",
+  "https://yoga-*-eddie-rowes-projects.vercel.app",
 ]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600

@@ -6,8 +6,10 @@ import type { Pose } from '@/lib/pose-types'
 import type { Flow } from '@/lib/flow/types'
 import { isStillnessNode } from '@/lib/flow/types'
 import { getFlow, deleteFlow } from '@/lib/storage/flow-store'
-import { resolveDisplayName } from '@/lib/pose-library/display-name'
+import { queueDelete } from '@/lib/storage/sync'
+import { resolveItemName } from '@/lib/pose-library/display-name'
 import { formatDuration, formatMeasure, totalSeconds } from '@/lib/flow/duration'
+import FlowShare from './FlowShare'
 
 interface Props {
   id: string
@@ -72,7 +74,12 @@ export default function FlowDetailClient({ id, poses, builtins }: Props) {
             return (
               <div key={item.id} className={`kk-card px-3 py-2 flex items-center justify-between ${stillness ? 'kk-stillness' : ''}`}>
                 <span className="text-sm">
-                  {index + 1}. {pose ? resolveDisplayName(pose) : item.poseSlug}
+                  {index + 1}. {resolveItemName(pose, item.poseSlug)}
+                  {!pose && (
+                    <span className="text-xs ml-2" style={{ color: 'var(--muted)' }}>
+                      not in your library
+                    </span>
+                  )}
                 </span>
                 <span className="text-xs" style={{ color: 'var(--muted)' }}>
                   {formatMeasure(item.measure)}
@@ -82,11 +89,16 @@ export default function FlowDetailClient({ id, poses, builtins }: Props) {
           })}
         </div>
 
+        {/* Sharing is for a teacher's own work. A built-in template is already
+            everyone's, and it has no row in `flows` to carry a share. */}
+        {!flow.isBuiltIn && <FlowShare flow={flow} />}
+
         {!flow.isBuiltIn && (
           <button
             data-testid={`flows-delete-${flow.id}`}
             onClick={async () => {
               await deleteFlow(flow.id)
+              await queueDelete(flow.id)
               window.location.href = '/flows'
             }}
             className="text-xs px-2 py-1"

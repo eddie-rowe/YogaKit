@@ -6,6 +6,7 @@ import { exportKramaFile } from '@/lib/storage/krama-file'
 import { getAllFlows } from '@/lib/storage/flow-store'
 import { createClient } from '@/lib/supabase/client'
 import { CLAIM_DECISION_KEY } from '@/lib/storage/claim-decision'
+import type { Json } from '@/types/database'
 
 // Shown once per device after sign-in when local flows exist and no claim
 // decision has been recorded yet (T030, appendix §E "Migrating existing
@@ -14,6 +15,11 @@ import { CLAIM_DECISION_KEY } from '@/lib/storage/claim-decision'
 // The key moved to @/lib/storage/claim-decision so /settings can clear it: this
 // prompt records a decision and never revisits it, which left anyone who
 // dismissed it with no way back.
+
+// `flows.id` is a uuid column. Local ids have been `crypto.randomUUID()` since v0.1, but
+// an imported file could carry anything, and a flow we cannot key is not a flow we should
+// drop — it stays in `claimed_flows` above, keyed by its text `source_flow_id`.
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 export default function ClaimFlowsPrompt() {
   const [visible, setVisible] = useState(false)
@@ -60,7 +66,21 @@ export default function ClaimFlowsPrompt() {
       payload: exportKramaFile(flow, exportedAt),
     }))
 
+    // The whole document lands first, and it lands write-once. `claimed_flows` is the
+    // audit trail (DECISIONS.md, 2026-09-03): if the shred below is wrong, or a later
+    // schema change loses something, the teacher's original is still here and the fix is
+    // a second backfill. A claimed flow has no other copy once the browser is cleared.
     await supabase.from('claimed_flows').insert(rows)
+
+    // Then the same flows as normalized rows, one transaction each — the shape the app
+    // actually reads. Ids are client-generated, so a claimed flow keeps the identity it
+    // already had on this device and a re-claim converges instead of duplicating.
+    for (const flow of flows) {
+      if (!UUID.test(flow.id)) continue
+      await supabase.rpc('app_save_flow', {
+        payload: flow as unknown as Json,
+      })
+    }
 
     setClaiming(false)
     decide()

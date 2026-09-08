@@ -60,10 +60,24 @@ carries a `data-testid`. Naming: `{area}-{element}`, kebab-case, stable across r
 | Flows | `flows-export-{id}` | Export `.krama.json` action |
 | Flows | `flows-import` | Import action (file picker trigger) |
 | Flows | `flows-delete-{id}` | Delete action (user-saved flows only) |
+| Flows | `flows-shared-link` | Link to `/flows/shared`, present only with ≥1 org (004 FR-024) |
+| Share | `share-panel` | The sharing panel on a flow the teacher owns; absent when signed out or with no org |
+| Share | `share-status` | Which org this flow is shared with, or that it is not shared |
+| Share | `share-org-{orgId}` | Share with this organization |
+| Share | `share-stop` | Stop sharing (FR-032) |
+| Share | `share-caption` | The standing explanation of what stopping does and does not do |
+| Share | `share-export` | Export a `.krama.json` with author-only notes removed (FR-029) |
+| Share | `share-error` | A share or revoke the server refused |
+| Shared | `shared-list` | The container for flows shared with this teacher |
+| Shared | `shared-empty` | Nothing is shared yet |
+| Shared | `shared-row-{flow-id}` | One shared flow |
+| Shared | `shared-adopt-{flow-id}` | One-click duplicate into your own flows (FR-025) |
+| Shared | `shared-open-{flow-id}` | Open the duplicate just made |
 | Read | `read-phase-{phase-id}` | Phase section in the read view |
 | Read | `read-item-{index}` | Each pose entry in the read view |
 | Read | `read-breath-mark` | A breath-notation mark (↑ ↓ ~) — asserted for presence, not content |
 | Read | `read-note-{index}` | A teacher's per-item note, when present. **Not** `read-item-note-*` — see the prefix rule below |
+| Read | `read-unknown-pose-{index}` | Said once, beside an item whose `pose_slug` isn't in this build's library (FR-031) |
 | Poses | `poses-search-input`, `poses-category-filter`, `poses-card-{slug}` | Unchanged from the existing Poses tab |
 | Poses | `poses-view-toggle-filter`, `poses-view-toggle-theme` | "By filter" / "By theme" view mode toggle chips |
 | Poses | `poses-theme-section-{emotion-slug}` | Theme section heading + pose list, in "By theme" view |
