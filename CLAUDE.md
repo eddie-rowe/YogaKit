@@ -43,6 +43,8 @@ Key artifacts:
 - Ported operating patterns:            `docs/BEST_PRACTICES_FROM_NEXTMOVE.md`
 - Running friction log:                 `FRICTION.md`
 - Why-we-chose log:                     `DECISIONS.md`
+- 008 plan (observability as code):     `specs/008-observability-as-code/plan.md`,
+  `specs/008-observability-as-code/research.md`, `specs/008-observability-as-code/data-model.md`
 <!-- SPECKIT END -->
 
 ## Non-negotiables (from constitution v3.0.0)

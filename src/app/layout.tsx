@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Geist, Geist_Mono } from "next/font/google";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
-import { DatadogRum } from "@/components/DatadogRum";
 import AppHeader, { MobileNavSpacer } from "@/components/layout/AppHeader";
 import { PRE_PAINT_SCRIPT } from "@/lib/theme";
 import "./globals.css";
@@ -64,7 +63,9 @@ export default function RootLayout({
             cookie is read here, in the browser, instead. */}
         <script dangerouslySetInnerHTML={{ __html: PRE_PAINT_SCRIPT }} />
         <ServiceWorkerRegistration />
-        <DatadogRum />
+        {/* RUM init lives in src/instrumentation-client.ts now (008) — Next's native
+            client instrumentation hook runs before any page code, so there is
+            nothing to mount here. */}
         <AppHeader />
         {children}
         <MobileNavSpacer />

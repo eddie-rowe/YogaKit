@@ -1,0 +1,29 @@
+schema-version: v2.1
+dd-service: yogakit
+team: yogakit
+contacts:
+  - name: Eddie Rowe
+    type: email
+    contact: erowe3@gmail.com
+description: >
+  YogaKit — a free, open-source yoga sequencing tool for teachers, with a
+  local-first read path and a multi-tenant, authenticated composition and
+  billing layer.
+tier: Standard
+links:
+  - name: GitHub
+    type: repo
+    url: https://github.com/eddie-rowe/YogaKit
+  - name: Vercel Production
+    type: other
+    url: https://yoga-kit.vercel.app
+  - name: Observability Runbook
+    type: runbook
+    url: https://github.com/eddie-rowe/YogaKit/blob/main/docs/OBSERVABILITY.md
+  - name: Datadog APM
+    type: dashboard
+    url: https://us5.datadoghq.com/apm/services/yogakit
+tags:
+  - env:prod
+  - product:yogakit
+  - tier:standard

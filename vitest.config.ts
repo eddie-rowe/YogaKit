@@ -27,6 +27,26 @@ export default defineConfig({
         // and a voice gate nobody has tested is exactly the kind of check that quietly
         // stops matching and lets the thing it guards through.
         'scripts/lib/copy-lint.mjs',
+        // 008 US4: the telemetry scrubber. This is the mechanism behind RULE-L7 for
+        // RUM — the same argument as tier1-report.mjs and copy-lint.mjs above, with
+        // the same force: an untested privacy gate is a claim, not a gate.
+        'src/lib/telemetry/scrub.ts',
+        // 008 US1: the sync tool's validation, diffing, tag/handle resolution, and
+        // dashboard title/widget-ID logic — the same argument as tier1-report.mjs and
+        // copy-lint.mjs above, with the same force: the sync tool is the only path by
+        // which config reaches production Datadog, so an untested gate here is a claim,
+        // not a gate.
+        'scripts/lib/datadog-sync.mjs',
+        // 008 US4: the content-free check's matching logic — the automated test RULE-L7
+        // never had. Same argument again: a check that asserts a constitutional
+        // guarantee and is itself untested is a claim, not a gate.
+        'scripts/lib/telemetry-check.mjs',
+        // 008 US2: the source-map upload's decision logic (whether to run, what
+        // datadog-ci gets, which files to clean up) — same argument as the other
+        // Datadog-adjacent modules above: this is the only thing standing between
+        // "captured" and "readable" for production error stacks, so it needs to be a
+        // tested claim, not an asserted one.
+        'scripts/lib/sourcemaps.mjs',
       ],
       // One threshold for all three files. The plan allowed the new module its own,
       // lower number; it turned out not to need one — a pure function over parsed JSON
