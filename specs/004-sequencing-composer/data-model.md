@@ -192,6 +192,25 @@ Duplication (FR-025, FR-026) is a client-side read of the shared structure follo
 `app_save_flow` under new ids. Independence in both directions falls out of that: there is no
 link between the copies to break.
 
+> **Amended in implementation (2026-09-04).** The policy above shipped with two changes,
+> both recorded in `DECISIONS.md` and asserted in `scripts/verify-migrations.sh`.
+>
+> 1. The shared read policies also require `deleted_at is null`. `deleted_at` exists because
+>    soft delete is a replication requirement (C1), which means a flow the author deleted
+>    still has a row — and without this clause it stayed in the organization's list. The
+>    recipient's view has to filter what the owner's view must not.
+> 2. `flows_insert_own` and `flows_update_own` are **replaced** so that their `WITH CHECK`
+>    also requires `shared_org_id is null or app_is_org_member(shared_org_id)`. As specified,
+>    `user_id = auth.uid()` alone let an author publish their own flow into an organization
+>    they had never belonged to — the row is theirs, so the check passed. It had to go inside
+>    the existing policies rather than into a third one: permissive policies are OR'd, so a
+>    new policy widens the boundary it was meant to narrow.
+>
+> The duplicate carries no `shared_org_id`, so a recipient's copy is not itself shared with
+> the organization (I5). `adoptSharedFlow` in `src/lib/storage/sharing.ts` calls `saveFlow`
+> then `queueUpsert` — the local-first order, not `app_save_flow` directly, so the copy
+> survives a tab closed before the flush.
+
 ---
 
 ## 5. The `outbox` store — C2

@@ -17,6 +17,36 @@ export function resolveDisplayName(pose: Pose, style?: Style): string {
 }
 
 /**
+ * A readable name for a pose slug that no longer resolves against the library
+ * (FR-031, invariant I10).
+ *
+ * flow_items.pose_slug has no foreign key and no CHECK, on purpose: pose identity
+ * lives in data/poses/*.json (RULE-O6), and enumerating valid slugs in Postgres would
+ * make the database a second authority that drifts the first time a pose is renamed.
+ * The cost of that choice is exactly this case — a shared or duplicated flow can name
+ * a pose this build does not have — and the item has to open anyway.
+ *
+ * Printing the raw slug is not legible: `half-butterfly-r` is a key, not a name. This
+ * humanizes it instead, so a teacher reading at arm's length sees something they can
+ * recognise, and the caller shows a quiet caption saying the library does not have it.
+ */
+export function humanizePoseSlug(slug: string): string {
+  const words = slug.trim().split(/[-_\s]+/).filter(Boolean)
+  if (words.length === 0) return 'Unnamed pose'
+  return words.join(' ').replace(/^./, c => c.toUpperCase())
+}
+
+/**
+ * The name to render for one flow item: the pose's own display name when the library
+ * has it, a humanized slug when it does not. Every flow render path goes through this
+ * rather than through its own `?? item.poseSlug`, so "degrades legibly" is one
+ * function with one test rather than four fallbacks that drift.
+ */
+export function resolveItemName(pose: Pose | undefined, slug: string, style?: Style): string {
+  return pose ? resolveDisplayName(pose, style) : humanizePoseSlug(slug)
+}
+
+/**
  * All names this pose answers to — single source of truth for search corpora.
  * Includes english, sanskrit, flat aliases, and all tradition_names values.
  */

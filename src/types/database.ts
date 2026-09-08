@@ -289,6 +289,7 @@ export type Database = {
           deleted_at: string | null
           id: string
           schema_version: string
+          shared_org_id: string | null
           synced_at: string
           title: string
           updated_at: string
@@ -299,6 +300,7 @@ export type Database = {
           deleted_at?: string | null
           id: string
           schema_version: string
+          shared_org_id?: string | null
           synced_at?: string
           title: string
           updated_at: string
@@ -309,12 +311,21 @@ export type Database = {
           deleted_at?: string | null
           id?: string
           schema_version?: string
+          shared_org_id?: string | null
           synced_at?: string
           title?: string
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "flows_shared_org_id_fkey"
+            columns: ["shared_org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       integration_connections: {
         Row: {

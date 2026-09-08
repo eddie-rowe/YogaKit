@@ -494,3 +494,75 @@ way, and the cheap fix is the correct one.
 The cost is that a queued flow does not resume syncing by itself if the same person signs
 back in; it re-queues on the next save. Automatically re-queueing at sign-in would be a
 second claim mechanism competing with `ClaimFlowsPrompt`, which decision 3 already rules out.
+
+---
+
+## 2026-09-04 — A shared read must filter soft deletes; the owner's must not
+
+**Decision.** `flows_select_shared_in_org` (and its counterparts on `phases` and
+`flow_items`) carry `deleted_at is null`. The owner's own `flows_select_own` does not, and
+should not.
+
+`data-model.md` §4 specified the policy without that clause, and it was wrong. `deleted_at`
+is a soft delete because a hard delete cannot replicate — a device that syncs a week later
+has to be told the flow is gone, and an absent row says nothing. So a deleted flow still has
+a row, still has `shared_org_id` set, and without this clause it stayed in the organization's
+list after its author deleted it. The teacher's word for that action is "delete"; anything
+still listing the flow to their students contradicts it.
+
+The asymmetry is the point: the owner's policy has to keep returning the row, because the
+delete is a state the owner's own client reconciles against. The recipient has no business
+reconciling anything. Asserted in `scripts/verify-migrations.sh` — "a soft-deleted flow
+leaves the org's list".
+
+**Alternative rejected: filter it in the query.** `sharing.ts` does also pass
+`.is('deleted_at', null)`, and that is a good query, but it is not the guarantee. Principle
+VIII says the boundary is enforced at the table layer, never by application code. A filter in
+one caller is a filter one new caller can forget.
+
+---
+
+## 2026-09-04 — The share-membership guard goes inside the existing write policies
+
+**Decision.** `flows_insert_own` and `flows_update_own` are dropped and recreated with
+`shared_org_id is null or app_is_org_member(shared_org_id)` added to their `WITH CHECK`,
+rather than adding a third policy that expresses the same requirement.
+
+As specified, the write check was `user_id = (select auth.uid())` alone. The row is the
+author's own, so that check passes for any value of `shared_org_id` — including an
+organization the author has never belonged to. Publishing your own flow into a studio you do
+not teach at is not a read leak, but it puts a row in that studio's list, and no policy
+anywhere said no.
+
+Adding a *new* permissive policy would have made it worse rather than better: permissive
+policy checks are OR'd, so a fourth `flows` policy saying "…and you must be a member" would
+have created an additional way for a write to be accepted, not a narrowing of the existing
+one. A narrowing guard has only one correct place — inside the `WITH CHECK` of every policy
+that can accept the write.
+
+The first version of the assertion for this passed for the wrong reason and hid a real bug:
+the guard read `SELECT id FROM organizations WHERE name = 'Org B'` from inside a block
+running as the author, who cannot see that row, so the UPDATE set `shared_org_id = NULL` —
+which the check rightly permits — and quietly destroyed the share the fixture had just made.
+The id is now passed in as a psql variable, the block raises if it is null, and the test
+asserts afterwards that the rejected update left the existing share intact.
+
+---
+
+## 2026-09-04 — Two export functions, not an export flag
+
+**Decision.** `exportKramaFileForSharing(flow, at)` sits beside `exportKramaFile(flow, at)`
+in `src/lib/storage/krama-file.ts`. It is not `exportKramaFile(flow, at, { forSharing: true })`.
+
+The two calls mean different things and have opposite failure modes. A file a teacher exports
+for themselves is a backup; silently dropping their per-pose notes from it would be data
+loss wearing a privacy argument. A file exported to hand to someone else must not carry
+those notes at all. A boolean puts both behaviours behind one name and lets the wrong one
+happen by default — and the default would have to be one of them.
+
+`stripAuthorOnly` in `src/lib/flow/share.ts` stays pure and knows nothing about Supabase.
+Its doc comment says explicitly that it is the file-export path and *not* the mechanism
+behind FR-022, because a reader who assumed otherwise would then believe the author boundary
+is enforced in TypeScript. It is enforced by there being no policy on `flow_item_notes`, and
+`tests/unit/architecture/notes-table-unreferenced.test.ts` fails if any file in `src/`
+outside the generated types so much as names that table.

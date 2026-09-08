@@ -5,7 +5,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { X } from 'lucide-react'
 import type { Pose } from '@/lib/pose-types'
 import type { FlowItem, LayerName } from '@/lib/flow/types'
-import { resolveDisplayName } from '@/lib/pose-library/display-name'
+import { resolveItemName } from '@/lib/pose-library/display-name'
 import { SECONDS_PER_BREATH } from '@/lib/flow/duration'
 
 interface SeamInfo {
@@ -72,7 +72,7 @@ export default function ComposeFlowItem({
             ⠿
           </button>
           <span className="kk-nocallout text-sm font-medium flex-1 min-w-0">
-            {pose ? resolveDisplayName(pose) : item.poseSlug}
+            {resolveItemName(pose, item.poseSlug)}
           </span>
           <div data-testid={`compose-item-measure-${index}`} className="flex items-center gap-1 text-xs">
             <select

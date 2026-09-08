@@ -2,6 +2,7 @@
 // Contract: specs/001-krama-mvp-spec/contracts/flow-file-format.md
 
 import type { Flow, KramaFile } from '@/lib/flow/types'
+import { stripAuthorOnly } from '@/lib/flow/share'
 
 export const CURRENT_SCHEMA_VERSION = '0.1.0'
 
@@ -41,6 +42,17 @@ export function exportKramaFile(flow: Flow, exportedAt: string): KramaFile {
     exported_at: exportedAt,
     flow,
   }
+}
+
+/**
+ * The same file, produced to give to someone else: author-only notes are not in it
+ * (FR-029). Two functions rather than a flag, because the caller has to say which of
+ * the two things they are doing, and "export" alone does not say it. The plain
+ * `exportKramaFile` above is a teacher's own copy of their own work and keeps
+ * everything.
+ */
+export function exportKramaFileForSharing(flow: Flow, exportedAt: string): KramaFile {
+  return exportKramaFile(stripAuthorOnly(flow), exportedAt)
 }
 
 export function importKramaFile(raw: unknown, newId: string): ImportResult {

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import type { Pose } from '@/lib/pose-types'
 import type { Flow } from '@/lib/flow/types'
 import { isStillnessNode } from '@/lib/flow/types'
-import { resolveDisplayName } from '@/lib/pose-library/display-name'
+import { resolveItemName } from '@/lib/pose-library/display-name'
 
 interface Props {
   flow: Flow
@@ -139,12 +139,23 @@ export default function ReadView({ flow, poses }: Props) {
                   >
                     <div className="flex items-baseline justify-between gap-4">
                       <span className={`kk-nocallout ${stillness ? 'text-xl' : 'text-2xl font-medium'}`}>
-                        {pose ? resolveDisplayName(pose) : item.poseSlug}
+                        {resolveItemName(pose, item.poseSlug)}
                       </span>
                       <span data-testid="read-breath-mark" className="text-lg whitespace-nowrap" style={{ color: 'var(--muted)' }}>
                         {breathMark(item.measure)}
                       </span>
                     </div>
+                    {/* FR-031: the library does not have this slug, and the flow still
+                        opens. Said once, quietly, next to the item it applies to. */}
+                    {!pose && (
+                      <p
+                        data-testid={`read-unknown-pose-${globalIndex}`}
+                        className="text-sm mt-1"
+                        style={{ color: 'var(--muted)' }}
+                      >
+                        This pose isn't in your library.
+                      </p>
+                    )}
                     {item.note && (
                       <p
                         data-testid={`read-note-${globalIndex}`}
