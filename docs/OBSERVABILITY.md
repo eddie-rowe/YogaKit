@@ -92,26 +92,22 @@ autoobs.md` "Configuration" for the cross-check.
 |---|---|---|---|
 | `/autoobs` step 1 | Monitor status | `pup monitors list` / `GET /api/v1/monitor?tags=service:yogakit`, cross-checked against `datadog/monitors/*.json` | current state (no window) |
 | `/autoobs` step 2 | SLO status + error budget | `pup slos list` / `GET /api/v1/slo?tags_query=service:yogakit`, history via `GET /api/v1/slo/<id>/history` | 30d (the SLOs' own configured timeframe) |
-| `/autoobs` step 3 | RUM error rate, LCP p75, INP p75 | `POST /api/v2/rum/analytics/aggregate`, `filter.query: "@application.id:<rum-app-id>"` | last 24h |
+| `/autoobs` step 3 | Real-user RUM error rate, LCP p75, page-load p75 | `POST /api/v2/rum/analytics/aggregate`, excluding `@session.type:synthetics` and `@browser.name:HeadlessChrome` | last 24h |
 | `/autoobs` step 4 | Server error rate, API latency p95 | Datadog metrics query, `service:yogakit env:prod` | last 24h |
 | `/autoobs` step 5 | Synthetic uptime | `GET /api/v1/synthetics/tests` filtered `service:yogakit`, then `GET /api/v1/synthetics/tests/<id>/results` | last 24h |
 | `/autoobs` step 6 | Dashboard reachability | `GET /api/v1/dashboard/<id>` for `[YogaKit] Health` | current state (no window) |
 | `npm run datadog:diff` | Manifest drift (any type) | Full read-compare over all 6 resource types | current state (no window) |
+| `npm run datadog:validate-live` | Metric/log pipeline liveness | Every manifest metric must have an `env:prod,service:yogakit` series; logs search must return at least one event | last 24h |
 
 Thresholds for each monitor (what counts as AT-RISK vs. BREACHED): `datadog/README.md`
 "Manifest notes" table.
 
-**Pre-launch caveat on Core Web Vitals:** `datadog/synthetics/browser/
-read-view-rum-session.json` loads the read view every hour purely to keep a real RUM
-session arriving before there is any organic traffic — otherwise the RUM-dependent
-monitors and SLOs above would read `No Data` indefinitely. Its LCP/INP will read
-**optimistically**: a datacenter browser on a stable `aws:us-east-1` connection does not
-represent a real mobile visitor, and the read view's own Lighthouse mobile score is 87
-(below the RULE-L6 ≥ 90 floor — `specs/008-observability-as-code/tasks.md` T048). A green
-`[YogaKit] Largest Contentful Paint p75 > 2.5s` monitor while this synthetic is the
-dominant traffic source is proof the RUM pipeline works, **not** proof of real-user
-performance. Re-evaluate this monitor's read once organic traffic outweighs the
-synthetic's hourly tick.
+**Synthetic traffic is pipeline evidence, not user evidence.** `datadog/synthetics/
+browser/read-view-rum-session.json` loads the read view every 15 minutes to prove RUM
+ingestion before organic traffic exists. Real-user dashboard and monitor queries
+exclude both Datadog synthetic sessions and HeadlessChrome sessions, so datacenter and
+local automation cannot make user experience look healthy. Those panels may correctly
+show no data pre-launch; synthetic companion monitors separately cover uptime.
 
 **A green synthetic here is not proof RUM is firing.** This synthetic asserts the page
 returns 200 — it says nothing about whether the RUM SDK actually started a session on
@@ -130,7 +126,7 @@ in a Playwright script across several fresh loads, never by polling
 `getInternalContext()` — internal context only ever shows the *current* view, so it is
 blind to a churn burst that starts and ends within a single render pass.
 
-**Session replay is on at 100% (2026-09-08) — masking is enforced per-field, not just by
+**Session replay is sampled at 10% — masking is enforced per-field, not just by
 the app-wide default.** `defaultPrivacyLevel: 'mask'` in `src/instrumentation-client.ts`
 is the app-wide floor, but the composer's three free-text inputs (flow title, phase name,
 per-pose note — see `DECISIONS.md`'s 2026-09-08 entry) carry an explicit
@@ -140,6 +136,13 @@ attribute** before replay is trusted not to leak it — this is not something th
 or telemetry-content check catches; both only see field names in structured logger/RUM
 calls, not raw replay recording.
 
+RUM does not initialize on `localhost` or `127.0.0.1`. This prevents local/headless
+sessions and their dependency spans from polluting production RUM cohorts and the APM
+service map. Server instrumentation also ignores localhost, npm registry, and Next.js
+telemetry URLs, and only honors `DD_ENV` in Vercel's production environment; local and
+preview spans use `development`/`preview`. Existing inferred service-map edges age out
+according to Datadog's retention window.
+
 ## 5. Manual setup checklist (lives outside this repo)
 
 These are one-time, click-through steps in Vercel/Datadog that the sync tool and the
@@ -147,10 +150,15 @@ codebase cannot apply for you — check them if a signal above reads unexpectedl
 
 - [ ] **Vercel → Datadog log drain** configured for the YogaKit project, so server logs
       (including `logger.ts`'s structured JSON lines) reach Datadog Log Management.
+      Confirm with `npm run datadog:validate-live`; configuration is incomplete until
+      that command sees at least one `service:yogakit` log in 24 hours.
 - [ ] **Vercel project env vars** — every `NEXT_PUBLIC_DD_*` and `DD_*` var in §3 set for
       the Production environment (and Preview, if preview-environment telemetry is
       wanted). `NEXT_PUBLIC_*` vars are inlined at build time — setting them after a
       build has already run does nothing until the next build.
+      In particular, `DD_ENV=prod` is required; server instrumentation uses the current
+      `deployment.environment.name` OTel semantic attribute so Datadog maps it to
+      `env:prod` instead of Vercel's default `env:production`.
 - [ ] **Datadog ↔ Vercel integration** enabled in Datadog's Integrations catalog, so
       deployment events and Vercel-sourced infrastructure metrics correlate with
       `service:yogakit`.

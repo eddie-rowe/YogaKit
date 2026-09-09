@@ -1,11 +1,8 @@
 {
   "name": "[YogaKit] Read View Availability",
-  "type": "metric",
+  "type": "monitor",
   "description": "Percentage of successful synthetic checks against the read view over the trailing 30 days. This is the FR-009 floor: the read view must work offline-first with no login (the constitution's '6am test'), and this SLO is what proves that path stays up, not merely that it once did.",
-  "query": {
-    "numerator": "sum:synthetics.http.availability{env:prod,service:yogakit,!status:error}.as_count()",
-    "denominator": "sum:synthetics.http.availability{env:prod,service:yogakit}.as_count()"
-  },
+  "monitor_ids": ["{{monitor_id:yogakit:read-view-200}}"],
   "thresholds": [{ "target": 99.5, "warning": 99.9, "timeframe": "30d" }],
   "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:read-view-availability"]
 }
