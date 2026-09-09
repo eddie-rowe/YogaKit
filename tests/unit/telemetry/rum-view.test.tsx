@@ -89,11 +89,11 @@ describe('DatadogRumView', () => {
 
   it('consumes a pending navigation url exactly once', () => {
     usePathnameMock.mockReturnValue('/flows')
-    recordNavigationUrl('https://yoga-kit.vercel.app/flows')
+    recordNavigationUrl('https://yogakit.vercel.app/flows')
     const { rerender } = render(<DatadogRumView />)
     expect(startViewMock).toHaveBeenNthCalledWith(1, {
       name: '/flows',
-      url: 'https://yoga-kit.vercel.app/flows',
+      url: 'https://yogakit.vercel.app/flows',
     })
 
     usePathnameMock.mockReturnValue('/sequences/seq-1')

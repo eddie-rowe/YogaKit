@@ -245,7 +245,7 @@ describe('validateManifest — synthetics', () => {
   const validSynthetic = {
     name: '[YogaKit] Homepage Returns 200',
     tags: [...baseTags.slice(0, 3), 'yogakit:homepage-200'],
-    config: { request: { url: 'https://yoga-kit.vercel.app/' } },
+    config: { request: { url: 'https://yogakit.vercel.app/' } },
     status: 'live',
   }
 

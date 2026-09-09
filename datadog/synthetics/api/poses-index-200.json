@@ -3,7 +3,7 @@
   "type": "api",
   "subtype": "http",
   "config": {
-    "request": { "method": "GET", "url": "https://yoga-kit.vercel.app/poses", "headers": {}, "body": "" },
+    "request": { "method": "GET", "url": "https://yogakit.vercel.app/poses", "headers": {}, "body": "" },
     "assertions": [
       { "type": "statusCode", "operator": "is", "target": 200 },
       { "type": "responseTime", "operator": "lessThan", "target": 2000 }

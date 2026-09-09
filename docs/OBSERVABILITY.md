@@ -148,6 +148,21 @@ telemetry URLs, and only honors `DD_ENV` in Vercel's production environment; loc
 preview spans use `development`/`preview`. Existing inferred service-map edges age out
 according to Datadog's retention window.
 
+### 3a. The production host
+
+Production is `https://yogakit.vercel.app` — Vercel's generated domain for the `yogakit`
+project, with no custom domain in front of it yet. That hostname is a literal in all five
+synthetic manifests (`config.request.url`) and in
+`datadog/service-catalog/yogakit.yaml`'s "Vercel Production" link; nothing else in the
+repo hardcodes it, because every runtime origin is derived from the request or from
+`window.location.origin`.
+
+The project was renamed `yoga-kit` → `yogakit` on 2026-09-09, which moved the apex domain
+and left the old one returning 404 while four live synthetics still pointed at it. Renaming
+a Vercel project is therefore a change to this file's contract, not just a cosmetic one.
+`npm run datadog:validate-live` now probes each distinct synthetic URL and fails on any
+4xx/5xx, so the same drift cannot recur silently.
+
 ## 5. Manual setup checklist (lives outside this repo)
 
 These are one-time, click-through steps in Vercel/Datadog that the sync tool and the
@@ -181,12 +196,14 @@ codebase cannot apply for you — check them if a signal above reads unexpectedl
       2026-09-09, which is why the JUnit upload it was written for had never once
       succeeded — see FRICTION.md. Without it the test step runs the suite normally and
       sends Datadog nothing, silently and by design.
-- [ ] **Vercel observability trace drain** connected to the same Datadog US5
+- [x] **Vercel observability trace drain** connected to the same Datadog US5
       organization, with Traces enabled for the YogaKit project. `@vercel/otel`
       creates spans, but it does not make a trace visible in Datadog unless Vercel is
       configured to export it. Confirm a production request appears under APM service
-      `yogakit` before debugging any child Supabase span. **Currently unset**, which is
-      what fails `datadog:validate-live` on `main`.
+      `yogakit` before debugging any child Supabase span. Verified connected 2026-09-09;
+      it had been connected all along, and the reason APM looked empty was the `env` tag,
+      not the drain — spans were arriving under `env:production` while every query here
+      assumes `env:prod` (see §3 and `src/instrumentation.ts`).
 - [ ] **Synthetics global variables** — if any synthetic test needs a shared
       credential (none currently do; all three live API tests hit public routes), set
       it once in Datadog Synthetics → Settings → Global Variables rather than

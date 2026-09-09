@@ -2,7 +2,7 @@
   "name": "[YogaKit] Read Flow Offline",
   "type": "browser",
   "config": {
-    "request": { "method": "GET", "url": "https://yoga-kit.vercel.app/read/classic-yin-full-body" },
+    "request": { "method": "GET", "url": "https://yogakit.vercel.app/read/classic-yin-full-body" },
     "variables": []
   },
   "options": {

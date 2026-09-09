@@ -282,3 +282,34 @@ no tracer, which means a green build that sends nothing. The failure mode is ide
 only the error message is gone. **A configuration claim read out of the file that consumes
 the config is not evidence** — `gh secret list` is one command, and it would have caught
 this three weeks and one incorrect plan earlier.
+
+Same day, one layer up: **the service name was already right everywhere in the repo, and
+that was not enough.** `src/lib/dd-service-name.ts` exists precisely to defend the
+`service:yogakit` tag — it normalizes a hyphenated `DD_SERVICE` back to `yogakit` and warns
+loudly at boot, with a comment explaining that a hyphen would silently break every monitor
+query. `DD_SERVICE` was set correctly. Traces, metrics and RUM all carried
+`service:yogakit`. Logs arrived as `service:yoga-kit` anyway, for the whole life of the log
+drain.
+
+The reason is that two different mechanisms decide that name and only one of them reads
+config. `@vercel/otel` takes the service name from `DD_SERVICE`, through the guard.
+Vercel's Datadog log drain takes it from the **Vercel project slug** and never looks at
+`DD_SERVICE` at all — nor does it parse the JSON stdout line, so the `service` field
+`logger.ts` writes into every log body was never promoted to an attribute
+(`@service:yogakit`: zero results, which is itself the tell).
+
+The generalisable part: **a guard protects the path it sits on, and its existence is
+reassuring out of proportion to its reach.** The comment in `dd-service-name.ts` describes
+the hazard accurately and completely for tracing, which made the tag feel settled and made
+the logs' disagreement read as a Datadog bug rather than a second, unguarded code path. The
+check that would have caught it is the same one that catches everything else in this file:
+for each signal type, ask *what actually sets this field*, and confirm it — logs, traces,
+metrics and RUM are four separate answers, not one.
+
+Runner-up from the same investigation, worth naming because it wasted the most time: I
+concluded "the Vercel drains are not connected" from a query that filtered on the very tag
+that was broken. APM had 1,526 spans the whole time, under `env:production` rather than
+`env:prod`. **A zero from a filtered query is evidence about the filter until you have
+proved the filter.** The fix is to widen to a control query first — no tag filter, or a
+known-good service — and only trust a zero once something non-zero has come back through
+the same code path.

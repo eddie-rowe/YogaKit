@@ -164,11 +164,33 @@ async function validateLiveTelemetry(env, manifestsByType) {
   })
   if (!logResult.data?.length) failures.push('no service:yogakit logs received in 24h (verify the Vercel log drain)')
 
+  // Manifest validation only checks that `config.request.url` is present, so a synthetic
+  // pointing at a hostname that no longer resolves syncs cleanly and then fails on every
+  // run — quietly burning the availability SLO it backs. This is how the `yoga-kit` ->
+  // `yogakit` Vercel rename stayed invisible. Probe each distinct URL for real.
+  const syntheticUrls = new Map()
+  for (const type of ['synthetics-api', 'synthetics-browser']) {
+    for (const { filename, manifest } of manifestsByType[type] ?? []) {
+      const url = manifest.config?.request?.url
+      if (url && !syntheticUrls.has(url)) syntheticUrls.set(url, `${type}/${filename}`)
+    }
+  }
+  for (const [url, source] of syntheticUrls) {
+    try {
+      const res = await fetch(url, { redirect: 'follow' })
+      if (res.status >= 400) failures.push(`synthetic URL is dead: ${url} responded ${res.status} (${source})`)
+    } catch (error) {
+      failures.push(`synthetic URL is unreachable: ${url} (${source}): ${error.message}`)
+    }
+  }
+
   if (failures.length) {
     for (const failure of failures) console.error(`LIVE INVALID  ${failure}`)
     throw new Error(`live telemetry validation failed (${failures.length} issue(s))`)
   }
-  console.log(`Live telemetry OK: ${metrics.size} metric(s) and logs active in env:prod.`)
+  console.log(
+    `Live telemetry OK: ${metrics.size} metric(s), ${syntheticUrls.size} synthetic URL(s) and logs active in env:prod.`,
+  )
 }
 
 function pup(env, args) {

@@ -159,6 +159,10 @@ site_url = "http://127.0.0.1:3000"
 # https://yoga-1ft4d1tr8-eddie-rowes-projects.vercel.app — Vercel truncates the `yoga-kit`
 # project slug to `yoga`, and appends an org segment the old pattern omitted entirely.
 #
+# The Vercel project has since been renamed `yoga-kit` -> `yogakit` (see DECISIONS.md).
+# The `yoga-*` glob below still matches, verified against a live deployment: Vercel
+# truncates either slug to `yoga`. Do not "fix" it to `yogakit-*` — that matches nothing.
+#
 # Scope note, now that branching is enabled: this file is applied to Supabase *preview*
 # branches, not to production. The branching docs are explicit that Auth and API settings
 # are ignored on a production deploy — only migrations, Edge Functions and storage buckets
