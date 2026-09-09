@@ -26,6 +26,7 @@ import {
   shouldUpload,
   buildUploadArgs,
   mapFilesToDelete,
+  releaseVersion,
   uploadEnv,
   siteMismatchWarning,
 } from './lib/sourcemaps.mjs'
@@ -60,7 +61,7 @@ try {
   const args = buildUploadArgs({
     buildDir,
     service: process.env.NEXT_PUBLIC_DD_SERVICE ?? 'yogakit',
-    releaseVersion: process.env.NEXT_PUBLIC_DD_VERSION,
+    releaseVersion: releaseVersion(process.env),
     minifiedPathPrefix: '/_next/static',
   })
 

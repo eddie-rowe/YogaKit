@@ -1,0 +1,13 @@
+{
+  "name": "[YogaKit] Generation Pipeline Error Rate > 5%",
+  "type": "query alert",
+  "query": "sum(last_15m):sum:yogakit.generate.outcomes{env:prod,outcome:pipeline_error}.as_count() / sum:yogakit.generate.outcomes{env:prod}.as_count() * 100 > 5",
+  "message": "Unexpected sequence-generation failures exceeded 5%. Inspect generate.sequence spans and generate.outcome logs by version. @syntheticstesting@gmail.com",
+  "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:generation-pipeline-errors"],
+  "options": {
+    "notify_audit": false,
+    "require_full_window": false,
+    "notify_no_data": false,
+    "thresholds": { "critical": 5, "warning": 2 }
+  }
+}

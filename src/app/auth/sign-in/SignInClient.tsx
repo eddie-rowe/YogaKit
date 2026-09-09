@@ -91,6 +91,7 @@ export default function SignInClient() {
           <form data-testid="auth-email-form" onSubmit={handleEmailSubmit} className="space-y-3">
             <input
               data-testid="auth-email-input"
+              data-dd-privacy="mask-user-input"
               type="email"
               required
               value={email}

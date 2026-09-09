@@ -350,6 +350,7 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
         <div className="relative">
           <input
             data-testid="compose-search-input"
+            data-dd-privacy="mask-user-input"
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search poses to add…"

@@ -61,14 +61,17 @@ session (`docs/OBSERVABILITY.md` explains why).
 
 | File | Kind | Threshold (critical) |
 |---|---|---|
-| `rum-error-rate.json` | query alert | client error rate > 10% (warn 5%) |
-| `web-vitals-lcp.json` | query alert | LCP p75 > 4s (warn 2.5s) |
+| `rum-error-rate.json` | query alert | client error rate > 5% (warn 2%) |
+| `web-vitals-lcp.json` | query alert | LCP p75 > 2.5s (warn 2s) |
 | `web-vitals-inp.json` | query alert | INP p75 > 500ms (warn 200ms) |
-| `api-error-rate.json` | query alert | server error rate > 10% (warn 5%) |
+| `api-error-rate.json` | query alert | server error rate > 5% (warn 2%) |
 | `api-latency-p95.json` | query alert | p95 > 5s (warn 2s, in nanoseconds) |
-| `synthetic-read-view-down.json` | query alert | any synthetic HTTP failure / 15m |
-| `slo-burn-fast-read-view-availability.json` | slo alert | 100% of the 30-day error budget consumed (SLO breached) |
-| `slo-burn-slow-read-view-availability.json` | slo alert | 50% of the 30-day error budget consumed (trending toward breach) |
+| `synthetic-read-view-down.json` | query alert | any read-view HTTP synthetic failure / 15m |
+| `generation-pipeline-errors.json` | query alert | unexpected generation outcomes > 5% (warn 2%) |
+| `rum-telemetry-freshness.json` | query alert | no RUM sessions for 30m |
+| `apm-telemetry-freshness.json` | query alert | no Next.js request spans for 30m |
+| `slo-burn-fast-read-view-availability.json` | slo alert | 25% of the 30-day error budget consumed |
+| `slo-burn-slow-read-view-availability.json` | slo alert | 10% of the 30-day error budget consumed |
 
 Both SLO alerts use `error_budget("<slo_id>").over("<timeframe>")`, not `burn_rate(...)`.
 `burn_rate()` monitor queries were rejected outright by this org/plan

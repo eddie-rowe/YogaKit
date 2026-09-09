@@ -402,6 +402,7 @@ function DimensionsForm() {
                     </label>
                     <input
                       id="theme"
+                      data-dd-privacy="mask-user-input"
                       type="text"
                       value={form.theme}
                       onChange={(e) => setField('theme', e.target.value)}
@@ -417,6 +418,7 @@ function DimensionsForm() {
                     </label>
                     <input
                       id="goal"
+                      data-dd-privacy="mask-user-input"
                       type="text"
                       value={form.goal}
                       onChange={(e) => setField('goal', e.target.value)}

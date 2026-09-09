@@ -113,6 +113,7 @@ export default function OrgMembersClient({ orgId }: OrgMembersClientProps) {
           <h2 className="font-serif text-xl font-semibold">Invite someone</h2>
           <input
             data-testid="org-invite-email-input"
+            data-dd-privacy="mask-user-input"
             type="email"
             required
             value={inviteEmail}

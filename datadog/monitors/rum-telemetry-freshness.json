@@ -1,0 +1,14 @@
+{
+  "name": "[YogaKit] RUM Telemetry Missing for 30 Minutes",
+  "type": "query alert",
+  "query": "sum(last_30m):sum:rum.session.count{service:yogakit,env:prod}.as_count() < 1",
+  "message": "No production RUM sessions were received for 30 minutes. Check build-time RUM variables, browser intake, and the read-view RUM synthetic. @syntheticstesting@gmail.com",
+  "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:rum-telemetry-freshness"],
+  "options": {
+    "notify_audit": false,
+    "require_full_window": true,
+    "notify_no_data": true,
+    "no_data_timeframe": 30,
+    "thresholds": { "critical": 1 }
+  }
+}

@@ -1,8 +1,8 @@
 {
   "name": "[YogaKit] Synthetic: Read View Unreachable",
   "type": "query alert",
-  "query": "avg(last_15m):avg:synthetics.http.error{env:prod,service:yogakit} > 0",
-  "message": "The read-view synthetic check is failing for YogaKit — the RULE-L3/L4 offline-first read path may be unreachable. @syntheticstesting@gmail.com",
+  "query": "avg(last_15m):avg:synthetics.http.error{env:prod,service:yogakit,yogakit:read-view-200} > 0",
+  "message": "The public read-view synthetic is failing or its expected content is missing. Check the deployment and read route. @syntheticstesting@gmail.com",
   "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:synthetic-read-view-down"],
   "options": {
     "notify_audit": false,

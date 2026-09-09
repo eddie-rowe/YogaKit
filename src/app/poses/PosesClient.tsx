@@ -237,6 +237,7 @@ export default function PosesClient({ poses }: Props) {
           <div className="flex items-center gap-2">
             <input
               type="search"
+              data-dd-privacy="mask-user-input"
               data-testid="poses-search-input"
               value={search}
               onChange={e => setSearch(e.target.value)}

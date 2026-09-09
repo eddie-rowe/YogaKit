@@ -57,6 +57,22 @@ describe('validateManifest — monitors', () => {
     expect(result).toEqual({ valid: true, errors: [] })
   })
 
+  it('rejects a query threshold that differs from the critical threshold', () => {
+    const manifest = {
+      ...validMonitor,
+      query: 'sum(last_15m):sum:trace.errors{service:yogakit,env:prod} > 5',
+    }
+    const result = validateManifest('monitors', 'api-error-rate.json', manifest)
+    expect(result.errors).toContain(
+      'query threshold (5) does not match options.thresholds.critical (10)',
+    )
+  })
+
+  it('allows monitor query types with no final numeric comparator', () => {
+    const manifest = { ...validMonitor, query: 'unsupported_for_threshold_check' }
+    expect(validateManifest('monitors', 'api-error-rate.json', manifest).valid).toBe(true)
+  })
+
   it('rejects a monitor missing the yogakit marker tag', () => {
     const manifest = { ...validMonitor, tags: ['env:prod', 'service:yogakit', 'managed_by:git'] }
     const result = validateManifest('monitors', 'api-error-rate.json', manifest)
@@ -109,7 +125,7 @@ describe('validateManifest — monitors', () => {
   it('rejects an SLO placeholder referencing an unknown SLO tag', () => {
     const manifest = {
       ...validMonitor,
-      query: 'burn_rate("{{slo_id:yogakit:missing-slo}}").over("1h") > 1',
+      query: 'burn_rate("{{slo_id:yogakit:missing-slo}}").over("1h") > 10',
     }
     const result = validateManifest('monitors', 'api-error-rate.json', manifest, {
       knownSloTags: ['read-view-availability'],
@@ -121,7 +137,7 @@ describe('validateManifest — monitors', () => {
   it('accepts an SLO placeholder referencing a known SLO tag', () => {
     const manifest = {
       ...validMonitor,
-      query: 'burn_rate("{{slo_id:yogakit:read-view-availability}}").over("1h") > 1',
+      query: 'burn_rate("{{slo_id:yogakit:read-view-availability}}").over("1h") > 10',
     }
     const result = validateManifest('monitors', 'api-error-rate.json', manifest, {
       knownSloTags: ['read-view-availability'],
@@ -131,11 +147,30 @@ describe('validateManifest — monitors', () => {
 })
 
 describe('validateManifest — slos', () => {
-  const baseSlo = { name: '[YogaKit] Read View Availability', tags: [...baseTags.slice(0, 3), 'yogakit:read-view-availability'], thresholds: [{ target: 99.5, timeframe: '30d' }] }
+  const baseSlo = {
+    name: '[YogaKit] Read View Availability',
+    tags: [...baseTags.slice(0, 3), 'yogakit:read-view-availability'],
+    thresholds: [{ target: 99.5, timeframe: '30d' }],
+  }
 
   it('accepts a metric SLO with a query', () => {
-    const manifest = { ...baseSlo, type: 'metric', query: { numerator: 'a', denominator: 'b' } }
+    const manifest = {
+      ...baseSlo,
+      type: 'metric',
+      query: {
+        numerator: 'sum:availability{yogakit:read-view-200}',
+        denominator: 'sum:availability{yogakit:read-view-200}',
+      },
+    }
     expect(validateManifest('slos', 'read-view-availability.json', manifest).valid).toBe(true)
+  })
+
+  it('rejects a read-view SLO that aggregates unrelated synthetics', () => {
+    const manifest = { ...baseSlo, type: 'metric', query: { numerator: 'a', denominator: 'b' } }
+    const result = validateManifest('slos', 'read-view-availability.json', manifest)
+    expect(result.errors).toContain(
+      'read-view SLO queries must be scoped to "yogakit:read-view-200"',
+    )
   })
 
   it('rejects a metric SLO with no query', () => {

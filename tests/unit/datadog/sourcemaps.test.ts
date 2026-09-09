@@ -5,7 +5,27 @@ import {
   mapFilesToDelete,
   uploadEnv,
   siteMismatchWarning,
+  releaseVersion,
 } from '../../../scripts/lib/sourcemaps.mjs'
+
+describe('releaseVersion', () => {
+  it('prefers an explicit public version', () => {
+    expect(
+      releaseVersion({ NEXT_PUBLIC_DD_VERSION: 'release-1', VERCEL_GIT_COMMIT_SHA: 'sha' }),
+    ).toBe('release-1')
+  })
+
+  it('uses the Vercel commit SHA for deployment-specific correlation', () => {
+    expect(
+      releaseVersion({ VERCEL_GIT_COMMIT_SHA: 'abc123', npm_package_version: '0.1.0' }),
+    ).toBe('abc123')
+  })
+
+  it('falls back to package version and then the repository version', () => {
+    expect(releaseVersion({ npm_package_version: '2.0.0' })).toBe('2.0.0')
+    expect(releaseVersion({})).toBe('0.1.0')
+  })
+})
 
 describe('shouldUpload', () => {
   it('does not run when DD_API_KEY is absent', () => {

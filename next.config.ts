@@ -1,7 +1,19 @@
 import type { NextConfig } from "next";
 import path from "path";
 
+const releaseVersion =
+  process.env.NEXT_PUBLIC_DD_VERSION ??
+  process.env.VERCEL_GIT_COMMIT_SHA ??
+  process.env.npm_package_version ??
+  "0.1.0";
+
 const nextConfig: NextConfig = {
+  // One build-derived release identifier is embedded in RUM and reused by the
+  // source-map uploader. Vercel's commit SHA prevents unrelated deploys from being
+  // grouped under a static version while still allowing an explicit override.
+  env: {
+    NEXT_PUBLIC_DD_VERSION: releaseVersion,
+  },
   turbopack: {
     root: path.join(__dirname),
   },

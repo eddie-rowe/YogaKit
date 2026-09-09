@@ -67,10 +67,13 @@ export async function POST(request: NextRequest) {
 ${expiryNote}`,
     })
   } catch (err) {
-    logger.error('org.invitation.email_failed', {
-      invitation_id,
-      error: err instanceof Error ? err.message : String(err),
-    })
+    logger.error(
+      'org.invitation.email_failed',
+      {
+        invitation_id,
+      },
+      err,
+    )
     return NextResponse.json({ error: 'email_delivery_failed' }, { status: 502 })
   }
 

@@ -10,7 +10,8 @@ export async function register() {
   registerOTel({
     serviceName: normalizeServiceName(process.env.DD_SERVICE),
     attributes: {
-      'service.version': process.env.DD_VERSION || '1.0.0',
+      'service.version':
+        process.env.DD_VERSION || process.env.VERCEL_GIT_COMMIT_SHA || process.env.npm_package_version || '0.1.0',
       'deployment.environment': process.env.DD_ENV || process.env.NODE_ENV || 'development',
     },
     instrumentationConfig: {

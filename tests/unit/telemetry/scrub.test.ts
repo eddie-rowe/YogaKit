@@ -8,7 +8,12 @@
 
 import { describe, expect, it } from 'vitest'
 
-import { scrubErrorMessage, scrubViewUrl } from '../../../src/lib/telemetry/scrub'
+import {
+  scrubErrorMessage,
+  scrubErrorStack,
+  scrubResourceUrl,
+  scrubViewUrl,
+} from '../../../src/lib/telemetry/scrub'
 
 describe('scrubViewUrl', () => {
   it('parameterizes a pose slug', () => {
@@ -60,46 +65,68 @@ describe('scrubViewUrl', () => {
     // An absolute-looking URL with a malformed host is one of the few inputs `new
     // URL(url, base)` cannot resolve against a valid base — it throws rather than
     // treating the string as a relative reference, which exercises the catch branch.
-    expect(scrubViewUrl('http://[::1?x=1#y')).toBe('http://[::1')
+    expect(scrubViewUrl('http://[::1?x=1#y')).toBe('/[unknown]')
+  })
+
+  it('redacts an unreviewed route by default', () => {
+    expect(scrubViewUrl('/future/private-title')).toBe('/[unknown]')
+  })
+})
+
+describe('scrubResourceUrl', () => {
+  const origin = 'https://yoga-kit.vercel.app'
+
+  it('preserves reviewed same-origin endpoints without query strings', () => {
+    expect(scrubResourceUrl('/api/generate?flow=my-flow', origin)).toBe('/api/generate')
+    expect(scrubResourceUrl('/', origin)).toBe('/')
+  })
+
+  it('parameterizes reviewed dynamic application paths', () => {
+    expect(scrubResourceUrl('/read/private-flow', origin)).toBe('/read/[id]')
+  })
+
+  it('preserves Next assets for performance and source-map diagnostics', () => {
+    expect(scrubResourceUrl('/_next/static/chunks/app-123.js?cache=1', origin)).toBe(
+      '/_next/static/chunks/app-123.js',
+    )
+  })
+
+  it('redacts unreviewed same-origin paths', () => {
+    expect(scrubResourceUrl('/future/private-title', origin)).toBe('/[resource]')
+  })
+
+  it('retains only the origin for third-party resources', () => {
+    expect(scrubResourceUrl('https://example.com/users/private-id?token=secret', origin)).toBe(
+      'https://example.com/[resource]',
+    )
+  })
+
+  it('redacts malformed resource URLs', () => {
+    expect(scrubResourceUrl('http://[::1', origin)).toBe('/[resource]')
   })
 })
 
 describe('scrubErrorMessage', () => {
-  it('redacts a double-quoted literal', () => {
-    expect(scrubErrorMessage('Failed to load pose "Downward Dog"')).toBe(
-      'Failed to load pose [redacted]',
-    )
-  })
-
-  it('redacts a single-quoted literal', () => {
-    expect(scrubErrorMessage("Could not save note 'left knee felt tight'")).toBe(
-      'Could not save note [redacted]',
-    )
-  })
-
-  it('redacts a backtick-quoted literal', () => {
-    expect(scrubErrorMessage('Unexpected token `my flow title`')).toBe(
-      'Unexpected token [redacted]',
-    )
-  })
-
-  it('scrubs an unquoted pose path embedded in the message', () => {
-    expect(scrubErrorMessage('GET /poses/downward-facing-dog 404')).toBe(
-      'GET /poses/[slug] 404',
-    )
-  })
-
-  it('scrubs an unquoted read path embedded in the message', () => {
-    expect(scrubErrorMessage('fetch failed for /read/abc-123')).toBe(
-      'fetch failed for /read/[id]',
-    )
+  it('redacts all free-text messages, including apparently harmless ones', () => {
+    expect(scrubErrorMessage('Failed to load pose "Downward Dog"')).toBe('[redacted]')
+    expect(scrubErrorMessage('Network request failed')).toBe('[redacted]')
   })
 
   it('returns an empty message unchanged', () => {
     expect(scrubErrorMessage('')).toBe('')
   })
+})
 
-  it('leaves a message with no quoted literal or content path untouched', () => {
-    expect(scrubErrorMessage('Network request failed')).toBe('Network request failed')
+describe('scrubErrorStack', () => {
+  it('redacts the message line while preserving frames and removing URL parameters', () => {
+    expect(
+      scrubErrorStack(
+        'Error: private flow title\n    at save (https://yoga-kit.vercel.app/_next/app.js?token=secret#x:1:2)',
+      ),
+    ).toBe('[redacted]\n    at save (https://yoga-kit.vercel.app/_next/app.js)')
+  })
+
+  it('returns absent stacks unchanged', () => {
+    expect(scrubErrorStack(undefined)).toBeUndefined()
   })
 })

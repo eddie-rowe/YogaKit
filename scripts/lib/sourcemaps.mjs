@@ -23,6 +23,11 @@ export function shouldUpload(env) {
   return { shouldRun: true }
 }
 
+/** The same precedence used by next.config.ts when embedding the RUM version. */
+export function releaseVersion(env) {
+  return env.NEXT_PUBLIC_DD_VERSION || env.VERCEL_GIT_COMMIT_SHA || env.npm_package_version || '0.1.0'
+}
+
 /**
  * The environment overlay `datadog-ci` needs, on top of the ambient one.
  *

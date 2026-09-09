@@ -21,11 +21,12 @@ full stop, regardless of how useful it would be for debugging.
 
 This is enforced at three points, not just documented:
 
-- **`src/lib/telemetry/scrub.ts`** — `scrubViewUrl` parameterizes every dynamic route
-  segment (`/poses/downward-dog` → `/poses/[slug]`) before a view URL reaches RUM;
-  `scrubErrorMessage` strips quoted substrings and path-shaped content out of error
-  text. Wired into RUM's `beforeSend` in `src/instrumentation-client.ts`. 100% branch
-  coverage (`vitest.config.ts`).
+- **`src/lib/telemetry/scrub.ts`** — view and resource URLs use explicit allow lists;
+  reviewed dynamic routes are parameterized (`/poses/downward-dog` →
+  `/poses/[slug]`) and unknown paths are redacted by default. Free-text error messages
+  and stack message lines are always redacted, while sanitized stack frames remain
+  available for source-map resolution. Wired into RUM's `beforeSend` and the server
+  logger. 100% branch coverage (`vitest.config.ts`).
 - **`src/lib/utils/logger.ts`** — `assertSafeFields` throws if a structured-log call
   passes a banned field name (`note`, `journal`, `mood`, `token`, `secret`, …). A
   logger call must never be the reason a request fails, but passing banned content
@@ -36,10 +37,9 @@ This is enforced at three points, not just documented:
   one. This is the automated test RULE-L7 never had before this feature — a check that
   asserts a constitutional guarantee and is itself untested is a claim, not a gate.
 
-None of the three above can see inside a value, only a field *name* — a call site could
-still smuggle content through a permitted field (e.g. `errorCode: <actual pose name>`).
-There is no code-level defense against that; it depends on reviewers applying the
-question above at PR time.
+The static field-name check cannot infer whether a permitted attribute value was
+derived from user content. URL and error values have runtime defenses, but new custom
+attributes still depend on reviewers applying the question above at PR time.
 
 ## 2. Attribute-naming conventions
 
@@ -67,10 +67,10 @@ degrade to a silent no-op, never a thrown error (FR-025/SC-011). None of them be
 | `NEXT_PUBLIC_DD_SITE` | Datadog site for the browser SDK | No | `us5.datadoghq.com` for this org |
 | `NEXT_PUBLIC_DD_SERVICE` | Service name tag on RUM events | No | `yogakit` |
 | `NEXT_PUBLIC_DD_ENV` | Env tag on RUM events | No | `prod` — **not** `production`; every query in §4 assumes `env:prod` |
-| `NEXT_PUBLIC_DD_VERSION` | Version tag on RUM events | No | `1.0.0` |
+| `NEXT_PUBLIC_DD_VERSION` | Version tag on RUM events | No | Explicit override; otherwise `next.config.ts` embeds `VERCEL_GIT_COMMIT_SHA` (then the package version locally) |
 | `DD_SERVICE` | Service name for `@vercel/otel` tracing + logger correlation | No | `yogakit`; run through `normalizeServiceName()` (`src/lib/dd-service-name.ts`) since a hyphen silently breaks `service:` queries |
 | `DD_ENV` | Env tag for server-side tracing | No | `prod` |
-| `DD_VERSION` | Version tag for server-side tracing | No | `1.0.0` |
+| `DD_VERSION` | Version tag for server-side tracing | No | Explicit override; otherwise `VERCEL_GIT_COMMIT_SHA` (then the package version locally) |
 | `DD_API_KEY` | Datadog API key | Only for `scripts/datadog/sync.mjs` and the content-free check's live-handle validation | Never bundled into the app — read only by Node scripts, never sent to the browser |
 | `DD_APP_KEY` | Datadog application key | Same as `DD_API_KEY` | Same |
 | `DD_SITE` | Datadog site for server-side/script API calls | Same as `DD_API_KEY` | `us5.datadoghq.com` |
@@ -95,13 +95,21 @@ autoobs.md` "Configuration" for the cross-check.
 | `/autoobs` step 4 | Server error rate, API latency p95 | Datadog metrics query, `service:yogakit env:prod` | last 24h |
 | `/autoobs` step 5 | Synthetic uptime | `GET /api/v1/synthetics/tests` filtered `service:yogakit`, then `GET /api/v1/synthetics/tests/<id>/results` | last 24h |
 | `/autoobs` step 6 | Dashboard reachability | `GET /api/v1/dashboard/<id>` for `[YogaKit] Health` | current state (no window) |
-| `npm run datadog:diff` | Manifest drift (any type) | Full read-compare over all 6 resource types | current state (no window) |
+| `npm run datadog:diff` | Manifest drift (any type) | Full read-compare over all 7 resource types | current state (no window) |
+
+The `rum-telemetry-freshness` and `apm-telemetry-freshness` monitors alert after 30
+minutes without intake. The five-minute public synthetics make an empty APM window a
+pipeline failure rather than merely a low-traffic period. Generation is monitored
+separately because its SSE protocol reports application outcomes inside HTTP 200
+responses: `generate.sequence` spans and `generate.outcome` logs carry only an outcome
+code and stage/total durations, and the `yogakit.generate.outcomes` log metric powers
+the generation error-rate monitor and dashboard.
 
 Thresholds for each monitor (what counts as AT-RISK vs. BREACHED): `datadog/README.md`
 "Manifest notes" table.
 
 **Pre-launch caveat on Core Web Vitals:** `datadog/synthetics/browser/
-read-view-rum-session.json` loads the read view every hour purely to keep a real RUM
+read-view-rum-session.json` loads the read view every 15 minutes purely to keep a real RUM
 session arriving before there is any organic traffic — otherwise the RUM-dependent
 monitors and SLOs above would read `No Data` indefinitely. Its LCP/INP will read
 **optimistically**: a datacenter browser on a stable `aws:us-east-1` connection does not
@@ -130,14 +138,11 @@ in a Playwright script across several fresh loads, never by polling
 blind to a churn burst that starts and ends within a single render pass.
 
 **Session replay is on at 100% (2026-09-08) — masking is enforced per-field, not just by
-the app-wide default.** `defaultPrivacyLevel: 'mask'` in `src/instrumentation-client.ts`
-is the app-wide floor, but the composer's three free-text inputs (flow title, phase name,
-per-pose note — see `DECISIONS.md`'s 2026-09-08 entry) carry an explicit
-`data-dd-privacy="mask-user-input"` so they can't be unmasked by a future change to that
-default. **Any new free-text input added anywhere in the app must carry the same
-attribute** before replay is trusted not to leak it — this is not something the copy-lint
-or telemetry-content check catches; both only see field names in structured logger/RUM
-calls, not raw replay recording.
+the app-wide default.** Every text, search, and email input carries
+`data-dd-privacy="mask-user-input"`, including profile, organization, generation-theme,
+catalog-search, and composer fields. **Any new free-text input must carry the same
+attribute** before replay is trusted not to leak it. The app-wide
+`defaultPrivacyLevel: 'mask'` remains a second layer of defense.
 
 ## 5. Manual setup checklist (lives outside this repo)
 
@@ -213,9 +218,8 @@ reads `NEXT_PUBLIC_DD_SITE` — and this project is on `us5`. Setting the key bu
 site uploads every map to the wrong region, where *both* halves succeed and RUM shows
 minified stacks forever. `siteMismatchWarning()` prints a warning when the two disagree.
 
-**`--release-version` must equal `NEXT_PUBLIC_DD_VERSION` exactly** — this is also what
-RUM itself reports as its `version` attribute. A mismatch here is a silent failure: the
-upload succeeds and error stacks still don't resolve, because Datadog looks up maps by
-service+version+path, not by upload time. If `DD_VERSION` (server-side tag) and
-`NEXT_PUBLIC_DD_VERSION` (browser-side tag, and the one this step uses) ever drift apart,
-this is where it would show up.
+**`--release-version` must equal the version embedded in RUM exactly.** Both resolve an
+explicit `NEXT_PUBLIC_DD_VERSION` first, then `VERCEL_GIT_COMMIT_SHA`, then the package
+version. Server tracing uses the equivalent `DD_VERSION` override and same deployment
+SHA fallback. A mismatch is a silent failure because Datadog looks maps up by
+service+version+path, not by upload time.
