@@ -159,6 +159,12 @@ describe('validateManifest — slos', () => {
     expect(result.errors).toContain('monitor SLO missing "monitor_ids"')
   })
 
+  it('rejects a monitor-type SLO with an empty monitor_ids array', () => {
+    const manifest = { ...baseSlo, type: 'monitor', monitor_ids: [] }
+    const result = validateManifest('slos', 'read-view-availability.json', manifest)
+    expect(result.errors).toContain('monitor SLO missing "monitor_ids"')
+  })
+
   it('accepts a portable monitor-type SLO reference', () => {
     const manifest = {
       ...baseSlo,
@@ -383,6 +389,29 @@ describe('metric and monitor-reference helpers', () => {
       ['{{monitor_id:yogakit:missing}}'],
       {},
     )).toThrow(/no live monitor found/)
+  })
+
+  it('finds no metric names in an unserialisable value', () => {
+    expect(extractMetricNames(undefined)).toEqual([])
+  })
+
+  it('returns null for a value that is not a monitor placeholder', () => {
+    expect(extractMonitorPlaceholder('123456')).toBeNull()
+    expect(extractMonitorPlaceholder(123456)).toBeNull()
+  })
+
+  it('blocks a monitor ID that is not a placeholder at all', () => {
+    expect(() => resolveMonitorPlaceholders([123456], {})).toThrow(
+      /invalid monitor placeholder/,
+    )
+  })
+
+  it('passes a non-numeric resolved monitor ID through unchanged', () => {
+    expect(
+      resolveMonitorPlaceholders(['{{monitor_id:yogakit:read-view-200}}'], {
+        'read-view-200': 'abc',
+      }),
+    ).toEqual(['abc'])
   })
 })
 

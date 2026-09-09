@@ -14,7 +14,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -42,34 +42,49 @@ jobs:
       - name: Telemetry content-free check
         run: npm run lint:telemetry
 
+      # Datadog Test Optimization, via dd-trace's native instrumentation rather than
+      # the JUnit XML upload this replaces. JUnit gives Datadog a file of pass/fail
+      # lines; the tracer gives it a span per test, which is what test history, flaky
+      # detection, and per-session code coverage are actually built on. Running both
+      # would double-report every test, so the old upload step is gone rather than
+      # kept "just in case".
+      #
+      # NODE_OPTIONS is set on this step alone and never at job level: it is read by
+      # every Node process, including the `npm ci` above, where dd-trace does not
+      # exist yet. Vitest is ESM-first, so it needs both hooks — `--import` for the
+      # ESM graph and `-r` for the CJS one.
+      #
+      # No key (a fork PR, say) means no NODE_OPTIONS at all, so the tracer never
+      # loads and the tests run exactly as they do locally. Same degrade-don't-abort
+      # posture as every other optional Datadog step here (FR-025/SC-011).
+      #
+      # DD_ENV is `ci`, not `prod`. Every monitor in datadog/ queries `env:prod`
+      # (datadog/README.md), so test runs landing there would corrupt production
+      # signals with data from a machine nobody is practising on.
       - name: Unit tests (with coverage)
-        run: npx vitest run --coverage --reporter=default --reporter=junit --outputFile=junit.xml
+        run: npx vitest run --coverage
+        env:
+          NODE_OPTIONS: ${{ secrets.DD_API_KEY != '' && '--import dd-trace/register.js -r dd-trace/ci/init' || '' }}
+          DD_CIVISIBILITY_AGENTLESS_ENABLED: 'true'
+          DD_API_KEY: ${{ secrets.DD_API_KEY }}
+          DD_SITE: us5.datadoghq.com
+          DD_ENV: ci
+          DD_SERVICE: yogakit
+          DD_TEST_SESSION_NAME: unit-tests
 
       - name: Build
         run: npx next build
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'sk-ant-placeholder' }}
 
-      # Uploads whatever JUnit output the test run produced, purely for visibility in
-      # Datadog Test Optimization. `continue-on-error: true` because an absent
-      # DD_API_KEY (e.g. a fork PR with no repo secrets) must not fail the build over an
-      # optional upload — NextMove learned this the hard way (docs/OBSERVABILITY.md).
-      - name: Upload test results to Datadog
-        if: always()
-        continue-on-error: true
-        run: >-
-          npx @datadog/datadog-ci junit upload
-          --service yogakit
-          --env ci
-          --tags test.framework:vitest
-          ./junit.xml
-        env:
-          DD_API_KEY: ${{ secrets.DD_API_KEY }}
-          DD_SITE: us5.datadoghq.com
-
-      # Publishes Vitest's LCOV report to Datadog Code Coverage. Keep this independent
-      # from the JUnit upload: test results and line coverage are separate Test
-      # Optimization signals, and either report may still exist when the test step fails.
+      # Dropped with the JUnit upload it sat beside: the tracer above reports every
+      # test as a span, so a second pass/fail file for the same run would double-count
+      # it. The coverage upload below is kept — it feeds Datadog Code Coverage, which
+      # is a different surface from the session's own lines_pct, and it costs nothing
+      # when it has nothing to send.
+      #
+      # Publishes Vitest's LCOV report to Datadog Code Coverage. Independent of the
+      # test step on purpose: the report may still exist when tests fail.
       - name: Upload code coverage to Datadog
         if: ${{ always() && hashFiles('coverage/lcov.info') != '' }}
         continue-on-error: true
@@ -87,7 +102,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -148,7 +163,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies

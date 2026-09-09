@@ -226,3 +226,59 @@ only one with no pre-merge signal. A near-miss found while fixing it: datadog-ci
 its upload site to US1 while this project's RUM is on `us5`, so setting `DD_API_KEY` without
 `DD_SITE` uploads every map to the wrong region, where both halves succeed and stacks never
 resolve. That one now warns.
+
+2026-09-08 — The source maps have been uploading with no commit attached since 008 shipped,
+and the only trace of it was one line in a deploy log nobody reads. `datadog-ci` printed
+`⚠️ An error occurred while invoking git: Error: No git remotes available` on every
+production deploy. Vercel builds from a tarball, not a clone: there is no `.git`, so there is
+no remote and no SHA. The upload succeeded, the maps resolved, and stacks de-minified — so
+nothing looked broken. What silently did not happen is the part the maps were uploaded for:
+no frame linked to a line on GitHub, and no error could be attributed to a deploy.
+
+It sat because it was found by accident. It was noticed while reading a deploy log for an
+unrelated failure, three weeks after 008 shipped. Nothing was watching for it: warnings in a
+build log have no monitor, no gate, and no owner, and this one is printed by a step that is
+deliberately non-fatal — the same degrade-don't-abort posture that (correctly) keeps a
+telemetry failure from stopping a deploy also guarantees its failures are invisible.
+
+Two related things were sitting in exactly the same blind spot, and were only found by
+pulling the same thread. `NEXT_PUBLIC_DD_VERSION` had been hardcoded `1.0.0` since 008
+shipped, so every deploy reported as the same release and every build's maps piled up under
+one version. And CI's Datadog integration was a JUnit XML upload — a file of pass/fail lines
+with no per-test spans, so no test history, no flaky detection, no per-session coverage.
+Neither was a bug anyone had filed. Both were "configured", which reads as done.
+
+The generalisable part: **"the integration is set up" and "the integration is producing the
+thing you set it up for" are different claims, and only the first one is easy to check.**
+Every one of these three passed a plausible smoke test — maps uploaded, tests reported, RUM
+had a version — while the specific capability each was for (deploy attribution, commit
+deep-links, test history) had never once worked. A checklist item that says "GitHub
+integration enabled" would have been checked; the box at `docs/OBSERVABILITY.md:129` was in
+fact an unchecked manual step whose stale text still described the JUnit upload as a *future*
+plan, months after it shipped. What would have caught it is asking, once, of each integration:
+what would I look at in the UI to see this working? For source maps that is a stack frame
+with a GitHub link on it — a thirty-second check that had never been run.
+
+Same day, found by the CI run on the branch that fixed the above: **the JUnit upload had
+never once succeeded.** `DD_API_KEY` is not a GitHub Actions secret and never has been —
+`gh secret list` on this repo returns nothing at all. Every run since `008` shipped ended
+that step with `Neither DATADOG_API_KEY nor DD_API_KEY is in your environment` →
+`Internal Error: API key is missing` → `Process completed with exit code 1`, swallowed by
+`continue-on-error: true`. Datadog has received zero test results for the entire life of
+the integration.
+
+Three separate things had to line up for that to stay invisible for three weeks, and all
+three were deliberate choices that were individually right. `continue-on-error: true` was
+correct — an optional telemetry upload must not fail a build. A step that fails but is
+allowed to fail renders as a green check with a small annotation nobody opens. And the
+plan for *this* change asserted "`DD_API_KEY` already exists as a repo secret (the JUnit
+step uses it) — no new secret needed", reasoning from the workflow file rather than from
+the secret store: **the YAML references a secret, therefore the secret exists.** It does
+not. The reference compiles to an empty string and everything downstream degrades politely.
+
+That last one is the generalisable part, and it is nastier than it looks, because the new
+dd-trace step inherits the exact same shape: no key means no `NODE_OPTIONS`, which means
+no tracer, which means a green build that sends nothing. The failure mode is identical;
+only the error message is gone. **A configuration claim read out of the file that consumes
+the config is not evidence** — `gh secret list` is one command, and it would have caught
+this three weeks and one incorrect plan earlier.
