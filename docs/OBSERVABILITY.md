@@ -71,6 +71,11 @@ degrade to a silent no-op, never a thrown error (FR-025/SC-011). None of them be
 | `DD_SERVICE` | Service name for `@vercel/otel` tracing + logger correlation | No | `yogakit`; run through `normalizeServiceName()` (`src/lib/dd-service-name.ts`) since a hyphen silently breaks `service:` queries |
 | `DD_ENV` | Env tag for server-side tracing | No | `prod` |
 | `DD_VERSION` | Version tag for server-side tracing | No | `1.0.0` |
+| `DD_APPSEC_ENABLED` | App & API Protection | Yes, for AAP | Enables request threat detection in `dd-trace` |
+| `DD_APPSEC_RASP_ENABLED` | Runtime Application Self-Protection (RASP) | Yes, for RASP | Blocks supported exploit attempts from inside the application process |
+| `DD_API_SECURITY_ENABLED` | API Security | Yes, for API discovery | Collects API endpoint and schema metadata; requires App & API Protection |
+| `DD_IAST_ENABLED` | Interactive Application Security Testing (IAST) | Yes, for IAST | Tracks request data through supported code paths; assess its runtime overhead before production rollout |
+| `DD_APPSEC_SCA_ENABLED` | Software Composition Analysis (SCA) | Yes, for runtime SCA | Reports vulnerable libraries loaded by the application process |
 | `DD_API_KEY` | Datadog API key | Only for `scripts/datadog/sync.mjs` and the content-free check's live-handle validation | Never bundled into the app — read only by Node scripts, never sent to the browser |
 | `DD_APP_KEY` | Datadog application key | Same as `DD_API_KEY` | Same |
 | `DD_SITE` | Datadog site for server-side/script API calls | Same as `DD_API_KEY` | `us5.datadoghq.com` |
@@ -79,6 +84,29 @@ Key-auth only. The sync tool and any headless routine (`/autoobs`) use
 `DD_API_KEY`/`DD_APP_KEY`/`DD_SITE` exclusively — never an interactive `pup auth login`
 session, which is a separate, expiring OAuth credential unrelated to these three vars
 (verified live: `specs/008-observability-as-code/tasks.md` T031).
+
+### Application security
+
+`vercel.json` enables App & API Protection, RASP, API Security, IAST, and runtime
+SCA for deployed server functions. The equivalent command for a conventional Node
+deployment is:
+
+```bash
+DD_APPSEC_ENABLED=true DD_APPSEC_RASP_ENABLED=true DD_API_SECURITY_ENABLED=true DD_IAST_ENABLED=true DD_APPSEC_SCA_ENABLED=true node app.js
+```
+
+These settings are read by the Datadog Node tracing library (`dd-trace`). This
+repository currently uses `@vercel/otel` for server tracing; OpenTelemetry export
+by itself does not implement Datadog application security. The Vercel project must
+therefore inject or package a compatible `dd-trace` version before these products
+produce security telemetry. Keep the tracer loaded before Next.js and other
+instrumented modules.
+
+Datadog Workload Protection (also called Cloud Workload Security or host runtime
+security) is not enabled by these variables. It requires a Datadog Agent with host
+or container access for process, file, and network activity, which Vercel's managed
+serverless runtime does not expose. RASP is the available in-process runtime
+protection for this deployment model.
 
 ## 4. Routine → signal → query map
 
