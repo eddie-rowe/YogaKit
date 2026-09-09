@@ -153,9 +153,9 @@ codebase cannot apply for you — check them if a signal above reads unexpectedl
 - [ ] **Datadog ↔ Vercel integration** enabled in Datadog's Integrations catalog, so
       deployment events and Vercel-sourced infrastructure metrics correlate with
       `service:yogakit`.
-- [ ] **Datadog ↔ GitHub integration** enabled, so a future CI JUnit upload
-      (`.github/workflows/ci.yml`'s "Upload test results to Datadog" step) and any
-      commit-correlation features work.
+- [ ] **Datadog ↔ GitHub integration** enabled, so CI's JUnit and LCOV uploads
+      (`.github/workflows/ci.yml`'s Datadog upload steps) correlate test results and
+      code coverage with the correct commits.
 - [ ] **Synthetics global variables** — if any synthetic test needs a shared
       credential (none currently do; all three live API tests hit public routes), set
       it once in Datadog Synthetics → Settings → Global Variables rather than
