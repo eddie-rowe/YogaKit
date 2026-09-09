@@ -57,7 +57,12 @@ jobs:
       - name: Upload test results to Datadog
         if: always()
         continue-on-error: true
-        run: npx @datadog/datadog-ci junit upload --service yogakit ./junit.xml
+        run: >-
+          npx @datadog/datadog-ci junit upload
+          --service yogakit
+          --env ci
+          --tags test.framework:vitest
+          ./junit.xml
         env:
           DD_API_KEY: ${{ secrets.DD_API_KEY }}
           DD_SITE: us5.datadoghq.com
