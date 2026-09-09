@@ -20,6 +20,17 @@ export async function register() {
       // the top-level `env` tag; the legacy key left Vercel spans at
       // `env:production` even when DD_ENV was `prod`.
       'deployment.environment.name': deploymentEnvironment,
+      // ...but the rename alone was not enough. Vercel's OTel collector injects a
+      // literal `env` attribute derived from VERCEL_ENV, and Datadog's OTel mapping
+      // ranks a literal `env` above `deployment.environment.name` — so every span
+      // landed on `env:production` while `custom.deployment.environment.name` read
+      // `prod`. That split every APM query from RUM, whose tag is `env:prod`, and it
+      // is what `npm run datadog:validate-live` reports as "metric has no env:prod
+      // series". Setting `env` here is the only key that reaches the tag Datadog
+      // actually filters on. `env:prod` is load-bearing in every manifest under
+      // `datadog/` (see docs/OBSERVABILITY.md §2), so one environment must have
+      // exactly one env value.
+      env: deploymentEnvironment,
     },
     instrumentationConfig: {
       fetch: {
