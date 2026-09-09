@@ -1,0 +1,14 @@
+{
+  "name": "[YogaKit] Production Logs Missing",
+  "type": "log alert",
+  "query": "logs(\"service:yogakit env:prod\").index(\"*\").rollup(\"count\").last(\"30m\") < 1",
+  "message": "No YogaKit production logs arrived for 30 minutes; verify the Vercel log drain. @syntheticstesting@gmail.com",
+  "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:log-ingestion-liveness"],
+  "options": {
+    "notify_audit": false,
+    "require_full_window": false,
+    "notify_no_data": true,
+    "no_data_timeframe": 30,
+    "thresholds": { "critical": 1 }
+  }
+}

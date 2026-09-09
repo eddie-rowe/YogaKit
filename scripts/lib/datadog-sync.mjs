@@ -31,6 +31,14 @@ export const TAG_MATCHED_TYPES = [
   'logs-metrics',
 ]
 
+const RETIRED_METRIC_PREFIXES = [
+  'rum.error.count',
+  'rum.session.count',
+  'rum.view.',
+  'synthetics.http.availability',
+  'synthetics.http.error',
+]
+
 const REQUIRED_TAGS = ['env:prod', 'service:yogakit', 'managed_by:git']
 
 /** `yogakit-error-rate` style filename → `yogakit:error-rate` marker tag. */
@@ -55,6 +63,12 @@ export function extractSlug(tags) {
 export function validateManifest(type, filename, manifest, opts = {}) {
   const errors = []
   const expectedSlug = filename.replace(/\.(json|ya?ml)$/, '')
+
+  for (const metric of extractMetricNames(manifest)) {
+    if (RETIRED_METRIC_PREFIXES.some((prefix) => metric === prefix || metric.startsWith(prefix))) {
+      errors.push(`query references retired metric "${metric}"`)
+    }
+  }
 
   if (type === 'dashboards') {
     if (!manifest.title || typeof manifest.title !== 'string') {
@@ -133,6 +147,19 @@ export function validateManifest(type, filename, manifest, opts = {}) {
     if (manifest.type === 'monitor' && !Array.isArray(manifest.monitor_ids)) {
       errors.push(`monitor SLO missing "monitor_ids"`)
     }
+    if (manifest.type === 'monitor' && manifest.monitor_ids?.length === 0) {
+      errors.push(`monitor SLO missing "monitor_ids"`)
+    }
+    if (manifest.type === 'monitor' && Array.isArray(manifest.monitor_ids)) {
+      for (const id of manifest.monitor_ids) {
+        const placeholder = extractMonitorPlaceholder(id)
+        if (!placeholder) {
+          errors.push(`monitor SLO IDs must use a "{{monitor_id:yogakit:<slug>}}" placeholder`)
+        } else if (opts.knownMonitorTags && !opts.knownMonitorTags.includes(placeholder)) {
+          errors.push(`monitor placeholder references unknown tag "yogakit:${placeholder}"`)
+        }
+      }
+    }
   }
 
   if (type === 'synthetics-api' || type === 'synthetics-browser') {
@@ -154,6 +181,34 @@ export function extractHandle(message) {
 }
 
 const SLO_PLACEHOLDER = /\{\{slo_id:yogakit:([a-z0-9-]+)\}\}/
+const MONITOR_PLACEHOLDER = /^\{\{monitor_id:yogakit:([a-z0-9-]+)\}\}$/
+
+/** Return every Datadog metric name referenced anywhere in a manifest. */
+export function extractMetricNames(value) {
+  const matches = (JSON.stringify(value) ?? '').matchAll(
+    /\b((?:trace|rum|synthetics|yogakit)\.[A-Za-z0-9_.]+)(?=\{)/g,
+  )
+  return [...new Set([...matches].map((match) => match[1]))]
+}
+
+/** The `yogakit:<slug>` tag a monitor-ID placeholder references. */
+export function extractMonitorPlaceholder(value) {
+  if (typeof value !== 'string') return null
+  return value.match(MONITOR_PLACEHOLDER)?.[1] ?? null
+}
+
+/** Resolve portable monitor references before sending a monitor-based SLO to Datadog. */
+export function resolveMonitorPlaceholders(ids, monitorIdBySlug) {
+  return ids.map((value) => {
+    const slug = extractMonitorPlaceholder(value)
+    if (!slug) throw new Error(`invalid monitor placeholder "${value}"`)
+    const id = monitorIdBySlug[slug]
+    if (!id) {
+      throw new Error(`no live monitor found tagged "yogakit:${slug}" — cannot resolve "${value}"`)
+    }
+    return Number.isFinite(Number(id)) ? Number(id) : id
+  })
+}
 
 /** The `yogakit:<slug>` tag a `{{slo_id:yogakit:<slug>}}` placeholder references. */
 export function extractSloPlaceholder(query) {

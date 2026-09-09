@@ -80,6 +80,18 @@ jobs:
       - name: Validate Datadog manifests
         run: npm run datadog:validate
 
+      # Provider secrets are unavailable to fork PRs, so structural validation runs
+      # everywhere and the live signal check runs after changes reach main. It fails
+      # when a referenced metric has no service:yogakit/env:prod series or when the
+      # Vercel log drain has delivered nothing for 24 hours.
+      - name: Validate live Datadog signals
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: npm run datadog:validate-live
+        env:
+          DD_API_KEY: ${{ secrets.DD_API_KEY }}
+          DD_APP_KEY: ${{ secrets.DD_APP_KEY }}
+          DD_SITE: us5.datadoghq.com
+
   db-verify:
     # RLS-assertion harness (T022, docs/design/002-schema.md §A/§D). Runs
     # against a bare Postgres service container — no Docker-in-Docker, no

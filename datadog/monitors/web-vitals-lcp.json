@@ -1,7 +1,7 @@
 {
   "name": "[YogaKit] Largest Contentful Paint p75 > 2.5s",
   "type": "query alert",
-  "query": "avg(last_1h):p75:rum.view.largest_contentful_paint{service:yogakit,env:prod} > 4000",
+  "query": "avg(last_1h):p75:rum.measure.view.largest_contentful_paint{service:yogakit,env:prod,!session_type:synthetics,!browser:HeadlessChrome} > 4000000000",
   "message": "Read-view LCP p75 exceeded the RULE-L6 mobile-performance floor for YogaKit. @syntheticstesting@gmail.com",
   "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:web-vitals-lcp"],
   "options": {
@@ -10,6 +10,6 @@
     "new_host_delay": 300,
     "evaluation_delay": 0,
     "notify_no_data": false,
-    "thresholds": { "critical": 4000, "warning": 2500 }
+    "thresholds": { "critical": 4000000000, "warning": 2500000000 }
   }
 }
