@@ -313,3 +313,43 @@ that was broken. APM had 1,526 spans the whole time, under `env:production` rath
 proved the filter.** The fix is to widen to a control query first — no tag filter, or a
 known-good service — and only trust a zero once something non-zero has come back through
 the same code path.
+
+Later the same day, from the first `npm run datadog:apply` in weeks: **two of the seven
+managed resource types had been failing on every single run, and the sync tool was
+reporting it correctly the whole time.**
+
+`[YogaKit] Read View Availability` had answered `400 Invalid payload: must specify the
+query for count types` since a Datadog bot commit flipped its `type` from `metric` to
+`monitor` three weeks earlier, and `yogakit.request.errors` had answered `404 Not found`
+for as long as the update path has existed, because the code sends `PUT` to an endpoint
+that is `PATCH`. Both printed `FAILED` with the API's own message in the apply output.
+Both set the process exit code to 1, which the tool has always done.
+
+Neither was noticed, for a reason that is worth being precise about rather than
+comfortable: **I read the output through `| tail -30`, which discards the exit status of
+everything upstream of the pipe.** The failing rows were on screen. `$?` was 0 because it
+described `tail`. The habit of tailing long command output — reasonable for a tool that
+prints one line per resource across seven types — is exactly what turned a correctly
+reported failure into an invisible one. `set -o pipefail`, or reading the exit code
+separately, is the whole fix.
+
+The second-order lesson is about *when* drift is detectable. `npm run datadog:validate`
+passed on both objects: a manifest can be structurally valid and still describe a change
+the live object cannot accept, and nothing but an apply finds that. The repo had a
+manifest whose `type` differed from the live SLO's for three weeks, and the only signal
+was a line inside output nobody re-read. An apply is therefore not a deployment step here
+— it is the only test that exists for repo-vs-live compatibility, and it needs to be run
+and *read* on a schedule, not just when something else is being changed.
+
+One more from the same sweep, which is the reason the two failures above were only *two*:
+the `[YogaKit] Health` dashboard's "Recent server errors" widget had been querying
+`service:yogakit env:prod version:$version level:error` with columns `error.kind`,
+`outcome` and `version`. Every one of those five terms is dead — logs carry no `env` tag,
+no `version` tag, and none of the JSON fields `logger.ts` writes, since the Vercel drain
+does not parse a log body. The widget rendered as an empty panel, and an empty
+"Recent server errors" panel reads exactly like good news.
+
+`npm run datadog:validate-live` did not catch it either, because it validates *metric*
+names against live series and has no equivalent check for a log query. That asymmetry is
+worth remembering when adding any signal: a metric with no data fails a check, while a log
+query with no results is indistinguishable from health.
