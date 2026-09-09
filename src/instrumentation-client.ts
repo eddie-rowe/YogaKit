@@ -7,13 +7,21 @@
  * (`NEXT_PUBLIC_DATADOG_*`) never matched what `.env.local` defines
  * (`NEXT_PUBLIC_DD_RUM_*`). This file uses the names that are actually set.
  *
- * FR-025/FR-026/SC-011: every posture flag below is a floor carried over unchanged
- * from the component this replaces — full sampling, replay off, interaction/resource/
- * long-task tracking off, `mask` privacy. Full NextMove manifest parity does not mean
- * matching NextMove's RUM posture; NextMove runs replay at 100% and interaction
- * tracking on, and this app deliberately does not follow it there. If any required
- * var is unset, `init()` is never called — RUM stays a silent no-op, never a thrown
- * error (FR-025/SC-011).
+ * FR-025/FR-026/SC-011: full sampling, `mask` privacy. If any required var is unset,
+ * `init()` is never called — RUM stays a silent no-op, never a thrown error
+ * (FR-025/SC-011).
+ *
+ * 2026-09-08: replay + interaction/resource/long-task tracking turned on (previously
+ * off — see DECISIONS.md for the full writeup and why this is a deliberate, tracked
+ * departure from the "page views, errors, web vitals only" telemetry floor in the
+ * constitution). Because replay is a visual reconstruction of the screen, default
+ * `mask` privacy is not enough on its own for the app's few free-text fields — a
+ * private flow title, phase name, or per-pose note is exactly the kind of "flow/note
+ * content" the constitution says telemetry must never carry. Those three inputs
+ * (src/app/compose/ComposeClient.tsx, src/app/compose/ComposeFlowItem.tsx) carry an
+ * explicit `data-dd-privacy="mask-user-input"` so they stay masked in both replay and
+ * action/input tracking even if a future page changes the default. Any new free-text
+ * input added to the composer (or elsewhere) needs the same attribute.
  *
  * `@datadog/browser-rum-nextjs`'s `nextjsPlugin()` is what makes RUM App-Router-aware:
  * plain `@datadog/browser-rum` sees a client-side route change as an unrelated event,
@@ -23,8 +31,9 @@
  */
 
 import { datadogRum } from '@datadog/browser-rum'
-import { nextjsPlugin, onRouterTransitionStart } from '@datadog/browser-rum-nextjs'
+import { nextjsPlugin } from '@datadog/browser-rum-nextjs'
 
+import { recordNavigationUrl } from '@/components/DatadogRumView'
 import { scrubErrorMessage, scrubViewUrl } from '@/lib/telemetry/scrub'
 
 const applicationId = process.env.NEXT_PUBLIC_DD_RUM_APPLICATION_ID
@@ -39,10 +48,10 @@ if (applicationId && clientToken && !datadogRum.getInternalContext()) {
     env: process.env.NEXT_PUBLIC_DD_ENV ?? 'prod',
     version: process.env.NEXT_PUBLIC_DD_VERSION,
     sessionSampleRate: 100,
-    sessionReplaySampleRate: 0,
-    trackUserInteractions: false,
-    trackResources: false,
-    trackLongTasks: false,
+    sessionReplaySampleRate: 100,
+    trackUserInteractions: true,
+    trackResources: true,
+    trackLongTasks: true,
     defaultPrivacyLevel: 'mask',
     // Joins RUM sessions to the @vercel/otel backend spans (src/instrumentation.ts) so a
     // trace id shows up on both sides. Scoped to same-origin only — third parties
@@ -61,6 +70,13 @@ if (applicationId && clientToken && !datadogRum.getInternalContext()) {
       if (event.view?.url) {
         event.view.url = scrubViewUrl(event.view.url)
       }
+      // DatadogRumView.tsx already scrubs the name it passes to startView(), but this
+      // is the enforcement point for RULE-L7, not a place that trusts a caller got it
+      // right — a name that somehow arrives unscrubbed (a future call site, a plugin
+      // default) must not reach Datadog raw.
+      if (event.view?.name) {
+        event.view.name = scrubViewUrl(event.view.name)
+      }
       if (event.type === 'error' && event.error?.message) {
         event.error.message = scrubErrorMessage(event.error.message)
       }
@@ -71,5 +87,10 @@ if (applicationId && clientToken && !datadogRum.getInternalContext()) {
 
 // FR-020: App Router transitions are RUM "views" only via this hook. Next.js's
 // client-instrumentation convention calls a function of this exact name on every
-// router transition — nothing in this file invokes it directly.
-export { onRouterTransitionStart }
+// router transition — nothing in this file invokes it directly. Unlike the SDK's own
+// @datadog/browser-rum-nextjs re-export, this feeds DatadogRumView.tsx's commit-phase
+// view starter instead of the SDK's render-phase DatadogAppRouter — see that
+// component's doc comment.
+export function onRouterTransitionStart(url: string) {
+  recordNavigationUrl(url)
+}

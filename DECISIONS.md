@@ -713,3 +713,141 @@ than left to be rediscovered.
 `/vercel/path0/.next/static`, and Turbopack emits `turbopack://[project]/src/…` source paths.
 If it is wrong, frames de-minify but do not deep-link — a failure with no error message. It
 is a post-deploy UI check, not something a test can catch.
+
+---
+
+## 2026-09-08 — RUM never actually started a session in production; `DatadogAppRouter`
+was the missing mount
+
+**Context:** Post-merge verification of `008` (after PR #17 landed and a production
+deploy finally succeeded) found zero RUM events in Datadog beyond the 5 recorded during
+`T047`'s local Playwright harness on 2026-09-04. The hourly `[YogaKit] Read View RUM
+Session` browser synthetic had been reporting PASS every hour that whole time — but
+"pass" only meant the page returned 200, not that RUM fired. Live investigation (a
+headless Playwright load of production, then `window.DD_RUM.getInitConfiguration()` and
+`getInternalContext()`) showed `init()` running with the exact right config, but
+`getInternalContext()` returned `undefined` on every load *and* on an in-app client-side
+navigation — no view was ever created, so nothing was ever queued to send.
+
+**Root cause:** `src/instrumentation-client.ts` initializes RUM with `plugins:
+[nextjsPlugin()]` and re-exports `onRouterTransitionStart`, matching Datadog's
+App-Router setup docs for that half of it. But that hook only records the *target* of a
+transition — Datadog's own integration docs
+(https://docs.datadoghq.com/integrations/rum-next-plugin/) require a second piece: the
+`<DatadogAppRouter />` component, mounted inside `app/layout.tsx`'s `<body>`, which is
+what actually commits the pathname and starts the view (including the very first one).
+`src/app/layout.tsx` never mounted it — worse, a comment at the RUM-init callsite
+asserted the opposite ("Next's native client instrumentation hook runs before any page
+code, so there is nothing to mount here"), which is why this went unnoticed through
+`008`'s own verification: `T047` proved the *scrubber* works on an event, not that a real
+navigation produces one.
+
+**Decision:** Mount `<DatadogAppRouter />` in `src/app/layout.tsx`, first child of
+`<body>`, before `<AppHeader />`/`{children}`. Verified locally against a real production
+build (`next build && next start`) with a headless Playwright load:
+`getInternalContext()` now returns a real `session_id`/`view.id`, and a real batched
+request reaches `browser-intake-us5-datadoghq.com` on navigation/unload flush. No other
+code changed — `instrumentation-client.ts`'s `init()` config, `beforeSend` scrubbing, and
+`allowedTracingUrls` were all already correct.
+
+**Why:** This is a straightforward missing-step bug against Datadog's documented
+contract, not a design choice — recorded here because the *symptom* (green synthetic,
+dark RUM) is the kind of thing worth a future reader recognizing quickly rather than
+re-diagnosing: a passing uptime-style check on a page that hosts a JS SDK is not evidence
+the SDK's client-side behavior works.
+
+---
+
+## 2026-09-08 — `DatadogAppRouter` itself spammed duplicate views; replaced with a
+commit-phase view starter
+
+**Context:** Verifying the mount above (this file's previous entry) surfaced a second
+bug. A single navigation to `/poses` produced ~90 RUM view events in a 35ms window, all
+`loading_type: route_change`, all named `/poses`, each with 0-1ms `time_spent`, under one
+session — one real navigation, ninety views. `PosesClient.tsx` does no URL manipulation
+at all (no `useRouter`, `useSearchParams`, or `replaceState`; its state is entirely
+local), so the cause could not be app code.
+
+**Root cause:** `@datadog/browser-rum-nextjs`'s `DatadogAppRouter` (v7.12.0) calls
+`startView` **during render**, guarded only by a per-instance `useRef`:
+```
+if (previousPathname.current !== pathname) {
+  previousPathname.current = pathname
+  startNextjsView(computeViewNameFromParams(pathname, params))
+}
+```
+A `useRef` is stable only across *committed* renders. A discarded concurrent render
+attempt, or a remount of the root layout during hydration recovery, gets a fresh ref and
+fires again for the same pathname. Since `nextjsPlugin()` sets `trackViewsManually =
+true`, `startView` is the only thing that creates a view — N render attempts means N
+views. `/poses` triggers this more than other routes because it serializes 67 pose
+objects into one client component; the root layout's pre-paint theme script (which
+mutates `documentElement` before hydration) is a plausible hydration-recovery trigger.
+It is intermittent by nature — a clean load can produce exactly 1 view — which is why it
+survived the previous entry's verification: that fix was tested by checking a view
+existed, not by counting how many were created.
+
+**Decision:** Replace the `<DatadogAppRouter />` mount with a small in-repo
+`<DatadogRumView />` (`src/components/DatadogRumView.tsx`) that starts the view in a
+`useEffect` — which only ever runs after a render commits — guarded by **module-scoped**
+state rather than a `useRef`, so a remount of the component cannot restart a view that
+already started. `onRouterTransitionStart` in `src/instrumentation-client.ts` now feeds
+this component's `recordNavigationUrl` instead of the SDK's own `startNextjsView`. The
+view name reuses `scrubViewUrl` (`src/lib/telemetry/scrub.ts`) rather than reimplementing
+the SDK's unexported `computeViewNameFromParams` — one privacy-relevant code path instead
+of two, and it was already 100%-covered. `beforeSend` also now scrubs `view.name` in
+addition to `view.url`, closing a latent RULE-L7 gap: an unrecognized path would
+otherwise reach Datadog as a raw view name.
+
+Verified with a 20-iteration Playwright loop against a real production build hitting
+`/poses` in a fresh browser context each time, capturing actual `browser-intake` beacon
+bodies (not `getInternalContext()` polling, which is blind to a sub-40ms burst) — 20/20
+runs produced exactly one `view` event. The same investigation also cleared a suspected
+third bug: `/read/[id]` appeared to emit zero view events in a short capture window, but
+forcing a real navigation-away showed the view flushes correctly — it was RUM's normal
+batch-size-driven flush timing on a lighter page, not a missing event.
+
+**Why:** Recorded because diverging from Datadog's own documented `DatadogAppRouter`
+mount looks like a mistake against the official integration unless the reason is written
+down — the SDK component's render-phase `startView` call is the churn mechanism, not an
+implementation detail safe to copy.
+
+---
+
+## 2026-09-08 — RUM turned on for session replay, interactions, resources, and long
+tasks; deliberate departure from the constitution's telemetry floor
+
+**Context:** With the view-churn bug fixed, RUM was still limited to views, errors, and
+web vitals (`sessionReplaySampleRate: 0`, `trackUserInteractions/trackResources/
+trackLongTasks: false`) — a floor carried over unchanged from the pre-008 component this
+file's instrumentation replaces. The user asked to turn on session replay (100%),
+interaction tracking, resource timing, and long-task tracking, to get real diagnostic
+value out of RUM rather than just uptime/error/vitals signal.
+
+**Tension with the constitution:** `.specify/memory/constitution.md` / `CLAUDE.md` state
+telemetry "carries page views, errors, and web vitals only — never pose/flow/note/
+journal content." Session replay is a visual reconstruction of the screen; interaction
+tracking captures click targets and DOM context. Both are a strictly larger telemetry
+surface than the floor the constitution describes, and replay in particular is the
+highest-risk feature for a masking gap to leak practice content.
+
+**Decision:** Turn all four on (`sessionReplaySampleRate: 100`, `trackUserInteractions:
+true`, `trackResources: true`, `trackLongTasks: true`) in
+`src/instrumentation-client.ts`, but treat `defaultPrivacyLevel: 'mask'` alone as
+insufficient for the app's three user-authored free-text fields — a private flow name
+isn't a hard-to-hit edge case, it's a labeled input right next to a "Name this flow"
+placeholder. Added an explicit `data-dd-privacy="mask-user-input"` to:
+- the flow title input (`src/app/compose/ComposeClient.tsx`, `compose-title-input`)
+- the phase name input (`src/app/compose/ComposeClient.tsx`)
+- the per-pose note input (`src/app/compose/ComposeFlowItem.tsx`, `compose-item-notes-*`)
+
+This forces those three fields to stay masked in replay recording and in action/input
+event capture regardless of what `defaultPrivacyLevel` is set to elsewhere, so a later
+change to the app-wide default privacy level can't silently unmask them.
+
+**Why:** Recorded as a deliberate, explicit widening of RUM's telemetry surface — not an
+accidental drift past the constitution's "views/errors/vitals only" line — so a future
+reader knows this was a considered tradeoff (diagnostic value vs. telemetry-surface
+minimalism) and knows where the compensating control lives. Any new free-text input added
+anywhere in the app needs the same `data-dd-privacy="mask-user-input"` attribute or it
+will render in cleartext in session replay.

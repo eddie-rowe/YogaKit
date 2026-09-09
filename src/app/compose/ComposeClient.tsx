@@ -306,6 +306,7 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
         <div className="flex items-center justify-between gap-3">
           <input
             data-testid="compose-title-input"
+            data-dd-privacy="mask-user-input"
             value={flow.title}
             onChange={e => updateFlow(f => ({ ...f, title: e.target.value, updatedAt: nowIso() }))}
             className="kk-input px-3 py-2 text-lg font-serif font-medium flex-1"
@@ -441,6 +442,7 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
             {flow.phases.map(phase => (
               <div key={phase.id} data-testid={`compose-phase-${phase.id}`} className="kk-card px-3 py-2 flex items-center gap-2">
                 <input
+                  data-dd-privacy="mask-user-input"
                   value={phase.name}
                   onChange={e =>
                     updateFlow(f => ({
