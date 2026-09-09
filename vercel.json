@@ -1,4 +1,11 @@
 {
+  "env": {
+    "DD_APPSEC_ENABLED": "true",
+    "DD_APPSEC_RASP_ENABLED": "true",
+    "DD_API_SECURITY_ENABLED": "true",
+    "DD_IAST_ENABLED": "true",
+    "DD_APPSEC_SCA_ENABLED": "true"
+  },
   "functions": {
     "src/app/api/generate/route.ts": {
       "maxDuration": 30
