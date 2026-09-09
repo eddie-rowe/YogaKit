@@ -15,9 +15,10 @@ export async function register() {
     },
     instrumentationConfig: {
       fetch: {
-        // Third parties reject an unrecognized `traceparent` header outright rather
-        // than ignoring it — a lesson recorded in NextMove's instrumentation.ts.
-        // Every outbound integration this app calls goes here.
+        // Do not leak request context to third-party APIs. Supabase is traced by the
+        // content-free wrapper in src/lib/supabase/tracing.ts; PostgREST does not carry
+        // an incoming traceparent through to the SQL it generates, so propagation here
+        // would not produce DBM correlation.
         dontPropagateContextUrls: [
           'api.stripe.com',
           'api.anthropic.com',
