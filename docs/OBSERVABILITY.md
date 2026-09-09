@@ -71,7 +71,7 @@ degrade to a silent no-op, never a thrown error (FR-025/SC-011). None of them be
 | `DD_SERVICE` | Service name for `@vercel/otel` tracing + logger correlation | No | `yogakit`; run through `normalizeServiceName()` (`src/lib/dd-service-name.ts`) since a hyphen silently breaks `service:` queries |
 | `DD_ENV` | Env tag for server-side tracing | No | `prod` |
 | `DD_VERSION` | Version tag for server-side tracing | No | `1.0.0` |
-| `DD_API_KEY` | Datadog API key | Only for `scripts/datadog/sync.mjs` and the content-free check's live-handle validation | Never bundled into the app — read only by Node scripts, never sent to the browser |
+| `DD_API_KEY` | Datadog API key | Server-side tooling and the CI Test Optimization upload | Never bundled into the app; store it as a GitHub Actions secret for CI |
 | `DD_APP_KEY` | Datadog application key | Same as `DD_API_KEY` | Same |
 | `DD_SITE` | Datadog site for server-side/script API calls | Same as `DD_API_KEY` | `us5.datadoghq.com` |
 
@@ -153,9 +153,11 @@ codebase cannot apply for you — check them if a signal above reads unexpectedl
 - [ ] **Datadog ↔ Vercel integration** enabled in Datadog's Integrations catalog, so
       deployment events and Vercel-sourced infrastructure metrics correlate with
       `service:yogakit`.
-- [ ] **Datadog ↔ GitHub integration** enabled, so a future CI JUnit upload
-      (`.github/workflows/ci.yml`'s "Upload test results to Datadog" step) and any
-      commit-correlation features work.
+- [ ] **`DD_API_KEY` GitHub Actions repository secret** set to a key from the us5
+      organization. The CI workflow uses it to upload Vitest JUnit results to Datadog
+      Test Optimization; fork pull requests without the secret still run normally.
+- [ ] **Datadog ↔ GitHub integration** enabled, so Test Optimization can correlate
+      `.github/workflows/ci.yml`'s uploaded results with commits and pull requests.
 - [ ] **Synthetics global variables** — if any synthetic test needs a shared
       credential (none currently do; all three live API tests hit public routes), set
       it once in Datadog Synthetics → Settings → Global Variables rather than
