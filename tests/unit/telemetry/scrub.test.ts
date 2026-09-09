@@ -53,7 +53,7 @@ describe('scrubViewUrl', () => {
   })
 
   it('accepts a full URL, not only a bare path', () => {
-    expect(scrubViewUrl('https://yoga-kit.vercel.app/poses/warrior-ii')).toBe('/poses/[slug]')
+    expect(scrubViewUrl('https://yogakit.vercel.app/poses/warrior-ii')).toBe('/poses/[slug]')
   })
 
   it('leaves a static route untouched', () => {
@@ -74,7 +74,7 @@ describe('scrubViewUrl', () => {
 })
 
 describe('scrubResourceUrl', () => {
-  const origin = 'https://yoga-kit.vercel.app'
+  const origin = 'https://yogakit.vercel.app'
 
   it('preserves reviewed same-origin endpoints without query strings', () => {
     expect(scrubResourceUrl('/api/generate?flow=my-flow', origin)).toBe('/api/generate')
@@ -121,9 +121,9 @@ describe('scrubErrorStack', () => {
   it('redacts the message line while preserving frames and removing URL parameters', () => {
     expect(
       scrubErrorStack(
-        'Error: private flow title\n    at save (https://yoga-kit.vercel.app/_next/app.js?token=secret#x:1:2)',
+        'Error: private flow title\n    at save (https://yogakit.vercel.app/_next/app.js?token=secret#x:1:2)',
       ),
-    ).toBe('[redacted]\n    at save (https://yoga-kit.vercel.app/_next/app.js)')
+    ).toBe('[redacted]\n    at save (https://yogakit.vercel.app/_next/app.js)')
   })
 
   it('returns absent stacks unchanged', () => {

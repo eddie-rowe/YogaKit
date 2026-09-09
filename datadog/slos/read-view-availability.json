@@ -1,8 +1,11 @@
 {
   "name": "[YogaKit] Read View Availability",
-  "type": "monitor",
+  "type": "metric",
   "description": "Percentage of successful, content-asserting checks against the public read view over the trailing 30 days, scoped only to yogakit:read-view-200. This proves online anonymous reachability; offline behavior is a separate browser journey that must be recorded and activated in Datadog.",
-  "monitor_ids": ["{{monitor_id:yogakit:read-view-200}}"],
+  "query": {
+    "numerator": "sum:synthetics.http.response{env:prod,service:yogakit,yogakit:read-view-200,status_code_class:2xx}.as_count()",
+    "denominator": "sum:synthetics.http.response{env:prod,service:yogakit,yogakit:read-view-200}.as_count()"
+  },
   "thresholds": [{ "target": 99.5, "warning": 99.9, "timeframe": "30d" }],
   "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:read-view-availability"]
 }

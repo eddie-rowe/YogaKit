@@ -16,7 +16,7 @@ links:
     url: https://github.com/eddie-rowe/YogaKit
   - name: Vercel Production
     type: other
-    url: https://yoga-kit.vercel.app
+    url: https://yogakit.vercel.app
   - name: Observability Runbook
     type: runbook
     url: https://github.com/eddie-rowe/YogaKit/blob/main/docs/OBSERVABILITY.md

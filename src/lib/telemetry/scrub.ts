@@ -62,7 +62,10 @@ const RESOURCE_ROUTES = new Set([
 
 function pathname(url: string): string | null {
   try {
-    return new URL(url, 'https://yoga-kit.vercel.app').pathname.replace(/\/$/, '') || '/'
+    // The base only lets `new URL` accept a relative path; `.pathname` discards the
+    // origin on the next call, so it must never be a real host — a real one rots the
+    // moment the deployment hostname changes, and reads like an allow-list it is not.
+    return new URL(url, 'https://placeholder.invalid').pathname.replace(/\/$/, '') || '/'
   } catch {
     return null
   }

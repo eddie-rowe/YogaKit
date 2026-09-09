@@ -173,37 +173,15 @@
             "layout": { "x": 6, "y": 0, "width": 6, "height": 3 }
           },
           {
-            "id": 23,
-            "definition": {
-              "type": "timeseries",
-              "title": "Generation outcomes",
-              "requests": [
-                {
-                  "response_format": "timeseries",
-                  "queries": [
-                    {
-                      "data_source": "metrics",
-                      "name": "outcomes",
-                      "query": "sum:yogakit.generate.outcomes{env:prod,version:$version} by {outcome}.as_count()"
-                    }
-                  ],
-                  "formulas": [{ "formula": "outcomes" }],
-                  "display_type": "bars"
-                }
-              ]
-            },
-            "layout": { "x": 0, "y": 3, "width": 6, "height": 3 }
-          },
-          {
             "id": 24,
             "definition": {
               "type": "log_stream",
               "title": "Recent server errors",
-              "query": "service:yogakit env:prod version:$version level:error",
-              "columns": ["timestamp", "message", "error.kind", "outcome", "version"],
+              "query": "service:yogakit @environment:production status:error",
+              "columns": ["timestamp", "status", "@path", "@statusCode", "@requestId"],
               "message_display": "inline"
             },
-            "layout": { "x": 6, "y": 3, "width": 6, "height": 3 }
+            "layout": { "x": 0, "y": 3, "width": 12, "height": 3 }
           }
         ]
       },

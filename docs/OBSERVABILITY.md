@@ -118,6 +118,23 @@ scoped `@application.id:<rum-app-id>` — an unscoped `service:yogakit` RUM quer
 healthy while the scoped one is actually dark, or vice versa; see `.claude/commands/
 autoobs.md` "Configuration" for the cross-check.
 
+**Logs are the exception, and it is not optional.** A Vercel-drained log carries exactly two
+tags — `source:vercel` and `datadog.submission_auth:api_key` — and no `env` tag at all, so
+`service:yogakit env:prod` matches zero log events. Vercel supplies the environment as an
+*attribute* instead. Every log query, monitor and log-based metric in this repo therefore
+filters `@environment:production`, and that is deliberate:
+
+```
+traces, metrics, RUM   env:prod
+logs                   @environment:production
+```
+
+Datadog cannot remap an attribute into the reserved `env` tag without a custom pipeline
+(a Category Processor to invent `prod` plus an Attribute Remapper to write the tag), and
+that config would be invisible from this repo — the same reason the Vercel project was
+renamed rather than remapped; see DECISIONS.md. `@environment:production` also excludes
+preview deployments, which drain into the same place.
+
 | Routine | Signal | Query shape | Time window |
 |---|---|---|---|
 | `/autoobs` step 1 | Monitor status | `pup monitors list` / `GET /api/v1/monitor?tags=service:yogakit`, cross-checked against `datadog/monitors/*.json` | current state (no window) |
@@ -127,7 +144,9 @@ autoobs.md` "Configuration" for the cross-check.
 | `/autoobs` step 5 | Synthetic uptime | `GET /api/v1/synthetics/tests` filtered `service:yogakit`, then `GET /api/v1/synthetics/tests/<id>/results` | last 24h |
 | `/autoobs` step 6 | Dashboard reachability | `GET /api/v1/dashboard/<id>` for `[YogaKit] Health` | current state (no window) |
 | `npm run datadog:diff` | Manifest drift (any type) | Full read-compare over all 7 resource types | current state (no window) |
-| `npm run datadog:validate-live` | Metric/log pipeline liveness | Every manifest metric must have an `env:prod,service:yogakit` series; logs search must return at least one event | last 24h |
+| `npm run datadog:validate-live` | Metric/log/synthetic-URL liveness | Every manifest metric must have an `env:prod,service:yogakit` series; a `service:yogakit` logs search must return at least one event; every synthetic's `config.request.url` must answer non-4xx/5xx | last 24h |
+| `[YogaKit] Production Logs Missing` | Log ingestion liveness | `logs("service:yogakit @environment:production")` — **not** `env:prod`, which matches nothing (see above) | last 30m |
+| `yogakit.request.errors` | Server error count by kind | Log-based metric, `service:yogakit @environment:production status:error`, grouped by `@error.kind` | continuous |
 
 The `rum-telemetry-freshness` and `apm-telemetry-freshness` monitors alert after 30
 minutes without intake. The five-minute public synthetics make an empty APM window a
@@ -178,6 +197,21 @@ telemetry URLs, and only honors `DD_ENV` in Vercel's production environment; loc
 preview spans use `development`/`preview`. Existing inferred service-map edges age out
 according to Datadog's retention window.
 
+### 3a. The production host
+
+Production is `https://yogakit.vercel.app` — Vercel's generated domain for the `yogakit`
+project, with no custom domain in front of it yet. That hostname is a literal in all five
+synthetic manifests (`config.request.url`) and in
+`datadog/service-catalog/yogakit.yaml`'s "Vercel Production" link; nothing else in the
+repo hardcodes it, because every runtime origin is derived from the request or from
+`window.location.origin`.
+
+The project was renamed `yoga-kit` → `yogakit` on 2026-09-09, which moved the apex domain
+and left the old one returning 404 while four live synthetics still pointed at it. Renaming
+a Vercel project is therefore a change to this file's contract, not just a cosmetic one.
+`npm run datadog:validate-live` now probes each distinct synthetic URL and fails on any
+4xx/5xx, so the same drift cannot recur silently.
+
 ## 5. Manual setup checklist (lives outside this repo)
 
 These are one-time, click-through steps in Vercel/Datadog that the sync tool and the
@@ -211,12 +245,14 @@ codebase cannot apply for you — check them if a signal above reads unexpectedl
       2026-09-09, which is why the JUnit upload it was written for had never once
       succeeded — see FRICTION.md. Without it the test step runs the suite normally and
       sends Datadog nothing, silently and by design.
-- [ ] **Vercel observability trace drain** connected to the same Datadog US5
+- [x] **Vercel observability trace drain** connected to the same Datadog US5
       organization, with Traces enabled for the YogaKit project. `@vercel/otel`
       creates spans, but it does not make a trace visible in Datadog unless Vercel is
       configured to export it. Confirm a production request appears under APM service
-      `yogakit` before debugging any child Supabase span. **Currently unset**, which is
-      what fails `datadog:validate-live` on `main`.
+      `yogakit` before debugging any child Supabase span. Verified connected 2026-09-09;
+      it had been connected all along, and the reason APM looked empty was the `env` tag,
+      not the drain — spans were arriving under `env:production` while every query here
+      assumes `env:prod` (see §3 and `src/instrumentation.ts`).
 - [ ] **Synthetics global variables** — if any synthetic test needs a shared
       credential (none currently do; all three live API tests hit public routes), set
       it once in Datadog Synthetics → Settings → Global Variables rather than

@@ -164,11 +164,33 @@ async function validateLiveTelemetry(env, manifestsByType) {
   })
   if (!logResult.data?.length) failures.push('no service:yogakit logs received in 24h (verify the Vercel log drain)')
 
+  // Manifest validation only checks that `config.request.url` is present, so a synthetic
+  // pointing at a hostname that no longer resolves syncs cleanly and then fails on every
+  // run — quietly burning the availability SLO it backs. This is how the `yoga-kit` ->
+  // `yogakit` Vercel rename stayed invisible. Probe each distinct URL for real.
+  const syntheticUrls = new Map()
+  for (const type of ['synthetics-api', 'synthetics-browser']) {
+    for (const { filename, manifest } of manifestsByType[type] ?? []) {
+      const url = manifest.config?.request?.url
+      if (url && !syntheticUrls.has(url)) syntheticUrls.set(url, `${type}/${filename}`)
+    }
+  }
+  for (const [url, source] of syntheticUrls) {
+    try {
+      const res = await fetch(url, { redirect: 'follow' })
+      if (res.status >= 400) failures.push(`synthetic URL is dead: ${url} responded ${res.status} (${source})`)
+    } catch (error) {
+      failures.push(`synthetic URL is unreachable: ${url} (${source}): ${error.message}`)
+    }
+  }
+
   if (failures.length) {
     for (const failure of failures) console.error(`LIVE INVALID  ${failure}`)
     throw new Error(`live telemetry validation failed (${failures.length} issue(s))`)
   }
-  console.log(`Live telemetry OK: ${metrics.size} metric(s) and logs active in env:prod.`)
+  console.log(
+    `Live telemetry OK: ${metrics.size} metric(s), ${syntheticUrls.size} synthetic URL(s) and logs active in env:prod.`,
+  )
 }
 
 function pup(env, args) {
@@ -284,11 +306,39 @@ async function applyCreate(env, type, manifest, filename) {
 
 async function applyUpdate(env, type, manifest, remote, filename) {
   if (type === 'monitors') return pupCreateOrUpdate(env, 'monitors', manifest, remote.id)
-  if (type === 'slos') return pupCreateOrUpdate(env, 'slos', manifest, remote.id)
+  if (type === 'slos') {
+    // Datadog cannot change an SLO's type in place. An update that switches type is
+    // rejected with a message about the *live* type's required fields ("must specify the
+    // query for count types" when the live SLO is metric-based), which reads like a
+    // malformed manifest rather than the immutable-field problem it is. Say so here
+    // instead: changing type means deleting the SLO, which issues a new ID and restarts
+    // the trailing error budget, so it is never something to do as a side effect.
+    if (manifest.type !== remote.type) {
+      throw new Error(
+        `SLO type is immutable: manifest says "${manifest.type}", live object ${remote.id} is ` +
+          `"${remote.type}". Either match the live type or delete and recreate the SLO ` +
+          `(which resets its 30d error budget and re-resolves {{slo_id:...}} references).`,
+      )
+    }
+    return pupCreateOrUpdate(env, 'slos', manifest, remote.id)
+  }
   if (type === 'synthetics-api') return restRequest(env, 'PUT', `/api/v1/synthetics/tests/api/${remote.public_id}`, manifest)
   if (type === 'synthetics-browser') return restRequest(env, 'PUT', `/api/v1/synthetics/tests/browser/${remote.public_id}`, manifest)
   if (type === 'dashboards') return restRequest(env, 'PUT', `/api/v1/dashboard/${remote.id}`, manifest)
-  if (type === 'logs-metrics') return restRequest(env, 'PUT', `/api/v2/logs/config/metrics/${remote.id}`, manifest)
+  if (type === 'logs-metrics') {
+    // The log-metrics update endpoint is PATCH, not PUT — a PUT answers 404 for a metric
+    // that demonstrably exists, which reads as "object missing" rather than "wrong verb".
+    // It also accepts only filter, group_by and compute.include_percentiles: the metric
+    // ID and its aggregation_type are immutable, so send neither.
+    const { filter, group_by: groupBy, compute } = manifest.data.attributes
+    const attributes = { filter, group_by: groupBy }
+    if (compute?.include_percentiles !== undefined) {
+      attributes.compute = { include_percentiles: compute.include_percentiles }
+    }
+    return restRequest(env, 'PATCH', `/api/v2/logs/config/metrics/${remote.id}`, {
+      data: { type: 'logs_metrics', attributes },
+    })
+  }
   if (type === 'service-catalog') return pupRegisterServiceCatalog(env, filename)
   throw new Error(`unhandled type: ${type}`)
 }

@@ -851,3 +851,92 @@ reader knows this was a considered tradeoff (diagnostic value vs. telemetry-surf
 minimalism) and knows where the compensating control lives. Any new free-text input added
 anywhere in the app needs the same `data-dd-privacy="mask-user-input"` attribute or it
 will render in cleartext in session replay.
+
+## 2026-09-09 — Renamed the Vercel project instead of remapping the log service in Datadog
+
+Vercel's Datadog log drain stamps the reserved `service` attribute from the **Vercel
+project slug**. It does not read `DD_SERVICE`, and it does not parse the JSON body of a
+stdout line, so `src/lib/utils/logger.ts`'s `service: 'yogakit'` field never became an
+attribute Datadog could promote (`@service:yogakit` matched zero logs). With the project
+named `yoga-kit`, every log line arrived as `service:yoga-kit` while every trace, metric,
+RUM event, monitor and SLO in `datadog/**` keyed off `service:yogakit`. Logs and traces
+for the same request could not be correlated.
+
+**Options.** (a) Rewrite the service name in a Datadog log pipeline. (b) Rename the Vercel
+project to `yogakit`.
+
+(a) is more work than it sounds. A Service Remapper copies an existing attribute's *value*
+into reserved `service`; it has no from/to and cannot rewrite a literal, so `yoga-kit` →
+`yogakit` needs **two** processors: a Category Processor to invent the value `yogakit` for
+logs matching `service:yoga-kit`, writing it to an intermediate attribute, then a Service
+Remapper to promote that attribute. Both must live in a custom pipeline ordered *above*
+Datadog's `Vercel` integration pipeline, which is `is_read_only: true` and cannot be
+edited. That is durable custom config, invisible from this repo, that every future reader
+has to discover before they can explain why the service name in Datadog differs from the
+project name in Vercel.
+
+**Decision:** rename the Vercel project to `yogakit`, so one name is correct at the source
+and no pipeline config exists to drift.
+
+**Cost, which was real:** the rename moves the project's generated apex domain.
+`yoga-kit.vercel.app` began returning 404 immediately, and four live synthetics were still
+pointed at it — including the one backing `read-view-availability` and the browser test
+that is the only source of pre-launch RUM data. Per-deployment hosts stay
+`yoga-<hash>-…` (Vercel truncates either slug to `yoga`), so
+`supabase/config.toml`'s preview-URL glob was unaffected. Guard added in
+`scripts/datadog/sync.mjs`: `datadog:validate-live` now probes every distinct synthetic
+URL and fails on any 4xx/5xx, because manifest validation only ever checked that
+`config.request.url` was *present*.
+
+**Why:** recorded so that a future reader who wonders why the Datadog service name and the
+Vercel project name agree — and finds no remapping pipeline — knows the agreement is
+deliberate and load-bearing, and knows that renaming the Vercel project again is a change
+to the observability contract, not a cosmetic one.
+
+## 2026-09-09 — Kept the read-view availability SLO metric-based, and parked the generation-pipeline signal
+
+Two decisions forced by the same `npm run datadog:apply` run, both about repo manifests
+that had drifted from what Datadog can actually accept.
+
+### The SLO stays metric-based
+
+`datadog/slos/read-view-availability.json` was created metric-based, converted to
+`type: monitor` by a Datadog bot commit (`bbbc72f`, merged in #26), and never applied
+successfully after that: Datadog **cannot change an SLO's type in place**, so every run
+answered `400 Invalid payload: must specify the query for count types` — the live object
+is metric-based, and the error describes the live type's required fields rather than the
+immutable-field problem it actually is.
+
+**Decision:** adopt the live shape into the repo — `type: metric` with the
+`synthetics.http.response` ratio scoped to `yogakit:read-view-200` and
+`status_code_class:2xx`.
+
+**Why not recreate as monitor-based:** deleting the SLO issues a new ID, restarts the
+trailing-30-day error budget at zero consumed, and forces both
+`slo-burn-{fast,slow}-read-view-availability.json` to re-resolve `{{slo_id:...}}`. The
+metric query is also strictly more precise than a monitor-uptime rollup: it counts 2xx
+responses against total responses for one specific test, which is what the SLO's
+description already claimed it measured.
+
+A guard now lives in `applyUpdate` (`scripts/datadog/sync.mjs`): a type mismatch between
+manifest and live object fails with the immutability explanation rather than passing the
+payload to Datadog and surfacing its misleading message.
+
+### The generation-pipeline signal is parked
+
+`datadog/logs-metrics/yogakit.generate.outcomes.json` grouped by `@env`, `@version` and
+`@outcome`, and `datadog/monitors/generation-pipeline-errors.json` divided one of its
+series by another. Those attributes exist only inside the JSON line
+`src/lib/utils/logger.ts` writes, and Vercel's Datadog drain does not parse a log body —
+the same mechanism that kept `@service:yogakit` at zero before the project rename. The
+metric had no series, could not get one, and was the sole failure of
+`npm run datadog:validate-live`.
+
+**Decision:** delete both manifests and both live objects. Git history preserves them.
+
+**Restore condition, so this is not rediscovered from scratch:** bring them back once a
+`logger.info` line from `src/app/api/generate/route.ts:92-95` is provably searchable in
+Datadog as `@outcome:*`. That needs either a JSON parser in a custom log pipeline or
+shipping logs from the app straight to the Datadog logs intake, bypassing the drain.
+Until one of those exists, no log-based product metric can work, and adding one only
+creates a monitor that reads healthy because it has no data.

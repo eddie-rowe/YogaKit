@@ -6,7 +6,7 @@ import { safeNextPath } from '@/lib/auth/redirect'
 // by /auth/callback and /auth/confirm, so every case asserts the final resolved
 // URL too — a return value that only looks relative is exactly the bug this
 // helper exists to prevent.
-const ORIGIN = 'https://yoga-kit.vercel.app'
+const ORIGIN = 'https://yogakit.vercel.app'
 const resolve = (next: string | null) => new URL(safeNextPath(next), ORIGIN).href
 
 describe('safeNextPath', () => {
@@ -34,6 +34,6 @@ describe('safeNextPath', () => {
     ['slash then backslash', '//\\evil.com'],
   ])('refuses to leave the origin: %s', (_label, candidate) => {
     expect(resolve(candidate)).toBe(`${ORIGIN}/`)
-    expect(new URL(safeNextPath(candidate), ORIGIN).hostname).toBe('yoga-kit.vercel.app')
+    expect(new URL(safeNextPath(candidate), ORIGIN).hostname).toBe('yogakit.vercel.app')
   })
 })

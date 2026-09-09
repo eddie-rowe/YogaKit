@@ -5,7 +5,7 @@
   "config": {
     "request": {
       "method": "GET",
-      "url": "https://yoga-kit.vercel.app/read/classic-yin-full-body",
+      "url": "https://yogakit.vercel.app/read/classic-yin-full-body",
       "headers": {},
       "body": ""
     },

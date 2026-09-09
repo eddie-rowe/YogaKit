@@ -282,3 +282,74 @@ no tracer, which means a green build that sends nothing. The failure mode is ide
 only the error message is gone. **A configuration claim read out of the file that consumes
 the config is not evidence** — `gh secret list` is one command, and it would have caught
 this three weeks and one incorrect plan earlier.
+
+Same day, one layer up: **the service name was already right everywhere in the repo, and
+that was not enough.** `src/lib/dd-service-name.ts` exists precisely to defend the
+`service:yogakit` tag — it normalizes a hyphenated `DD_SERVICE` back to `yogakit` and warns
+loudly at boot, with a comment explaining that a hyphen would silently break every monitor
+query. `DD_SERVICE` was set correctly. Traces, metrics and RUM all carried
+`service:yogakit`. Logs arrived as `service:yoga-kit` anyway, for the whole life of the log
+drain.
+
+The reason is that two different mechanisms decide that name and only one of them reads
+config. `@vercel/otel` takes the service name from `DD_SERVICE`, through the guard.
+Vercel's Datadog log drain takes it from the **Vercel project slug** and never looks at
+`DD_SERVICE` at all — nor does it parse the JSON stdout line, so the `service` field
+`logger.ts` writes into every log body was never promoted to an attribute
+(`@service:yogakit`: zero results, which is itself the tell).
+
+The generalisable part: **a guard protects the path it sits on, and its existence is
+reassuring out of proportion to its reach.** The comment in `dd-service-name.ts` describes
+the hazard accurately and completely for tracing, which made the tag feel settled and made
+the logs' disagreement read as a Datadog bug rather than a second, unguarded code path. The
+check that would have caught it is the same one that catches everything else in this file:
+for each signal type, ask *what actually sets this field*, and confirm it — logs, traces,
+metrics and RUM are four separate answers, not one.
+
+Runner-up from the same investigation, worth naming because it wasted the most time: I
+concluded "the Vercel drains are not connected" from a query that filtered on the very tag
+that was broken. APM had 1,526 spans the whole time, under `env:production` rather than
+`env:prod`. **A zero from a filtered query is evidence about the filter until you have
+proved the filter.** The fix is to widen to a control query first — no tag filter, or a
+known-good service — and only trust a zero once something non-zero has come back through
+the same code path.
+
+Later the same day, from the first `npm run datadog:apply` in weeks: **two of the seven
+managed resource types had been failing on every single run, and the sync tool was
+reporting it correctly the whole time.**
+
+`[YogaKit] Read View Availability` had answered `400 Invalid payload: must specify the
+query for count types` since a Datadog bot commit flipped its `type` from `metric` to
+`monitor` three weeks earlier, and `yogakit.request.errors` had answered `404 Not found`
+for as long as the update path has existed, because the code sends `PUT` to an endpoint
+that is `PATCH`. Both printed `FAILED` with the API's own message in the apply output.
+Both set the process exit code to 1, which the tool has always done.
+
+Neither was noticed, for a reason that is worth being precise about rather than
+comfortable: **I read the output through `| tail -30`, which discards the exit status of
+everything upstream of the pipe.** The failing rows were on screen. `$?` was 0 because it
+described `tail`. The habit of tailing long command output — reasonable for a tool that
+prints one line per resource across seven types — is exactly what turned a correctly
+reported failure into an invisible one. `set -o pipefail`, or reading the exit code
+separately, is the whole fix.
+
+The second-order lesson is about *when* drift is detectable. `npm run datadog:validate`
+passed on both objects: a manifest can be structurally valid and still describe a change
+the live object cannot accept, and nothing but an apply finds that. The repo had a
+manifest whose `type` differed from the live SLO's for three weeks, and the only signal
+was a line inside output nobody re-read. An apply is therefore not a deployment step here
+— it is the only test that exists for repo-vs-live compatibility, and it needs to be run
+and *read* on a schedule, not just when something else is being changed.
+
+One more from the same sweep, which is the reason the two failures above were only *two*:
+the `[YogaKit] Health` dashboard's "Recent server errors" widget had been querying
+`service:yogakit env:prod version:$version level:error` with columns `error.kind`,
+`outcome` and `version`. Every one of those five terms is dead — logs carry no `env` tag,
+no `version` tag, and none of the JSON fields `logger.ts` writes, since the Vercel drain
+does not parse a log body. The widget rendered as an empty panel, and an empty
+"Recent server errors" panel reads exactly like good news.
+
+`npm run datadog:validate-live` did not catch it either, because it validates *metric*
+names against live series and has no equivalent check for a log query. That asymmetry is
+worth remembering when adding any signal: a metric with no data fails a check, while a log
+query with no results is indistinguishable from health.
