@@ -14,6 +14,7 @@
 // Datadog Error Tracking issue.
 
 import { trace } from '@opentelemetry/api'
+import { scrubErrorMessage, scrubErrorStack } from '@/lib/telemetry/scrub'
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error'
 
@@ -50,6 +51,10 @@ const BANNED_FIELD_NAMES = new Set([
   'token',
   'raw_token',
   'secret',
+  'email',
+  'to',
+  'recipient',
+  'error',
 ])
 
 function assertSafeFields(fields: LogFields | undefined) {
@@ -70,6 +75,10 @@ function write(level: LogLevel, message: string, fields?: LogFields, error?: Log
     level,
     message,
     timestamp: new Date().toISOString(),
+    service: 'yogakit',
+    env: process.env.DD_ENV || process.env.NODE_ENV || 'development',
+    version:
+      process.env.DD_VERSION || process.env.VERCEL_GIT_COMMIT_SHA || process.env.npm_package_version || '0.1.0',
     ...traceContext(),
     ...fields,
     // Top-level, not nested — Datadog Error Tracking only groups an error.* shape
@@ -94,9 +103,13 @@ function write(level: LogLevel, message: string, fields?: LogFields, error?: Log
 // to catch if passed as a regular field instead.
 function toLoggedError(err: unknown): LoggedError {
   if (err instanceof Error) {
-    return { kind: err.name, message: err.message, stack: err.stack }
+    return {
+      kind: err.name,
+      message: scrubErrorMessage(err.message),
+      stack: scrubErrorStack(err.stack),
+    }
   }
-  return { kind: 'UnknownError', message: String(err) }
+  return { kind: 'UnknownError', message: '[redacted]' }
 }
 
 export const logger = {

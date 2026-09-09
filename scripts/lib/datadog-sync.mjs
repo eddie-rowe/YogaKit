@@ -123,6 +123,20 @@ export function validateManifest(type, filename, manifest, opts = {}) {
     if (!manifest.name) errors.push(`missing "name"`)
     if (!manifest.query) errors.push(`missing "query"`)
     if (!manifest.message) errors.push(`missing "message"`)
+    const queryThreshold =
+      typeof manifest.query === 'string'
+        ? Number(manifest.query.match(/[<>]=?\s*(-?\d+(?:\.\d+)?)\s*$/)?.[1])
+        : Number.NaN
+    const criticalThreshold = Number(manifest.options?.thresholds?.critical)
+    if (
+      Number.isFinite(queryThreshold) &&
+      Number.isFinite(criticalThreshold) &&
+      queryThreshold !== criticalThreshold
+    ) {
+      errors.push(
+        `query threshold (${queryThreshold}) does not match options.thresholds.critical (${criticalThreshold})`,
+      )
+    }
     const handle = extractHandle(manifest.message)
     if (!handle) {
       errors.push(`"message" does not end with a notification handle (e.g. "@syntheticstesting@gmail.com")`)
@@ -143,6 +157,14 @@ export function validateManifest(type, filename, manifest, opts = {}) {
     }
     if (manifest.type === 'metric' && !manifest.query) {
       errors.push(`metric SLO missing "query"`)
+    }
+    if (
+      filename === 'read-view-availability.json' &&
+      manifest.type === 'metric' &&
+      (!manifest.query?.numerator?.includes('yogakit:read-view-200') ||
+        !manifest.query?.denominator?.includes('yogakit:read-view-200'))
+    ) {
+      errors.push(`read-view SLO queries must be scoped to "yogakit:read-view-200"`)
     }
     if (manifest.type === 'monitor' && !Array.isArray(manifest.monitor_ids)) {
       errors.push(`monitor SLO missing "monitor_ids"`)

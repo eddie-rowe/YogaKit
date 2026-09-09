@@ -67,6 +67,7 @@ export default function ProfileSection({
           <span className="text-sm">Display name</span>
           <input
             data-testid="settings-display-name-input"
+            data-dd-privacy="mask-user-input"
             type="text"
             required
             value={name}
@@ -79,6 +80,7 @@ export default function ProfileSection({
           <span className="text-sm">Time zone</span>
           <input
             data-testid="settings-timezone-input"
+            data-dd-privacy="mask-user-input"
             type="text"
             required
             value={zone}

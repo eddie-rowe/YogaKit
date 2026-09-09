@@ -1,0 +1,16 @@
+{
+  "data": {
+    "type": "logs_metrics",
+    "id": "yogakit.generate.outcomes",
+    "attributes": {
+      "compute": { "aggregation_type": "count" },
+      "filter": { "query": "service:yogakit @message:generate.outcome" },
+      "group_by": [
+        { "path": "service", "tag_name": "service" },
+        { "path": "@env", "tag_name": "env" },
+        { "path": "@version", "tag_name": "version" },
+        { "path": "@outcome", "tag_name": "outcome" }
+      ]
+    }
+  }
+}

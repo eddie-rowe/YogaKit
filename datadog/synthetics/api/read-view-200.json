@@ -11,6 +11,7 @@
     },
     "assertions": [
       { "type": "statusCode", "operator": "is", "target": 200 },
+      { "type": "body", "operator": "contains", "target": "60-Minute Yin: Classic Full Body" },
       { "type": "responseTime", "operator": "lessThan", "target": 2000 }
     ]
   },

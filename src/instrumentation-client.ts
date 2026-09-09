@@ -34,7 +34,12 @@ import { datadogRum } from '@datadog/browser-rum'
 import { nextjsPlugin } from '@datadog/browser-rum-nextjs'
 
 import { recordNavigationUrl } from '@/components/DatadogRumView'
-import { scrubErrorMessage, scrubViewUrl } from '@/lib/telemetry/scrub'
+import {
+  scrubErrorMessage,
+  scrubErrorStack,
+  scrubResourceUrl,
+  scrubViewUrl,
+} from '@/lib/telemetry/scrub'
 
 const applicationId = process.env.NEXT_PUBLIC_DD_RUM_APPLICATION_ID
 const clientToken = process.env.NEXT_PUBLIC_DD_RUM_CLIENT_TOKEN
@@ -83,8 +88,12 @@ if (applicationId && clientToken && isObservableHost && !datadogRum.getInternalC
       if (event.view?.name) {
         event.view.name = scrubViewUrl(event.view.name)
       }
-      if (event.type === 'error' && event.error?.message) {
-        event.error.message = scrubErrorMessage(event.error.message)
+      if (event.type === 'error') {
+        if (event.error?.message) event.error.message = scrubErrorMessage(event.error.message)
+        if (event.error?.stack) event.error.stack = scrubErrorStack(event.error.stack)
+      }
+      if (event.type === 'resource' && event.resource?.url) {
+        event.resource.url = scrubResourceUrl(event.resource.url, window.location.origin)
       }
       return true
     },

@@ -21,11 +21,12 @@ full stop, regardless of how useful it would be for debugging.
 
 This is enforced at three points, not just documented:
 
-- **`src/lib/telemetry/scrub.ts`** — `scrubViewUrl` parameterizes every dynamic route
-  segment (`/poses/downward-dog` → `/poses/[slug]`) before a view URL reaches RUM;
-  `scrubErrorMessage` strips quoted substrings and path-shaped content out of error
-  text. Wired into RUM's `beforeSend` in `src/instrumentation-client.ts`. 100% branch
-  coverage (`vitest.config.ts`).
+- **`src/lib/telemetry/scrub.ts`** — view and resource URLs use explicit allow lists;
+  reviewed dynamic routes are parameterized (`/poses/downward-dog` →
+  `/poses/[slug]`) and unknown paths are redacted by default. Free-text error messages
+  and stack message lines are always redacted, while sanitized stack frames remain
+  available for source-map resolution. Wired into RUM's `beforeSend` and the server
+  logger. 100% branch coverage (`vitest.config.ts`).
 - **`src/lib/utils/logger.ts`** — `assertSafeFields` throws if a structured-log call
   passes a banned field name (`note`, `journal`, `mood`, `token`, `secret`, …). A
   logger call must never be the reason a request fails, but passing banned content
@@ -36,10 +37,9 @@ This is enforced at three points, not just documented:
   one. This is the automated test RULE-L7 never had before this feature — a check that
   asserts a constitutional guarantee and is itself untested is a claim, not a gate.
 
-None of the three above can see inside a value, only a field *name* — a call site could
-still smuggle content through a permitted field (e.g. `errorCode: <actual pose name>`).
-There is no code-level defense against that; it depends on reviewers applying the
-question above at PR time.
+The static field-name check cannot infer whether a permitted attribute value was
+derived from user content. URL and error values have runtime defenses, but new custom
+attributes still depend on reviewers applying the question above at PR time.
 
 ## 2. Attribute-naming conventions
 
@@ -68,10 +68,10 @@ degrade to a silent no-op, never a thrown error (FR-025/SC-011). None of them be
 | `NEXT_PUBLIC_DD_SITE` | Datadog site for the browser SDK | No | `us5.datadoghq.com` for this org |
 | `NEXT_PUBLIC_DD_SERVICE` | Service name tag on RUM events | No | `yogakit` |
 | `NEXT_PUBLIC_DD_ENV` | Env tag on RUM events | No | `prod` — **not** `production`; every query in §4 assumes `env:prod` |
-| `NEXT_PUBLIC_DD_VERSION` | Version tag on RUM events | No | **Ignored on Vercel** — `next.config.ts` overrides it with the commit SHA (§7). Local only |
+| `NEXT_PUBLIC_DD_VERSION` | Version tag on RUM events | No | **Ignored on Vercel** — `next.config.ts` overrides it with the commit SHA (§8). Local only |
 | `DD_SERVICE` | Service name for `@vercel/otel` tracing + logger correlation | No | `yogakit`; run through `normalizeServiceName()` (`src/lib/dd-service-name.ts`) since a hyphen silently breaks `service:` queries |
 | `DD_ENV` | Env tag for server-side tracing | No | `prod` |
-| `DD_VERSION` | Version tag for server-side tracing | No | Same — **ignored on Vercel**, overridden with the commit SHA (§7) |
+| `DD_VERSION` | Version tag for server-side tracing | No | Same — **ignored on Vercel**, overridden with the commit SHA (§8) |
 | `DD_API_KEY` | Datadog API key | `scripts/datadog/sync.mjs`, the content-free check's live-handle validation, and CI's test instrumentation | Never bundled into the app — read only by Node scripts, never sent to the browser. CI reads it as a GitHub Actions repository secret |
 | `DD_APP_KEY` | Datadog application key | Same as `DD_API_KEY` | Same |
 | `DD_SITE` | Datadog site for server-side/script API calls | Same as `DD_API_KEY` | `us5.datadoghq.com` |
@@ -96,8 +96,16 @@ autoobs.md` "Configuration" for the cross-check.
 | `/autoobs` step 4 | Server error rate, API latency p95 | Datadog metrics query, `service:yogakit env:prod` | last 24h |
 | `/autoobs` step 5 | Synthetic uptime | `GET /api/v1/synthetics/tests` filtered `service:yogakit`, then `GET /api/v1/synthetics/tests/<id>/results` | last 24h |
 | `/autoobs` step 6 | Dashboard reachability | `GET /api/v1/dashboard/<id>` for `[YogaKit] Health` | current state (no window) |
-| `npm run datadog:diff` | Manifest drift (any type) | Full read-compare over all 6 resource types | current state (no window) |
+| `npm run datadog:diff` | Manifest drift (any type) | Full read-compare over all 7 resource types | current state (no window) |
 | `npm run datadog:validate-live` | Metric/log pipeline liveness | Every manifest metric must have an `env:prod,service:yogakit` series; logs search must return at least one event | last 24h |
+
+The `rum-telemetry-freshness` and `apm-telemetry-freshness` monitors alert after 30
+minutes without intake. The five-minute public synthetics make an empty APM window a
+pipeline failure rather than merely a low-traffic period. Generation is monitored
+separately because its SSE protocol reports application outcomes inside HTTP 200
+responses: `generate.sequence` spans and `generate.outcome` logs carry only an outcome
+code and stage/total durations, and the `yogakit.generate.outcomes` log metric powers
+the generation error-rate monitor and dashboard.
 
 Thresholds for each monitor (what counts as AT-RISK vs. BREACHED): `datadog/README.md`
 "Manifest notes" table.
@@ -127,14 +135,11 @@ in a Playwright script across several fresh loads, never by polling
 blind to a churn burst that starts and ends within a single render pass.
 
 **Session replay is sampled at 10% — masking is enforced per-field, not just by
-the app-wide default.** `defaultPrivacyLevel: 'mask'` in `src/instrumentation-client.ts`
-is the app-wide floor, but the composer's three free-text inputs (flow title, phase name,
-per-pose note — see `DECISIONS.md`'s 2026-09-08 entry) carry an explicit
-`data-dd-privacy="mask-user-input"` so they can't be unmasked by a future change to that
-default. **Any new free-text input added anywhere in the app must carry the same
-attribute** before replay is trusted not to leak it — this is not something the copy-lint
-or telemetry-content check catches; both only see field names in structured logger/RUM
-calls, not raw replay recording.
+the app-wide default.** Every text, search, and email input carries
+`data-dd-privacy="mask-user-input"`, including profile, organization, generation-theme,
+catalog-search, and composer fields. **Any new free-text input must carry the same
+attribute** before replay is trusted not to leak it. The app-wide
+`defaultPrivacyLevel: 'mask'` remains a second layer of defense.
 
 RUM does not initialize on `localhost` or `127.0.0.1`. This prevents local/headless
 sessions and their dependency spans from polluting production RUM cohorts and the APM
@@ -165,7 +170,7 @@ codebase cannot apply for you — check them if a signal above reads unexpectedl
 - [x] **Datadog GitHub App** created and installed on the `YogaKit` repo, with
       **`Actions: Read`** (CI Pipeline Visibility) and **`Contents: Read`** (inline
       source snippets on stack frames). Datadog → Integrations → GitHub →
-      *Add New GitHub Application*. One app covers both; see §7.
+      *Add New GitHub Application*. One app covers both; see §8.
 - [x] **CI Visibility enabled for the repo** — Software Delivery → CI Visibility →
       *Add a Pipeline Provider* → GitHub → *Enable Account*, then toggle `YogaKit`.
       Nothing in this repo turns this on; without it no workflow run is recorded, and
@@ -286,10 +291,10 @@ minified stacks forever. `siteMismatchWarning()` prints a warning when the two d
 mismatch is a silent failure: the upload succeeds and stacks still don't resolve,
 because Datadog looks maps up by service+version+path, not by upload time. Rather than
 trusting three env vars to stay in step, all three call sites now read one function,
-`resolveVersion()` in `scripts/lib/dd-version.mjs` — see §7.
+`resolveVersion()` in `scripts/lib/dd-version.mjs` — see §8.
 
 
-## 7. CI and source code integration
+## 8. CI and source code integration
 
 Three things had to be true before a production error could be traced back to the line
 of source that caused it. Two of them live in this repo; one is a click-through.
