@@ -67,6 +67,17 @@ jobs:
           DD_API_KEY: ${{ secrets.DD_API_KEY }}
           DD_SITE: us5.datadoghq.com
 
+      # Publishes Vitest's LCOV report to Datadog Code Coverage. Keep this independent
+      # from the JUnit upload: test results and line coverage are separate Test
+      # Optimization signals, and either report may still exist when the test step fails.
+      - name: Upload code coverage to Datadog
+        if: ${{ always() && hashFiles('coverage/lcov.info') != '' }}
+        continue-on-error: true
+        run: npx @datadog/datadog-ci coverage upload --service yogakit --format lcov ./coverage/lcov.info
+        env:
+          DD_API_KEY: ${{ secrets.DD_API_KEY }}
+          DD_SITE: us5.datadoghq.com
+
   datadog-validate:
     # Manifest-only validation (FR-004) — never applies. Applying stays a deliberate
     # local `npm run datadog:apply`, per 008's plan: "No auto-apply from CI."

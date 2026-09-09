@@ -154,10 +154,12 @@ codebase cannot apply for you — check them if a signal above reads unexpectedl
       deployment events and Vercel-sourced infrastructure metrics correlate with
       `service:yogakit`.
 - [ ] **`DD_API_KEY` GitHub Actions repository secret** set to a key from the us5
-      organization. The CI workflow uses it to upload Vitest JUnit results to Datadog
-      Test Optimization; fork pull requests without the secret still run normally.
-- [ ] **Datadog ↔ GitHub integration** enabled, so Test Optimization can correlate
-      `.github/workflows/ci.yml`'s uploaded results with commits and pull requests.
+      organization. The CI workflow uses it to upload Vitest JUnit results and LCOV
+      coverage to Datadog Test Optimization; fork pull requests without the secret
+      still run normally.
+- [ ] **Datadog ↔ GitHub integration** enabled, so CI's JUnit and LCOV uploads
+      (`.github/workflows/ci.yml`'s Datadog upload steps) correlate test results and
+      code coverage with the correct commits and pull requests.
 - [ ] **Synthetics global variables** — if any synthetic test needs a shared
       credential (none currently do; all three live API tests hit public routes), set
       it once in Datadog Synthetics → Settings → Global Variables rather than
