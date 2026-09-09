@@ -38,8 +38,12 @@ import { scrubErrorMessage, scrubViewUrl } from '@/lib/telemetry/scrub'
 
 const applicationId = process.env.NEXT_PUBLIC_DD_RUM_APPLICATION_ID
 const clientToken = process.env.NEXT_PUBLIC_DD_RUM_CLIENT_TOKEN
+const isObservableHost =
+  typeof window !== 'undefined' &&
+  window.location.hostname !== 'localhost' &&
+  window.location.hostname !== '127.0.0.1'
 
-if (applicationId && clientToken && !datadogRum.getInternalContext()) {
+if (applicationId && clientToken && isObservableHost && !datadogRum.getInternalContext()) {
   datadogRum.init({
     applicationId,
     clientToken,
@@ -48,7 +52,9 @@ if (applicationId && clientToken && !datadogRum.getInternalContext()) {
     env: process.env.NEXT_PUBLIC_DD_ENV ?? 'prod',
     version: process.env.NEXT_PUBLIC_DD_VERSION,
     sessionSampleRate: 100,
-    sessionReplaySampleRate: 100,
+    // Replays are useful for genuine sessions but wasteful for the scheduled browser
+    // synthetic that runs every 15 minutes. Keep a bounded diagnostic sample.
+    sessionReplaySampleRate: 10,
     trackUserInteractions: true,
     trackResources: true,
     trackLongTasks: true,

@@ -24,7 +24,7 @@
                       "name": "query1",
                       "indexes": ["*"],
                       "compute": { "aggregation": "count" },
-                      "search": { "query": "@type:error service:yogakit env:prod" }
+                      "search": { "query": "@type:error service:yogakit env:prod -@session.type:synthetics -@browser.name:HeadlessChrome" }
                     }
                   ],
                   "formulas": [{ "formula": "query1" }],
@@ -46,7 +46,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "p75:rum.view.largest_contentful_paint{service:yogakit,env:prod}"
+                      "query": "p75:rum.measure.view.largest_contentful_paint{service:yogakit,env:prod,!session_type:synthetics,!browser:HeadlessChrome}"
                     }
                   ],
                   "formulas": [{ "formula": "query1" }],
@@ -60,7 +60,7 @@
             "id": 13,
             "definition": {
               "type": "timeseries",
-              "title": "Interaction to Next Paint p75",
+              "title": "Real-user page load p75",
               "requests": [
                 {
                   "response_format": "timeseries",
@@ -68,7 +68,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "p75:rum.view.interaction_to_next_paint{service:yogakit,env:prod}"
+                      "query": "p75:rum.measure.view.loading_time{service:yogakit,env:prod,!session_type:synthetics,!browser:HeadlessChrome}"
                     }
                   ],
                   "formulas": [{ "formula": "query1" }],
@@ -92,7 +92,7 @@
                       "name": "query1",
                       "indexes": ["*"],
                       "compute": { "aggregation": "count" },
-                      "search": { "query": "@type:view service:yogakit env:prod" }
+                      "search": { "query": "@type:view service:yogakit env:prod -@session.type:synthetics -@browser.name:HeadlessChrome" }
                     }
                   ],
                   "formulas": [{ "formula": "query1" }],
@@ -125,7 +125,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "sum:trace.next_js.BaseServer.handleRequest.errors{service:yogakit,env:prod}.as_rate()"
+                      "query": "sum:trace.next_js.BaseServer.handleRequest.hits.by_http_status{service:yogakit,env:prod,http.status_code:5*}.as_rate()"
                     }
                   ],
                   "formulas": [{ "formula": "query1" }],
@@ -180,7 +180,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "avg:synthetics.http.availability{service:yogakit,env:prod}"
+                      "query": "sum:synthetics.test_runs{service:yogakit,env:prod}.as_count()"
                     }
                   ],
                   "formulas": [{ "formula": "query1" }],

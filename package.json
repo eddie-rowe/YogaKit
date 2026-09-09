@@ -15,6 +15,7 @@
     "validate:poses": "node scripts/validate-poses.mjs",
     "perf:read": "node scripts/lighthouse-read.mjs",
     "datadog:validate": "node scripts/datadog/sync.mjs --validate",
+    "datadog:validate-live": "node scripts/datadog/sync.mjs --validate --validate-live",
     "datadog:diff": "node scripts/datadog/sync.mjs",
     "datadog:apply": "node scripts/datadog/sync.mjs --apply",
     "lint:telemetry": "node scripts/check-telemetry-content-free.mjs",

@@ -3,8 +3,8 @@
   "type": "metric",
   "description": "Percentage of RUM sessions with zero client-side errors, over the trailing 30 days.",
   "query": {
-    "numerator": "sum:rum.session.count{service:yogakit,env:prod,!has_error:true}.as_count()",
-    "denominator": "sum:rum.session.count{service:yogakit,env:prod}.as_count()"
+    "numerator": "sum:rum.measure.session{service:yogakit,env:prod,!session_type:synthetics,!browser:HeadlessChrome,!has_error:true}.as_count()",
+    "denominator": "sum:rum.measure.session{service:yogakit,env:prod,!session_type:synthetics,!browser:HeadlessChrome}.as_count()"
   },
   "thresholds": [{ "target": 99, "warning": 99.5, "timeframe": "30d" }],
   "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:rum-error-free-sessions"]

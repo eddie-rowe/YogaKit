@@ -77,6 +77,22 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'sk-ant-placeholder' }}
 
+      # Dropped with the JUnit upload it sat beside: the tracer above reports every
+      # test as a span, so a second pass/fail file for the same run would double-count
+      # it. The coverage upload below is kept — it feeds Datadog Code Coverage, which
+      # is a different surface from the session's own lines_pct, and it costs nothing
+      # when it has nothing to send.
+      #
+      # Publishes Vitest's LCOV report to Datadog Code Coverage. Independent of the
+      # test step on purpose: the report may still exist when tests fail.
+      - name: Upload code coverage to Datadog
+        if: ${{ always() && hashFiles('coverage/lcov.info') != '' }}
+        continue-on-error: true
+        run: npx @datadog/datadog-ci coverage upload --service yogakit --format lcov ./coverage/lcov.info
+        env:
+          DD_API_KEY: ${{ secrets.DD_API_KEY }}
+          DD_SITE: us5.datadoghq.com
+
   datadog-validate:
     # Manifest-only validation (FR-004) — never applies. Applying stays a deliberate
     # local `npm run datadog:apply`, per 008's plan: "No auto-apply from CI."
@@ -94,6 +110,18 @@ jobs:
 
       - name: Validate Datadog manifests
         run: npm run datadog:validate
+
+      # Provider secrets are unavailable to fork PRs, so structural validation runs
+      # everywhere and the live signal check runs after changes reach main. It fails
+      # when a referenced metric has no service:yogakit/env:prod series or when the
+      # Vercel log drain has delivered nothing for 24 hours.
+      - name: Validate live Datadog signals
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: npm run datadog:validate-live
+        env:
+          DD_API_KEY: ${{ secrets.DD_API_KEY }}
+          DD_APP_KEY: ${{ secrets.DD_APP_KEY }}
+          DD_SITE: us5.datadoghq.com
 
   db-verify:
     # RLS-assertion harness (T022, docs/design/002-schema.md §A/§D). Runs

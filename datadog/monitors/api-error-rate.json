@@ -1,7 +1,7 @@
 {
   "name": "[YogaKit] Server Error Rate > 5%",
   "type": "query alert",
-  "query": "sum(last_15m):sum:trace.next_js.BaseServer.handleRequest.errors{service:yogakit,env:prod}.as_rate() / sum:trace.next_js.BaseServer.handleRequest.hits{service:yogakit,env:prod}.as_rate() * 100 > 10",
+  "query": "sum(last_15m):sum:trace.next_js.BaseServer.handleRequest.hits.by_http_status{service:yogakit,env:prod,http.status_code:5*}.as_rate() / sum:trace.next_js.BaseServer.handleRequest.hits{service:yogakit,env:prod}.as_rate() * 100 > 10",
   "message": "Server-side request error rate exceeded threshold for YogaKit. @syntheticstesting@gmail.com",
   "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:api-error-rate"],
   "options": {

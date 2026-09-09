@@ -49,6 +49,7 @@ question above at PR time.
 | `session.*` | RUM session-scoped attributes (Datadog's own convention) | set automatically by `@datadog/browser-rum` |
 | `dd.*` | Datadog correlation IDs, always Datadog-internal identifiers, never content | `dd.trace_id`, `dd.span_id` (from `src/lib/utils/logger.ts`'s `traceContext()`); also present on RUM view/resource events for same-origin requests, since `src/instrumentation-client.ts`'s `allowedTracingUrls` propagates W3C trace context (`propagatorTypes: ['tracecontext']`) into the `@vercel/otel` backend spans — a RUM session and the server span it triggered now share one `dd.trace_id` |
 | `error.*` | Top-level (not nested) error shape on a log line, so Datadog Error Tracking groups it | `error.kind`, `error.message`, `error.stack` (from `logger.error(msg, fields, err)`) |
+| `db.*`, `supabase.*` | Low-cardinality server-side Supabase dependency metadata | `db.operation.name`, `db.collection.name`, `db.stored_procedure.name`, `supabase.component`; emitted by `src/lib/supabase/tracing.ts`, never query strings, row IDs, bodies, or object paths |
 | `@view.*`, `@application.id` | RUM's own reserved attributes for view/app scoping | `@application.id:<rum-app-id>` — always filter RUM queries by this, not just `service:yogakit` (see §4) |
 
 New attributes should extend one of these prefixes rather than invent a new one. If a
@@ -71,7 +72,7 @@ degrade to a silent no-op, never a thrown error (FR-025/SC-011). None of them be
 | `DD_SERVICE` | Service name for `@vercel/otel` tracing + logger correlation | No | `yogakit`; run through `normalizeServiceName()` (`src/lib/dd-service-name.ts`) since a hyphen silently breaks `service:` queries |
 | `DD_ENV` | Env tag for server-side tracing | No | `prod` |
 | `DD_VERSION` | Version tag for server-side tracing | No | Same — **ignored on Vercel**, overridden with the commit SHA (§7) |
-| `DD_API_KEY` | Datadog API key | Only for `scripts/datadog/sync.mjs` and the content-free check's live-handle validation | Never bundled into the app — read only by Node scripts, never sent to the browser |
+| `DD_API_KEY` | Datadog API key | `scripts/datadog/sync.mjs`, the content-free check's live-handle validation, and CI's test instrumentation | Never bundled into the app — read only by Node scripts, never sent to the browser. CI reads it as a GitHub Actions repository secret |
 | `DD_APP_KEY` | Datadog application key | Same as `DD_API_KEY` | Same |
 | `DD_SITE` | Datadog site for server-side/script API calls | Same as `DD_API_KEY` | `us5.datadoghq.com` |
 
@@ -91,26 +92,22 @@ autoobs.md` "Configuration" for the cross-check.
 |---|---|---|---|
 | `/autoobs` step 1 | Monitor status | `pup monitors list` / `GET /api/v1/monitor?tags=service:yogakit`, cross-checked against `datadog/monitors/*.json` | current state (no window) |
 | `/autoobs` step 2 | SLO status + error budget | `pup slos list` / `GET /api/v1/slo?tags_query=service:yogakit`, history via `GET /api/v1/slo/<id>/history` | 30d (the SLOs' own configured timeframe) |
-| `/autoobs` step 3 | RUM error rate, LCP p75, INP p75 | `POST /api/v2/rum/analytics/aggregate`, `filter.query: "@application.id:<rum-app-id>"` | last 24h |
+| `/autoobs` step 3 | Real-user RUM error rate, LCP p75, page-load p75 | `POST /api/v2/rum/analytics/aggregate`, excluding `@session.type:synthetics` and `@browser.name:HeadlessChrome` | last 24h |
 | `/autoobs` step 4 | Server error rate, API latency p95 | Datadog metrics query, `service:yogakit env:prod` | last 24h |
 | `/autoobs` step 5 | Synthetic uptime | `GET /api/v1/synthetics/tests` filtered `service:yogakit`, then `GET /api/v1/synthetics/tests/<id>/results` | last 24h |
 | `/autoobs` step 6 | Dashboard reachability | `GET /api/v1/dashboard/<id>` for `[YogaKit] Health` | current state (no window) |
 | `npm run datadog:diff` | Manifest drift (any type) | Full read-compare over all 6 resource types | current state (no window) |
+| `npm run datadog:validate-live` | Metric/log pipeline liveness | Every manifest metric must have an `env:prod,service:yogakit` series; logs search must return at least one event | last 24h |
 
 Thresholds for each monitor (what counts as AT-RISK vs. BREACHED): `datadog/README.md`
 "Manifest notes" table.
 
-**Pre-launch caveat on Core Web Vitals:** `datadog/synthetics/browser/
-read-view-rum-session.json` loads the read view every hour purely to keep a real RUM
-session arriving before there is any organic traffic — otherwise the RUM-dependent
-monitors and SLOs above would read `No Data` indefinitely. Its LCP/INP will read
-**optimistically**: a datacenter browser on a stable `aws:us-east-1` connection does not
-represent a real mobile visitor, and the read view's own Lighthouse mobile score is 87
-(below the RULE-L6 ≥ 90 floor — `specs/008-observability-as-code/tasks.md` T048). A green
-`[YogaKit] Largest Contentful Paint p75 > 2.5s` monitor while this synthetic is the
-dominant traffic source is proof the RUM pipeline works, **not** proof of real-user
-performance. Re-evaluate this monitor's read once organic traffic outweighs the
-synthetic's hourly tick.
+**Synthetic traffic is pipeline evidence, not user evidence.** `datadog/synthetics/
+browser/read-view-rum-session.json` loads the read view every 15 minutes to prove RUM
+ingestion before organic traffic exists. Real-user dashboard and monitor queries
+exclude both Datadog synthetic sessions and HeadlessChrome sessions, so datacenter and
+local automation cannot make user experience look healthy. Those panels may correctly
+show no data pre-launch; synthetic companion monitors separately cover uptime.
 
 **A green synthetic here is not proof RUM is firing.** This synthetic asserts the page
 returns 200 — it says nothing about whether the RUM SDK actually started a session on
@@ -129,7 +126,7 @@ in a Playwright script across several fresh loads, never by polling
 `getInternalContext()` — internal context only ever shows the *current* view, so it is
 blind to a churn burst that starts and ends within a single render pass.
 
-**Session replay is on at 100% (2026-09-08) — masking is enforced per-field, not just by
+**Session replay is sampled at 10% — masking is enforced per-field, not just by
 the app-wide default.** `defaultPrivacyLevel: 'mask'` in `src/instrumentation-client.ts`
 is the app-wide floor, but the composer's three free-text inputs (flow title, phase name,
 per-pose note — see `DECISIONS.md`'s 2026-09-08 entry) carry an explicit
@@ -139,6 +136,13 @@ attribute** before replay is trusted not to leak it — this is not something th
 or telemetry-content check catches; both only see field names in structured logger/RUM
 calls, not raw replay recording.
 
+RUM does not initialize on `localhost` or `127.0.0.1`. This prevents local/headless
+sessions and their dependency spans from polluting production RUM cohorts and the APM
+service map. Server instrumentation also ignores localhost, npm registry, and Next.js
+telemetry URLs, and only honors `DD_ENV` in Vercel's production environment; local and
+preview spans use `development`/`preview`. Existing inferred service-map edges age out
+according to Datadog's retention window.
+
 ## 5. Manual setup checklist (lives outside this repo)
 
 These are one-time, click-through steps in Vercel/Datadog that the sync tool and the
@@ -146,25 +150,38 @@ codebase cannot apply for you — check them if a signal above reads unexpectedl
 
 - [ ] **Vercel → Datadog log drain** configured for the YogaKit project, so server logs
       (including `logger.ts`'s structured JSON lines) reach Datadog Log Management.
+      Confirm with `npm run datadog:validate-live`; configuration is incomplete until
+      that command sees at least one `service:yogakit` log in 24 hours.
 - [ ] **Vercel project env vars** — every `NEXT_PUBLIC_DD_*` and `DD_*` var in §3 set for
       the Production environment (and Preview, if preview-environment telemetry is
       wanted). `NEXT_PUBLIC_*` vars are inlined at build time — setting them after a
       build has already run does nothing until the next build.
+      In particular, `DD_ENV=prod` is required; server instrumentation uses the current
+      `deployment.environment.name` OTel semantic attribute so Datadog maps it to
+      `env:prod` instead of Vercel's default `env:production`.
 - [ ] **Datadog ↔ Vercel integration** enabled in Datadog's Integrations catalog, so
       deployment events and Vercel-sourced infrastructure metrics correlate with
       `service:yogakit`.
-- [ ] **Datadog GitHub App** created and installed on the `YogaKit` repo, with
+- [x] **Datadog GitHub App** created and installed on the `YogaKit` repo, with
       **`Actions: Read`** (CI Pipeline Visibility) and **`Contents: Read`** (inline
       source snippets on stack frames). Datadog → Integrations → GitHub →
       *Add New GitHub Application*. One app covers both; see §7.
-- [ ] **CI Visibility enabled for the repo** — Software Delivery → CI Visibility →
+- [x] **CI Visibility enabled for the repo** — Software Delivery → CI Visibility →
       *Add a Pipeline Provider* → GitHub → *Enable Account*, then toggle `YogaKit`.
-      Nothing in this repo turns this on; without it no workflow run is recorded.
-- [ ] **`DD_API_KEY` set as a GitHub Actions repository secret** —
-      `gh secret set DD_API_KEY --repo eddie-rowe/YogaKit`. This is genuinely unset
-      today (`gh secret list` returns nothing), which is why the JUnit upload it was
-      written for had never once succeeded — see FRICTION.md. Without it the test step
-      runs the suite normally and sends Datadog nothing, silently and by design.
+      Nothing in this repo turns this on; without it no workflow run is recorded, and
+      installing the app is not sufficient on its own — the two are separate switches,
+      which cost most of a day to establish.
+- [x] **`DD_API_KEY` set as a GitHub Actions repository secret** —
+      `gh secret set DD_API_KEY --repo eddie-rowe/YogaKit`. It was genuinely unset until
+      2026-09-09, which is why the JUnit upload it was written for had never once
+      succeeded — see FRICTION.md. Without it the test step runs the suite normally and
+      sends Datadog nothing, silently and by design.
+- [ ] **Vercel observability trace drain** connected to the same Datadog US5
+      organization, with Traces enabled for the YogaKit project. `@vercel/otel`
+      creates spans, but it does not make a trace visible in Datadog unless Vercel is
+      configured to export it. Confirm a production request appears under APM service
+      `yogakit` before debugging any child Supabase span. **Currently unset**, which is
+      what fails `datadog:validate-live` on `main`.
 - [ ] **Synthetics global variables** — if any synthetic test needs a shared
       credential (none currently do; all three live API tests hit public routes), set
       it once in Datadog Synthetics → Settings → Global Variables rather than
@@ -173,7 +190,50 @@ codebase cannot apply for you — check them if a signal above reads unexpectedl
       done for this branch (application ID `91af99b0-865b-405f-914e-bda170dc43b7`);
       re-check this box only if the application is ever recreated.
 
-## 6. Source-map upload
+## 6. Supabase traces and Database Monitoring
+
+Server-created Supabase clients use `src/lib/supabase/tracing.ts` as their fetch
+transport. Each Data API request is a child of the active Next.js request trace and is
+tagged with a stable operation and allow-listed table or RPC name. Auth, Storage,
+Realtime, and Functions requests get only their component and HTTP method. The wrapper
+never records a URL query, row ID, request/response body, object path, authorization
+header, or exception message.
+
+In APM, start with `service:yogakit @supabase.component:postgrest`. Useful facets are
+`@db.operation.name`, `@db.collection.name`, and `@db.stored_procedure.name`. The same
+trace already joins to same-origin RUM requests and structured logs, so a slow browser
+interaction can be followed through the Next request, the Supabase dependency span,
+and its correlated log lines.
+
+DBM itself requires infrastructure outside this repository:
+
+1. Run a Datadog Agent where it can reach the Supabase Postgres endpoint; neither a
+   Vercel Function nor hosted Supabase runs that Agent for this app. Use TLS, a
+   least-privilege Datadog monitoring role, and `dbm: true` in the Agent's Postgres
+   integration. Prefer the direct database endpoint when network support allows it;
+   otherwise verify the chosen Supabase pooler mode exposes the DBM catalog/statistics
+   queries Datadog requires.
+2. Give that database instance the unified tags `service:yogakit` and `env:prod`, and
+   use database name `postgres`, matching the APM span attributes. Restrict inbound
+   database networking to the Agent and rotate the monitoring password normally.
+3. Verify Query Metrics and Query Samples arrive in Datadog DBM, then pivot between APM
+   and DBM by the same time window, database, operation, and table/RPC tags.
+
+There is an important boundary: Supabase JS sends HTTP to PostgREST; YogaKit does not
+execute SQL or hold a Postgres connection. PostgREST generates SQL after the Vercel
+trace has left the process and does not inject that trace context into its SQL comment.
+Consequently Datadog cannot provide one-click, exact query-sample-to-trace linking for
+these calls. The spans above provide honest, time/resource correlation without
+pretending it is exact propagation. Exact DBM/APM linking would require a server-only
+direct Postgres client instrumented for DBM propagation. Do not migrate signed-in/RLS
+queries to such a client merely for telemetry: preserving per-user transaction-local
+identity and safe Vercel connection pooling is a prerequisite.
+
+Browser-created Supabase clients remain visible as RUM resources, not backend APM
+spans. Trace headers are intentionally not sent cross-origin to Supabase because they
+would stop at the Data API and cannot create the missing SQL link.
+
+## 7. Source-map upload
 
 RUM error stack traces are minified without this step — a gap NextMove repeatedly
 flagged and never closed. It is now wired into the build itself, not a manual follow-up:
