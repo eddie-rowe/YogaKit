@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 import { getEnv } from '@/lib/env'
+import { createTracedSupabaseFetch } from '@/lib/supabase/tracing'
 
 // Session refresh (docs/design/002-schema.md §F). NOT middleware.ts.
 //
@@ -24,6 +25,9 @@ export async function proxy(request: NextRequest) {
   const env = getEnv()
 
   const supabase = createServerClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY, {
+    global: {
+      fetch: createTracedSupabaseFetch(env.NEXT_PUBLIC_SUPABASE_URL),
+    },
     cookies: {
       getAll() {
         return request.cookies.getAll()

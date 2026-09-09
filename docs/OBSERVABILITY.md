@@ -49,6 +49,7 @@ question above at PR time.
 | `session.*` | RUM session-scoped attributes (Datadog's own convention) | set automatically by `@datadog/browser-rum` |
 | `dd.*` | Datadog correlation IDs, always Datadog-internal identifiers, never content | `dd.trace_id`, `dd.span_id` (from `src/lib/utils/logger.ts`'s `traceContext()`); also present on RUM view/resource events for same-origin requests, since `src/instrumentation-client.ts`'s `allowedTracingUrls` propagates W3C trace context (`propagatorTypes: ['tracecontext']`) into the `@vercel/otel` backend spans — a RUM session and the server span it triggered now share one `dd.trace_id` |
 | `error.*` | Top-level (not nested) error shape on a log line, so Datadog Error Tracking groups it | `error.kind`, `error.message`, `error.stack` (from `logger.error(msg, fields, err)`) |
+| `db.*`, `supabase.*` | Low-cardinality server-side Supabase dependency metadata | `db.operation.name`, `db.collection.name`, `db.stored_procedure.name`, `supabase.component`; emitted by `src/lib/supabase/tracing.ts`, never query strings, row IDs, bodies, or object paths |
 | `@view.*`, `@application.id` | RUM's own reserved attributes for view/app scoping | `@application.id:<rum-app-id>` — always filter RUM queries by this, not just `service:yogakit` (see §4) |
 
 New attributes should extend one of these prefixes rather than invent a new one. If a
@@ -153,6 +154,11 @@ codebase cannot apply for you — check them if a signal above reads unexpectedl
 - [ ] **Datadog ↔ Vercel integration** enabled in Datadog's Integrations catalog, so
       deployment events and Vercel-sourced infrastructure metrics correlate with
       `service:yogakit`.
+- [ ] **Vercel observability trace drain** connected to the same Datadog US5
+      organization, with Traces enabled for the YogaKit project. `@vercel/otel`
+      creates spans, but it does not make a trace visible in Datadog unless Vercel is
+      configured to export it. Confirm a production request appears under APM service
+      `yogakit` before debugging any child Supabase span.
 - [ ] **Datadog ↔ GitHub integration** enabled, so a future CI JUnit upload
       (`.github/workflows/ci.yml`'s "Upload test results to Datadog" step) and any
       commit-correlation features work.
@@ -164,7 +170,50 @@ codebase cannot apply for you — check them if a signal above reads unexpectedl
       done for this branch (application ID `91af99b0-865b-405f-914e-bda170dc43b7`);
       re-check this box only if the application is ever recreated.
 
-## 6. Source-map upload
+## 6. Supabase traces and Database Monitoring
+
+Server-created Supabase clients use `src/lib/supabase/tracing.ts` as their fetch
+transport. Each Data API request is a child of the active Next.js request trace and is
+tagged with a stable operation and allow-listed table or RPC name. Auth, Storage,
+Realtime, and Functions requests get only their component and HTTP method. The wrapper
+never records a URL query, row ID, request/response body, object path, authorization
+header, or exception message.
+
+In APM, start with `service:yogakit @supabase.component:postgrest`. Useful facets are
+`@db.operation.name`, `@db.collection.name`, and `@db.stored_procedure.name`. The same
+trace already joins to same-origin RUM requests and structured logs, so a slow browser
+interaction can be followed through the Next request, the Supabase dependency span,
+and its correlated log lines.
+
+DBM itself requires infrastructure outside this repository:
+
+1. Run a Datadog Agent where it can reach the Supabase Postgres endpoint; neither a
+   Vercel Function nor hosted Supabase runs that Agent for this app. Use TLS, a
+   least-privilege Datadog monitoring role, and `dbm: true` in the Agent's Postgres
+   integration. Prefer the direct database endpoint when network support allows it;
+   otherwise verify the chosen Supabase pooler mode exposes the DBM catalog/statistics
+   queries Datadog requires.
+2. Give that database instance the unified tags `service:yogakit` and `env:prod`, and
+   use database name `postgres`, matching the APM span attributes. Restrict inbound
+   database networking to the Agent and rotate the monitoring password normally.
+3. Verify Query Metrics and Query Samples arrive in Datadog DBM, then pivot between APM
+   and DBM by the same time window, database, operation, and table/RPC tags.
+
+There is an important boundary: Supabase JS sends HTTP to PostgREST; YogaKit does not
+execute SQL or hold a Postgres connection. PostgREST generates SQL after the Vercel
+trace has left the process and does not inject that trace context into its SQL comment.
+Consequently Datadog cannot provide one-click, exact query-sample-to-trace linking for
+these calls. The spans above provide honest, time/resource correlation without
+pretending it is exact propagation. Exact DBM/APM linking would require a server-only
+direct Postgres client instrumented for DBM propagation. Do not migrate signed-in/RLS
+queries to such a client merely for telemetry: preserving per-user transaction-local
+identity and safe Vercel connection pooling is a prerequisite.
+
+Browser-created Supabase clients remain visible as RUM resources, not backend APM
+spans. Trace headers are intentionally not sent cross-origin to Supabase because they
+would stop at the Data API and cannot create the missing SQL link.
+
+## 7. Source-map upload
 
 RUM error stack traces are minified without this step — a gap NextMove repeatedly
 flagged and never closed. It is now wired into the build itself, not a manual follow-up:

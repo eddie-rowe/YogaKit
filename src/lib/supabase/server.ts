@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
 import { getEnv } from '@/lib/env'
+import { createTracedSupabaseFetch } from '@/lib/supabase/tracing'
 
 // Server client, bound to the current request's cookies. Server Components and
 // Route Handlers use this to run queries as the signed-in user under RLS.
@@ -20,6 +21,9 @@ export async function createClient() {
   const cookieStore = await cookies()
 
   return createServerClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY, {
+    global: {
+      fetch: createTracedSupabaseFetch(env.NEXT_PUBLIC_SUPABASE_URL),
+    },
     cookies: {
       getAll() {
         return cookieStore.getAll()
