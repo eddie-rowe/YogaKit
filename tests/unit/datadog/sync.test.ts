@@ -12,12 +12,15 @@ import { describe, expect, it } from 'vitest'
 import {
   dashboardTitleMatches,
   extractHandle,
+  extractMetricNames,
+  extractMonitorPlaceholder,
   extractSlug,
   extractSloPlaceholder,
   formatResultLine,
   markerTagFor,
   planAction,
   resolveSloPlaceholders,
+  resolveMonitorPlaceholders,
   stripWidgetIds,
   validateManifest,
 } from '../../../scripts/lib/datadog-sync.mjs'
@@ -98,6 +101,12 @@ describe('validateManifest — monitors', () => {
     expect(result.errors).toEqual(
       expect.arrayContaining(['missing "name"', 'missing "query"', 'missing "message"']),
     )
+  })
+
+  it('rejects retired metric families that silently return no data', () => {
+    const manifest = { ...validMonitor, query: 'sum(last_15m):sum:rum.session.count{service:yogakit} > 1' }
+    const result = validateManifest('monitors', 'api-error-rate.json', manifest)
+    expect(result.errors).toContain('query references retired metric "rum.session.count"')
   })
 
   it('rejects a message with no notification handle', () => {
@@ -183,6 +192,40 @@ describe('validateManifest — slos', () => {
     const manifest = { ...baseSlo, type: 'monitor' }
     const result = validateManifest('slos', 'read-view-availability.json', manifest)
     expect(result.errors).toContain('monitor SLO missing "monitor_ids"')
+  })
+
+  it('rejects a monitor-type SLO with an empty monitor_ids array', () => {
+    const manifest = { ...baseSlo, type: 'monitor', monitor_ids: [] }
+    const result = validateManifest('slos', 'read-view-availability.json', manifest)
+    expect(result.errors).toContain('monitor SLO missing "monitor_ids"')
+  })
+
+  it('accepts a portable monitor-type SLO reference', () => {
+    const manifest = {
+      ...baseSlo,
+      type: 'monitor',
+      monitor_ids: ['{{monitor_id:yogakit:read-view-200}}'],
+    }
+    const result = validateManifest('slos', 'read-view-availability.json', manifest, {
+      knownMonitorTags: ['read-view-200'],
+    })
+    expect(result.valid).toBe(true)
+  })
+
+  it('rejects hardcoded monitor IDs and unknown monitor references', () => {
+    const hardcoded = validateManifest('slos', 'read-view-availability.json', {
+      ...baseSlo,
+      type: 'monitor',
+      monitor_ids: [123],
+    })
+    expect(hardcoded.errors.some((error) => error.includes('must use a'))).toBe(true)
+
+    const unknown = validateManifest('slos', 'read-view-availability.json', {
+      ...baseSlo,
+      type: 'monitor',
+      monitor_ids: ['{{monitor_id:yogakit:missing}}'],
+    }, { knownMonitorTags: ['read-view-200'] })
+    expect(unknown.errors.some((error) => error.includes('unknown tag'))).toBe(true)
   })
 
   it('rejects an SLO missing a name', () => {
@@ -359,6 +402,51 @@ describe('extractSloPlaceholder / resolveSloPlaceholders', () => {
     expect(() =>
       resolveSloPlaceholders('burn_rate("{{slo_id:yogakit:missing}}") > 1', {}),
     ).toThrow(/no live SLO found/)
+  })
+})
+
+describe('metric and monitor-reference helpers', () => {
+  it('extracts unique metric names from nested manifests', () => {
+    expect(extractMetricNames({
+      query: 'sum:rum.measure.session{service:yogakit} / sum:rum.measure.session{env:prod}',
+      nested: ['avg:synthetics.test_runs{*}'],
+    })).toEqual(['rum.measure.session', 'synthetics.test_runs'])
+  })
+
+  it('extracts and resolves monitor placeholders', () => {
+    const value = '{{monitor_id:yogakit:read-view-200}}'
+    expect(extractMonitorPlaceholder(value)).toBe('read-view-200')
+    expect(resolveMonitorPlaceholders([value], { 'read-view-200': '123' })).toEqual([123])
+  })
+
+  it('blocks unresolved monitor placeholders', () => {
+    expect(() => resolveMonitorPlaceholders(
+      ['{{monitor_id:yogakit:missing}}'],
+      {},
+    )).toThrow(/no live monitor found/)
+  })
+
+  it('finds no metric names in an unserialisable value', () => {
+    expect(extractMetricNames(undefined)).toEqual([])
+  })
+
+  it('returns null for a value that is not a monitor placeholder', () => {
+    expect(extractMonitorPlaceholder('123456')).toBeNull()
+    expect(extractMonitorPlaceholder(123456)).toBeNull()
+  })
+
+  it('blocks a monitor ID that is not a placeholder at all', () => {
+    expect(() => resolveMonitorPlaceholders([123456], {})).toThrow(
+      /invalid monitor placeholder/,
+    )
+  })
+
+  it('passes a non-numeric resolved monitor ID through unchanged', () => {
+    expect(
+      resolveMonitorPlaceholders(['{{monitor_id:yogakit:read-view-200}}'], {
+        'read-view-200': 'abc',
+      }),
+    ).toEqual(['abc'])
   })
 })
 

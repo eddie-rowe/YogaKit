@@ -4,7 +4,7 @@
     "id": "yogakit.request.errors",
     "attributes": {
       "compute": { "aggregation_type": "count" },
-      "filter": { "query": "service:yogakit level:error" },
+      "filter": { "query": "service:yogakit env:prod status:error" },
       "group_by": [{ "path": "@error.kind", "tag_name": "kind" }]
     }
   }

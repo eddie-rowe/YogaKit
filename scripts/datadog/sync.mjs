@@ -28,6 +28,8 @@ import {
   extractSlug,
   validateManifest,
   extractSloPlaceholder,
+  resolveMonitorPlaceholders,
+  extractMetricNames,
   resolveSloPlaceholders,
   dashboardTitleMatches,
   stripWidgetIds,
@@ -62,22 +64,22 @@ function parseArgs(argv) {
     types: type ? [type] : RESOURCE_TYPES,
     apply: argv.includes('--apply'),
     validateOnly: argv.includes('--validate'),
+    validateLive: argv.includes('--validate-live'),
   }
 }
 
 function loadEnv() {
   const envPath = path.join(repoRoot, '.env.local')
-  if (!fs.existsSync(envPath)) {
-    throw new Error('.env.local not found at repo root — cannot load DD_API_KEY/DD_APP_KEY/DD_SITE')
-  }
-  const vars = {}
-  for (const line of fs.readFileSync(envPath, 'utf8').split('\n')) {
-    const match = line.match(/^([A-Z0-9_]+)=(.*)$/)
-    if (match) vars[match[1]] = match[2]
+  const vars = { ...process.env }
+  if (fs.existsSync(envPath)) {
+    for (const line of fs.readFileSync(envPath, 'utf8').split('\n')) {
+      const match = line.match(/^([A-Z0-9_]+)=(.*)$/)
+      if (match && !vars[match[1]]) vars[match[1]] = match[2]
+    }
   }
   for (const required of ['DD_API_KEY', 'DD_APP_KEY', 'DD_SITE']) {
     if (!vars[required]) {
-      throw new Error(`.env.local is missing ${required} — the sync tool uses key-auth only, never "pup auth login"`)
+      throw new Error(`${required} is missing from the environment and .env.local — the sync tool uses key-auth only`)
     }
   }
   return vars
@@ -137,6 +139,36 @@ async function restRequest(env, method, urlPath, body) {
   })
   if (!res.ok) throw new Error(`${method} ${urlPath} → ${res.status} ${await res.text()}`)
   return res.status === 204 ? null : res.json()
+}
+
+async function validateLiveTelemetry(env, manifestsByType) {
+  const end = Math.floor(Date.now() / 1000)
+  const start = end - 24 * 60 * 60
+  const metrics = new Set()
+  for (const manifests of Object.values(manifestsByType)) {
+    for (const { manifest } of manifests) {
+      for (const metric of extractMetricNames(manifest)) metrics.add(metric)
+    }
+  }
+
+  const failures = []
+  for (const metric of [...metrics].sort()) {
+    const query = `avg:${metric}{service:yogakit,env:prod}`
+    const result = await restGet(env, `/api/v1/query?from=${start}&to=${end}&query=${encodeURIComponent(query)}`)
+    if (!result.series?.length) failures.push(`metric has no env:prod series in 24h: ${metric}`)
+  }
+
+  const logResult = await restRequest(env, 'POST', '/api/v2/logs/events/search', {
+    filter: { from: new Date(start * 1000).toISOString(), to: new Date(end * 1000).toISOString(), query: 'service:yogakit' },
+    page: { limit: 1 },
+  })
+  if (!logResult.data?.length) failures.push('no service:yogakit logs received in 24h (verify the Vercel log drain)')
+
+  if (failures.length) {
+    for (const failure of failures) console.error(`LIVE INVALID  ${failure}`)
+    throw new Error(`live telemetry validation failed (${failures.length} issue(s))`)
+  }
+  console.log(`Live telemetry OK: ${metrics.size} metric(s) and logs active in env:prod.`)
 }
 
 function pup(env, args) {
@@ -279,7 +311,7 @@ function pupCreateOrUpdate(env, resource, manifest, id) {
 }
 
 async function main() {
-  const { types, apply, validateOnly } = parseArgs(process.argv.slice(2))
+  const { types, apply, validateOnly, validateLive } = parseArgs(process.argv.slice(2))
 
   const manifestsByType = {}
   for (const type of types) {
@@ -291,12 +323,18 @@ async function main() {
   const knownSloTags = (manifestsByType.slos ?? readManifests('slos')).map((m) =>
     extractSlug(m.manifest.tags),
   )
+  const knownMonitorTags = [
+    ...(manifestsByType.monitors ?? readManifests('monitors')).map((m) => extractSlug(m.manifest.tags)),
+    ...(manifestsByType['synthetics-api'] ?? readManifests('synthetics-api')).map((m) => extractSlug(m.manifest.tags)),
+    ...(manifestsByType['synthetics-browser'] ?? readManifests('synthetics-browser')).map((m) => extractSlug(m.manifest.tags)),
+  ]
   let anyInvalid = false
   for (const type of types) {
     for (const { filename, manifest } of manifestsByType[type]) {
       const { valid, errors } = validateManifest(type, filename, manifest, {
         liveHandles: LIVE_HANDLES,
         knownSloTags,
+        knownMonitorTags,
       })
       if (!valid) {
         anyInvalid = true
@@ -310,9 +348,13 @@ async function main() {
     process.exit(1)
   }
   console.log(`Validated ${types.reduce((n, t) => n + manifestsByType[t].length, 0)} manifest(s). OK.`)
-  if (validateOnly) return
+  if (validateOnly && !validateLive) return
 
   const env = loadEnv()
+  if (validateLive) {
+    await validateLiveTelemetry(env, manifestsByType)
+    return
+  }
   const lines = []
   let exitCode = 0
 
@@ -336,11 +378,29 @@ async function main() {
       }
     }
 
+    const monitorIdBySlug = {}
+    if (type === 'slos') {
+      const liveMonitors = await fetchLive(env, 'monitors')
+      for (const monitor of liveMonitors) {
+        const slug = extractSlug(monitor.tags)
+        if (slug) monitorIdBySlug[slug] = monitor.id
+      }
+    }
+
     for (const { filename, manifest: rawManifest } of manifestsByType[type]) {
       let manifest = rawManifest
       if (type === 'monitors' && extractSloPlaceholder(manifest.query)) {
         try {
           manifest = { ...manifest, query: resolveSloPlaceholders(manifest.query, sloIdBySlug) }
+        } catch (err) {
+          lines.push(formatResultLine({ type, name: filename, action: 'error', status: 'blocked', detail: err.message }))
+          exitCode = 1
+          continue
+        }
+      }
+      if (type === 'slos' && manifest.type === 'monitor') {
+        try {
+          manifest = { ...manifest, monitor_ids: resolveMonitorPlaceholders(manifest.monitor_ids, monitorIdBySlug) }
         } catch (err) {
           lines.push(formatResultLine({ type, name: filename, action: 'error', status: 'blocked', detail: err.message }))
           exitCode = 1

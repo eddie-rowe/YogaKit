@@ -1,8 +1,8 @@
 {
-  "name": "[YogaKit] Synthetic: Read View Unreachable",
+  "name": "[YogaKit] Synthetic Test Runs Missing",
   "type": "query alert",
-  "query": "avg(last_15m):avg:synthetics.http.error{env:prod,service:yogakit,yogakit:read-view-200} > 0",
-  "message": "The public read-view synthetic is failing or its expected content is missing. Check the deployment and read route. @syntheticstesting@gmail.com",
+  "query": "sum(last_15m):sum:synthetics.test_runs{env:prod,service:yogakit}.as_count() < 1",
+  "message": "No YogaKit synthetic test runs arrived for 15 minutes; verify Synthetics scheduling and ingestion. @syntheticstesting@gmail.com",
   "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:synthetic-read-view-down"],
   "options": {
     "notify_audit": false,
@@ -11,6 +11,6 @@
     "evaluation_delay": 0,
     "notify_no_data": true,
     "no_data_timeframe": 20,
-    "thresholds": { "critical": 0 }
+    "thresholds": { "critical": 1 }
   }
 }

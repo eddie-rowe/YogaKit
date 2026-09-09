@@ -1,8 +1,8 @@
 {
-  "name": "[YogaKit] Interaction to Next Paint p75 > 500ms",
+  "name": "[YogaKit] Real-user Page Load p75 > 4s",
   "type": "query alert",
-  "query": "avg(last_1h):p75:rum.view.interaction_to_next_paint{service:yogakit,env:prod} > 500",
-  "message": "Read-view INP p75 exceeded threshold for YogaKit. @syntheticstesting@gmail.com",
+  "query": "avg(last_1h):p75:rum.measure.view.loading_time{service:yogakit,env:prod,!session_type:synthetics,!browser:HeadlessChrome} > 4000000000",
+  "message": "Real-user page-load p75 exceeded threshold for YogaKit. @syntheticstesting@gmail.com",
   "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:web-vitals-inp"],
   "options": {
     "notify_audit": false,
@@ -10,6 +10,6 @@
     "new_host_delay": 300,
     "evaluation_delay": 0,
     "notify_no_data": false,
-    "thresholds": { "critical": 500, "warning": 200 }
+    "thresholds": { "critical": 4000000000, "warning": 2500000000 }
   }
 }

@@ -3,6 +3,7 @@ import 'server-only'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
 import { getEnv } from '@/lib/env'
+import { createTracedSupabaseFetch } from '@/lib/supabase/tracing'
 
 // Service-role client — bypasses RLS entirely. Only for trusted server-side
 // paths that must act across tenants (webhook handlers, admin scripts, cron
@@ -31,6 +32,9 @@ export function createServiceClient() {
   return createSupabaseClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SECRET_KEY, {
     auth: {
       persistSession: false,
+    },
+    global: {
+      fetch: createTracedSupabaseFetch(env.NEXT_PUBLIC_SUPABASE_URL),
     },
   })
 }

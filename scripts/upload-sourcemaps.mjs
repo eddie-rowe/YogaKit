@@ -26,10 +26,11 @@ import {
   shouldUpload,
   buildUploadArgs,
   mapFilesToDelete,
-  releaseVersion,
   uploadEnv,
   siteMismatchWarning,
+  gitEnv,
 } from './lib/sourcemaps.mjs'
+import { resolveVersion } from './lib/dd-version.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.join(here, '..')
@@ -51,8 +52,8 @@ if (!fs.existsSync(buildDir)) {
 // deploy: a throw here does not degrade observability, it stops the product shipping.
 // That is exactly what happened — a missing `DATADOG_API_KEY` alias failed two
 // production deploys in a row while both builds themselves were completely fine (see
-// FRICTION.md). `ci.yml` already made this call for the JUnit upload with
-// `continue-on-error: true`; this is the same call, in the one place it costs a deploy.
+// FRICTION.md). This is the same call `ci.yml` makes for every optional Datadog step
+// it runs — made here in the one place where getting it wrong costs a deploy.
 const mismatch = siteMismatchWarning(process.env)
 if (mismatch) console.warn(`[sourcemaps] ${mismatch}`)
 
@@ -61,7 +62,7 @@ try {
   const args = buildUploadArgs({
     buildDir,
     service: process.env.NEXT_PUBLIC_DD_SERVICE ?? 'yogakit',
-    releaseVersion: releaseVersion(process.env),
+    releaseVersion: resolveVersion(process.env),
     minifiedPathPrefix: '/_next/static',
   })
 
@@ -69,7 +70,7 @@ try {
   execFileSync('npx', ['@datadog/datadog-ci', ...args], {
     cwd: repoRoot,
     stdio: 'inherit',
-    env: { ...process.env, ...uploadEnv(process.env) },
+    env: { ...process.env, ...uploadEnv(process.env), ...gitEnv(process.env) },
   })
   uploaded = true
 } catch (err) {

@@ -1,18 +1,20 @@
 import type { NextConfig } from "next";
 import path from "path";
 
-const releaseVersion =
-  process.env.NEXT_PUBLIC_DD_VERSION ??
-  process.env.VERCEL_GIT_COMMIT_SHA ??
-  process.env.npm_package_version ??
-  "0.1.0";
+import { resolveVersion } from "./scripts/lib/dd-version.mjs";
 
 const nextConfig: NextConfig = {
-  // One build-derived release identifier is embedded in RUM and reused by the
-  // source-map uploader. Vercel's commit SHA prevents unrelated deploys from being
-  // grouped under a static version while still allowing an explicit override.
+  // 008: the one place the release version is decided, for both halves of the app.
+  // Values under `env` are inlined at build time into the client bundle *and* the
+  // bundled server code, so src/instrumentation-client.ts's `NEXT_PUBLIC_DD_VERSION`
+  // and src/instrumentation.ts's `DD_VERSION` both read the same resolved string
+  // without either file changing. On Vercel that string is the commit SHA of the
+  // deploy — see scripts/lib/dd-version.mjs for why the SHA outranks an explicitly
+  // set value, and note the consequence: editing DD_VERSION in the Vercel dashboard
+  // will appear to do nothing.
   env: {
-    NEXT_PUBLIC_DD_VERSION: releaseVersion,
+    NEXT_PUBLIC_DD_VERSION: resolveVersion(process.env),
+    DD_VERSION: resolveVersion(process.env),
   },
   turbopack: {
     root: path.join(__dirname),
