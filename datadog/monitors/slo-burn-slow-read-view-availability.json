@@ -1,12 +1,12 @@
 {
-  "name": "[YogaKit] SLO Burn (trending) — Read View Availability",
+  "name": "[YogaKit] Read View Error Budget Consumed > 10%",
   "type": "slo alert",
-  "query": "error_budget(\"{{slo_id:yogakit:read-view-availability}}\").over(\"30d\") > 50",
-  "message": "Read-view availability SLO has consumed over half its 30-day error budget — trending toward breach. @syntheticstesting@gmail.com",
+  "query": "error_budget(\"{{slo_id:yogakit:read-view-availability}}\").over(\"30d\") > 10",
+  "message": "Read-view availability has consumed over 10% of its 30-day error budget. Review the SLO trend before it accelerates. @syntheticstesting@gmail.com",
   "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:slo-burn-slow-read-view-availability"],
   "options": {
     "notify_audit": false,
     "notify_no_data": false,
-    "thresholds": { "critical": 50 }
+    "thresholds": { "critical": 10 }
   }
 }

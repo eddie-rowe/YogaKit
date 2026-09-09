@@ -63,6 +63,7 @@ export default function OrgNewClient() {
         <form data-testid="org-new-form" onSubmit={handleSubmit} className="space-y-4">
           <input
             data-testid="org-new-name-input"
+            data-dd-privacy="mask-user-input"
             type="text"
             required
             value={name}

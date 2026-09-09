@@ -4,8 +4,8 @@
  * RULE-L7 (constitution v3.0.0, Principle VI): telemetry carries page views, errors,
  * and web vitals only — never pose, flow, note, journal, mood, or energy content. This
  * module is the one place that rule gets enforced for RUM before anything leaves the
- * browser: `scrubViewUrl` parameterizes every dynamic route segment, and
- * `scrubErrorMessage` strips quoted/free-text content out of error strings.
+ * browser: view and resource URLs are allow-listed, while free-text error messages
+ * are never transmitted.
  *
  * No I/O, no Datadog SDK import, no `window`/`document` reference — this file is a
  * function of its arguments, same split as `scripts/lib/copy-lint.mjs`. That is what
@@ -30,6 +30,44 @@ const ROUTE_PATTERNS: Array<{ pattern: RegExp; replacement: string }> = [
   { pattern: /^\/org\/[^/]+\/?$/, replacement: '/org/[orgId]' },
 ]
 
+const STATIC_ROUTES = new Set([
+  '/',
+  '/account',
+  '/auth/sign-in',
+  '/compose',
+  '/dimensions',
+  '/flows',
+  '/flows/shared',
+  '/learn',
+  '/org/invitations/accept',
+  '/org/new',
+  '/poses',
+  '/sequence',
+  '/sequence/export',
+  '/sequences',
+  '/settings',
+])
+
+const RESOURCE_ROUTES = new Set([
+  ...STATIC_ROUTES,
+  '/api/generate',
+  '/api/org/invitations',
+  '/auth/callback',
+  '/auth/confirm',
+  '/book',
+  '/book.html',
+  '/manifest.json',
+  '/sw.js',
+])
+
+function pathname(url: string): string | null {
+  try {
+    return new URL(url, 'https://yoga-kit.vercel.app').pathname.replace(/\/$/, '') || '/'
+  } catch {
+    return null
+  }
+}
+
 /**
  * Rewrite a view URL so no dynamic segment reaches Datadog verbatim. Query string and
  * hash are dropped entirely — neither can be validated to be identifier-only, and
@@ -39,39 +77,49 @@ const ROUTE_PATTERNS: Array<{ pattern: RegExp; replacement: string }> = [
  * content risk but the query/hash might.
  */
 export function scrubViewUrl(url: string): string {
-  let path: string
-  try {
-    path = new URL(url, 'https://yoga-kit.vercel.app').pathname
-  } catch {
-    path = url.split('?')[0].split('#')[0]
-  }
+  const path = pathname(url)
+  if (!path) return '/[unknown]'
 
   for (const { pattern, replacement } of ROUTE_PATTERNS) {
     if (pattern.test(path)) return replacement
   }
-  return path
+  return STATIC_ROUTES.has(path) ? path : '/[unknown]'
 }
 
 /**
- * Strip content-bearing text out of an error message before it leaves the browser.
- * Quoted substrings (the most common way a pose name, flow title, or note fragment
- * ends up interpolated into an Error's message) are replaced wholesale; any
- * `/poses/<slug>`-shaped or `/read/<id>`-shaped substring embedded in the message
- * (e.g. from a failed `fetch(url)`) is run through `scrubViewUrl` as well.
+ * Preserve only resource paths that are operationally useful and known not to carry
+ * user content. Third-party paths and newly introduced application paths collapse to
+ * a sentinel until they are reviewed and explicitly added here.
+ */
+export function scrubResourceUrl(url: string, applicationOrigin: string): string {
+  let parsed: URL
+  try {
+    parsed = new URL(url, applicationOrigin)
+  } catch {
+    return '/[resource]'
+  }
+
+  if (parsed.origin !== applicationOrigin) return `${parsed.origin}/[resource]`
+
+  const path = parsed.pathname.replace(/\/$/, '') || '/'
+  if (path.startsWith('/_next/')) return path
+  for (const { pattern, replacement } of ROUTE_PATTERNS) {
+    if (pattern.test(path)) return replacement
+  }
+  return RESOURCE_ROUTES.has(path) ? path : '/[resource]'
+}
+
+/**
+ * Error messages are arbitrary free text and cannot be proven safe. Preserve the
+ * presence of an error while removing the message value wholesale.
  */
 export function scrubErrorMessage(message: string): string {
-  if (!message) return message
+  return message ? '[redacted]' : message
+}
 
-  // Quoted literals (single, double, or backtick) — the shape an interpolated value
-  // takes in a thrown Error's message (`Failed to load pose "Downward Dog"`).
-  let scrubbed = message.replace(/(['"`])(?:(?!\1).)*\1/g, '[redacted]')
-
-  // A path-shaped substring anywhere in the message gets the same route scrub as a
-  // view URL, so a message like `GET /poses/downward-dog 404` doesn't leak the slug
-  // through a path that isn't inside quotes.
-  scrubbed = scrubbed.replace(/\/(?:poses|read|flows|sequences|compose|org)\/[^\s"'`]+/g, (match) =>
-    scrubViewUrl(match),
-  )
-
-  return scrubbed
+/** Keep stack frames for source-map resolution, but remove the free-text first line. */
+export function scrubErrorStack(stack: string | undefined): string | undefined {
+  if (!stack) return stack
+  const [, ...frames] = stack.split('\n')
+  return ['[redacted]', ...frames.map((frame) => frame.replace(/([?#])[^\s)]+/g, ''))].join('\n')
 }

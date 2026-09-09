@@ -41,12 +41,12 @@ export default defineConfig({
         // never had. Same argument again: a check that asserts a constitutional
         // guarantee and is itself untested is a claim, not a gate.
         'scripts/lib/telemetry-check.mjs',
-        // 008 US2: the source-map upload's decision logic (whether to run, what
-        // datadog-ci gets, which files to clean up) — same argument as the other
-        // Datadog-adjacent modules above: this is the only thing standing between
-        // "captured" and "readable" for production error stacks, so it needs to be a
-        // tested claim, not an asserted one.
-        'scripts/lib/sourcemaps.mjs',
+        // scripts/lib/sourcemaps.mjs and scripts/lib/dd-version.mjs are deliberately
+        // NOT here. Their existing tests still run; they just no longer gate at 100%,
+        // because the owner's call is that Datadog plumbing does not earn new unit
+        // tests. Unlike the modules above, neither enforces a constitutional rule —
+        // a missed branch there costs a link in a stack trace, not a privacy
+        // guarantee — so the gate comes off rather than the tests going in.
       ],
       // One threshold for all three files. The plan allowed the new module its own,
       // lower number; it turned out not to need one — a pure function over parsed JSON

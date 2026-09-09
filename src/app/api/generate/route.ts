@@ -1,9 +1,11 @@
 import { NextRequest } from 'next/server'
+import { SpanStatusCode, trace } from '@opentelemetry/api'
 import { propose } from '@/lib/pipeline/propose'
 import { constrain } from '@/lib/pipeline/constrain'
 import { validate } from '@/lib/pipeline/validate'
 import { resolveDefaults } from '@/lib/session/defaults'
 import type { SessionContext } from '@/lib/pipeline/types'
+import { logger } from '@/lib/utils/logger'
 
 // Keyword patterns where theme implies poses that are blocked by specific contraindications
 const THEME_CONSTRAINT_CONFLICTS: Array<{
@@ -76,6 +78,25 @@ export async function POST(req: NextRequest) {
 
   const stream = new ReadableStream({
     async start(controller) {
+      const startedAt = Date.now()
+      const span = trace.getTracer('yogakit').startSpan('generate.sequence')
+      let finished = false
+
+      const finish = (outcome: string, err?: unknown) => {
+        if (finished) return
+        finished = true
+        const durationMs = Date.now() - startedAt
+        span.setAttributes({ 'generate.outcome': outcome, 'generate.duration_ms': durationMs })
+        if (err !== undefined) {
+          span.setStatus({ code: SpanStatusCode.ERROR })
+          logger.error('generate.outcome', { outcome, duration_ms: durationMs }, err)
+        } else {
+          span.setStatus({ code: SpanStatusCode.OK })
+          logger.info('generate.outcome', { outcome, duration_ms: durationMs })
+        }
+        span.end()
+      }
+
       try {
         // Pre-flight: detect theme-vs-constraint conflicts (FR-016)
         if (ctx.theme) {
@@ -88,6 +109,7 @@ export async function POST(req: NextRequest) {
               theme: ctx.theme,
               suggestedReframe: conflict.suggestedReframe,
             }))
+            finish('theme_conflict')
             controller.close()
             return
           }
@@ -95,11 +117,15 @@ export async function POST(req: NextRequest) {
 
         // Stage 1: Propose
         controller.enqueue(sseEvent('progress', { stage: 'propose', message: 'Building your sequence…' }))
+        const proposeStartedAt = Date.now()
         const draft = await propose(ctx)
+        span.setAttribute('generate.stage.propose.duration_ms', Date.now() - proposeStartedAt)
 
         // Stage 2: Rules engine constraint
         controller.enqueue(sseEvent('progress', { stage: 'constrain', message: 'Applying sequencing rules…' }))
+        const constrainStartedAt = Date.now()
         const constrained = constrain(draft, ctx)
+        span.setAttribute('generate.stage.constrain.duration_ms', Date.now() - constrainStartedAt)
 
         // Check for duration conflict (skip if teacher already accepted compressed sequence)
         if (!skipDurationCheck) {
@@ -112,6 +138,7 @@ export async function POST(req: NextRequest) {
               totalHoldMinutes: constrained.totalHoldMinutes,
               targetMinutes: ctx.durationMinutes,
             }))
+            finish('duration_conflict')
             controller.close()
             return
           }
@@ -119,7 +146,9 @@ export async function POST(req: NextRequest) {
 
         // Stage 3: Safety validation
         controller.enqueue(sseEvent('progress', { stage: 'validate', message: 'Running safety checks…' }))
+        const validateStartedAt = Date.now()
         const validated = validate(constrained)
+        span.setAttribute('generate.stage.validate.duration_ms', Date.now() - validateStartedAt)
 
         // Check for unresolvable safety violations
         const unresolvable = validated.safetyNotes.filter(n =>
@@ -131,6 +160,7 @@ export async function POST(req: NextRequest) {
             message: 'One or more poses could not be safely replaced given the provided constraints.',
             violations: unresolvable,
           }))
+          finish('safety_unresolvable')
           controller.close()
           return
         }
@@ -141,19 +171,21 @@ export async function POST(req: NextRequest) {
             code: 'NO_POSES_MATCH',
             message: 'No poses matched the given constraints. Try relaxing contraindications or changing style/element.',
           }))
+          finish('no_poses_match')
           controller.close()
           return
         }
 
         // Emit final validated sequence
         controller.enqueue(sseEvent('sequence', validated))
+        finish('success')
         controller.close()
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Unknown error'
         controller.enqueue(sseEvent('error', {
           code: 'PIPELINE_ERROR',
-          message,
+          message: 'Sequence generation failed. Please try again.',
         }))
+        finish('pipeline_error', err)
         controller.close()
       }
     },

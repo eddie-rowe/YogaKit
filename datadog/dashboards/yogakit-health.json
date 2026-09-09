@@ -1,7 +1,10 @@
 {
   "title": "[YogaKit] Health",
-  "description": "RUM error rate, web vitals, server error rate/latency, and synthetic uptime for YogaKit. See docs/OBSERVABILITY.md. Managed as-code via scripts/datadog/sync.mjs --type dashboards --apply.",
+  "description": "Journey outcomes, RUM, APM, logs, and read-view SLI health for YogaKit. Filter and compare by version to correlate regressions with deployments. See docs/OBSERVABILITY.md.",
   "layout_type": "ordered",
+  "template_variables": [
+    { "name": "version", "prefix": "version", "available_values": [], "default": "*" }
+  ],
   "widgets": [
     {
       "id": 1,
@@ -24,7 +27,7 @@
                       "name": "query1",
                       "indexes": ["*"],
                       "compute": { "aggregation": "count" },
-                      "search": { "query": "@type:error service:yogakit env:prod" }
+                      "search": { "query": "@type:error service:yogakit env:prod version:$version -@session.type:synthetics -@browser.name:HeadlessChrome" }
                     }
                   ],
                   "formulas": [{ "formula": "query1" }],
@@ -46,7 +49,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "p75:rum.view.largest_contentful_paint{service:yogakit,env:prod}"
+                      "query": "p75:rum.measure.view.largest_contentful_paint{service:yogakit,env:prod,version:$version,!session_type:synthetics,!browser:HeadlessChrome}"
                     }
                   ],
                   "formulas": [{ "formula": "query1" }],
@@ -60,7 +63,7 @@
             "id": 13,
             "definition": {
               "type": "timeseries",
-              "title": "Interaction to Next Paint p75",
+              "title": "Real-user page load p75",
               "requests": [
                 {
                   "response_format": "timeseries",
@@ -68,7 +71,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "p75:rum.view.interaction_to_next_paint{service:yogakit,env:prod}"
+                      "query": "p75:rum.measure.view.loading_time{service:yogakit,env:prod,version:$version,!session_type:synthetics,!browser:HeadlessChrome}"
                     }
                   ],
                   "formulas": [{ "formula": "query1" }],
@@ -92,7 +95,14 @@
                       "name": "query1",
                       "indexes": ["*"],
                       "compute": { "aggregation": "count" },
-                      "search": { "query": "@type:view service:yogakit env:prod" }
+                      "search": { "query": "@type:view service:yogakit env:prod version:$version -@session.type:synthetics -@browser.name:HeadlessChrome" },
+                      "group_by": [
+                        {
+                          "facet": "@view.name",
+                          "limit": 10,
+                          "sort": { "aggregation": "count", "order": "desc" }
+                        }
+                      ]
                     }
                   ],
                   "formulas": [{ "formula": "query1" }],
@@ -124,11 +134,16 @@
                   "queries": [
                     {
                       "data_source": "metrics",
-                      "name": "query1",
-                      "query": "sum:trace.next_js.BaseServer.handleRequest.errors{service:yogakit,env:prod}.as_rate()"
+                      "name": "errors",
+                      "query": "sum:trace.next_js.BaseServer.handleRequest.hits.by_http_status{service:yogakit,env:prod,version:$version,http.status_code:5*}.as_rate()"
+                    },
+                    {
+                      "data_source": "metrics",
+                      "name": "requests",
+                      "query": "sum:trace.next_js.BaseServer.handleRequest.hits{service:yogakit,env:prod,version:$version}.as_rate()"
                     }
                   ],
-                  "formulas": [{ "formula": "query1" }],
+                  "formulas": [{ "formula": "errors / requests * 100", "alias": "error rate (%)" }],
                   "display_type": "line"
                 }
               ]
@@ -147,7 +162,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "p95:trace.next_js.BaseServer.handleRequest{service:yogakit,env:prod}"
+                      "query": "p95:trace.next_js.BaseServer.handleRequest{service:yogakit,env:prod,version:$version}"
                     }
                   ],
                   "formulas": [{ "formula": "query1" }],
@@ -156,10 +171,43 @@
               ]
             },
             "layout": { "x": 6, "y": 0, "width": 6, "height": 3 }
+          },
+          {
+            "id": 23,
+            "definition": {
+              "type": "timeseries",
+              "title": "Generation outcomes",
+              "requests": [
+                {
+                  "response_format": "timeseries",
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "outcomes",
+                      "query": "sum:yogakit.generate.outcomes{env:prod,version:$version} by {outcome}.as_count()"
+                    }
+                  ],
+                  "formulas": [{ "formula": "outcomes" }],
+                  "display_type": "bars"
+                }
+              ]
+            },
+            "layout": { "x": 0, "y": 3, "width": 6, "height": 3 }
+          },
+          {
+            "id": 24,
+            "definition": {
+              "type": "log_stream",
+              "title": "Recent server errors",
+              "query": "service:yogakit env:prod version:$version level:error",
+              "columns": ["timestamp", "message", "error.kind", "outcome", "version"],
+              "message_display": "inline"
+            },
+            "layout": { "x": 6, "y": 3, "width": 6, "height": 3 }
           }
         ]
       },
-      "layout": { "x": 0, "y": 7, "width": 12, "height": 4 }
+      "layout": { "x": 0, "y": 7, "width": 12, "height": 7 }
     },
     {
       "id": 3,
@@ -172,7 +220,7 @@
             "id": 31,
             "definition": {
               "type": "timeseries",
-              "title": "Synthetic availability",
+              "title": "Synthetic test runs",
               "requests": [
                 {
                   "response_format": "timeseries",
@@ -180,7 +228,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "avg:synthetics.http.availability{service:yogakit,env:prod}"
+                      "query": "sum:synthetics.test_runs{service:yogakit,env:prod}.as_count()"
                     }
                   ],
                   "formulas": [{ "formula": "query1" }],
@@ -192,7 +240,7 @@
           }
         ]
       },
-      "layout": { "x": 0, "y": 11, "width": 12, "height": 4 }
+      "layout": { "x": 0, "y": 14, "width": 12, "height": 4 }
     }
   ]
 }

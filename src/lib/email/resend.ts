@@ -63,15 +63,14 @@ export async function sendEmail(options: SendEmailOptions): Promise<SendEmailRes
         throw new Error('Resend API returned success but no message ID')
       }
 
-      logger.info('email.delivered', { resend_id: data.id, to: options.to, attempt })
+      logger.info('email.delivered', { resend_id: data.id, attempt })
       return { id: data.id }
     } catch (err) {
       lastError = err
       const isLastAttempt = attempt === RETRY_DELAYS_MS.length
       logger.warn('email.attempt_failed', {
         attempt,
-        to: options.to,
-        error: err instanceof Error ? err.message : String(err),
+        error_kind: err instanceof Error ? err.name : 'UnknownError',
         will_retry: !isLastAttempt,
       })
       if (!isLastAttempt) {
@@ -80,10 +79,13 @@ export async function sendEmail(options: SendEmailOptions): Promise<SendEmailRes
     }
   }
 
-  logger.error('email.delivery_failure', {
-    to: options.to,
-    attempts: RETRY_DELAYS_MS.length + 1,
-  })
+  logger.error(
+    'email.delivery_failure',
+    {
+      attempts: RETRY_DELAYS_MS.length + 1,
+    },
+    lastError,
+  )
   if (lastError instanceof Error) throw lastError
   throw new Error(`Email delivery failed after ${RETRY_DELAYS_MS.length + 1} attempts`)
 }

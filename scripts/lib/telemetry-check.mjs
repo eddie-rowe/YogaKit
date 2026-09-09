@@ -31,7 +31,7 @@ export const EXCLUDED_PATTERNS = [/\.test\.tsx?$/, /\.spec\.tsx?$/, /\/__tests__
  */
 export const BANNED_FIELD_NAMES = new Set([
   'note', 'notes', 'journal', 'reflection', 'mood', 'energy',
-  'password', 'token', 'raw_token', 'secret',
+  'password', 'token', 'raw_token', 'secret', 'email', 'to', 'recipient', 'error',
   'pose', 'pose_name', 'posename', 'pose_slug', 'poseslug', 'pose_title',
   'flow', 'flow_name', 'flowname', 'flow_title', 'flowtitle',
   'sequence', 'sequence_name', 'sequencename', 'sequence_title',

@@ -51,6 +51,7 @@ npm run datadog:diff                        # dry run, every type
 npm run datadog:diff -- --type monitors      # dry run, one type
 npm run datadog:apply -- --type monitors     # mutate — requires the explicit flag
 npm run datadog:validate                     # validate every manifest, no network call
+npm run datadog:validate-live                # require active env:prod metrics + logs
 ```
 
 Credentials come from `.env.local` at the repo root (`DD_API_KEY`, `DD_APP_KEY`,
@@ -61,14 +62,18 @@ session (`docs/OBSERVABILITY.md` explains why).
 
 | File | Kind | Threshold (critical) |
 |---|---|---|
-| `rum-error-rate.json` | query alert | client error rate > 10% (warn 5%) |
-| `web-vitals-lcp.json` | query alert | LCP p75 > 4s (warn 2.5s) |
-| `web-vitals-inp.json` | query alert | INP p75 > 500ms (warn 200ms) |
-| `api-error-rate.json` | query alert | server error rate > 10% (warn 5%) |
+| `rum-error-rate.json` | query alert | client error rate > 5% (warn 2%) |
+| `web-vitals-lcp.json` | query alert | LCP p75 > 2.5s (warn 2s) |
+| `web-vitals-inp.json` | query alert | real-user page load p75 > 4s (warn 2.5s; legacy filename preserves live identity) |
+| `api-error-rate.json` | query alert | server error rate > 5% (warn 2%) |
 | `api-latency-p95.json` | query alert | p95 > 5s (warn 2s, in nanoseconds) |
-| `synthetic-read-view-down.json` | query alert | any synthetic HTTP failure / 15m |
-| `slo-burn-fast-read-view-availability.json` | slo alert | 100% of the 30-day error budget consumed (SLO breached) |
-| `slo-burn-slow-read-view-availability.json` | slo alert | 50% of the 30-day error budget consumed (trending toward breach) |
+| `synthetic-read-view-down.json` | query alert | no synthetic test runs / 15m (legacy filename preserves live identity) |
+| `log-ingestion-liveness.json` | log alert | no production logs / 30m |
+| `generation-pipeline-errors.json` | query alert | unexpected generation outcomes > 5% (warn 2%) |
+| `rum-telemetry-freshness.json` | query alert | no RUM sessions for 30m |
+| `apm-telemetry-freshness.json` | query alert | no Next.js request spans for 30m |
+| `slo-burn-fast-read-view-availability.json` | slo alert | 25% of the 30-day error budget consumed |
+| `slo-burn-slow-read-view-availability.json` | slo alert | 10% of the 30-day error budget consumed |
 
 Both SLO alerts use `error_budget("<slo_id>").over("<timeframe>")`, not `burn_rate(...)`.
 `burn_rate()` monitor queries were rejected outright by this org/plan
@@ -82,6 +87,17 @@ Every monitor message ends `@syntheticstesting@gmail.com` (the address in
 configured in this org (confirmed by a 404 against
 `/api/v1/integration/slack/channels`), so email is the notification destination for
 this pass.
+
+The read-view availability SLO is monitor-based and refers to the synthetic companion
+monitor with `{{monitor_id:yogakit:read-view-200}}`. The sync resolves that portable
+tag reference to the live numeric monitor ID before diff/apply; hardcoded IDs fail
+validation.
+
+`datadog:validate` also rejects retired metric families that Datadog accepts
+syntactically but no longer populates. `datadog:validate-live` goes further: over the
+last 24 hours it requires an `env:prod,service:yogakit` series for every metric named
+by a manifest and at least one YogaKit log. CI runs this authenticated check after a
+push to `main`; PR validation remains credential-free.
 
 ### Expected drift under `--type monitors`
 

@@ -80,6 +80,52 @@ export function siteMismatchWarning(env) {
   )
 }
 
+/** Git hosts datadog-ci can build deep links for, keyed by Vercel's provider name. */
+const GIT_HOSTS = {
+  github: 'github.com',
+  gitlab: 'gitlab.com',
+  bitbucket: 'bitbucket.org',
+}
+
+/**
+ * The git metadata overlay, so unminified stack frames link to the line on GitHub.
+ *
+ * Vercel builds from a tarball, not a clone: there is no `.git` directory and no
+ * remote, so datadog-ci's automatic detection prints "No git remotes available" and
+ * uploads maps with no repository attached. Stacks de-minify, but no frame links
+ * anywhere — which is half the value of uploading them.
+ *
+ * datadog-ci's documented answer is to supply `DD_GIT_REPOSITORY_URL` *and*
+ * `DD_GIT_COMMIT_SHA`: with both present it skips invoking git entirely, which is
+ * exactly the tarball case. Both or neither — one alone still shells out to git and
+ * still fails. Vercel exposes the pieces as `VERCEL_GIT_*` (build and runtime), gated
+ * on "Enable access to System Environment Variables" in project settings.
+ *
+ * One consequence worth stating plainly: in bypass mode datadog-ci takes source paths
+ * from each map's own `sources` field rather than from git's list of tracked files, so
+ * a path that is untracked locally can still be named. That is application source, not
+ * practice content — RULE-L7 is untouched — but it should be written down rather than
+ * discovered.
+ *
+ * Returns `{}` for any provider not in GIT_HOSTS: datadog-ci only understands hosts
+ * containing github, gitlab, bitbucket, or dev.azure, and a URL it cannot parse is
+ * worse than no URL, because the upload still succeeds and the links are silently wrong.
+ *
+ * @param {Record<string, string | undefined>} env
+ * @returns {Record<string, string>} both keys, or none
+ */
+export function gitEnv(env) {
+  const host = GIT_HOSTS[env.VERCEL_GIT_PROVIDER ?? '']
+  const owner = env.VERCEL_GIT_REPO_OWNER
+  const slug = env.VERCEL_GIT_REPO_SLUG
+
+  const url = env.DD_GIT_REPOSITORY_URL || (host && owner && slug ? `https://${host}/${owner}/${slug}` : undefined)
+  const sha = env.DD_GIT_COMMIT_SHA || env.VERCEL_GIT_COMMIT_SHA
+
+  if (!url || !sha) return {}
+  return { DD_GIT_REPOSITORY_URL: url, DD_GIT_COMMIT_SHA: sha }
+}
+
 /**
  * Builds the `datadog-ci sourcemaps upload` argument list. `--release-version` must
  * equal what RUM itself reports as `version` (`NEXT_PUBLIC_DD_VERSION`) — a mismatch

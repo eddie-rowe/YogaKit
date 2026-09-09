@@ -1,0 +1,14 @@
+{
+  "name": "[YogaKit] APM Telemetry Missing for 30 Minutes",
+  "type": "query alert",
+  "query": "sum(last_30m):sum:trace.next_js.BaseServer.handleRequest.hits{service:yogakit,env:prod}.as_count() < 1",
+  "message": "No production Next.js request spans were received for 30 minutes despite five-minute HTTP synthetics. Check OpenTelemetry registration and trace intake. @syntheticstesting@gmail.com",
+  "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:apm-telemetry-freshness"],
+  "options": {
+    "notify_audit": false,
+    "require_full_window": true,
+    "notify_no_data": true,
+    "no_data_timeframe": 30,
+    "thresholds": { "critical": 1 }
+  }
+}
