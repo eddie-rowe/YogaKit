@@ -940,3 +940,40 @@ Datadog as `@outcome:*`. That needs either a JSON parser in a custom log pipelin
 shipping logs from the app straight to the Datadog logs intake, bypassing the drain.
 Until one of those exists, no log-based product metric can work, and adding one only
 creates a monitor that reads healthy because it has no data.
+
+### Datadog application security is deferred, not configured
+
+`c51f10e` ("Enable Datadog security feature flags", PR #32) set five variables in
+`vercel.json` — `DD_APPSEC_ENABLED`, `DD_APPSEC_RASP_ENABLED`, `DD_API_SECURITY_ENABLED`,
+`DD_IAST_ENABLED`, `DD_APPSEC_SCA_ENABLED` — and mirrored them into `.env.example`.
+
+All five are read only by `dd-trace`. Server tracing in this app is `@vercel/otel`
+(`src/instrumentation.ts`), and `dd-trace@6.15.0` is a devDependency loaded only by CI's
+test instrumentation (`.github/workflows/ci.yml`), never in the deployed server runtime.
+So none of the five products they name — App & API Protection, RASP, API Security, IAST,
+runtime SCA — was running, and nothing under `datadog/` watched for them, so nothing would
+have reported the gap either.
+
+Config that asserts a security control which does not exist is worse than no config at
+all: it answers the question "is this app protected?" wrongly, and it answers it
+convincingly enough that nobody asks again. The doc section added by the same PR said so
+in prose, but `vercel.json` is what a reader trusts.
+
+**Decision:** remove the five variables from `vercel.json` and `.env.example`. Keep the
+research as `docs/OBSERVABILITY.md` "Application security (not enabled)", including the
+per-product table and the Workload Protection paragraph that rules out a host-agent
+approach on Vercel's runtime.
+
+**Enabling condition:** a runtime `dd-trace` path — packaged in the app and loaded before
+Next.js and any other instrumented module, or injected by the platform. When that lands,
+the variables and matching `datadog/` manifests go back in together, so the products are
+configured and monitored in one change.
+
+**The pattern, which is the real reason to write this down:** three consecutive
+Datadog-bot PRs added a signal for a mechanism this deployment does not have. `bbbc72f`
+(#26) flipped an SLO to a type the live object cannot accept, so every `datadog:apply`
+failed on that row for weeks. The same PR added a log metric grouped by attributes that
+Vercel's drain never produces. #32 enabled security products for a tracer this app does
+not load. Each passed CI, because CI validates manifest shape and repository state, not
+whether the mechanism behind a manifest exists. **Review a bot PR against live behaviour,
+not against a green check.**
