@@ -71,13 +71,6 @@ degrade to a silent no-op, never a thrown error (FR-025/SC-011). None of them be
 | `NEXT_PUBLIC_DD_VERSION` | Version tag on RUM events | No | **Ignored on Vercel** — `next.config.ts` overrides it with the commit SHA (§8). Local only |
 | `DD_SERVICE` | Service name for `@vercel/otel` tracing + logger correlation | No | `yogakit`; run through `normalizeServiceName()` (`src/lib/dd-service-name.ts`) since a hyphen silently breaks `service:` queries |
 | `DD_ENV` | Env tag for server-side tracing | No | `prod` |
-| `DD_VERSION` | Version tag for server-side tracing | No | `1.0.0` |
-| `DD_APPSEC_ENABLED` | App & API Protection | Yes, for AAP | Enables request threat detection in `dd-trace` |
-| `DD_APPSEC_RASP_ENABLED` | Runtime Application Self-Protection (RASP) | Yes, for RASP | Blocks supported exploit attempts from inside the application process |
-| `DD_API_SECURITY_ENABLED` | API Security | Yes, for API discovery | Collects API endpoint and schema metadata; requires App & API Protection |
-| `DD_IAST_ENABLED` | Interactive Application Security Testing (IAST) | Yes, for IAST | Tracks request data through supported code paths; assess its runtime overhead before production rollout |
-| `DD_APPSEC_SCA_ENABLED` | Software Composition Analysis (SCA) | Yes, for runtime SCA | Reports vulnerable libraries loaded by the application process |
-| `DD_API_KEY` | Datadog API key | Only for `scripts/datadog/sync.mjs` and the content-free check's live-handle validation | Never bundled into the app — read only by Node scripts, never sent to the browser |
 | `DD_VERSION` | Version tag for server-side tracing | No | Same — **ignored on Vercel**, overridden with the commit SHA (§8) |
 | `DD_API_KEY` | Datadog API key | `scripts/datadog/sync.mjs`, the content-free check's live-handle validation, and CI's test instrumentation | Never bundled into the app — read only by Node scripts, never sent to the browser. CI reads it as a GitHub Actions repository secret |
 | `DD_APP_KEY` | Datadog application key | Same as `DD_API_KEY` | Same |
@@ -88,22 +81,38 @@ Key-auth only. The sync tool and any headless routine (`/autoobs`) use
 session, which is a separate, expiring OAuth credential unrelated to these three vars
 (verified live: `specs/008-observability-as-code/tasks.md` T031).
 
-### Application security
+### Application security (not enabled)
 
-`vercel.json` enables App & API Protection, RASP, API Security, IAST, and runtime
-SCA for deployed server functions. The equivalent command for a conventional Node
-deployment is:
+Datadog's application-security products — App & API Protection, RASP, API Security, IAST
+and runtime SCA — are **not running for this app**, and nothing in the repository turns
+them on. PR #32 briefly set the five `DD_*_ENABLED` variables in `vercel.json`; they were
+removed again because they cannot take effect here (see `DECISIONS.md`).
+
+All five are read by the Datadog Node tracing library, `dd-trace`. Server tracing in this
+app is `@vercel/otel` (`src/instrumentation.ts`), and OpenTelemetry export by itself does
+not implement any of these products. `dd-trace@6.15.0` is present as a devDependency, but
+only CI loads it, for test instrumentation (`.github/workflows/ci.yml`) — it never reaches
+the deployed server runtime.
+
+**Enabling condition:** a runtime `dd-trace` path — packaged in the app and loaded before
+Next.js and any other instrumented module, or injected by the platform. Once that exists,
+the five variables and matching `datadog/` manifests go back in together, so these products
+are configured and monitored in the same change. For a conventional Node deployment the
+equivalent invocation is:
 
 ```bash
 DD_APPSEC_ENABLED=true DD_APPSEC_RASP_ENABLED=true DD_API_SECURITY_ENABLED=true DD_IAST_ENABLED=true DD_APPSEC_SCA_ENABLED=true node app.js
 ```
 
-These settings are read by the Datadog Node tracing library (`dd-trace`). This
-repository currently uses `@vercel/otel` for server tracing; OpenTelemetry export
-by itself does not implement Datadog application security. The Vercel project must
-therefore inject or package a compatible `dd-trace` version before these products
-produce security telemetry. Keep the tracer loaded before Next.js and other
-instrumented modules.
+What each variable would buy, recorded here so it does not have to be researched again:
+
+| Variable | Product | What it does |
+|---|---|---|
+| `DD_APPSEC_ENABLED` | App & API Protection | Request threat detection |
+| `DD_APPSEC_RASP_ENABLED` | Runtime Application Self-Protection | Blocks supported exploit attempts from inside the application process |
+| `DD_API_SECURITY_ENABLED` | API Security | Collects API endpoint and schema metadata; requires App & API Protection |
+| `DD_IAST_ENABLED` | Interactive Application Security Testing | Tracks request data through supported code paths; assess its runtime overhead before a production rollout |
+| `DD_APPSEC_SCA_ENABLED` | Software Composition Analysis | Reports vulnerable libraries loaded by the application process |
 
 Datadog Workload Protection (also called Cloud Workload Security or host runtime
 security) is not enabled by these variables. It requires a Datadog Agent with host
