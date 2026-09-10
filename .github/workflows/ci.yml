@@ -93,6 +93,53 @@ jobs:
           DD_API_KEY: ${{ secrets.DD_API_KEY }}
           DD_SITE: us5.datadoghq.com
 
+  datadog-sast:
+    name: Datadog SAST
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      DD_API_KEY: ${{ secrets.DD_API_KEY }}
+      DD_APP_KEY: ${{ secrets.DD_APP_KEY }}
+    steps:
+      # Full history lets Datadog associate findings with the correct commit and
+      # calculate pull-request changes. Fork PRs do not receive repository secrets,
+      # so the scan is skipped there instead of failing an otherwise valid build.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan source code
+        if: env.DD_API_KEY != '' && env.DD_APP_KEY != ''
+        uses: DataDog/datadog-static-analyzer-github-action@v1
+        with:
+          dd_api_key: ${{ env.DD_API_KEY }}
+          dd_app_key: ${{ env.DD_APP_KEY }}
+          dd_site: us5.datadoghq.com
+
+  datadog-sca:
+    name: Datadog SCA
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      DD_API_KEY: ${{ secrets.DD_API_KEY }}
+      DD_APP_KEY: ${{ secrets.DD_APP_KEY }}
+    steps:
+      # SCA reads the committed dependency manifests and lockfiles; it does not
+      # depend on the Vercel runtime or require dependencies to be installed.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan open-source dependencies
+        if: env.DD_API_KEY != '' && env.DD_APP_KEY != ''
+        uses: DataDog/datadog-sca-github-action@main
+        with:
+          dd_api_key: ${{ env.DD_API_KEY }}
+          dd_app_key: ${{ env.DD_APP_KEY }}
+          dd_site: us5.datadoghq.com
+
   datadog-validate:
     # Manifest-only validation (FR-004) — never applies. Applying stays a deliberate
     # local `npm run datadog:apply`, per 008's plan: "No auto-apply from CI."
