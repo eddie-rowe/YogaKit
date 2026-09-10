@@ -93,6 +93,75 @@ jobs:
           DD_API_KEY: ${{ secrets.DD_API_KEY }}
           DD_SITE: us5.datadoghq.com
 
+  datadog-sast:
+    name: Datadog SAST
+    runs-on: ubuntu-latest
+    # Datadog Code Security rejects the pull_request event outright ("use push
+    # instead"), so this job only runs on push. Push already fires on every branch
+    # (see the `on:` block above), so every commit on a PR branch still gets scanned —
+    # it just doesn't show up as a check on the pull_request event itself. The
+    # `secrets` context isn't available in a job-level `if`, which is why the
+    # credential check below stays a per-step `env` gate instead of moving here.
+    if: github.event_name == 'push'
+    permissions:
+      contents: read
+    env:
+      DD_API_KEY: ${{ secrets.DD_API_KEY }}
+      DD_APP_KEY: ${{ secrets.DD_APP_KEY }}
+    steps:
+      # Full history lets Datadog associate findings with the correct commit and is
+      # required for diff-aware scanning (the action's default), which scans only the
+      # files changed by a commit rather than the whole tree. Fork PRs do not receive
+      # repository secrets, so the scan is skipped there instead of failing an
+      # otherwise valid build.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # v1/v2 of this action are unsupported deprecation stubs — the runner image no
+      # longer ships git, so the entrypoint dies before scanning anything. v3 is the
+      # first version Datadog still maintains. `continue-on-error` keeps a Datadog
+      # outage or a scoping problem on the app key from blocking every merge, same
+      # posture as the other optional Datadog steps in this workflow.
+      - name: Scan source code
+        if: env.DD_API_KEY != '' && env.DD_APP_KEY != ''
+        continue-on-error: true
+        uses: DataDog/datadog-static-analyzer-github-action@v3
+        with:
+          dd_api_key: ${{ env.DD_API_KEY }}
+          dd_app_key: ${{ env.DD_APP_KEY }}
+          dd_site: us5.datadoghq.com
+
+  datadog-sca:
+    name: Datadog SCA
+    runs-on: ubuntu-latest
+    # Same reason as datadog-sast above: Datadog Code Security errors out on the
+    # pull_request event, so this job is push-only.
+    if: github.event_name == 'push'
+    permissions:
+      contents: read
+    env:
+      DD_API_KEY: ${{ secrets.DD_API_KEY }}
+      DD_APP_KEY: ${{ secrets.DD_APP_KEY }}
+    steps:
+      # SCA reads the committed dependency manifests and lockfiles; it does not
+      # depend on the Vercel runtime or require dependencies to be installed.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Pinned to the v4 major tag rather than @main, per the action's own README, so
+      # this job doesn't pick up unreleased changes without warning. `continue-on-error`
+      # for the same non-blocking reason as datadog-sast.
+      - name: Scan open-source dependencies
+        if: env.DD_API_KEY != '' && env.DD_APP_KEY != ''
+        continue-on-error: true
+        uses: DataDog/datadog-sca-github-action@v4
+        with:
+          dd_api_key: ${{ env.DD_API_KEY }}
+          dd_app_key: ${{ env.DD_APP_KEY }}
+          dd_site: us5.datadoghq.com
+
   datadog-validate:
     # Manifest-only validation (FR-004) — never applies. Applying stays a deliberate
     # local `npm run datadog:apply`, per 008's plan: "No auto-apply from CI."
