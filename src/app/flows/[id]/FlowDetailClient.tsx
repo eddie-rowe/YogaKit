@@ -18,15 +18,11 @@ interface Props {
 }
 
 export default function FlowDetailClient({ id, poses, builtins }: Props) {
-  const [flow, setFlow] = useState<Flow | null | undefined>(undefined)
+  const [flow, setFlow] = useState<Flow | null | undefined>(() => builtins.find(f => f.id === id) ?? undefined)
   const poseBySlug = new Map(poses.map(p => [p.slug, p]))
 
   useEffect(() => {
-    const builtin = builtins.find(f => f.id === id)
-    if (builtin) {
-      setFlow(builtin)
-      return
-    }
+    if (builtins.find(f => f.id === id)) return
     getFlow(id).then(f => setFlow(f ?? null))
   }, [id, builtins])
 

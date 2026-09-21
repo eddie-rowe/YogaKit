@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import type { ValidatedSequence, SequenceItem } from '@/lib/pipeline/types'
 import type { PoseMode } from '@/lib/pose-types'
@@ -37,25 +37,16 @@ function formatHold(item: SequenceItem): string {
 }
 
 export default function ExportPage() {
-  const [sequence, setSequence] = useState<ValidatedSequence | null>(null)
-  const [loaded, setLoaded] = useState(false)
-
-  useEffect(() => {
+  const [sequence] = useState<ValidatedSequence | null>(() => {
+    if (typeof window === 'undefined') return null
     const raw = sessionStorage.getItem('krama_sequence')
-    if (raw) {
-      try {
-        setSequence(JSON.parse(raw) as ValidatedSequence)
-      } catch {
-        setSequence(null)
-      }
+    if (!raw) return null
+    try {
+      return JSON.parse(raw) as ValidatedSequence
+    } catch {
+      return null
     }
-    setLoaded(true)
-  }, [])
-
-  if (!loaded) {
-    return null
-  }
-
+  })
   if (!sequence) {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center gap-4 p-8">

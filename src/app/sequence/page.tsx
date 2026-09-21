@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { AlertTriangle } from 'lucide-react'
 import type { ValidatedSequence, SequenceItem } from '@/lib/pipeline/types'
@@ -93,26 +93,18 @@ function NoSequenceFound() {
 }
 
 export default function SequencePage() {
-  const [sequence, setSequence] = useState<ValidatedSequence | null>(null)
-  const [loaded, setLoaded] = useState(false)
-  const [items, setItems] = useState<SequenceItem[]>([])
-  const [modified, setModified] = useState(false)
-
-  useEffect(() => {
+  const [sequence] = useState<ValidatedSequence | null>(() => {
+    if (typeof window === 'undefined') return null
     try {
       const raw = sessionStorage.getItem('krama_sequence')
-      if (raw) {
-        const parsed = JSON.parse(raw) as ValidatedSequence
-        setSequence(parsed)
-        setItems(parsed.items)
-      }
+      return raw ? (JSON.parse(raw) as ValidatedSequence) : null
     } catch {
-      // sequence stays null
+      return null
     }
-    setLoaded(true)
-  }, [])
+  })
+  const [items, setItems] = useState<SequenceItem[]>(() => sequence?.items ?? [])
+  const [modified, setModified] = useState(false)
 
-  if (!loaded) return null
   if (!sequence) return <NoSequenceFound />
 
   const ctx = sequence.sessionContext
