@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect, Suspense } from 'react'
+import { useState, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { CONTRAINDICATION_OPTIONS, ALL_PROPS } from '@/lib/contraindications'
 import type { SessionContext } from '@/lib/pipeline/types'
@@ -63,27 +63,23 @@ export default function DimensionsPage() {
 function DimensionsForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [form, setForm] = useState<FormState>(INITIAL_FORM)
+  // Pre-fill from ?style=yin&duration=60&element=water (e.g. from reference sequences)
+  const [form, setForm] = useState<FormState>(() => {
+    const style = searchParams.get('style') as Style | null
+    const duration = searchParams.get('duration')
+    const element = searchParams.get('element') as FiveElement | null
+    return {
+      ...INITIAL_FORM,
+      ...(style ? { style } : {}),
+      ...(duration ? { durationMinutes: parseInt(duration, 10) } : {}),
+      ...(element ? { elementFocus: element } : {}),
+    }
+  })
   const [loading, setLoading] = useState(false)
   const [stage, setStage] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [showMore, setShowMore] = useState(false)
   const bufferRef = useRef('')
-
-  // Pre-fill from ?style=yin&duration=60&element=water (e.g. from reference sequences)
-  useEffect(() => {
-    const style = searchParams.get('style') as Style | null
-    const duration = searchParams.get('duration')
-    const element = searchParams.get('element') as FiveElement | null
-    if (style || duration || element) {
-      setForm(prev => ({
-        ...prev,
-        ...(style ? { style } : {}),
-        ...(duration ? { durationMinutes: parseInt(duration, 10) } : {}),
-        ...(element ? { elementFocus: element } : {}),
-      }))
-    }
-  }, [searchParams])
 
   function setField<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }))

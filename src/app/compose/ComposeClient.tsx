@@ -63,7 +63,14 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
   const [flow, setFlow] = useState<Flow | null>(flowId ? null : emptyFlow())
   const [loading, setLoading] = useState(!!flowId)
   const [search, setSearch] = useState('')
-  const [layer, setLayer] = useState<LayerName>('simple')
+  const [layer, setLayer] = useState<LayerName>(() => {
+    const stored = typeof window !== 'undefined' ? window.localStorage.getItem(LAYER_STORAGE_KEY) : null
+    // 'custom' was removed as a Compose layer; fall back to 'advanced' for anyone
+    // who had it saved from before rather than crashing on an unknown layer.
+    if (stored === 'custom') return 'advanced'
+    if (stored && (LAYERS as string[]).includes(stored)) return stored as LayerName
+    return 'simple'
+  })
   // Honest save state: 'dirty' as soon as anything changes, 'saving' while the
   // write is in flight, 'saved' only once that exact write has landed, 'error' if
   // it didn't. Replaces the old savedAt-forever "Saved" label (Phase 1).
@@ -74,15 +81,6 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
   // Every mutation goes through updateFlow, so mark dirty there rather than at each
   // call site.
   const markDirty = () => setSaveState('dirty')
-
-  useEffect(() => {
-    const stored = typeof window !== 'undefined' ? window.localStorage.getItem(LAYER_STORAGE_KEY) : null
-    if (!stored) return
-    // 'custom' was removed as a Compose layer; fall back to 'advanced' for anyone
-    // who had it saved from before rather than crashing on an unknown layer.
-    if (stored === 'custom') setLayer('advanced')
-    else if ((LAYERS as string[]).includes(stored)) setLayer(stored as LayerName)
-  }, [])
 
   useEffect(() => {
     if (!flowId) return

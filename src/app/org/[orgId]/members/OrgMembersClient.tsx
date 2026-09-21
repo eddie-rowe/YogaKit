@@ -26,36 +26,39 @@ export default function OrgMembersClient({ orgId }: OrgMembersClientProps) {
   const [inviting, setInviting] = useState(false)
   const [inviteMessage, setInviteMessage] = useState<string | null>(null)
 
-  const loadMembers = useCallback(async () => {
+  const loadMembers = useCallback(() => {
     const supabase = createClient()
 
-    const { data: org } = await supabase.from('organizations').select('name').eq('id', orgId).single()
-    setOrgName(org?.name ?? null)
+    return supabase.from('organizations').select('name').eq('id', orgId).single()
+      .then(({ data: org }) => {
+        setOrgName(org?.name ?? null)
 
-    // Two queries, never a join against `profiles` directly (docs/design/002-schema.md
-    // §B) — profile_cards is the only identity data a co-member may read.
-    const { data: memberships } = await supabase
-      .from('memberships')
-      .select('id, user_id, roles, status')
-      .eq('org_id', orgId)
-
-    const userIds = (memberships ?? []).map(m => m.user_id)
-    const { data: cards } = userIds.length
-      ? await supabase.from('profile_cards').select('user_id, display_name').in('user_id', userIds)
-      : { data: [] }
-
-    const nameByUserId = new Map((cards ?? []).map(c => [c.user_id, c.display_name]))
-
-    setMembers(
-      (memberships ?? []).map(m => ({
-        membershipId: m.id,
-        userId: m.user_id,
-        roles: m.roles,
-        status: m.status,
-        displayName: nameByUserId.get(m.user_id) ?? 'Member',
-      })),
-    )
-    setLoading(false)
+        // Two queries, never a join against `profiles` directly (docs/design/002-schema.md
+        // §B) — profile_cards is the only identity data a co-member may read.
+        return supabase
+          .from('memberships')
+          .select('id, user_id, roles, status')
+          .eq('org_id', orgId)
+      })
+      .then(({ data: memberships }) => {
+        const userIds = (memberships ?? []).map(m => m.user_id)
+        return (userIds.length
+          ? supabase.from('profile_cards').select('user_id, display_name').in('user_id', userIds)
+          : Promise.resolve({ data: [] })
+        ).then(({ data: cards }) => {
+          const nameByUserId = new Map((cards ?? []).map(c => [c.user_id, c.display_name]))
+          setMembers(
+            (memberships ?? []).map(m => ({
+              membershipId: m.id,
+              userId: m.user_id,
+              roles: m.roles,
+              status: m.status,
+              displayName: nameByUserId.get(m.user_id) ?? 'Member',
+            })),
+          )
+          setLoading(false)
+        })
+      })
   }, [orgId])
 
   useEffect(() => {

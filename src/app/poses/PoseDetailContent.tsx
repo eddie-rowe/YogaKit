@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type { Pose } from '@/lib/pose-types'
 import BodyDiagram from '@/components/poses/BodyDiagram'
 import { CHAKRA_DOTS } from '@/lib/pose-library/body-map'
@@ -66,23 +66,21 @@ const DOSHA_EFFECT_COLORS: Record<string, string> = {
 }
 
 export function useDetailLayer() {
-  const [layer, setLayer] = useState<DetailLayer>('simple')
-  const [customFields, setCustomFields] = useState<Record<CustomFieldGroup, boolean>>(DEFAULT_CUSTOM_FIELDS)
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
+  const [layer, setLayer] = useState<DetailLayer>(() => {
+    if (typeof window === 'undefined') return 'simple'
     const stored = window.localStorage.getItem(DETAIL_LAYER_STORAGE_KEY)
-    if (stored && (DETAIL_LAYERS as string[]).includes(stored)) setLayer(stored as DetailLayer)
+    return stored && (DETAIL_LAYERS as string[]).includes(stored) ? (stored as DetailLayer) : 'simple'
+  })
+  const [customFields, setCustomFields] = useState<Record<CustomFieldGroup, boolean>>(() => {
+    if (typeof window === 'undefined') return DEFAULT_CUSTOM_FIELDS
     const storedFields = window.localStorage.getItem(CUSTOM_FIELDS_STORAGE_KEY)
-    if (storedFields) {
-      try {
-        const parsed = JSON.parse(storedFields)
-        setCustomFields(prev => ({ ...prev, ...parsed }))
-      } catch {
-        // ignore malformed stored value
-      }
+    if (!storedFields) return DEFAULT_CUSTOM_FIELDS
+    try {
+      return { ...DEFAULT_CUSTOM_FIELDS, ...JSON.parse(storedFields) }
+    } catch {
+      return DEFAULT_CUSTOM_FIELDS
     }
-  }, [])
+  })
 
   function selectLayer(next: DetailLayer) {
     setLayer(next)

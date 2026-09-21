@@ -24,9 +24,11 @@ export default function FlowsClient({ builtins }: Props) {
   const [hasOrgs, setHasOrgs] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  async function refresh() {
-    setSavedFlows(await getAllFlows())
-    setLoaded(true)
+  function refresh() {
+    return getAllFlows().then(flows => {
+      setSavedFlows(flows)
+      setLoaded(true)
+    })
   }
 
   useEffect(() => {

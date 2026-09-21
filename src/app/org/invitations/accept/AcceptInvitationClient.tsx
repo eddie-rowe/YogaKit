@@ -12,14 +12,11 @@ export default function AcceptInvitationClient() {
   const searchParams = useSearchParams()
   const token = searchParams.get('token')
 
-  const [status, setStatus] = useState<Status>('pending')
+  const [status, setStatus] = useState<Status>(token ? 'pending' : 'failed')
   const [orgId, setOrgId] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!token) {
-      setStatus('failed')
-      return
-    }
+    if (!token) return
 
     const supabase = createClient()
     supabase
