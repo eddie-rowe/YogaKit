@@ -212,7 +212,7 @@ export default function ReadView({ flow, poses }: Props) {
                         className="text-sm mt-1"
                         style={{ color: 'var(--muted-strong)' }}
                       >
-                        This pose isn't in your library.
+                        This pose isn&apos;t in your library.
                       </p>
                     )}
                     {item.note && (

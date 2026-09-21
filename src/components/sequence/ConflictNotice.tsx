@@ -28,14 +28,14 @@ export function ConflictNotice({
             Theme conflict detected
           </h3>
           <p className="mt-1 text-sm text-amber-800">
-            Your theme <strong>"{theme}"</strong> conflicts with the following safety
+            Your theme <strong>&quot;{theme}&quot;</strong> conflicts with the following safety
             constraint{conflictingConstraints.length > 1 ? 's' : ''}:{' '}
             <strong>{constraintList}</strong>. These constraints are hard rules — poses
             that conflict cannot appear in the sequence.
           </p>
           {suggestedReframe && (
             <p className="mt-2 text-sm text-amber-800">
-              Suggested reframe: <strong>"{suggestedReframe}"</strong>
+              Suggested reframe: <strong>&quot;{suggestedReframe}&quot;</strong>
             </p>
           )}
           <div className="mt-4 flex gap-3">

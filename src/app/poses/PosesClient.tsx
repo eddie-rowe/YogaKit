@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import type { Pose, PoseTypeTag, MuscleGroup, FiveElement, NervousSystemEffect, SequencingPosition } from '@/lib/pose-types'
 import { allSearchableNames, resolveDisplayName } from '@/lib/pose-library/display-name'
@@ -203,10 +204,10 @@ export default function PosesClient({ poses }: Props) {
               <h1 className="font-serif text-2xl font-semibold" style={{ color: 'var(--foreground)' }}>Pose Library</h1>
               <p className="text-sm" style={{ color: 'var(--muted)' }}>{filtered.length} of {poses.length} poses</p>
             </div>
-            <a href="/" className="flex items-center gap-1.5 text-sm transition-colors" style={{ color: 'var(--muted)', transitionDuration: '150ms' }}>
+            <Link href="/" className="flex items-center gap-1.5 text-sm transition-colors" style={{ color: 'var(--muted)', transitionDuration: '150ms' }}>
               <ArrowLeft size={14} />
               Home
-            </a>
+            </Link>
           </div>
 
           {/* View mode toggle */}
