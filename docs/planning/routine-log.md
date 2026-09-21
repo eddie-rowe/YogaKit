@@ -1,9 +1,9 @@
 # Routine log
 
-One line per headless-routine run, newest last. Written by `/autoobs`
-(`.claude/commands/autoobs.md`) and, later, whatever routines `007-autonomous-operations`
-adds. Never edited retroactively — a run's line is truth for what that run observed at
-that time, even if a later run finds it was wrong.
+One line per headless-routine run, newest last. Written by `/tools:03_observation:autoobs`
+(`.claude/commands/tools/03_observation/autoobs.md`) and, later, whatever routines
+`007-autonomous-operations` adds. Never edited retroactively — a run's line is truth for
+what that run observed at that time, even if a later run finds it was wrong.
 
 Format:
 

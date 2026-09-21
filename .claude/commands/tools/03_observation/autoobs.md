@@ -11,24 +11,23 @@ questions.
 
 ## Context
 
-`/autoobs` is YogaKit's daily observation routine, ported from NextMove's
-`.claude/commands/tools/03_observation/autoobs.md` per
-`specs/008-observability-as-code/plan.md` Phase 6. Unlike NextMove, YogaKit has no
-`/status`, `/slo`, `/metrics`, `/ux`, `/datadog-report`, `/digest`, or
-`/daily-connector-report` sub-commands, no GitHub escalation issue, and no scheduler
-(007's job, not yet built) — this command queries Datadog directly for the signals
-already defined in `datadog/` and writes one dated digest plus one routine-log line.
-Scheduling stays a stub: this command is runnable by hand only.
+`/autoobs` is YogaKit's daily observation routine. Unlike a connector-heavy product,
+YogaKit has no `/status`, `/slo`, `/metrics`, `/ux`, `/datadog-report`, `/digest`, or
+`/daily-connector-report` sub-commands and no scheduler (007's job, not yet built) —
+this command queries Datadog directly for the signals already defined in `datadog/`
+and writes one dated digest plus one routine-log line. Scheduling stays a stub: this
+command is runnable by hand only.
 
-**Scope: observe / record — never implement, never mutate.** This command never runs
-`npm run datadog:apply` and never edits application code. If a finding needs a code or
-config fix, record it in the digest's "Findings" section and stop there.
+**Scope: observe / record / escalate — never implement, never mutate.** This command
+never runs `npm run datadog:apply` and never edits application code. If a finding
+needs a code or config fix, record it in the digest's "Findings" section — that's
+`/tools:02_development:autodev`'s job, not this command's.
 
 ## Configuration (fixed for this org — do not re-derive)
 
 - Site: `us5.datadoghq.com`. Auth: `DD_API_KEY`/`DD_APP_KEY`/`DD_SITE` from
-  `.env.local`, **key-auth only** — never `pup auth login`. T031 already proved the
-  full sync tool works with zero OAuth session; this command must too.
+  `.env.local`, **key-auth only** — never `pup auth login`. The sync tool already
+  proved it works with zero OAuth session; this command must too.
 - Service: `yogakit`. Env tag: `env:prod` (**not** `env:production` — every query
   below must use `env:prod` or it silently returns 0 rows).
 - RUM application: filter every RUM query by
@@ -37,6 +36,7 @@ config fix, record it in the digest's "Findings" section and stop there.
   actually dark, or vice versa. If RUM session count is 0, check both scopes before
   concluding "no traffic": 0 in the unscoped view too means genuinely no traffic; 0
   scoped but nonzero unscoped means a RUM tagging bug, not a traffic problem.
+- GitHub: use `mcp__github__*` (lowercase). Repo slug is `eddie-rowe/YogaKit`.
 - Content-free invariant: this command reads only aggregate signals (error rates,
   Core Web Vitals, uptime, monitor/SLO status). It must never print, log, or write a
   pose slug, flow title, journal/note/reflection body, mood, or energy value — none of
@@ -55,10 +55,26 @@ config fix, record it in the digest's "Findings" section and stop there.
 3. If both are unreachable for a given signal, mark that section `NO-DATA` in the
    digest and move on — never fabricate a value.
 
-## Execution constraints (hard — same hardening NextMove's 6-hour hang taught)
+## Connector-degraded mode
+
+Datadog can be dark for a given signal without the whole sweep failing:
+
+- If a source is confirmed dark and already tracked by an open GitHub issue, emit
+  one line — "still dark, see #NN, no new query run" — and move on rather than
+  re-probing it from scratch every sweep. Re-validate weekly (first sweep of each
+  ISO week), not daily.
+- Distinguish "connector DOWN" (mark that section `NO-DATA`, name it in the reply)
+  from "connector UP, data genuinely absent" (a real gap, e.g. zero RUM traffic
+  confirmed via both the scoped and unscoped check above).
+- If Datadog is entirely unreachable (both `pup` and the REST fallback), say so
+  plainly and mark overall sweep status `DEGRADED` — never fabricate a healthy or
+  unhealthy verdict for a signal you couldn't reach.
+
+## Execution constraints (hard — hardening earned the hard way)
 
 - **Never delegate this sweep, or any step of it, to a background/async subagent.**
-  Run every step directly in this session, synchronously.
+  Run every step directly in this session, synchronously. A spawned agent that hangs
+  on an MCP call has no watchdog and no guaranteed notification in an unattended run.
 - **Per-step time budget: ~10 minutes.** If a query hasn't returned by then, abandon
   it, record that section `DEGRADED — timed out` with what was tried, and move to the
   next step. Never let one dark connector block the whole sweep.
@@ -78,7 +94,7 @@ Run each step directly against Datadog. Record the result even if a step fails.
 
 List every monitor tagged `service:yogakit`, report its current status (`OK`/`Alert`/
 `Warn`/`No Data`). Cross-check against `datadog/monitors/*.json` — a monitor present in
-Datadog but not one of the 8 manifest files is either the documented synthetic-test
+Datadog but not one of the manifest files is either the documented synthetic-test
 companion-monitor drift (`datadog/README.md` "Expected drift") or a genuine
 out-of-band change worth flagging.
 
@@ -172,9 +188,22 @@ Append one line to `docs/planning/routine-log.md`:
 YYYY-MM-DD HH:MM /autoobs [STATUS] — overall: [HEALTHY/DEGRADED/AT-RISK]; monitors: [N ok / M alert]; digest: docs/observation/autoobs/YYYY-MM-DD.md
 ```
 
-Do not commit either file — this command only observes and records locally; whether
-these are committed to `main` is a decision the operator (or, later, 007's scheduler)
-makes explicitly, not something this command does on its own.
+### 8. Escalate (only if overall is AT-RISK)
+
+Open or update one idempotent GitHub issue labelled `auto/observation` with the
+findings section, evidence, and links to the digest. If an open `auto/observation`
+issue already exists, update it in place rather than opening a second one — search
+for it first (`mcp__github__search_issues`, label `auto/observation`, state open).
+HEALTHY or DEGRADED → silent, no issue action.
+
+**Escalation self-verify.** After the issue create/update call, re-read the issue via
+`mcp__github__issue_read` (or `pull_request_read` equivalent) to confirm it actually
+posted before logging it done in the digest and final summary.
+
+Whether to commit the digest, routine-log line, and any escalation to `main` is a
+decision the operator (or, later, 007's scheduler) makes explicitly — this command
+does not commit on its own when run by hand. `docs/routines/autoobs/system-instructions.md`
+makes that call when this command runs as part of the headless routine.
 
 ## Final Summary Output
 
@@ -195,6 +224,8 @@ After all steps complete, provide a consolidated summary:
 Findings:
 • [finding 1, or "None this sweep."]
 
+Escalation: [none / auto/observation #NN opened / #NN updated]
+
 Digest: docs/observation/autoobs/YYYY-MM-DD.md
 Log: docs/planning/routine-log.md
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -212,9 +243,9 @@ Log: docs/planning/routine-log.md
 
 - This command is idempotent within a day: re-running appends a `## Re-run` section
   rather than overwriting.
-- No GitHub escalation, no owner-digest issue, no scheduling — those are
-  `007-autonomous-operations`' job. This command's only outputs are the dated digest
-  and the routine-log line.
+- No owner-digest issue, no scheduling — those are `007-autonomous-operations`' job.
+  This command's only outputs are the dated digest, the routine-log line, and (on
+  AT-RISK) the single `auto/observation` issue.
 - See `docs/OBSERVABILITY.md` §4 (routine → signal → query map) for the exact query
-  strings once that section exists (Phase 3.5, T039) — until then, the query shapes in
+  strings once that section exists — until then, the query shapes in
   `scripts/lib/datadog-sync.mjs` and `datadog/README.md` are the source of truth.

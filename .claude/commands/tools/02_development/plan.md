@@ -1,0 +1,167 @@
+---
+model: opus
+description: Issue Analysis & Planning
+argument-hint: "[issue#]"
+---
+
+# /plan - Issue Analysis & Planning
+
+Analyze GitHub issues, break down requirements into subtasks, and create comprehensive implementation plans.
+
+[Extended thinking: Analyze issues comprehensively to produce implementation plans that /dev can follow without making architecture decisions. Make all architecture choices here (schema design, component structure) and document them in a GitHub comment.]
+
+## Usage
+```
+/plan <issue_number_or_url>
+```
+
+## Examples
+```
+/plan 123
+/plan https://github.com/user/repo/issues/123
+/plan 65
+```
+
+## Agent Invocation Instructions
+
+When this command lists agents in orchestration tables:
+1. **Invoke the Task tool** with `subagent_type` set to the agent name
+2. **Provide context** in the prompt including the issue number/URL and specific task
+3. **Wait for completion** before proceeding
+
+## Agent Orchestration
+
+| Agent | Purpose |
+|-------|---------|
+| **github-issue-analyzer** | Retrieve issue, analyze requirements, create subtask breakdown |
+| **Explore** | Find related code, existing patterns, and specific file paths |
+| **sql-pro** | Design database schema and RLS policies |
+
+## Execution
+
+When invoked with `/plan <issue>`, execute these steps:
+
+1. **Validate Input**
+   ```
+   # If no argument provided, show error:
+   "❌ Please provide an issue number or URL"
+
+   # Parse issue number from various formats (123, #123, URL)
+   ```
+
+2. **Begin Analysis**
+   **Output:**
+   ```
+   🤖 Starting issue analysis workflow...
+   📋 Analyzing issue: {issue}
+   ```
+
+3. **Execute Issue Analysis**
+
+   Use Task tool with `subagent_type="github-issue-analyzer"`:
+
+   **Prompt:** "Analyze GitHub issue: {issue}. Pull the issue details, perform comprehensive requirement analysis, and break down into actionable subtasks."
+
+   **Agent Actions:**
+   1. Retrieve issue details from GitHub
+   2. Analyze requirements and acceptance criteria
+   3. Identify dependencies and integration points
+   4. Break down into granular, actionable subtasks
+
+4. **Explore Codebase**
+
+   Use Task tool with `subagent_type="Explore"`:
+
+   **Prompt:** "Based on issue #{issue} requirements: [summary from step 3]. Find:
+   1. Existing similar implementations to use as patterns
+   2. Related services, components, and types that need modification
+   3. Exact file paths for all files that will be created or modified
+   4. Current naming conventions and patterns in this domain"
+
+   **Agent Output:**
+   - List of related files with purposes
+   - Pattern files to reference (e.g., "Follow GrowService.ts pattern")
+   - Exact paths for new files to create
+
+5. **Design Database Schema (if needed)**
+
+   If the issue requires database changes, use Task tool with `subagent_type="sql-pro"`:
+
+   **Prompt:** "Design database schema for issue #{issue}: [summary]. Include table definitions, RLS policies, and migrations following Supabase patterns."
+
+6. **Create Implementation Plan**
+
+   Compile a comprehensive plan including:
+   - **Database**: Schema changes, migrations, RLS policies
+   - **Service Layer**: TypeScript services to create/modify
+   - **Components**: React components needed
+   - **Files to Create**: New files this issue introduces (exact paths)
+   - **Files to Modify**: Existing files this issue changes (exact paths)
+   - **Patterns**: Reference implementations to follow
+   - **Steps**: Ordered implementation steps for `/dev` to follow
+   - **Testing**: Required unit, integration, and E2E tests
+   - **Dependency Signals**: Components/tables/types this issue creates that other issues may consume, and components/tables/types this issue consumes from other issues
+
+7. **Post Plan to GitHub Issue**
+
+   ```bash
+   gh issue comment {issue_number} --body "$(cat <<'EOF'
+   ## Implementation Plan
+
+   ### Related Files & Patterns
+   - **Pattern to follow**: `path/to/similar/implementation.ts`
+   - **Related files**: [list from exploration]
+
+   ### Database Changes
+   - [table/column changes]
+   - [RLS policies]
+
+   ### Service Layer
+   - [services to create/modify]
+
+   ### Components
+   - [React components]
+
+   ### Files to Create
+   - `path/to/new/file1.ts` - [purpose]
+   - `path/to/new/file2.tsx` - [purpose]
+
+   ### Files to Modify
+   - `path/to/existing/file1.ts` - [what changes]
+   - `path/to/existing/file2.tsx` - [what changes]
+
+   ### Dependency Signals
+   **Creates** (other issues may depend on these):
+   - [component/table/type name] in `path/to/file`
+
+   **Consumes** (this issue depends on these existing or to-be-created items):
+   - [component/table/type name] from `path/to/file`
+
+   ### Implementation Steps
+   1. [step 1]
+   2. [step 2]
+   ...
+
+   ### Testing Requirements
+   **Unit Tests:**
+   - [ ] [test description]
+
+   **Integration Tests:**
+   - [ ] [test description]
+
+   **E2E Tests (for /validate):**
+   - [ ] [user flow to test]
+
+   ---
+   *Generated by `/plan` - Run `/dev {issue}` or `/team-dev` to implement*
+   EOF
+   )"
+   ```
+
+8. **Complete Analysis**
+   **Output:**
+   ```
+   ✅ Planning complete
+   📝 Implementation plan posted to issue #{issue}
+   💡 Next step: '/dev {issue}' to implement, or include in '/team-dev' batch
+   ```
