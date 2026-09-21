@@ -38,7 +38,7 @@ export default function HomeClient({ builtins }: Props) {
         {loaded && todaysFlow && (
           <Link data-testid="home-todays-flow" href={`/flows/${todaysFlow.id}`} className="kk-card block px-4 py-3">
             <div className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--muted)' }}>
-              Today's flow
+              Today&apos;s flow
             </div>
             <div className="text-lg font-medium">{todaysFlow.title}</div>
             <div className="text-xs" style={{ color: 'var(--muted)' }}>
