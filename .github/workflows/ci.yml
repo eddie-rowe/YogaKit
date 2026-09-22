@@ -35,6 +35,12 @@ jobs:
       - name: Validate pose library
         run: npm run validate:poses
 
+      # Blocking, no `|| true` — #48: no routine may be credited with a run it has no
+      # first-party artifact for. See scripts/validate-routine-log.mjs and
+      # docs/planning/routines.md "Shared guardrails".
+      - name: Validate routine log
+        run: npm run validate:routine-log
+
       # Blocking, deliberately with no `|| true` — 008 US4/FR-021: RULE-L7 (telemetry
       # carries page views, errors, and web vitals only, never practice content) had no
       # automated test before this feature. See coverageLimits() in

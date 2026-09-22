@@ -220,7 +220,7 @@ git checkout main && git pull --ff-only origin main
 git commit -m "dev: autodev sweep YYYY-MM-DD — ..."
 git push origin main
 # verify it landed
-test "$(git rev-parse origin/main)" = "$(git rev-parse HEAD)" || echo "PUSH FAILED — stop here"
+test "$(git rev-parse origin/main)" = "$(git rev-parse HEAD)" || { echo "PUSH FAILED — stop here"; exit 1; }
 ```
 - **Never commit routine artifacts to a `claude/*` or feature branch.** Only
   code goes on per-issue branches.
