@@ -39,20 +39,20 @@ exact matches to that section.
 
 **Purpose**: Project/dependency scaffolding shared by every later phase.
 
-- [ ] T001 Add dependencies to `package.json`: `@supabase/supabase-js`, `@supabase/ssr`,
+- [X] T001 Add dependencies to `package.json`: `@supabase/supabase-js`, `@supabase/ssr`,
   `stripe`, `zod` (matches plan.md Technical Context)
-- [ ] T002 [P] Create `supabase/config.toml` with local dev settings and
+- [X] T002 [P] Create `supabase/config.toml` with local dev settings and
   `additional_redirect_urls` listing localhost + Vercel preview-URL pattern (research.md
   item 4)
-- [ ] T003 [P] Create `src/lib/env.ts` — zod schema for
+- [X] T003 [P] Create `src/lib/env.ts` — zod schema for
   `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`,
   `SUPABASE_SECRET_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
   `ENCRYPTION_KEY`; fails fast at boot, never logs values (ported per research.md)
-- [ ] T004 [P] Create `src/lib/utils/logger.ts` — structured logger, no user-content
+- [X] T004 [P] Create `src/lib/utils/logger.ts` — structured logger, no user-content
   fields ever (RULE-L7), ported pattern
-- [ ] T005 [P] Add `.env.example` documenting all `src/lib/env.ts` keys with placeholder
+- [X] T005 [P] Add `.env.example` documenting all `src/lib/env.ts` keys with placeholder
   values (no real secrets)
-- [ ] T006 [P] Add ESLint `no-restricted-imports` rule banning `src/lib/supabase/service.ts`
+- [X] T006 [P] Add ESLint `no-restricted-imports` rule banning `src/lib/supabase/service.ts`
   from any file containing `'use client'`
 
 **Checkpoint**: Env/logging/lint scaffolding ready.
@@ -71,7 +71,7 @@ Summary). Do not shortcut the hardening rules in `docs/design/002-schema.md` §A
 
 ### Schema — RLS helpers (must exist before any other migration references them)
 
-- [ ] T007 Create migration `supabase/migrations/<ts>_helper_functions.sql`:
+- [X] T007 Create migration `supabase/migrations/<ts>_helper_functions.sql`:
   `app_org_ids()`, `app_org_ids_with_role(text[])`, `app_is_org_member(uuid)`,
   `app_has_org_role(uuid, text[])`, `app_co_member_ids()`, `app_visible_student_ids()` —
   all `SECURITY DEFINER`, return `uuid[]`/`boolean`, `SET search_path = public, pg_temp`,
@@ -79,7 +79,7 @@ Summary). Do not shortcut the hardening rules in `docs/design/002-schema.md` §A
 
 ### Schema — identity & tenancy
 
-- [ ] T008 Create migration `supabase/migrations/<ts>_identity_tenancy.sql`:
+- [X] T008 Create migration `supabase/migrations/<ts>_identity_tenancy.sql`:
   `profiles`, `profile_cards` (+ sync trigger from `profiles`), `organizations`
   (`org_types text[]` with `CHECK`), `memberships` (`UNIQUE(org_id, user_id)`, +
   `COMMENT ON TABLE` warning against `FORCE ROW LEVEL SECURITY`), `invitations`
@@ -87,70 +87,71 @@ Summary). Do not shortcut the hardening rules in `docs/design/002-schema.md` §A
   (`encrypted_credentials` with column-level `REVOKE SELECT`) — RLS policies for every
   table, every write policy with both `USING` and `WITH CHECK`, every `auth.uid()`
   wrapped `(SELECT auth.uid())` (data-model.md, docs/design/002-schema.md §C)
-- [ ] T009 In the same or a follow-up migration
+- [X] T009 In the same or a follow-up migration
   `supabase/migrations/<ts>_org_escalation_triggers.sql`: `trg_prevent_last_owner_removal`
   and `trg_prevent_self_escalation` triggers on `memberships` (FR-008, docs/design/002-schema.md §C)
-- [ ] T010 [P] Add `app_create_organization(name text, org_types text[])` `SECURITY
+- [X] T010 [P] Add `app_create_organization(name text, org_types text[])` `SECURITY
   DEFINER` RPC in the identity/tenancy migration — inserts `organizations` +
   owner `memberships` row transactionally (contracts/org-membership-api.md)
-- [ ] T011 [P] Add `app_accept_invitation(raw_token text)` `SECURITY DEFINER` RPC —
+- [X] T011 [P] Add `app_accept_invitation(raw_token text)` `SECURITY DEFINER` RPC —
   hash lookup, generic-failure error, email-match check, role-union upsert into
   `memberships` (contracts/org-membership-api.md, FR-005/FR-006/FR-007)
 
 ### Schema — cohorts
 
-- [ ] T012 Create migration `supabase/migrations/<ts>_cohorts.sql`: `cohorts`,
+- [X] T012 Create migration `supabase/migrations/<ts>_cohorts.sql`: `cohorts`,
   `cohort_enrollments` (with `share_signals boolean DEFAULT true`), `cohort_teachers`,
   plus `app_grant_ytt_completion(cohort_id uuid, user_id uuid)` idempotent `SECURITY
   DEFINER` RPC (data-model.md, docs/design/002-schema.md §C)
 
 ### Schema — entitlements & billing
 
-- [ ] T013 Create migration `supabase/migrations/<ts>_entitlements_billing.sql`:
+- [X] T013 Create migration `supabase/migrations/<ts>_entitlements_billing.sql`:
   `plan_features`, `stripe_customers`, `subscriptions`, `seat_assignments`,
   `entitlement_grants`, `stripe_events` (RLS enabled, zero policies) (data-model.md,
   docs/design/002-schema.md §C)
-- [ ] T014 Add `app_entitlements(user_id uuid)` `SECURITY DEFINER` RPC in the same
+- [X] T014 Add `app_entitlements(user_id uuid)` `SECURITY DEFINER` RPC in the same
   migration — union of subscription/seat/grant, raises `insufficient_privilege` unless
   `user_id = (SELECT auth.uid())` or caller is `service_role` (contracts/entitlements-api.md,
   research.md item 6 — the escalation trap)
 
 ### Generated types & drift check
 
-- [ ] T015 [P] Run `supabase gen types typescript` and commit output as
+- [X] T015 [P] Run `supabase gen types typescript` and commit output as
   `src/types/database.ts`
-- [ ] T016 [P] Create `scripts/db-types-check.sh` — regenerates types against
+- [X] T016 [P] Create `scripts/db-types-check.sh` — regenerates types against
   locally-applied migrations, fails on diff; wire into CI (research.md item 5)
 
 ### Supabase clients
 
-- [ ] T017 [P] Create `src/lib/supabase/client.ts` — browser client
-- [ ] T018 [P] Create `src/lib/supabase/server.ts` — server client bound to request
+- [X] T017 [P] Create `src/lib/supabase/client.ts` — browser client
+- [X] T018 [P] Create `src/lib/supabase/server.ts` — server client bound to request
   cookies, using `getUser()` semantics
-- [ ] T019 [P] Create `src/lib/supabase/service.ts` — service-role client,
+- [X] T019 [P] Create `src/lib/supabase/service.ts` — service-role client,
   `persistSession: false`, module-level `typeof window !== 'undefined'` throw
 
 ### Session refresh
 
-- [ ] T020 Create `src/proxy.ts` (NOT `middleware.ts` — research.md item 2): calls
+- [X] T020 Create `src/proxy.ts` (NOT `middleware.ts` — research.md item 2): calls
   `getUser()`, returns the same mutated `response` object, matches all app routes
   requiring session awareness
 
 ### Encryption
 
-- [ ] T021 [P] Create `src/lib/crypto.ts` — AES-256-GCM versioned envelope (`v1:`
+- [X] T021 [P] Create `src/lib/crypto.ts` — AES-256-GCM versioned envelope (`v1:`
   prefix), ported from NextMove's `crypto.ts` (research.md item 7)
 
 ### RLS-assertion CI harness
 
-- [ ] T022 Create `scripts/verify-migrations.sh` — applies every migration from empty
+- [X] T022 Create `scripts/verify-migrations.sh` — applies every migration from empty
   to a scratch Postgres, then runs assertions as `SET ROLE authenticated` with a forged
   `request.jwt.claim.sub`: cross-org isolation, last-owner-removal `restrict_violation`,
   self-escalation `insufficient_privilege`, `app_entitlements('<other-user>')` raises
   `insufficient_privilege`, bare `SELECT count(*) FROM memberships` does NOT raise `42P17`
   (docs/design/002-schema.md §A/§D, plan.md Verification section)
-- [ ] T023 [P] Wire `scripts/verify-migrations.sh` and `scripts/db-types-check.sh` into
-  `.github/workflows/ci.yml` as required (non-advisory) checks
+- [X] T023 [P] Wire `scripts/verify-migrations.sh` and `scripts/db-types-check.sh` into
+  `.github/workflows/ci.yml` as required (non-advisory) checks — the `db-verify` and
+  `db-types-check` jobs (`.github/workflows/ci.yml`)
 
 **Checkpoint**: `npx supabase db reset` applies cleanly; `scripts/verify-migrations.sh`
 passes; `src/types/database.ts` has zero drift. Per-story implementation may now begin.
@@ -168,25 +169,25 @@ organization/teacher/billing-seat references.
 
 ### Tests for User Story 1
 
-- [x] T024 [P] [US1] RLS assertion: a user with zero memberships can read/write their own
+- [X] T024 [P] [US1] RLS assertion: a user with zero memberships can read/write their own
   `profiles` row and nothing else, in `scripts/verify-migrations.sh`
-- [x] T025 [P] [US1] Component test for the claim-existing-flows prompt appearing exactly
+- [X] T025 [P] [US1] Component test for the claim-existing-flows prompt appearing exactly
   once in `tests/unit/onboarding/claim-flow-prompt.test.tsx`
-- [x] T026 [P] [US1] E2E: sign up with no pre-existing flows → land in a fully personal,
+- [X] T026 [P] [US1] E2E: sign up with no pre-existing flows → land in a fully personal,
   org-free experience, in `tests/e2e-qa/auth-org-invite.spec.ts` (first scenario in this
   spec file; later phases extend the same file)
 
 ### Implementation for User Story 1
 
-- [x] T027 [US1] Create `src/app/auth/callback/route.ts` — PKCE `exchangeCodeForSession`
+- [X] T027 [US1] Create `src/app/auth/callback/route.ts` — PKCE `exchangeCodeForSession`
   + open-redirect guard on `next` (contracts/auth-flows.md)
-- [x] T028 [US1] Create `src/app/auth/confirm/route.ts` — OTP `verifyOtp({token_hash,
+- [X] T028 [US1] Create `src/app/auth/confirm/route.ts` — OTP `verifyOtp({token_hash,
   type})` (contracts/auth-flows.md)
-- [x] T029 [US1] Create `src/app/auth/sign-in/page.tsx` — Google + email sign-in UI
-- [x] T030 [US1] Implement the "claim your existing flows" prompt (new component under
+- [X] T029 [US1] Create `src/app/auth/sign-in/page.tsx` — Google + email sign-in UI
+- [X] T030 [US1] Implement the "claim your existing flows" prompt (new component under
   `src/app/onboarding/` or equivalent) — reads existing IndexedDB v1 flows, offers
   explicit claim/decline, never silent (FR-020, Appendix E of the platform-pivot plan)
-- [x] T031 [US1] Ensure every personal-feature surface (compose, read, poses) renders
+- [X] T031 [US1] Ensure every personal-feature surface (compose, read, poses) renders
   identically whether or not the signed-in user belongs to any organization — audit and
   fix any component that assumes an org exists
 
@@ -204,24 +205,29 @@ account, confirm correct role and full cross-org isolation.
 
 ### Tests for User Story 2
 
-- [ ] T032 [P] [US2] RLS assertion: a member of Org A gets zero rows querying Org B's
+- [X] T032 [P] [US2] RLS assertion: a member of Org A gets zero rows querying Org B's
   `memberships`/`invitations`, in `scripts/verify-migrations.sh`
-- [ ] T033 [P] [US2] RLS assertion: an invitation has zero `SELECT` visibility for any
+- [X] T033 [P] [US2] RLS assertion: an invitation has zero `SELECT` visibility for any
   role prior to acceptance, in `scripts/verify-migrations.sh`
-- [ ] T034 [P] [US2] Unit test for `app_accept_invitation` role-union-not-duplicate
-  behavior in `tests/integration/rls/invitations.test.ts`
-- [ ] T035 [P] [US2] Unit test for last-owner-removal and self-escalation trigger
-  rejections in `tests/integration/rls/org-escalation.test.ts`
+- [X] T034 [P] [US2] Unit test for `app_accept_invitation` role-union-not-duplicate
+  behavior — implemented inline in `scripts/verify-migrations.sh` (PASS T034) rather than
+  as the separately-named `tests/integration/rls/invitations.test.ts`; the
+  `tests/integration/rls/` path was never created, everything landed in the shared harness
+  instead
+- [X] T035 [P] [US2] Unit test for last-owner-removal and self-escalation trigger
+  rejections — implemented inline in `scripts/verify-migrations.sh` (PASS T035) rather than
+  as the separately-named `tests/integration/rls/org-escalation.test.ts`; same shared-harness
+  note as T034
 - [ ] T036 [US2] E2E: create org → invite → accept (as new signup) → verify role and
   isolation, extending `tests/e2e-qa/auth-org-invite.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T037 [US2] Create `src/app/org/new/page.tsx` — organization creation UI, calls
+- [X] T037 [US2] Create `src/app/org/new/page.tsx` — organization creation UI, calls
   `app_create_organization`
-- [ ] T038 [US2] Create `src/app/org/[orgId]/members/page.tsx` — membership list + invite
+- [X] T038 [US2] Create `src/app/org/[orgId]/members/page.tsx` — membership list + invite
   UI, calls the create-invitation application logic (contracts/org-membership-api.md)
-- [ ] T039 [US2] Create `src/app/org/invitations/accept/page.tsx` — acceptance landing
+- [X] T039 [US2] Create `src/app/org/invitations/accept/page.tsx` — acceptance landing
   page, calls `app_accept_invitation`, handles the generic-failure case per FR-005
 - [ ] T040 [US2] Implement invitation-creation server logic (route handler or server
   action) generating the raw token, storing only `sha256(token)`, sending the email link
@@ -254,9 +260,11 @@ membership/role are mutually visible.
 
 ### Implementation for User Story 5
 
-- [ ] T044 [US5] Confirm `src/app/org/[orgId]/members/page.tsx` (from T038) renders only
+- [X] T044 [US5] Confirm `src/app/org/[orgId]/members/page.tsx` (from T038) renders only
   `profile_cards` data (name) + membership role/status — audit for any accidental join
-  against `profiles` or flow data
+  against `profiles` or flow data — confirmed: `OrgMembersClient.tsx` queries
+  `memberships` + `profile_cards` only, `profile_cards` chosen explicitly per its own
+  comment at :36-37; no join against `profiles`
 - [ ] T045 [US5] Add a `COMMENT ON TABLE` (or migration-adjacent doc note) on every
   future-content-table placeholder reminding implementers of the §B structural rule
   before `005` adds `practice_reflections`
@@ -347,8 +355,9 @@ cancel and confirm access continues to period end.
 - [ ] T065 Update `CLAUDE.md` if any file path in this feature's Project Structure
   changed during implementation
 - [ ] T066 Full run of `npm run test:coverage`, `npm run test:rls`
-  (`scripts/verify-migrations.sh`), `npm run db:types:check`, and `npm run test:e2e` —
-  all green before merge
+  (`scripts/verify-migrations.sh`), `bash scripts/db-types-check.sh` (CI's actual
+  drift-check invocation — `npm run db:types` runs `db-types-local.sh`, a different
+  script, not the drift check), and `npm run test:e2e` — all green before merge
 
 ---
 
