@@ -80,3 +80,12 @@ All four routines:
 - Observe/implement split: `autoobs` only observes, records, and escalates —
   it never edits application code or runs `npm run datadog:apply`. Fixing a
   finding is `autodev`'s job.
+- No routine may attribute shipped work to another routine without that
+  routine's own first-party artifact (a `routine-log.md` line naming it, plus
+  the dated artifact its own spec declares). Reconstructing "did X run" from
+  GitHub PR/issue state and reporting it as fact is exactly the failure mode
+  this guards against — it happened on 2026-09-21/22 (`#48`) and corrupted two
+  days of `autoretro` output before a manual intake caught it. `npm run
+  validate:routine-log` (`scripts/validate-routine-log.mjs`) enforces the
+  detectable half of this in CI; a routine crediting work with no artifact to
+  back it is still a spec violation even when the script cannot see it yet.

@@ -51,8 +51,8 @@ banner/owner-digest — not the carry slots.
   git checkout main && git pull --ff-only origin main
   git commit -m "retro: autoretro YYYY-MM-DD — ..."
   git push origin main
-  test "$(git symbolic-ref --short HEAD)" = "main" || echo "WRONG BRANCH — abort, do not switch away"
-  test "$(git rev-parse origin/main)" = "$(git rev-parse HEAD)" || echo "PUSH FAILED"
+  test "$(git symbolic-ref --short HEAD)" = "main" || { echo "WRONG BRANCH — abort, do not switch away"; exit 1; }
+  test "$(git rev-parse origin/main)" = "$(git rev-parse HEAD)" || { echo "PUSH FAILED"; exit 1; }
   ```
   Never commit to a `claude/*` branch. Never force-push main. End the session
   with HEAD on `main` — do not `git checkout claude/*` afterward. If git
@@ -67,19 +67,38 @@ banner/owner-digest — not the carry slots.
   human-merged PRs.
 - Today's dev reflections —
   `docs/planning/retro/YYYY-MM-DD-reflection-*.md`.
+- Today's `/autodev` handoff — `docs/planning/autopm/autodev-handoff-<today>.md`.
+  This is `/autodev`'s primary structured input (`autodev.md`'s handoff
+  section) and therefore the routine's own first-party evidence of what it
+  attempted — read it before inferring anything about `/autodev` from GitHub
+  PR/issue state.
 - Today's observation digest — `docs/observation/autoobs/<today>.md` (did
   production stay healthy while we shipped?).
 - Today's `routine-log.md` entries (`/autopm`, `/autodev`).
 - `DECISIONS.md` (repo root) — anything ratified today that changes tomorrow's
   priorities.
 
-**Completion-barrier check (do this before reporting "shipped 0"):** Read
-`docs/planning/routine-log.md` and look for a `/autodev` line with today's
-date. If **no `/autodev` line exists**, do NOT assert "autodev silent" or
-"shipped 0." Instead: label the retro `dev-incomplete`, report "autodev had
-not committed by end of day — dev output excluded from this retro," and add
-a carry-forward item: "verify /autodev ran and recover its artifacts." Dev
-output simply hasn't landed yet; it is not evidence of a failure.
+**Completion-barrier check — bidirectional (do this before reporting *any*
+shipped-work verdict, zero or nonzero):**
+
+1. **Before reporting "shipped 0":** read `docs/planning/routine-log.md` and
+   look for a `/autodev` line with today's date. If **no `/autodev` line
+   exists**, do NOT assert "autodev silent" or "shipped 0." Instead: label
+   the retro `dev-incomplete`, report "autodev had not committed by end of
+   day — dev output excluded from this retro," and add a carry-forward item:
+   "verify /autodev ran and recover its artifacts." Dev output simply hasn't
+   landed yet; it is not evidence of a failure.
+2. **Before crediting *any* routine with shipped work:** confirm that
+   routine's own first-party artifact exists for today (its `routine-log.md`
+   line, plus the dated artifact its spec declares —
+   `docs/planning/routines.md`'s File layout convention lists them). A merged
+   PR or closed issue is not, by itself, evidence that a specific routine
+   produced it — it may have been a human-driven session. Inferring "`/autodev`
+   shipped this" from GitHub state alone, without that artifact, is the exact
+   failure this barrier exists to catch (see `#48`: it went unbadged for two
+   days and corrupted both the retro's top-friction finding and the CEO
+   brief). If the artifact is missing, credit the work as unattributed/human
+   rather than to the routine.
 
 ## Execution
 
