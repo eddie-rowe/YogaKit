@@ -34,12 +34,14 @@ CI a few times over ~10 min max; if not green, label auto/dev-failure with the
 failing check names and move on.
 
 Write each issue's reflection to docs/planning/retro/YYYY-MM-DD-reflection-<issue>.md
-(not .claude/). Commit the handoff file + reflections directly to main:
+(not .claude/) and commit it on that issue's own feature branch, alongside the code
+change — per autodev.md Step 3, the spec, which wins over this prompt on conflict.
+Only the handoff file goes to main directly:
   git checkout main && git pull --ff-only origin main
   git commit -m "dev: autodev sweep YYYY-MM-DD — N PRs merged; ..."
   git push origin main
-  test "$(git symbolic-ref --short HEAD)" = "main" || echo "WRONG BRANCH — abort"
-  test "$(git rev-parse origin/main)" = "$(git rev-parse HEAD)" || echo "PUSH FAILED"
+  test "$(git symbolic-ref --short HEAD)" = "main" || { echo "WRONG BRANCH — abort"; exit 1; }
+  test "$(git rev-parse origin/main)" = "$(git rev-parse HEAD)" || { echo "PUSH FAILED"; exit 1; }
 After committing the handoff, END the session. Do not poll or "stand by".
 
 Guardrails: Never commit routine artifacts to a claude/*/feature branch. End with HEAD

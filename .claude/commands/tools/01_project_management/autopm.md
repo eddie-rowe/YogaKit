@@ -49,8 +49,8 @@ label the issue `auto/needs-human`, and move on.
 git checkout main && git pull --ff-only origin main
 git commit -m "pm: autopm sweep YYYY-MM-DD — ..."
 git push origin main
-test "$(git symbolic-ref --short HEAD)" = "main" || echo "WRONG BRANCH — abort, do not switch away"
-test "$(git rev-parse origin/main)" = "$(git rev-parse HEAD)" || echo "PUSH FAILED — stop here"
+test "$(git symbolic-ref --short HEAD)" = "main" || { echo "WRONG BRANCH — abort, do not switch away"; exit 1; }
+test "$(git rev-parse origin/main)" = "$(git rev-parse HEAD)" || { echo "PUSH FAILED — stop here"; exit 1; }
 ```
 Never `git push --force` / `--force-with-lease` on `main`. End the session
 with HEAD on `main` — do not `git checkout claude/*` afterward. If git warns
