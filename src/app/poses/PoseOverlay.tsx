@@ -35,6 +35,7 @@ export default function PoseOverlay({ pose, onClose }: Props) {
   const { layer, selectLayer, customFields, toggleCustomField } = useDetailLayer()
   const [closing, setClosing] = useState(false)
   const [dragY, setDragY] = useState(0)
+  const [dragging, setDragging] = useState(false)
   const dragState = useRef<{ startY: number; dragging: boolean } | null>(null)
 
   function requestClose() {
@@ -55,6 +56,7 @@ export default function PoseOverlay({ pose, onClose }: Props) {
 
   function onPointerDown(e: React.PointerEvent) {
     dragState.current = { startY: e.clientY, dragging: true }
+    setDragging(true)
   }
 
   function onPointerMove(e: React.PointerEvent) {
@@ -66,6 +68,7 @@ export default function PoseOverlay({ pose, onClose }: Props) {
   function onPointerUp() {
     if (!dragState.current?.dragging) return
     dragState.current.dragging = false
+    setDragging(false)
     if (dragY > SWIPE_DISMISS_THRESHOLD) {
       requestClose()
     } else {
@@ -89,7 +92,7 @@ export default function PoseOverlay({ pose, onClose }: Props) {
           borderColor: 'var(--border)',
           color: 'var(--foreground)',
           transform: dragY ? `translateY(${dragY}px)` : undefined,
-          transition: dragState.current?.dragging ? 'none' : 'transform var(--duration-fast) var(--ease-standard)',
+          transition: dragging ? 'none' : 'transform var(--duration-fast) var(--ease-standard)',
         }}
       >
         <div className="max-w-5xl mx-auto px-4 py-6">

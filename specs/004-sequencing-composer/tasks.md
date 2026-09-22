@@ -315,7 +315,8 @@ npm test                       # 301 on main; must only rise
 npx vitest run --coverage      # friction, validator-lite, tier1-report, copy-lint all at 100
 npm run lint:copy              # blocking; must stay green
 npm run validate:poses         # 67 valid, 67/67 Tier-1
-npm run lint                   # must not rise above 29 problems
+npm run lint                   # must not rise above 11 problems, 0 errors — blocking in CI
+                                # as of 007's plan (ci.yml's Lint step lost its `|| true`)
 npm run build                  # /poses ○, all 67 /poses/[slug] ●
 bash scripts/verify-migrations.sh   # from Phase 2 on
 npm run dev &                  # playwright.config.qa.ts has no webServer
