@@ -17,6 +17,12 @@ const eslintConfig = defineConfig([
     // happened to have been run — which quietly undermines the "lint must not rise"
     // check this repo leans on.
     "coverage/**",
+    // Stale git worktrees (.claude/worktrees/) carry their own Next/Turbopack
+    // build output. Gitignored but not root-anchored patterns like ".next/**"
+    // don't match nested paths, so a leftover worktree build silently inflated
+    // `npm run lint` from 13 to 36,690 problems — same failure class as
+    // coverage/** above, just nested a level deeper. See #53.
+    ".claude/worktrees/**",
   ]),
   {
     // The service-role Supabase client (src/lib/supabase/service.ts) bypasses RLS
