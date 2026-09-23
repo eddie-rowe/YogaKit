@@ -188,35 +188,17 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
     }))
   }
 
-  // Preserves the list container's scroll position across a reorder (FR-035, T048):
-  // a reorder key-stably re-renders the same DOM nodes in a new order, which by
-  // itself doesn't move scroll — but the *page* can still jump when the reordered
-  // item's on-screen position shifts under a fixed scroll offset (e.g. moving the
-  // last item to the top pushes everything below it up). Capturing and restoring
-  // window.scrollY around the state update cancels that shift.
-  function withScrollPreserved(fn: () => void) {
-    if (typeof window === 'undefined') {
-      fn()
-      return
-    }
-    const y = window.scrollY
-    fn()
-    requestAnimationFrame(() => window.scrollTo(0, y))
-  }
-
   // Builds from f.items (the render-scoped updater's own argument), not the
   // sortedItems memo — matches removeItem, and avoids the stale-closure bug where a
   // rapid second reorder would silently operate on an out-of-date order.
   function moveItem(index: number, direction: -1 | 1) {
-    withScrollPreserved(() => {
-      updateFlow(f => {
-        const items = [...f.items].sort((a, b) => a.order - b.order)
-        const target = index + direction
-        if (target < 0 || target >= items.length) return f
-        ;[items[index], items[target]] = [items[target], items[index]]
-        const reordered = items.map((i, idx) => ({ ...i, order: idx }))
-        return { ...f, items: reordered, updatedAt: nowIso() }
-      })
+    updateFlow(f => {
+      const items = [...f.items].sort((a, b) => a.order - b.order)
+      const target = index + direction
+      if (target < 0 || target >= items.length) return f
+      ;[items[index], items[target]] = [items[target], items[index]]
+      const reordered = items.map((i, idx) => ({ ...i, order: idx }))
+      return { ...f, items: reordered, updatedAt: nowIso() }
     })
   }
 
@@ -232,15 +214,13 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
     if (!over || active.id === over.id) return
-    withScrollPreserved(() => {
-      updateFlow(f => {
-        const items = [...f.items].sort((a, b) => a.order - b.order)
-        const oldIndex = items.findIndex(i => i.id === active.id)
-        const newIndex = items.findIndex(i => i.id === over.id)
-        if (oldIndex === -1 || newIndex === -1) return f
-        const reordered = arrayMove(items, oldIndex, newIndex).map((i, idx) => ({ ...i, order: idx }))
-        return { ...f, items: reordered, updatedAt: nowIso() }
-      })
+    updateFlow(f => {
+      const items = [...f.items].sort((a, b) => a.order - b.order)
+      const oldIndex = items.findIndex(i => i.id === active.id)
+      const newIndex = items.findIndex(i => i.id === over.id)
+      if (oldIndex === -1 || newIndex === -1) return f
+      const reordered = arrayMove(items, oldIndex, newIndex).map((i, idx) => ({ ...i, order: idx }))
+      return { ...f, items: reordered, updatedAt: nowIso() }
     })
     haptics.success()
   }
