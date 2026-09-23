@@ -6,7 +6,14 @@ import { X } from 'lucide-react'
 import type { Pose } from '@/lib/pose-types'
 import type { FlowItem, LayerName } from '@/lib/flow/types'
 import { resolveItemName } from '@/lib/pose-library/display-name'
+import { describeEnergeticDirection } from '@/lib/pose-library/energetic-direction'
 import { SECONDS_PER_BREATH } from '@/lib/flow/duration'
+
+// The one sanctioned non-accent color for pose-content chips (guardrails §2): the
+// same chakra hue as CATEGORY_HUES.chakras in src/components/poses/BodyDiagram.tsx,
+// applied via inline style rather than a Tailwind utility class, per that file's
+// pattern. T046 replaces the ad-hoc bg-purple-50/bg-violet-50 chips with this.
+const CHAKRA_HUE = { background: '#faf5ff', color: '#7e22ce' }
 
 interface SeamInfo {
   tier: number
@@ -56,7 +63,7 @@ export default function ComposeFlowItem({
       <div
         ref={setNodeRef}
         style={style}
-        data-testid={`compose-item-${index}`}
+        data-testid={`compose-row-${index}`}
         data-dragging={isDragging}
         className={`kk-card kk-drag-item px-3 py-2.5 flex flex-col gap-2 ${stillness ? 'kk-stillness' : ''}`}
       >
@@ -159,7 +166,7 @@ export default function ComposeFlowItem({
               </span>
             )}
             {pose.tissue_depth && (
-              <span className="bg-violet-50 text-violet-700 px-2 py-1 rounded capitalize">
+              <span className="px-2 py-1 rounded capitalize" style={CHAKRA_HUE}>
                 {pose.tissue_depth} tissue
               </span>
             )}
@@ -168,9 +175,11 @@ export default function ComposeFlowItem({
         {pose && layer === 'expert' && (
           <div data-testid={`compose-item-energetics-${index}`} className="flex flex-wrap gap-1 text-xs">
             {pose.energetic_quality.map(eq => (
-              <span key={eq} className="px-1.5 py-0.5 bg-purple-50 text-purple-700 rounded capitalize">{eq}</span>
+              <span key={eq} className="px-1.5 py-0.5 rounded capitalize" style={CHAKRA_HUE}>{eq}</span>
             ))}
-            <span className="px-1.5 py-0.5 bg-purple-50 text-purple-700 rounded capitalize">{pose.energetic_direction}</span>
+            <span className="px-1.5 py-0.5 rounded capitalize" style={CHAKRA_HUE}>
+              {describeEnergeticDirection(pose.energetic_direction)}
+            </span>
           </div>
         )}
       </div>

@@ -17,11 +17,13 @@
  * constitution). Because replay is a visual reconstruction of the screen, default
  * `mask` privacy is not enough on its own for the app's few free-text fields — a
  * private flow title, phase name, or per-pose note is exactly the kind of "flow/note
- * content" the constitution says telemetry must never carry. Those three inputs
- * (src/app/compose/ComposeClient.tsx, src/app/compose/ComposeFlowItem.tsx) carry an
- * explicit `data-dd-privacy="mask-user-input"` so they stay masked in both replay and
- * action/input tracking even if a future page changes the default. Any new free-text
- * input added to the composer (or elsewhere) needs the same attribute.
+ * content" the constitution says telemetry must never carry. Those inputs — now split
+ * across src/components/compose/ComposeHeader.tsx (title), ComposePoseSearch.tsx
+ * (search), ComposeFlowItem.tsx (per-pose note), and ComposePhases.tsx (phase name)
+ * since 004 US4's decomposition of the former ComposeClient.tsx/ComposeFlowItem.tsx —
+ * carry an explicit `data-dd-privacy="mask-user-input"` so they stay masked in both
+ * replay and action/input tracking even if a future page changes the default. Any new
+ * free-text input added to the composer (or elsewhere) needs the same attribute.
  *
  * `@datadog/browser-rum-nextjs`'s `nextjsPlugin()` is what makes RUM App-Router-aware:
  * plain `@datadog/browser-rum` sees a client-side route change as an unrelated event,

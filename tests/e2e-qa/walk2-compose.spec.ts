@@ -19,9 +19,9 @@ test('Walk 2: Build a short class from scratch', async ({ page }) => {
   await addPose('savasana')
   await page.screenshot({ caret: 'initial', path: 'qa-screenshots/06-compose-items-added.png' })
 
-  await expect(page.getByTestId('compose-item-0')).toBeVisible()
-  await expect(page.getByTestId('compose-item-1')).toBeVisible()
-  await expect(page.getByTestId('compose-item-2')).toBeVisible()
+  await expect(page.getByTestId('compose-row-0')).toBeVisible()
+  await expect(page.getByTestId('compose-row-1')).toBeVisible()
+  await expect(page.getByTestId('compose-row-2')).toBeVisible()
 
   // set breaths on item 0, seconds on item 1
   const measure0 = page.getByTestId('compose-item-measure-0')
