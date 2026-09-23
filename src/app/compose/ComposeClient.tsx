@@ -3,31 +3,30 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  DndContext,
   PointerSensor,
   KeyboardSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
 } from '@dnd-kit/core'
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  arrayMove,
-  sortableKeyboardCoordinates,
-} from '@dnd-kit/sortable'
+import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import type { Pose } from '@/lib/pose-types'
 import type { Flow, FlowItem, LayerName, Phase } from '@/lib/flow/types'
 import { isStillnessNode } from '@/lib/flow/types'
-import { resolveDisplayName, resolveItemName } from '@/lib/pose-library/display-name'
 import { allSearchableNames } from '@/lib/pose-library/display-name'
 import { buildFrictionMatrix } from '@/lib/friction'
 import { validateLite } from '@/lib/validator/lite'
 import { saveFlow, getFlow, getAllFlows } from '@/lib/storage/flow-store'
 import { queueUpsert } from '@/lib/storage/sync'
 import { CURRENT_SCHEMA_VERSION } from '@/lib/storage/krama-file'
-import { formatDuration, totalSeconds } from '@/lib/flow/duration'
-import ComposeFlowItem from './ComposeFlowItem'
+import { totalSeconds } from '@/lib/flow/duration'
+import ComposeHeader from '@/components/compose/ComposeHeader'
+import ComposeLayerChips from '@/components/compose/ComposeLayerChips'
+import ComposePoseSearch from '@/components/compose/ComposePoseSearch'
+import ComposeToolbar from '@/components/compose/ComposeToolbar'
+import ComposeWarnings from '@/components/compose/ComposeWarnings'
+import ComposeFlowList from '@/components/compose/ComposeFlowList'
+import ComposePhases from '@/components/compose/ComposePhases'
 import * as haptics from '@/lib/haptics'
 
 interface Props {
@@ -56,6 +55,11 @@ function emptyFlow(): Flow {
   }
 }
 
+// ComposeClient is the orchestrator (004 T043): it owns all state and handlers, and
+// composes the presentational/logic pieces under src/components/compose/ via props —
+// same pattern as src/components/poses/BodyDiagram.tsx composing BodySvg.tsx. Every
+// data-testid that used to live inline here now lives in one of those components,
+// byte-identical (FR-033, SC-011).
 export default function ComposeClient({ poses, builtins, flowId }: Props) {
   const router = useRouter()
   const poseBySlug = useMemo(() => new Map(poses.map(p => [p.slug, p])), [poses])
@@ -184,17 +188,35 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
     }))
   }
 
+  // Preserves the list container's scroll position across a reorder (FR-035, T048):
+  // a reorder key-stably re-renders the same DOM nodes in a new order, which by
+  // itself doesn't move scroll — but the *page* can still jump when the reordered
+  // item's on-screen position shifts under a fixed scroll offset (e.g. moving the
+  // last item to the top pushes everything below it up). Capturing and restoring
+  // window.scrollY around the state update cancels that shift.
+  function withScrollPreserved(fn: () => void) {
+    if (typeof window === 'undefined') {
+      fn()
+      return
+    }
+    const y = window.scrollY
+    fn()
+    requestAnimationFrame(() => window.scrollTo(0, y))
+  }
+
   // Builds from f.items (the render-scoped updater's own argument), not the
   // sortedItems memo — matches removeItem, and avoids the stale-closure bug where a
   // rapid second reorder would silently operate on an out-of-date order.
   function moveItem(index: number, direction: -1 | 1) {
-    updateFlow(f => {
-      const items = [...f.items].sort((a, b) => a.order - b.order)
-      const target = index + direction
-      if (target < 0 || target >= items.length) return f
-      ;[items[index], items[target]] = [items[target], items[index]]
-      const reordered = items.map((i, idx) => ({ ...i, order: idx }))
-      return { ...f, items: reordered, updatedAt: nowIso() }
+    withScrollPreserved(() => {
+      updateFlow(f => {
+        const items = [...f.items].sort((a, b) => a.order - b.order)
+        const target = index + direction
+        if (target < 0 || target >= items.length) return f
+        ;[items[index], items[target]] = [items[target], items[index]]
+        const reordered = items.map((i, idx) => ({ ...i, order: idx }))
+        return { ...f, items: reordered, updatedAt: nowIso() }
+      })
     })
   }
 
@@ -210,13 +232,15 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
     if (!over || active.id === over.id) return
-    updateFlow(f => {
-      const items = [...f.items].sort((a, b) => a.order - b.order)
-      const oldIndex = items.findIndex(i => i.id === active.id)
-      const newIndex = items.findIndex(i => i.id === over.id)
-      if (oldIndex === -1 || newIndex === -1) return f
-      const reordered = arrayMove(items, oldIndex, newIndex).map((i, idx) => ({ ...i, order: idx }))
-      return { ...f, items: reordered, updatedAt: nowIso() }
+    withScrollPreserved(() => {
+      updateFlow(f => {
+        const items = [...f.items].sort((a, b) => a.order - b.order)
+        const oldIndex = items.findIndex(i => i.id === active.id)
+        const newIndex = items.findIndex(i => i.id === over.id)
+        if (oldIndex === -1 || newIndex === -1) return f
+        const reordered = arrayMove(items, oldIndex, newIndex).map((i, idx) => ({ ...i, order: idx }))
+        return { ...f, items: reordered, updatedAt: nowIso() }
+      })
     })
     haptics.success()
   }
@@ -246,6 +270,17 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
       }
       return { ...f, phases: [...f.phases, phase], updatedAt: nowIso() }
     })
+  }
+
+  function renamePhase(phaseId: string, name: string) {
+    updateFlow(f => ({
+      ...f,
+      phases: f.phases.map(p => (p.id === phaseId ? { ...p, name } : p)),
+    }))
+  }
+
+  function assignItemToPhase(itemId: string, phaseId: string) {
+    updateItem(itemId, { phaseId })
   }
 
   async function handleSave() {
@@ -301,175 +336,47 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
   return (
     <div className="kk-page">
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
-        <div className="flex items-center justify-between gap-3">
-          <input
-            data-testid="compose-title-input"
-            data-dd-privacy="mask-user-input"
-            value={flow.title}
-            onChange={e => updateFlow(f => ({ ...f, title: e.target.value, updatedAt: nowIso() }))}
-            className="kk-input px-3 py-2 text-lg font-serif font-medium flex-1"
-            placeholder="Name this flow"
-          />
-          <button
-            onClick={handleSave}
-            disabled={saveState === 'saving'}
-            data-testid="compose-save-button"
-            className="kk-btn px-4 py-2 text-sm font-medium"
-          >
-            {saveState === 'saved' && 'Saved'}
-            {saveState === 'dirty' && 'Save'}
-            {saveState === 'saving' && 'Saving…'}
-            {saveState === 'error' && 'Retry save'}
-          </button>
-        </div>
-        {saveState === 'error' && (
-          <div data-testid="compose-save-error" className="kk-warning px-3 py-2 text-sm">
-            Couldn&apos;t save. Check available storage and try again. Your edits are still on
-            this screen.
-          </div>
-        )}
+        <ComposeHeader
+          title={flow.title}
+          onTitleChange={title => updateFlow(f => ({ ...f, title, updatedAt: nowIso() }))}
+          saveState={saveState}
+          onSave={handleSave}
+        />
 
-        {/* Layer chips */}
-        <div className="flex gap-1.5">
-          {LAYERS.map(l => (
-            <button
-              key={l}
-              data-testid={`compose-layer-${l}`}
-              data-active={layer === l}
-              onClick={() => setLayerAndPersist(l)}
-              className="kk-chip px-3 py-1 text-xs capitalize"
-            >
-              {l}
-            </button>
-          ))}
-        </div>
+        <ComposeLayerChips layer={layer} onSelect={setLayerAndPersist} />
 
-        {/* Search + add */}
-        <div className="relative">
-          <input
-            data-testid="compose-search-input"
-            data-dd-privacy="mask-user-input"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search poses to add…"
-            className="kk-input w-full px-3 py-2"
-          />
-          {searchResults.length > 0 && (
-            <div className="kk-card absolute z-10 mt-1 w-full max-h-72 overflow-y-auto shadow-lg">
-              {searchResults.map(p => (
-                <button
-                  key={p.slug}
-                  data-testid={`compose-add-pose-${p.slug}`}
-                  onClick={() => addPose(p)}
-                  className="w-full text-left px-3 py-2.5 text-sm hover:opacity-80 transition-opacity duration-150 flex items-center justify-between"
-                >
-                  <span>{resolveDisplayName(p)}</span>
-                  <span className="text-xs" style={{ color: 'var(--muted)' }}>{p.sanskrit}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <ComposePoseSearch
+          search={search}
+          onSearchChange={setSearch}
+          results={searchResults}
+          onAddPose={addPose}
+        />
 
-        <div className="flex items-center justify-between">
-          <div className="flex gap-2">
-            <button onClick={addStillness} className="kk-btn-outline px-3 py-1.5 text-sm">
-              + Add stillness
-            </button>
-            <button onClick={addPhase} className="kk-btn-outline px-3 py-1.5 text-sm">
-              + Add phase
-            </button>
-          </div>
-          <div data-testid="compose-total-duration" className="text-sm font-medium">
-            Total: {formatDuration(total)}
-          </div>
-        </div>
+        <ComposeToolbar onAddStillness={addStillness} onAddPhase={addPhase} totalSeconds={total} />
 
         {/* Validator warnings — never block save */}
-        {warnings.map(w => (
-          <div
-            key={`${w.code}-${w.itemId ?? 'flow'}`}
-            data-testid={`validator-warning-${w.code}`}
-            className="kk-warning px-3 py-2 text-sm"
-          >
-            {w.message}
-          </div>
-        ))}
+        <ComposeWarnings warnings={warnings} />
 
-        {/* Flow items */}
-        <div className="space-y-1">
-          {sortedItems.length === 0 && (
-            <p className="text-sm text-center py-8" style={{ color: 'var(--muted)' }}>
-              Search above to add your first pose.
-            </p>
-          )}
-          <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-            <SortableContext items={sortedItems.map(i => i.id)} strategy={verticalListSortingStrategy}>
-              {sortedItems.map((item, index) => {
-                const pose = poseBySlug.get(item.poseSlug)
-                const stillness = isStillnessNode(item.poseSlug)
-                const next = sortedItems[index + 1]
-                const seam = next && pose
-                  ? frictionMatrix[pose.slug]?.[next.poseSlug]
-                  : undefined
-                return (
-                  <ComposeFlowItem
-                    key={item.id}
-                    item={item}
-                    index={index}
-                    pose={pose}
-                    stillness={stillness}
-                    layer={layer}
-                    isFirst={index === 0}
-                    isLast={index === sortedItems.length - 1}
-                    next={next}
-                    seam={seam}
-                    onMove={moveItem}
-                    onUpdate={updateItem}
-                    onRemove={removeItem}
-                  />
-                )
-              })}
-            </SortableContext>
-          </DndContext>
-        </div>
+        <ComposeFlowList
+          items={sortedItems}
+          poseBySlug={poseBySlug}
+          frictionMatrix={frictionMatrix}
+          layer={layer}
+          sensors={sensors}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onMove={moveItem}
+          onUpdate={updateItem}
+          onRemove={removeItem}
+        />
 
-        {/* Phases */}
-        {flow.phases.length > 0 && (
-          <div className="space-y-2 pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
-            <h2 className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--muted)' }}>Phases</h2>
-            {flow.phases.map(phase => (
-              <div key={phase.id} data-testid={`compose-phase-${phase.id}`} className="kk-card px-3 py-2 flex items-center gap-2">
-                <input
-                  data-dd-privacy="mask-user-input"
-                  value={phase.name}
-                  onChange={e =>
-                    updateFlow(f => ({
-                      ...f,
-                      phases: f.phases.map(p => (p.id === phase.id ? { ...p, name: e.target.value } : p)),
-                    }))
-                  }
-                  className="kk-input px-2 py-2 flex-1"
-                />
-                <select
-                  value=""
-                  onChange={e => {
-                    const itemId = e.target.value
-                    if (itemId) updateItem(itemId, { phaseId: phase.id })
-                  }}
-                  className="kk-input px-2 py-2 text-xs"
-                >
-                  <option value="">Assign item…</option>
-                  {sortedItems.map((item, idx) => (
-                    <option key={item.id} value={item.id}>
-                      {idx + 1}. {resolveItemName(poseBySlug.get(item.poseSlug), item.poseSlug)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            ))}
-          </div>
-        )}
+        <ComposePhases
+          phases={flow.phases}
+          items={sortedItems}
+          poseBySlug={poseBySlug}
+          onRenamePhase={renamePhase}
+          onAssignItem={assignItemToPhase}
+        />
       </div>
     </div>
   )
