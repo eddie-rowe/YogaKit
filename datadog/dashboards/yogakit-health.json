@@ -1,6 +1,6 @@
 {
   "title": "[YogaKit] Health",
-  "description": "Journey outcomes, RUM, APM, logs, and read-view SLI health for YogaKit. Filter and compare by version to correlate regressions with deployments. See docs/OBSERVABILITY.md.",
+  "description": "Client (RUM), server (APM), and synthetic uptime health for YogaKit. Filter and compare by version to correlate regressions with deployments. See docs/OBSERVABILITY.md.",
   "layout_type": "ordered",
   "template_variables": [
     { "name": "version", "prefix": "version", "available_values": [], "default": "*" }

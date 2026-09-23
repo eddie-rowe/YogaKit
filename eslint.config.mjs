@@ -25,6 +25,21 @@ const eslintConfig = defineConfig([
     ".claude/worktrees/**",
   ]),
   {
+    // `no-unused-vars` treats `({ a, b, ...rest }) => rest` and
+    // `const { id: _id, ...rest } = obj` as unused bindings for `a`/`b`/`_id`. Both
+    // idioms bind those names purely to exclude them from `rest` — see
+    // scripts/datadog/sync.mjs and scripts/lib/datadog-sync.mjs's stripWidgetIds.
+    // ignoreRestSiblings stops that false positive without touching the destructure
+    // (removing the names from it would let them leak into `rest` and change what
+    // normalizeForDiff compares, producing false SLO/dashboard drift). #45.
+    rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { ignoreRestSiblings: true, varsIgnorePattern: "^_" },
+      ],
+    },
+  },
+  {
     // The service-role Supabase client (src/lib/supabase/service.ts) bypasses RLS
     // entirely — it must never end up in a browser bundle. .tsx files are where
     // 'use client' components live in this codebase; service.ts itself also

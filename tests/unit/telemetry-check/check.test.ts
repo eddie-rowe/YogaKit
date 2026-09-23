@@ -57,7 +57,6 @@ describe('extractTelemetryCalls', () => {
   })
 
   it('picks up a shorthand property and a string-literal-keyed property', () => {
-    const viewId = 'abc'
     const calls = extractTelemetryCalls(`logger.info('x', { viewId, 'durationMs': 1 })`, 'x.ts')
     expect(calls[0].fields.map((f) => f.name)).toEqual(['viewId', 'durationMs'])
   })

@@ -2,7 +2,7 @@
   "name": "[YogaKit] Read View Error Budget Consumed > 10%",
   "type": "slo alert",
   "query": "error_budget(\"{{slo_id:yogakit:read-view-availability}}\").over(\"30d\") > 10",
-  "message": "Read-view availability has consumed over 10% of its 30-day error budget. Review the SLO trend before it accelerates. @syntheticstesting@gmail.com",
+  "message": "Read-view availability has consumed over 10% of its 30-day error budget. Review the SLO trend before it accelerates. Known exception: the SLO query was corrected 2026-09-23 (was scoped to status_code_class:2xx, blind to the body-assertion failures behind #39's 13-day outage, 2026-09-09 to 2026-09-22 — see DECISIONS.md). This monitor will alert honestly on that historical outage until it rolls out of the 30-day window around 2026-10-22. Do not re-open #39 for this. @syntheticstesting@gmail.com",
   "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:slo-burn-slow-read-view-availability"],
   "options": {
     "notify_audit": false,

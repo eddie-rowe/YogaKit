@@ -69,7 +69,6 @@ session (`docs/OBSERVABILITY.md` explains why).
 | `api-latency-p95.json` | query alert | p95 > 5s (warn 2s, in nanoseconds) |
 | `synthetic-read-view-down.json` | query alert | no synthetic test runs / 15m (legacy filename preserves live identity) |
 | `log-ingestion-liveness.json` | log alert | no production logs / 30m |
-| `generation-pipeline-errors.json` | query alert | unexpected generation outcomes > 5% (warn 2%) |
 | `rum-telemetry-freshness.json` | query alert | no RUM sessions for 30m |
 | `apm-telemetry-freshness.json` | query alert | no Next.js request spans for 30m |
 | `slo-burn-fast-read-view-availability.json` | slo alert | 25% of the 30-day error budget consumed |
@@ -88,10 +87,18 @@ configured in this org (confirmed by a 404 against
 `/api/v1/integration/slack/channels`), so email is the notification destination for
 this pass.
 
-The read-view availability SLO is monitor-based and refers to the synthetic companion
-monitor with `{{monitor_id:yogakit:read-view-200}}`. The sync resolves that portable
-tag reference to the live numeric monitor ID before diff/apply; hardcoded IDs fail
-validation.
+The read-view availability SLO (`slos/read-view-availability.json`) is metric-based: its
+numerator and denominator are `synthetics.test_runs{yogakit:read-view-200,...}` counts
+(numerator additionally scoped to `status:success`), not a reference to the synthetic's
+companion monitor. `{{monitor_id:...}}` portable-tag resolution exists in the sync
+tooling for a monitor-based SLO, but no manifest currently uses it.
+
+Use `synthetics.test_runs`'s `status` tag (`success`/`failure`), not
+`synthetics.http.response`'s `status_code_class`, for any SLO or monitor meant to catch
+a synthetic *assertion* failure — a synthetic can return HTTP 200 and still fail its
+content assertion, which `status_code_class:2xx` cannot see. This is not hypothetical:
+it is why the read-view SLO reported 100% availability throughout the 13-day outage
+behind `#39` (see `DECISIONS.md`, 2026-09-23 entry).
 
 `datadog:validate` also rejects retired metric families that Datadog accepts
 syntactically but no longer populates. `datadog:validate-live` goes further: over the

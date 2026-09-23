@@ -162,9 +162,6 @@ function buildFallbackSequence(ctx: SessionContext): { poses: SequenceItem[]; to
 export function constrain(draft: PipelineDraft, ctx: SessionContext): ConstrainedSequence {
   const contraindications = ctx.hardConstraints.contraindications
   const curve = ctx.intensityCurve ?? 'bell'
-  const meridians = ctx.elementFocus
-    ? getMeridianSlugsForElement(ctx.elementFocus)
-    : (ctx.meridianFocus ?? [])
 
   // Map draft poses → resolved items
   let resolvedItems: SequenceItem[] = []
