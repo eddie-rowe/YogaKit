@@ -2,7 +2,7 @@
 
 **Feature Branch**: `007-autonomous-operations`
 **Created**: 2026-08-31
-**Status**: Draft
+**Status**: Planned
 **Input**: User description: "Port the operating patterns from NextMove (`docs/BEST_PRACTICES_FROM_NEXTMOVE.md`, patterns B1–B4 and B7) so Krama can be worked on by scheduled, headless Claude Code sessions without a human at the keyboard — session-level done-gates, a labelled work-consumption model with a hard owner-gate, an operational spine of living planning files, and a four-routine daily loop coupled only through files committed to `main`. The constitution (v3.0.0) is the ceiling: anything the loop could do that would bend a constitution rule becomes owner-gated rather than an exception."
 
 ## User Scenarios & Testing *(mandatory)*

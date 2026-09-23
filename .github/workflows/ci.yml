@@ -23,8 +23,14 @@ jobs:
       - name: Type-check
         run: npx tsc --noEmit
 
+      # Blocking, no `|| true` — 007 US1 done-gates: a lint step that cannot fail is a
+      # claim, not a gate (same reasoning as the copy-lint below it). Previously
+      # `npx next lint --dir src`, which errors ("unknown option '--dir'") on this
+      # Next.js version and was silently swallowed by the `|| true` it sat behind —
+      # `npm run lint` (`eslint`, no path restriction) is the same command
+      # specs/004-sequencing-composer/tasks.md's Verification section already gates on.
       - name: Lint
-        run: npx next lint --dir src || true
+        run: npm run lint
 
       # Blocking, and deliberately with no `|| true` — unlike the step above it, which
       # 007 owns. RULE-C5 says the copy-lint gates the build; a copy-lint that cannot

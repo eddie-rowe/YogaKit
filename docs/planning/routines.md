@@ -19,10 +19,12 @@ Loop order: `autoobs → autopm → autodev → autoretro → autopm (next day) 
 `autodev` builds it; `autoretro` closes the day and sharpens tomorrow's `autopm`.
 
 **No scheduler exists yet.** All four routines are hand-launched today.
-Production-grade ops (including any cron/scheduler) are deferred until the
-~Nov 2026 launch — that gap is `007-autonomous-operations`'s job, still Draft.
-Until then, launching a routine is a manual action (a headless session
-started with the matching system-instructions.md as its prompt).
+`007-autonomous-operations` is Planned (see `specs/007-autonomous-operations/plan.md`);
+its US1 done-gates and honesty requirements (FR-030–FR-035) are in scope now, but its
+US4 — the actual cron/scheduler that runs these four routines unattended on a daily
+cycle — is deferred until the ~Nov 2026 launch, per the standing decision recorded there.
+Until US4 ships, launching a routine is a manual action (a headless session started with
+the matching system-instructions.md as its prompt).
 
 ## File layout convention
 
