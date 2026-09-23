@@ -197,7 +197,6 @@ describe('validate()', () => {
   })
 
   it('emits timingSumWarning when hold times deviate far from target duration', () => {
-    const pose = makePose()
     // Very long hold times for short class
     const items = Array.from({ length: 5 }, (_, i) =>
       makeItem(makePose({ slug: `pose-${i}` }), { holdMinutes: 30 })

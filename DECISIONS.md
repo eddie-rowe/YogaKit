@@ -977,3 +977,48 @@ Vercel's drain never produces. #32 enabled security products for a tracer this a
 not load. Each passed CI, because CI validates manifest shape and repository state, not
 whether the mechanism behind a manifest exists. **Review a bot PR against live behaviour,
 not against a green check.**
+
+## 2026-09-23 — the read-view SLO was a false negative; the corrected query ships honest
+
+**Context:** `#39` ("Read View synthetic failing 100% of runs") was filed 2026-09-21,
+diagnosed as a Vercel deployment-protection interstitial, and closed once `curl` and 124
+consecutive synthetic passes confirmed the real fix was `#52`
+(`getBuiltInFlowById` keyed on UUID only; `b127025` fixed it). Checking that diagnosis
+against the read-view SLO's own history exposed a second, larger problem.
+
+`datadog/slos/read-view-availability.json` scoped both numerator and denominator to
+`sum:synthetics.http.response{...,status_code_class:2xx}`. Every failing run in the
+outage returned HTTP 200 and failed only the synthetic's body-content assertion, so
+numerator and denominator moved together throughout — the SLO's history API reported
+`sli_value: 100.0` for the exact window the read view was completely broken. Daily
+synthetic pass rate: 100% through 2026-09-08, 62.5% on 09-09, then **0.0% every day from
+09-10 through 09-21** (1728 failures/day), recovering 09-22. The true outage was **13
+days**, not the 1-2 days `#39`'s filing date suggested — nothing before 09-21 could see
+it, because the SLO that existed to see it could not.
+
+**Decision:** switch the query to `synthetics.test_runs{...,status:success}` /
+`synthetics.test_runs{...}` — a metric whose `status` tag tracks the synthetic's actual
+assertion outcome (verified: `status:failure` = 2808/2808 during the outage window,
+`status:success` = 96/96 in the 4h after recovery). `type` stays `metric`; only the
+query changed. Ship the corrected SLO immediately rather than deferring it or trying to
+paper over the number it now reports.
+
+**Consequence, accepted deliberately:** the corrected SLI over the trailing 30 days is
+3090/25238 = **12.2%** against a 99.5% target. Both burn monitors (`slo-burn-fast` at
+25%, `slo-burn-slow` at 10%) fire on this. That is not a new incident — it is the SLO
+reporting an outage that already happened and was already fixed. It self-corrects as
+2026-09-09 through 09-22 age out of the 30-day window, around **2026-10-22**. Both burn
+monitor manifests carry a note to that effect so a future `/autoobs` sweep reads this as
+known history, not a fresh page.
+
+**Why not reset the SLO's history instead:** a metric-based SLO's history is computed on
+read from the underlying metric time series, not stored — confirmed by querying the
+history API for an arbitrary past window and getting a real SLI back for it. Deleting and
+recreating the SLO object changes nothing about what that computation returns; there is
+no achievable version of "reset." The only options were ship the true number or keep
+shipping the false one.
+
+**The pattern, again:** a monitor whose query cannot observe the failure it is named for
+is worse than no monitor — it produces a specific, confident, wrong answer
+("100% available") instead of an honest "no signal." Same lesson as the entry above:
+review what a manifest can actually detect, not just that it applies cleanly.

@@ -159,11 +159,15 @@ preview deployments, which drain into the same place.
 
 The `rum-telemetry-freshness` and `apm-telemetry-freshness` monitors alert after 30
 minutes without intake. The five-minute public synthetics make an empty APM window a
-pipeline failure rather than merely a low-traffic period. Generation is monitored
-separately because its SSE protocol reports application outcomes inside HTTP 200
-responses: `generate.sequence` spans and `generate.outcome` logs carry only an outcome
-code and stage/total durations, and the `yogakit.generate.outcomes` log metric powers
-the generation error-rate monitor and dashboard.
+pipeline failure rather than merely a low-traffic period. Generation needs its own
+signal because its SSE protocol reports application outcomes inside HTTP 200 responses,
+where `status_code_class`-based checks can't see a failed generation the way they can't
+see the read-view content-assertion failures behind `#39` (`DECISIONS.md`, 2026-09-23
+entry). `src/app/api/generate/route.ts` already emits the raw material for that signal —
+a `generate.sequence` span and a `generate.outcome` log per request, each carrying an
+outcome code and stage/total durations — but no `datadog/` manifest consumes them yet:
+there is no `yogakit.generate.outcomes` log metric, no generation error-rate monitor, and
+no dashboard widget for it. This is scoped, not-yet-built work, not a shipped signal.
 
 Thresholds for each monitor (what counts as AT-RISK vs. BREACHED): `datadog/README.md`
 "Manifest notes" table.

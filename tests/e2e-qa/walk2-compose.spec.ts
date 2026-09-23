@@ -19,7 +19,6 @@ test('Walk 2: Build a short class from scratch', async ({ page }) => {
   await addPose('savasana')
   await page.screenshot({ caret: 'initial', path: 'qa-screenshots/06-compose-items-added.png' })
 
-  const items = page.locator('[data-testid^="compose-item-"][data-testid*="compose-item-0"], [data-testid="compose-item-0"], [data-testid="compose-item-1"], [data-testid="compose-item-2"]')
   await expect(page.getByTestId('compose-item-0')).toBeVisible()
   await expect(page.getByTestId('compose-item-1')).toBeVisible()
   await expect(page.getByTestId('compose-item-2')).toBeVisible()

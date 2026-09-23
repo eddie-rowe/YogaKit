@@ -12,7 +12,7 @@
  */
 
 import type { SessionContext } from '@/lib/pipeline/types'
-import type { Pose, FiveElement, PoseTypeTag } from '@/lib/pose-types'
+import type { Pose, PoseTypeTag } from '@/lib/pose-types'
 import { getAllPoses } from './index'
 
 export interface TransitionCandidate {

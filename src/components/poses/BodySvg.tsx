@@ -171,7 +171,6 @@ export default function BodySvg({
   activeJoints,
   activeMeridians,
   activeChakras,
-  element,
   highlighted,
   onSelectRegion,
 }: BodySvgProps) {
