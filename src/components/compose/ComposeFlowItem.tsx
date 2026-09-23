@@ -63,7 +63,7 @@ export default function ComposeFlowItem({
       <div
         ref={setNodeRef}
         style={style}
-        data-testid={`compose-item-${index}`}
+        data-testid={`compose-row-${index}`}
         data-dragging={isDragging}
         className={`kk-card kk-drag-item px-3 py-2.5 flex flex-col gap-2 ${stillness ? 'kk-stillness' : ''}`}
       >

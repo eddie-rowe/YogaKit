@@ -45,7 +45,7 @@ carries a `data-testid`. Naming: `{area}-{element}`, kebab-case, stable across r
 | Home | `home-builtin-{slug}` | Each of the three built-in flow cards |
 | Compose | `compose-search-input` | Pose search field |
 | Compose | `compose-add-pose-{slug}` | Add-to-flow action per search result |
-| Compose | `compose-item-{index}` | Each flow item row, in order |
+| Compose | `compose-row-{index}` | Each flow item row, in order |
 | Compose | `compose-item-measure-{index}` | Breaths/seconds toggle+input for an item |
 | Compose | `compose-item-notes-{index}` | Per-item notes field |
 | Compose | `compose-item-reorder-up-{index}` / `-down-{index}` | Button reorder controls |
@@ -137,11 +137,13 @@ to write, and it matched `read-item-note-3` as well as `read-item-3` — a walk 
 read for three features as a content gap in the flow rather than an over-match in the
 selector (see `FRICTION.md`, 2026-09-01 and the correction that follows it). That is why
 the note testid is `read-note-{index}` and not `read-item-note-{index}`. When a new testid
-would extend an existing one, give it a sibling name instead. One family still violates
-this: `compose-item-{index}` is a prefix of `compose-item-measure-*`,
-`compose-item-notes-*`, `compose-item-reorder-*`, and `compose-item-drag-handle-*`, which
-is why `tests/e2e-qa/walk2-compose.spec.ts:22` carries a hardcoded index list instead of a
-prefix selector. Renaming that family belongs to `004` US4.
+would extend an existing one, give it a sibling name instead. The one family that used to
+violate this — `compose-item-{index}` was a prefix of `compose-item-measure-*`,
+`compose-item-notes-*`, `compose-item-reorder-*`, and `compose-item-drag-handle-*` — was
+renamed to `compose-row-{index}` in `004` US4 (T047), so `[data-testid^="compose-row-"]`
+is now a safe prefix selector over exactly the row roots. `compose-item-*` remains a valid
+prefix for the sibling controls it still names (measure, notes, reorder, drag-handle,
+geometry, energetics) since none of those collide with `compose-row-*`.
 
 **Deliberate renames.** The `/account` stopgap became `/settings` (006 FR-001), and its
 testids moved with it: `account-page-email` → `settings-email`, `account-profile-*` →
