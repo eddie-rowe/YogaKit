@@ -17,6 +17,8 @@ import {
   extractScopedQueries,
   extractSlug,
   extractSloPlaceholder,
+  EXPECTED_DRIFT_MONITOR_NAMES,
+  findUnexpectedDrift,
   findUnexpectedNoData,
   formatResultLine,
   markerTagFor,
@@ -581,6 +583,40 @@ describe('findUnexpectedNoData — #64 evaluated-state check', () => {
 
   it('returns nothing for an empty monitor list', () => {
     expect(findUnexpectedNoData([])).toEqual([])
+  })
+})
+
+// `npm run datadog:diff` exits 0 even when it reports drift — exitCode is only ever set
+// by a validation or apply failure, never by a `drift | live, not in repo` row. This is
+// the classifier `--fail-on-drift` (#70) uses to close that blind spot: it separates the
+// five documented, permanent synthetics companion monitors from a real, unexpected gap.
+describe('findUnexpectedDrift — #70 repo-vs-live drift classifier', () => {
+  it('does not flag a documented synthetics companion monitor', () => {
+    const entries = EXPECTED_DRIFT_MONITOR_NAMES.map((name) => ({ type: 'monitors', name }))
+    expect(findUnexpectedDrift(entries)).toEqual([])
+  })
+
+  it('flags a monitor drift entry not on the expected-companion list', () => {
+    const entries = [{ type: 'monitors', name: '[YogaKit] Some New Unmanaged Monitor' }]
+    expect(findUnexpectedDrift(entries)).toEqual(entries)
+  })
+
+  it('flags drift on a non-monitors type regardless of name', () => {
+    // The expected-companion exemption is monitors-only (README: Datadog auto-creates a
+    // companion *monitor* per synthetic test) — an SLO or dashboard with the same name
+    // string is not the same phenomenon and must not be silently exempted.
+    const entries = [{ type: 'slos', name: EXPECTED_DRIFT_MONITOR_NAMES[0] }]
+    expect(findUnexpectedDrift(entries)).toEqual(entries)
+  })
+
+  it('returns nothing for an empty drift list', () => {
+    expect(findUnexpectedDrift([])).toEqual([])
+  })
+
+  it('separates expected and unexpected entries within one mixed run', () => {
+    const expected = { type: 'monitors', name: EXPECTED_DRIFT_MONITOR_NAMES[0] }
+    const unexpected = { type: 'monitors', name: 'not ours' }
+    expect(findUnexpectedDrift([expected, unexpected])).toEqual([unexpected])
   })
 })
 

@@ -1,0 +1,52 @@
+name: Datadog drift check
+
+# Scheduled repo-vs-live check (#70): `npm run datadog:diff`'s own exit code never
+# reflects drift — it is only ever set by a validation or apply failure — so a job that
+# merely ran `datadog:diff` and checked `$?` would pass forever even as live config
+# drifted away from the manifests in `datadog/`. `datadog:drift-check` closes that gap
+# with a real classifier (`findUnexpectedDrift` in `scripts/lib/datadog-sync.mjs`) that
+# separates the five documented, permanent synthetics companion monitors
+# (`datadog/README.md`'s "Expected drift" section) from a genuine, unexpected gap.
+#
+# This workflow validates and diffs only. It never applies — 008's plan is explicit:
+# "No auto-apply from CI." A real drift here means someone changed Datadog by hand and
+# should either update the manifest or run `npm run datadog:apply` locally, on purpose.
+
+on:
+  schedule:
+    - cron: '0 13 * * 1' # Monday 13:00 UTC — weekly, off-hours
+  workflow_dispatch: {}
+
+jobs:
+  drift-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for unexpected repo-vs-live drift
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run datadog:drift-check
+        env:
+          DD_API_KEY: ${{ secrets.DD_API_KEY }}
+          DD_APP_KEY: ${{ secrets.DD_APP_KEY }}
+          DD_SITE: us5.datadoghq.com
+
+      - name: Validate live Datadog signals
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run datadog:validate-live
+        env:
+          DD_API_KEY: ${{ secrets.DD_API_KEY }}
+          DD_APP_KEY: ${{ secrets.DD_APP_KEY }}
+          DD_SITE: us5.datadoghq.com

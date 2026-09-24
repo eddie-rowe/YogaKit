@@ -14,6 +14,7 @@
  *   node scripts/datadog/sync.mjs                        # diff every type (default)
  *   node scripts/datadog/sync.mjs --type monitors        # diff one type
  *   node scripts/datadog/sync.mjs --type monitors --apply # mutate — requires the flag
+ *   node scripts/datadog/sync.mjs --fail-on-drift        # diff, but exit 1 on unexpected drift
  */
 
 import fs from 'node:fs'
@@ -31,6 +32,7 @@ import {
   resolveMonitorPlaceholders,
   extractScopedQueries,
   findUnexpectedNoData,
+  findUnexpectedDrift,
   quietMetricNames,
   resolveSloPlaceholders,
   dashboardTitleMatches,
@@ -67,6 +69,7 @@ function parseArgs(argv) {
     apply: argv.includes('--apply'),
     validateOnly: argv.includes('--validate'),
     validateLive: argv.includes('--validate-live'),
+    failOnDrift: argv.includes('--fail-on-drift'),
   }
 }
 
@@ -386,7 +389,7 @@ function pupCreateOrUpdate(env, resource, manifest, id) {
 }
 
 async function main() {
-  const { types, apply, validateOnly, validateLive } = parseArgs(process.argv.slice(2))
+  const { types, apply, validateOnly, validateLive, failOnDrift } = parseArgs(process.argv.slice(2))
 
   const manifestsByType = {}
   for (const type of types) {
@@ -431,6 +434,7 @@ async function main() {
     return
   }
   const lines = []
+  const driftEntries = []
   let exitCode = 0
 
   for (const type of types) {
@@ -548,7 +552,9 @@ async function main() {
       for (const remote of remoteList) {
         const slug = extractSlug(remote.tags)
         if (slug && !localSlugs.has(slug)) {
-          lines.push(formatResultLine({ type, name: remote.name ?? slug, action: 'drift', status: 'live, not in repo' }))
+          const name = remote.name ?? slug
+          lines.push(formatResultLine({ type, name, action: 'drift', status: 'live, not in repo' }))
+          driftEntries.push({ type, name })
         }
       }
     }
@@ -556,6 +562,21 @@ async function main() {
 
   console.log('')
   for (const line of lines) console.log(line)
+
+  // `datadog:diff`'s own exit code never reflects drift — only a validation or apply
+  // failure sets it above — so a scheduled job checking `$?` alone would never see a
+  // real drift regression. `--fail-on-drift` is the opt-in check that closes that gap
+  // without changing the default (unattended-friendly, no-op-by-default) diff behavior.
+  if (failOnDrift) {
+    const unexpected = findUnexpectedDrift(driftEntries)
+    if (unexpected.length) {
+      console.error('')
+      console.error(`Unexpected drift (${unexpected.length}):`)
+      for (const { type, name } of unexpected) console.error(`  - ${type}: ${name}`)
+      exitCode = 1
+    }
+  }
+
   process.exit(exitCode)
 }
 
