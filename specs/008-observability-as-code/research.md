@@ -153,7 +153,7 @@ plan.md as a known gap, not attempted this pass.
 ## 8. `/autoobs` scope this branch
 
 **Decision**: ship the command definition (`.claude/commands/autoobs.md`) and the
-`docs/observation/` / `docs/routine_runs/autoobs/` scaffolding so the routine is runnable
+`docs/observation/` / `docs/routines/autoobs/` scaffolding so the routine is runnable
 by hand. Do not build 007's scheduler, label taxonomy, or owner-digest issue automation.
 
 **Rationale**: explicit owner direction — 008 first, autoobs stub second. 007 is

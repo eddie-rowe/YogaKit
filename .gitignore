@@ -47,3 +47,13 @@ next-env.d.ts
 .playwright-cli
 .playwright
 .claude/worktrees/
+
+# vendored third-party skills (regenerable from skills-lock.json)
+/.agents/
+
+# unrelated/foreign artifacts that have landed in the tree by accident
+/pup
+/LICENSE-3rdparty.csv
+
+# business/legal material — public repo, never track
+/docs/legal/

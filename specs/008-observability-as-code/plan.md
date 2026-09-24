@@ -146,7 +146,7 @@ tests/unit/
 docs/
 ├── OBSERVABILITY.md                 # NEW — US3, FR-016-019
 ├── observation/.gitkeep             # NEW — 007-shared, dated outputs land here
-├── routine_runs/autoobs/
+├── routines/autoobs/
 │   └── system-instructions.md       # NEW
 └── planning/routine-log.md          # NEW
 

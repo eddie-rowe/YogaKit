@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Selected Pages — Working Draft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Spline+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#23281f; --ink-soft:#5a6152; --ink-faint:#8b917f;
+    --paper:#e7e9e0; --card:#f3f4ee; --card-2:#eceee3;
+    --line:rgba(35,40,31,.14); --line-strong:rgba(35,40,31,.26);
+    --sage:#4e6152; --sage-deep:#33452e;
+    --ochre:#a9762f; --water:#4f7280;
+    --sage-tint:rgba(78,97,82,.10); --ochre-tint:rgba(169,118,47,.13); --water-tint:rgba(79,114,128,.12);
+    --shadow:0 1px 0 rgba(35,40,31,.04), 0 12px 34px -22px rgba(35,40,31,.4);
+    --book-paper:#f7f3e7; --book-ink:#2b2417; --book-ink-soft:#63583f;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Spline Sans",system-ui,sans-serif; line-height:1.55;
+    font-size:15.5px; letter-spacing:.005em;
+    background-image:radial-gradient(rgba(35,40,31,.028) 1px, transparent 1px);
+    background-size:22px 22px;
+  }
+  .wrap{max-width:1080px; margin:0 auto; padding:0 24px}
+  .mono{font-family:"IBM Plex Mono",monospace}
+
+  /* ---- header (no book title — untitled) ---- */
+  header.hero{padding:64px 0 30px}
+  .eyebrow{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.24em;
+    text-transform:uppercase; color:var(--sage); margin:0 0 14px}
+  .dedication{font-family:"Fraunces",serif; font-style:italic; font-size:19px; color:var(--sage-deep); margin:0 0 22px}
+  .hero-prose{max-width:64ch}
+  .hero-prose p{font-size:17px; line-height:1.62; color:var(--ink-soft); margin:0}
+  .hero-prose p b{color:var(--ink); font-weight:600}
+
+  section{padding:40px 0}
+  section + section{border-top:1px solid var(--line)}
+  .part-tag{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.2em;
+    text-transform:uppercase; color:var(--ink-faint); margin:0 0 10px}
+  h2{font-family:"Fraunces",serif; font-weight:500; font-size:clamp(26px,3.4vw,36px);
+    letter-spacing:-.015em; margin:0 0 12px}
+  .section-note{max-width:66ch; color:var(--ink-soft); margin:0 0 24px}
+  .caption{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.05em; color:var(--ink-faint); text-align:center; margin:14px 0 0}
+
+  /* ---- table of contents ---- */
+  .tocpage{margin-top:8px; border:1px solid var(--line); border-radius:16px; background:var(--card); padding:8px 0; box-shadow:var(--shadow)}
+  .tocpart{padding:20px 26px; display:grid; grid-template-columns:100px 1fr; gap:18px; align-items:start}
+  .tocpart:not(:last-child){border-bottom:1px solid var(--line)}
+  .tocpart .tocnum{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--sage); letter-spacing:.05em; padding-top:4px}
+  .tocpart h4{margin:0 0 4px; font-family:"Fraunces",serif; font-size:19px; font-weight:500}
+  .tocpart .tocrole{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint); margin-left:10px}
+  .tocpart .tocchapters{margin:8px 0 0; padding:0; list-style:none; display:flex; flex-wrap:wrap; gap:8px}
+  .tocpart .tocchapters li{font-size:12.5px; color:var(--ink-soft); background:var(--paper); border:1px solid var(--line); border-radius:999px; padding:4px 12px}
+  .tocpart p.tocnote{margin:8px 0 0; font-size:13px; color:var(--ink-soft)}
+
+  /* ---- book pages (the show-don't-tell centerpiece) ---- */
+  .bookpage{position:relative; background:linear-gradient(90deg, rgba(35,40,31,.10), transparent 16px), var(--book-paper);
+    border-radius:2px 14px 14px 2px; box-shadow:0 1px 0 rgba(0,0,0,.05), 0 22px 50px -26px rgba(35,40,31,.55);
+    padding:34px 44px 38px; margin-bottom:22px; display:grid; grid-template-columns:1fr 220px; gap:34px}
+  .page-main{min-width:0}
+  .page-runninghead{grid-column:1/-1; display:flex; justify-content:space-between; align-items:baseline;
+    font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--book-ink-soft); border-bottom:1px solid rgba(43,36,23,.18); padding-bottom:12px; margin-bottom:20px}
+  .page-title{grid-column:1/-1; font-family:"Fraunces",serif; font-weight:500; font-size:26px; color:var(--book-ink);
+    letter-spacing:-.01em; margin:0 0 6px}
+  .page-tag{grid-column:1/-1; font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--sage); margin:0 0 18px}
+  .page-main p{font-family:"Fraunces",serif; font-size:16.5px; line-height:1.68; color:var(--book-ink); margin:0 0 15px; max-width:60ch}
+  .page-main p:first-of-type{margin-top:0}
+  .page-main p + p{text-indent:1.5em}
+  .page-main em{font-style:italic; color:var(--book-ink)}
+  .page-main .quote{font-size:15px; color:var(--book-ink-soft); font-style:italic; border-left:2px solid rgba(43,36,23,.22); padding-left:16px; margin:0 0 15px; text-indent:0!important}
+  .page-margin{border-left:1px solid rgba(43,36,23,.16); padding-left:26px}
+  .margin-lab{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--book-ink-soft); display:block; margin-bottom:8px}
+  .margin-word{font-family:"Fraunces",serif; font-style:italic; font-size:24px; margin:0 0 3px}
+  .margin-word.easy{color:var(--sage-deep)} .margin-word.hard{color:var(--water)}
+  .margin-score{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--book-ink-soft); margin-bottom:22px; display:block}
+  .mini-staff{margin-top:4px}
+  .mini-staffrow{display:grid; grid-template-columns:52px 1fr; gap:8px; align-items:center; padding:4px 0}
+  .mini-staff-lab{font-family:"IBM Plex Mono",monospace; font-size:9.5px; color:var(--book-ink-soft); text-transform:uppercase}
+  .mini-staff-line{width:100%; height:14px; display:block}
+  .mini-staff-line.held line{stroke:var(--sage); stroke-width:2.5; stroke-linecap:round}
+  .mini-staff-line.moved path{stroke:var(--ochre); stroke-width:2.5; fill:none; stroke-linecap:round; stroke-linejoin:round}
+  .fourway{grid-column:1/-1; display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:6px 0 20px}
+  .fourcol{border:1px solid rgba(43,36,23,.16); border-radius:8px; padding:12px 13px; background:rgba(255,255,255,.35)}
+  .fourcol h5{margin:0 0 8px; font-family:"Fraunces",serif; font-style:italic; font-size:14.5px; color:var(--book-ink)}
+  .fourcol .row{font-size:11px; color:var(--book-ink-soft); display:flex; justify-content:space-between; padding:2px 0}
+  .fourcol .row.hl{color:var(--sage-deep); font-weight:500}
+
+  /* ---- contrast line between Part II pages ---- */
+  .contrast-line{font-family:"Fraunces",serif; font-style:italic; font-size:18px; color:var(--sage-deep);
+    text-align:center; max-width:56ch; margin:0 auto 22px; padding:0 20px}
+
+  /* ---- Part II reference pointer (replaces the deleted numbers page) ---- */
+  .measure-pointer{grid-column:1/-1; font-size:14px; color:var(--ink-soft); margin:2px 0 22px}
+  .measure-pointer a{color:var(--sage-deep)}
+
+  /* ---- transition figure: pictogram + five-track staff ---- */
+  .transition-fig{grid-column:1/-1; margin:6px 0 22px}
+  .fig-frame{display:grid; grid-template-columns:96px 1fr 96px; gap:18px; align-items:center; margin-bottom:18px}
+  .fig-pose{text-align:center}
+  .fig-pose svg{width:72px; height:54px}
+  .fig-pose .fig-name{display:block; font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--book-ink-soft); margin-top:4px}
+  .fig-arrow{display:flex; align-items:center; justify-content:center}
+  .fig-arrow svg{width:100%; height:16px}
+  .fig-arrow path{stroke:var(--book-ink-soft); stroke-width:1.5; fill:none}
+  .staff{grid-column:1/-1}
+  .staffrow{display:grid; grid-template-columns:64px 1fr 210px 70px; gap:12px; align-items:center; padding:6px 0}
+  .staff-lab{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--book-ink-soft)}
+  .staff-line{width:100%; height:16px; display:block}
+  .staff-line.held line{stroke:var(--sage); stroke-width:2.5; stroke-linecap:round}
+  .staff-line.moved path{stroke:var(--ochre); stroke-width:2.5; fill:none; stroke-linecap:round; stroke-linejoin:round}
+  .staff-val{font-family:"Fraunces",serif; font-size:13.5px; color:var(--book-ink-soft)}
+  .staff-flag{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; text-align:right}
+  .staff-flag.held{color:var(--sage-deep)} .staff-flag.moved{color:var(--ochre)}
+
+  /* ---- Part III: friction across the class (line chart) ---- */
+  .classchart{border:1px solid var(--line); border-radius:16px; background:var(--card); padding:26px 28px 18px; box-shadow:var(--shadow); margin-top:8px}
+  .classchart .chartlabel{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:14px}
+  .classchart svg{width:100%; height:auto; display:block}
+  .chart-band-lab{font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.05em; text-transform:uppercase}
+  .chart-band-lab.easy{fill:var(--sage-deep)} .chart-band-lab.costly{fill:var(--ochre)} .chart-band-lab.abrupt{fill:var(--water)}
+  .chart-phase-lab{font-family:"IBM Plex Mono",monospace; font-size:9.5px; fill:var(--ink-faint); text-transform:uppercase}
+  .chart-seam-lab{font-family:"IBM Plex Mono",monospace; font-size:9.5px; fill:var(--ink-soft)}
+  .chart-line{fill:none; stroke:var(--sage-deep); stroke-width:2}
+  .chart-dot{fill:var(--card)}
+  .chart-dot.hot{fill:var(--water)}
+  .chart-note{font-size:12px; color:var(--ink-faint); margin:10px 0 0}
+  .rule-line{margin-top:16px; padding-top:14px; border-top:1px dashed var(--line); font-size:13.5px; color:var(--ink-soft)}
+  .rule-line b{color:var(--ink)}
+
+  /* ---- eleven-dimension table (replaces the old accordion) ---- */
+  .dimtable{border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--card); box-shadow:var(--shadow); margin:6px 0 30px}
+  .dimrow{display:grid; grid-template-columns:170px 1.4fr 1.7fr 100px; gap:16px; padding:13px 22px; border-top:1px solid var(--line); align-items:baseline}
+  .dimrow:first-child{border-top:0; background:var(--card-2)}
+  .dimrow.head{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint)}
+  .dimrow .dtitle{font-family:"Fraunces",serif; font-size:16px; font-weight:500}
+  .dimrow .dask{color:var(--ink-soft); font-size:13.5px}
+  .dimrow .dex{font-size:12.5px; color:var(--ink-soft)}
+  .dimrow .dex .mono{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--sage-deep)}
+  .dimrow .dstatus{font-family:"IBM Plex Mono",monospace; font-size:11px; text-align:right; color:var(--ink-faint); white-space:nowrap}
+  .dimrow .dstatus.built{color:var(--sage-deep)}
+  .dimrow .dstatus.open{color:var(--ochre)}
+
+  /* ---- pose library specimen ---- */
+  .specimen{grid-column:1/-1; margin:6px 0 4px}
+  .specrow{display:grid; grid-template-columns:190px 1fr; gap:16px; padding:10px 0; border-top:1px solid rgba(43,36,23,.12); align-items:baseline}
+  .specrow:first-child{border-top:0}
+  .spec-lab{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.07em; text-transform:uppercase; color:var(--book-ink-soft)}
+  .spec-val{font-family:"Fraunces",serif; font-size:15px; line-height:1.5; color:var(--book-ink)}
+  .spec-val .need{font-family:"Spline Sans",sans-serif; font-style:normal; font-size:12.5px; letter-spacing:.02em; color:var(--water)}
+
+  /* ---- the ask (Smart Brevity, first person, one place only) ---- */
+  .ask{border:1px solid var(--line-strong); border-radius:14px; padding:24px 26px; background:var(--card)}
+  .ask-row{display:grid; grid-template-columns:110px 1fr; gap:16px; padding:10px 0; border-top:1px dashed var(--line); align-items:baseline}
+  .ask-row:first-child{border-top:0}
+  .sb-lab{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--sage)}
+  .ask-row p{margin:0; color:var(--ink-soft); font-size:14.5px}
+  .ask-row .byline{font-family:"Fraunces",serif; font-size:17px; color:var(--ink); font-style:italic}
+  .ask-row.catch .sb-lab{color:var(--water)}
+
+  footer{padding:44px 0 70px; border-top:1px solid var(--line); margin-top:0; color:var(--ink-faint); font-size:13px}
+  footer a{color:var(--sage-deep)}
+
+  @media(max-width:820px){
+    .tocpart{grid-template-columns:1fr; gap:4px}
+    .bookpage{grid-template-columns:1fr; padding:26px 22px 30px}
+    .page-margin{border-left:none; border-top:1px solid rgba(43,36,23,.16); padding-left:0; padding-top:20px; margin-top:6px}
+    .fourway{grid-template-columns:repeat(2,1fr)}
+    .dimrow{grid-template-columns:1fr; gap:4px}
+    .dimrow .dstatus{text-align:left}
+    .ask-row{grid-template-columns:1fr; gap:4px}
+    .fig-frame{grid-template-columns:1fr; text-align:center}
+    .fig-arrow svg{height:24px; transform:rotate(90deg)}
+    .staffrow{grid-template-columns:56px 1fr; grid-template-areas:"lab lab" "line line" "val flag"; gap:4px 12px}
+    .staffrow .staff-lab{grid-area:lab}
+    .staffrow .staff-line{grid-area:line}
+    .staffrow .staff-val{grid-area:val}
+    .staffrow .staff-flag{grid-area:flag; text-align:left}
+  }
+  @media(prefers-reduced-motion:reduce){*{transition:none!important; scroll-behavior:auto}}
+  :focus-visible{outline:2px solid var(--water); outline-offset:3px; border-radius:4px}
+  @media print{
+    .bookpage{box-shadow:none; break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">A book · selected pages · working draft</p>
+    <div class="hero-prose">
+      <p>Every yoga book is a catalogue of shapes. This one asks eleven questions of every pose — where the weight rests, which way you face, how high you sit, what the spine does, and more — and then asks the same eleven of the moment between two of them. Four still answer. <b>What follows is what it looks like on the page.</b></p>
+    </div>
+  </div>
+</header>
+
+<section id="toc">
+  <div class="wrap">
+    <h2>Contents</h2>
+    <div class="tocpage" id="tocpage">
+      <div class="tocpart">
+        <div class="tocnum">Part I</div>
+        <div>
+          <h4>Eleven Ways to Look at a Pose<span class="tocrole">a moment</span></h4>
+          <ul class="tocchapters"><li>Who the pose is</li><li>Where the body sits in space</li><li>What it works</li><li>How it moves energy</li><li>How it meets the breath</li><li>Who it's for</li><li>How long to stay</li><li>How it's set up</li><li>How it's taught</li><li>What it connects to</li><li>The hard rules</li></ul>
+          <p class="tocnote">Eleven questions, closing on: does this survive a transition?</p>
+        </div>
+      </div>
+      <div class="tocpart">
+        <div class="tocnum">Part II</div>
+        <div>
+          <h4>What Moves When You Move<span class="tocrole">a move</span></h4>
+          <ul class="tocchapters"><li>One thing moves</li><li>The floor changes hands</li><li>Four of five move</li><li>Everything moves</li><li>The breath carries the seam</li></ul>
+          <p class="tocnote">Four real seams, ordered by how much of the shape changes.</p>
+        </div>
+      </div>
+      <div class="tocpart">
+        <div class="tocnum">Part III</div>
+        <div>
+          <h4>The Shape of an Hour<span class="tocrole">an hour</span></h4>
+          <ul class="tocchapters"><li>The loud open</li><li>The quiet middle</li><li>The loudest seam is the last one</li><li>The yin shape</li></ul>
+          <p class="tocnote">One real class, plotted seam by seam.</p>
+        </div>
+      </div>
+      <div class="tocpart">
+        <div class="tocnum">Back matter</div>
+        <div>
+          <h4>The Pose Library<span class="tocrole">reference</span></h4>
+          <ul class="tocchapters"><li>All 67 poses × eleven dimensions</li><li>Every column, printed as it stands</li></ul>
+          <p class="tocnote">The ask made visible, once per pose, 67 times.</p>
+        </div>
+      </div>
+      <div class="tocpart">
+        <div class="tocnum">Back matter</div>
+        <div>
+          <h4>The Grammar<span class="tocrole">how to read it</span></h4>
+          <ul class="tocchapters"><li>Names that hide moves</li><li>Moves that got promoted to names</li><li>How to read a cell awaiting your hand</li></ul>
+          <p class="tocnote">The vocabulary, for reference, after the book has made its case.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="part-one">
+  <div class="wrap">
+    <p class="part-tag">Part I</p>
+    <h2>Eleven ways to look at a pose</h2>
+    <p class="section-note">Eleven questions get asked of every pose. Geometry, marked below, is the one already built and read today. The other ten are what the six sessions are for.</p>
+
+    <div class="dimtable">
+      <div class="dimrow head"><span>Dimension</span><span>What it asks</span><span>Down Dog</span><span>Status</span></div>
+      <div class="dimrow"><span class="dtitle">Identity &amp; lineage</span><span class="dask">The name, and its story</span><span class="dex">Adho Mukha Svanasana; <span class="mono">"hatha/vinyasa"</span></span><span class="dstatus">4 fields</span></div>
+      <div class="dimrow"><span class="dtitle">Geometry</span><span class="dask">Where the body sits in space</span><span class="dex"><span class="mono">hands+feet · inverted · mid · sagittal</span></span><span class="dstatus built">built — read today</span></div>
+      <div class="dimrow"><span class="dtitle">Load &amp; tissue</span><span class="dask">Which tissues, how hard</span><span class="dex">hamstrings, calves, shoulders, lats</span><span class="dstatus open">3 of 7 answered</span></div>
+      <div class="dimrow"><span class="dtitle">Energetics &amp; philosophy</span><span class="dask">Heating, cooling, the tradition's terms</span><span class="dex">grounding, cooling · <span class="mono">samana</span></span><span class="dstatus open">3 of 9 answered</span></div>
+      <div class="dimrow"><span class="dtitle">Breath</span><span class="dask">What happens on inhale, exhale</span><span class="dex">"exhale, lift hips up and back"</span><span class="dstatus built">answered</span></div>
+      <div class="dimrow"><span class="dtitle">Difficulty &amp; progression</span><span class="dask">Who it's for, how far to go</span><span class="dex">accessible · intensity 3/5</span><span class="dstatus open">3 of 5 answered</span></div>
+      <div class="dimrow"><span class="dtitle">Timing</span><span class="dask">How long to stay</span><span class="dex">5 breaths</span><span class="dstatus built">answered</span></div>
+      <div class="dimrow"><span class="dtitle">Shape &amp; props</span><span class="dask">The shape, and what it takes</span><span class="dex">no props; bend knees if tight</span><span class="dstatus built">answered</span></div>
+      <div class="dimrow"><span class="dtitle">Cueing</span><span class="dask">The words a teacher actually says</span><span class="dex">"hips high and back, inverted V"</span><span class="dstatus built">answered</span></div>
+      <div class="dimrow"><span class="dtitle">Relational</span><span class="dask">What it groups with, what undoes it</span><span class="dex">counters into Child's Pose</span><span class="dstatus open">1 of 2 answered</span></div>
+      <div class="dimrow"><span class="dtitle">Safety</span><span class="dask">Who this is contraindicated for, and why</span><span class="dex">high blood pressure, wrist, shoulder</span><span class="dstatus open">answered</span></div>
+    </div>
+
+    <div class="bookpage" id="page-identity"></div>
+  </div>
+</section>
+
+<section id="part-two">
+  <div class="wrap">
+    <p class="part-tag">Part II</p>
+    <h2>What moves when you move</h2>
+    <p class="measure-pointer">Five things are measured at every seam — where the body touches the floor, which way it faces, how high it sits, what the spine does, which plane it moves through. The arithmetic behind every number on this page is in the <a href="book-evidence.html#howitworks">evidence document</a>.</p>
+    <div class="bookpage" id="page-warrior"></div>
+    <div class="bookpage" id="page-contact"></div>
+    <div class="bookpage" id="page-halfway"></div>
+    <div class="bookpage" id="page-thread"></div>
+    <p class="caption">Four seams from Part II, ordered by how much of the shape changes.</p>
+  </div>
+</section>
+
+<section id="part-three">
+  <div class="wrap">
+    <p class="part-tag">Part III</p>
+    <h2>The shape of an hour</h2>
+    <p class="section-note">Every seam in a 60-minute vinyasa class, plotted in order. The class opens loud, runs quiet through the sun salutations and the standing series, and climbs to its loudest seam at the very end.</p>
+    <div class="classchart">
+      <div class="chartlabel">60-minute vinyasa · heart openers — friction, every seam, in order</div>
+      <svg id="class-chart-svg" viewBox="0 0 950 270" role="img" aria-label="Friction score for each of 33 seams in the heart-openers vinyasa class, opening at 0.575, running low through warm-up and standing, and climbing to 0.867 at the closing seam."></svg>
+      <p class="rule-line">Seams that stay within one body position average <b>0.159</b> (n=30). Seams that cross into another average <b>0.556</b> (n=24) — <b>3.5×</b> more. That gap is the real mechanism behind the shape above. Full workings, the attribution rule, and the yin exception: the <a href="book-evidence.html#arc-full">evidence document</a>.</p>
+    </div>
+  </div>
+</section>
+
+<section id="back-matter">
+  <div class="wrap">
+    <p class="part-tag">Back Matter</p>
+    <h2>One pose, eleven dimensions</h2>
+    <p class="section-note">The page every one of the 67 poses would get — real data, printed plainly, your calls marked in place.</p>
+    <div class="bookpage" id="page-library"></div>
+  </div>
+</section>
+
+<section id="ask">
+  <div class="wrap">
+    <h2>What I'd need from you</h2>
+    <div class="ask">
+      <div class="ask-row"><span class="sb-lab">Time</span><p>Six two-hour sessions, spread over a few months.</p></div>
+      <div class="ask-row"><span class="sb-lab">Scope</span><p>Pages, not a manuscript deadline.</p></div>
+      <div class="ask-row"><span class="sb-lab">Byline</span><p class="byline">Gioconda Parker · Tavo Grijalva · Eddie Rowe</p></div>
+      <div class="ask-row"><span class="sb-lab">Terms</span><p>A plainer conversation, later — once you've seen enough pages to decide.</p></div>
+      <div class="ask-row catch"><span class="sb-lab">The catch</span><p>Plank into chaturanga scores 0.000. The model reads geometry; effort is what the two of you read.</p></div>
+      <div class="ask-row"><span class="sb-lab">Your call</span><p>The five weights — .35 contact, .25 facing, .20 height, .10 spine, .10 plane — were chosen, not derived. Deciding whether they're right is your half of the book.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Full workings and checked figures → <a href="book-evidence.html">the evidence document</a>. The questions that need your judgment → <a href="book-feedback.html">the feedback guide</a>.</p>
+  </div>
+</footer>
+
+<script>
+/* ---- pose pictograms: one shared 96x72 viewBox, one shared ground line ---- */
+const GROUND = `<line x1="4" y1="66" x2="92" y2="66" stroke="var(--line)" stroke-width="1"/>`;
+const STROKE = `stroke="var(--book-ink)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"`;
+const POSE_ART = {
+  "warrior-2": { name:"Warrior II", inner:`
+    <circle cx="48" cy="14" r="5" ${STROKE}/>
+    <line x1="48" y1="19" x2="48" y2="36" ${STROKE}/>
+    <line x1="16" y1="26" x2="80" y2="26" ${STROKE}/>
+    <polyline points="16,66 48,36 64,52 80,66" ${STROKE}/>` },
+  "reverse-warrior": { name:"Reverse Warrior", inner:`
+    <circle cx="58" cy="12" r="5" ${STROKE}/>
+    <polyline points="48,36 56,20" ${STROKE}/>
+    <polyline points="56,20 84,4" ${STROKE}/>
+    <polyline points="56,20 28,50" ${STROKE}/>
+    <polyline points="16,66 48,36 64,52 80,66" ${STROKE}/>` },
+  "butterfly": { name:"Butterfly", inner:`
+    <circle cx="48" cy="24" r="5" ${STROKE}/>
+    <line x1="48" y1="29" x2="48" y2="58" ${STROKE}/>
+    <polyline points="48,34 30,52" ${STROKE}/>
+    <polyline points="48,34 66,52" ${STROKE}/>
+    <polyline points="48,58 28,54 46,64" ${STROKE}/>
+    <polyline points="48,58 68,54 50,64" ${STROKE}/>` },
+  "wide-knee-child": { name:"Wide-Knee Child's Pose", inner:`
+    <circle cx="16" cy="64" r="5" ${STROKE}/>
+    <polyline points="10,66 30,60 60,52 64,66" ${STROKE}/>` },
+  "halfway-lift": { name:"Halfway Lift", inner:`
+    <circle cx="12" cy="34" r="5" ${STROKE}/>
+    <polyline points="18,36 48,42 48,66" ${STROKE}/>
+    <line x1="18" y1="36" x2="34" y2="50" ${STROKE}/>` },
+  "plank": { name:"Plank Pose", inner:`
+    <circle cx="14" cy="48" r="5" ${STROKE}/>
+    <polyline points="18,66 22,50 54,50 86,66" ${STROKE}/>` },
+  "thread-needle": { name:"Thread the Needle", inner:`
+    <circle cx="20" cy="60" r="5" ${STROKE}/>
+    <polyline points="14,66 30,58 58,52" ${STROKE}/>
+    <line x1="58" y1="52" x2="74" y2="66" ${STROKE}/>
+    <polyline points="30,58 58,34" ${STROKE}/>` },
+  "savasana": { name:"Corpse Pose", inner:`
+    <circle cx="14" cy="58" r="5" ${STROKE}/>
+    <line x1="20" y1="58" x2="86" y2="58" ${STROKE}/>
+    <line x1="26" y1="58" x2="20" y2="64" ${STROKE}/>` },
+};
+function poseSvg(slug){
+  return `<svg viewBox="0 0 96 72" aria-hidden="true">${GROUND}${POSE_ART[slug].inner}</svg>`;
+}
+function arrowSvg(){
+  return `<svg viewBox="0 0 100 16" aria-hidden="true"><path d="M2 8 H90 M80 2 L92 8 L80 14" stroke="var(--book-ink-soft)" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+/* ---- five-track staff, promoted to full width for each Part II page ---- */
+function heldLine(){ return `<svg class="staff-line held" viewBox="0 0 400 20" preserveAspectRatio="none"><line x1="4" y1="10" x2="396" y2="10"/></svg>`; }
+function movedLine(){ return `<svg class="staff-line moved" viewBox="0 0 400 20" preserveAspectRatio="none"><path d="M4 10 L140 10 L260 5 L396 5"/></svg>`; }
+function transitionFigure(fromSlug, toSlug, rows){
+  return `
+    <div class="transition-fig">
+      <div class="fig-frame">
+        <div class="fig-pose">${poseSvg(fromSlug)}<span class="fig-name">${POSE_ART[fromSlug].name}</span></div>
+        <div class="fig-arrow">${arrowSvg()}</div>
+        <div class="fig-pose">${poseSvg(toSlug)}<span class="fig-name">${POSE_ART[toSlug].name}</span></div>
+      </div>
+      <div class="staff">
+        ${rows.map(r => `
+        <div class="staffrow">
+          <span class="staff-lab">${r.lab}</span>
+          ${r.moved ? movedLine() : heldLine()}
+          <span class="staff-val">${r.val}</span>
+          <span class="staff-flag ${r.moved ? 'moved' : 'held'}">${r.moved ? 'moved' : 'held'}</span>
+        </div>`).join("")}
+      </div>
+    </div>`;
+}
+
+/* ---- page: who the pose is (Part I, chapter one, p.14) ---- */
+document.getElementById("page-identity").innerHTML = `
+  <div class="page-runninghead"><span>part i · chapter one · who the pose is</span><span>14</span></div>
+  <div class="page-main" style="grid-column:1/-1">
+    <p class="page-tag">Who The Pose Is</p>
+    <h3 class="page-title" style="margin-bottom:16px">One shape, four names</h3>
+    <p>Butterfly. Baddha Konasana. Bound Angle Pose. Cobbler's Pose. One shape, taught under four names in four different rooms — a sanskrit lineage, a literal translation, a folk name, a yin-studio label.</p>
+  </div>
+  <div class="fourway">
+    <div class="fourcol"><h5>Baddha Konasana</h5>
+      <div class="row"><span>register</span><span>sanskrit</span></div>
+      <div class="row hl"><span>says</span><span>bound angle</span></div>
+    </div>
+    <div class="fourcol"><h5>Bound Angle Pose</h5>
+      <div class="row"><span>register</span><span>translation</span></div>
+      <div class="row hl"><span>says</span><span>the shape</span></div>
+    </div>
+    <div class="fourcol"><h5>Cobbler's Pose</h5>
+      <div class="row"><span>register</span><span>folk name</span></div>
+      <div class="row hl"><span>says</span><span>the trade</span></div>
+    </div>
+    <div class="fourcol"><h5>Butterfly</h5>
+      <div class="row"><span>register</span><span>yin studio</span></div>
+      <div class="row hl"><span>says</span><span>the wings</span></div>
+    </div>
+  </div>
+  <div class="page-main" style="grid-column:1/-1">
+    <p style="text-indent:0">61 of 67 poses carry an alias; 22 carry four. Which room taught you which name is what six sessions would settle.</p>
+  </div>
+  <div class="page-margin">
+    <span class="margin-lab">the whole lineage field, 67 poses</span>
+    <p class="margin-word">43</p>
+    <span class="margin-score">yin; Grilley, Clark, Powers</span>
+    <p class="margin-word" style="margin-top:14px">22</p>
+    <span class="margin-score">hatha/vinyasa</span>
+    <p class="margin-word" style="margin-top:14px">2</p>
+    <span class="margin-score">vinyasa</span>
+  </div>
+`;
+
+/* ---- page: warrior-2 -> reverse-warrior (Part II, chapter one, p.52) ---- */
+document.getElementById("page-warrior").innerHTML = `
+  <div class="page-runninghead"><span>part ii · chapter one · one thing moves</span><span>52</span></div>
+  <div class="page-main" style="grid-column:1/-1">
+    <p class="page-tag">One Thing Moves</p>
+    <h3 class="page-title" style="margin-bottom:16px">Warrior II &rarr; Reverse Warrior</h3>
+    <p>Reaching the front arm up and back out of Warrior II is the small, obvious move every vinyasa teacher cues without a second thought. Stance, height and facing all carry over unchanged — the whole passage rides on the spine bending sideways, once. The felt ease and the measured ease agree.</p>
+  </div>
+  ${transitionFigure("warrior-2", "reverse-warrior", [
+    { lab:"floor", val:"feet &rarr; feet" },
+    { lab:"facing", val:"upright &rarr; upright" },
+    { lab:"height", val:"high &rarr; high" },
+    { lab:"spine", val:"neutral &rarr; lateral flex", moved:true },
+    { lab:"plane", val:"coronal &rarr; coronal" },
+  ])}
+  <div class="page-margin">
+    <span class="margin-lab">how it measures</span>
+    <p class="margin-word easy">easy</p>
+    <span class="margin-score">0.10 of 1.00</span>
+    <span class="margin-lab" style="margin-top:14px">what moves</span>
+    <span class="margin-score">spine, alone</span>
+  </div>
+`;
+
+/* ---- page: butterfly -> wide-knee child's (Part II, chapter two, p.56) ---- */
+document.getElementById("page-contact").innerHTML = `
+  <div class="page-runninghead"><span>part ii · chapter two · the floor changes hands</span><span>56</span></div>
+  <div class="page-main" style="grid-column:1/-1">
+    <p class="page-tag">The Floor Changes Hands</p>
+    <h3 class="page-title" style="margin-bottom:16px">Butterfly &rarr; Wide-Knee Child's Pose</h3>
+    <p>Fold forward from Butterfly onto the belly and roll the knees wide into Child's Pose — a common way to rest between seated shapes. Facing, height, spine and plane hold steady the entire way through; only what touches the floor changes, from the sitbones and feet to the knees and hands. One term carries the whole seam.</p>
+  </div>
+  ${transitionFigure("butterfly", "wide-knee-child", [
+    { lab:"floor", val:"sitbones+feet &rarr; knees+hands", moved:true },
+    { lab:"facing", val:"upright &rarr; upright" },
+    { lab:"height", val:"low &rarr; low" },
+    { lab:"spine", val:"flexion &rarr; flexion" },
+    { lab:"plane", val:"sagittal &rarr; sagittal" },
+  ])}
+  <div class="page-margin">
+    <span class="margin-lab">how it measures</span>
+    <p class="margin-word hard">costly</p>
+    <span class="margin-score">0.35 of 1.00</span>
+    <span class="margin-lab" style="margin-top:14px">what moves</span>
+    <span class="margin-score">floor, alone</span>
+  </div>
+`;
+
+/* ---- page: halfway lift -> plank (Part II, chapter three, p.60) ---- */
+document.getElementById("page-halfway").innerHTML = `
+  <div class="page-runninghead"><span>part ii · chapter three · four of five move</span><span>60</span></div>
+  <div class="page-main" style="grid-column:1/-1">
+    <p class="page-tag">Four Of Five Move</p>
+    <h3 class="page-title" style="margin-bottom:16px">Halfway Lift &rarr; Plank Pose</h3>
+    <p>Halfway lift, step back to plank — the transition every vinyasa teacher cues in two words. Four of the five terms this book tracks move at once: the floor gains a second point of contact, the body flips from upright to face-down, the center of gravity drops from mid-height toward the floor, and the spine unwinds from extension to neutral. Only the plane holds. Together they score <b>0.59</b> — more than chaturanga, more than the lift into up dog.</p>
+  </div>
+  ${transitionFigure("halfway-lift", "plank", [
+    { lab:"floor", val:"feet &rarr; hands+feet", moved:true },
+    { lab:"facing", val:"upright &rarr; prone", moved:true },
+    { lab:"height", val:"mid &rarr; low", moved:true },
+    { lab:"spine", val:"extension &rarr; neutral", moved:true },
+    { lab:"plane", val:"sagittal &rarr; sagittal" },
+  ])}
+  <div class="page-margin">
+    <span class="margin-lab">how it measures</span>
+    <p class="margin-word hard">costly</p>
+    <span class="margin-score">0.59 of 1.00</span>
+    <span class="margin-lab" style="margin-top:14px">what moves</span>
+    <span class="margin-score">floor, facing, height, spine</span>
+  </div>
+`;
+
+/* ---- page: thread the needle -> corpse (Part II, chapter four, p.64) ---- */
+document.getElementById("page-thread").innerHTML = `
+  <div class="page-runninghead"><span>part ii · chapter four · everything moves</span><span>64</span></div>
+  <div class="page-main" style="grid-column:1/-1">
+    <p class="page-tag">Everything Moves</p>
+    <h3 class="page-title" style="margin-bottom:16px">Thread the Needle &rarr; Corpse Pose</h3>
+    <p>Thread the Needle unwinds into Corpse Pose at the close of a class most teachers would call a rest. All five terms move at once: the floor changes completely, the body turns from upright to lying on the back, the spine drops its rotation, the plane straightens out, and the center of gravity settles to the floor. It's the loudest seam measured anywhere in this book's three flows — the moment the room calls stillness.</p>
+  </div>
+  ${transitionFigure("thread-needle", "savasana", [
+    { lab:"floor", val:"knees+hands+shoulders &rarr; back", moved:true },
+    { lab:"facing", val:"upright &rarr; supine", moved:true },
+    { lab:"height", val:"low &rarr; floor", moved:true },
+    { lab:"spine", val:"rotation &rarr; neutral", moved:true },
+    { lab:"plane", val:"transverse &rarr; sagittal", moved:true },
+  ])}
+  <div class="page-margin">
+    <span class="margin-lab">how it measures</span>
+    <p class="margin-word hard">abrupt</p>
+    <span class="margin-score">0.87 of 1.00</span>
+    <span class="margin-lab" style="margin-top:14px">what moves</span>
+    <span class="margin-score">all five</span>
+  </div>
+`;
+
+/* ---- Part III: friction across the class, plotted seam by seam ---- */
+(function renderClassChart(){
+  const scores = [0.575,0.708,0.292,0.100,0.592,0.000,0.100,0.317,0.425,0.100,0.292,0.292,0.100,0.592,0.000,0.100,0.317,0.492,0.200,0.100,0.000,0.000,0.175,0.517,0.383,0.733,0.467,0.333,0.000,0.667,0.183,0.712,0.867];
+  const left = 40, top = 10, w = 850, h = 220;
+  const x = i => left + (i / (scores.length - 1)) * w;
+  const y = v => top + (1 - v) * h;
+  const points = scores.map((s, i) => `${x(i).toFixed(1)},${y(s).toFixed(1)}`).join(" ");
+  const bandY = v => top + (1 - v) * h;
+  const bands = `
+    <rect x="${left}" y="${bandY(1)}" width="${w}" height="${(bandY(0.67)-bandY(1)).toFixed(1)}" fill="var(--water-tint)"/>
+    <rect x="${left}" y="${bandY(0.67)}" width="${w}" height="${(bandY(0.34)-bandY(0.67)).toFixed(1)}" fill="var(--ochre-tint)"/>
+    <rect x="${left}" y="${bandY(0.34)}" width="${w}" height="${(bandY(0)-bandY(0.34)).toFixed(1)}" fill="var(--sage-tint)"/>`;
+  const bandLabels = `
+    <text class="chart-band-lab abrupt" x="${left+w+8}" y="${((bandY(1)+bandY(0.67))/2+3).toFixed(1)}">abrupt</text>
+    <text class="chart-band-lab costly" x="${left+w+8}" y="${((bandY(0.67)+bandY(0.34))/2+3).toFixed(1)}">costly</text>
+    <text class="chart-band-lab easy" x="${left+w+8}" y="${((bandY(0.34)+bandY(0))/2+3).toFixed(1)}">easy</text>`;
+  const phaseBounds = [0, 1, 17, 24, 27, 32]; // seam index where each phase starts
+  const phaseNames = ["Opening","Warm-up","Standing","Peak","Cooldown","Closing"];
+  const seps = [0, 16, 23, 26, 31].map(i => x(i + 0.5));
+  const sepLines = seps.map(sx => `<line x1="${sx.toFixed(1)}" y1="${top}" x2="${sx.toFixed(1)}" y2="${top+h}" stroke="var(--line)" stroke-dasharray="3 3"/>`).join("");
+  const phaseLabels = phaseNames.map((name, i) => {
+    const startI = phaseBounds[i];
+    const endI = i < phaseBounds.length - 1 ? phaseBounds[i+1] - 1 : scores.length - 1;
+    const cx = (x(startI) + x(endI)) / 2;
+    return `<text class="chart-phase-lab" x="${cx.toFixed(1)}" y="${top+h+18}" text-anchor="middle">${name}</text>`;
+  }).join("");
+  const dots = scores.map((s, i) => `<circle class="chart-dot${s>=0.67?' hot':''}" cx="${x(i).toFixed(1)}" cy="${y(s).toFixed(1)}" r="3" stroke="var(--sage-deep)" stroke-width="1.5"/>`).join("");
+  const callouts = `
+    <text class="chart-seam-lab" x="${x(1).toFixed(1)}" y="${(y(0.708)-10).toFixed(1)}" text-anchor="middle">0.708</text>
+    <text class="chart-seam-lab" x="${x(32).toFixed(1)}" y="${(y(0.867)-10).toFixed(1)}" text-anchor="middle">0.867</text>`;
+  const axisTicks = `
+    <text class="chart-phase-lab" x="${left-6}" y="${top+4}" text-anchor="end">1.0</text>
+    <text class="chart-phase-lab" x="${left-6}" y="${top+h+4}" text-anchor="end">0.0</text>`;
+  document.getElementById("class-chart-svg").innerHTML = bands + bandLabels + sepLines + axisTicks +
+    `<polyline class="chart-line" points="${points}"/>` + dots + callouts + phaseLabels;
+})();
+
+/* ---- page: the pose library specimen (Back matter) ---- */
+document.getElementById("page-library").innerHTML = `
+  <div class="page-runninghead"><span>back matter · the pose library</span><span>301</span></div>
+  <div class="page-main" style="grid-column:1/-1">
+    <p class="page-tag">Down Dog</p>
+    <h3 class="page-title" style="margin-bottom:16px">Eleven dimensions, one pose, printed as it stands</h3>
+    <div class="specimen">
+      <div class="specrow"><span class="spec-lab">01 · identity</span><span class="spec-val">Down Dog, one name on file so far. <span class="need">lineage story: your call</span></span></div>
+      <div class="specrow"><span class="spec-lab">02 · geometry</span><span class="spec-val">Hands and feet on the floor, upside-down, mid-height, spine in extension, sagittal plane.</span></div>
+      <div class="specrow"><span class="spec-lab">03 · load &amp; tissue</span><span class="spec-val">Loads hamstrings, calves, shoulders, lats, spinal erectors. <span class="need">how hard, what kind of stress: your call</span></span></div>
+      <div class="specrow"><span class="spec-lab">04 · energetics</span><span class="spec-val">Classed as a balancing pose. <span class="need">heating/cooling, element, chakra, dosha: your call</span></span></div>
+      <div class="specrow"><span class="spec-lab">05 · breath</span><span class="spec-val">Full instructions on file for entering, holding, exiting on the breath.</span></div>
+      <div class="specrow"><span class="spec-lab">06 · difficulty</span><span class="spec-val">Accessible, moderate intensity, no-prop variation on file. <span class="need">progression path: your call</span></span></div>
+      <div class="specrow"><span class="spec-lab">07 · timing</span><span class="spec-val">Five breaths, by default.</span></div>
+      <div class="specrow"><span class="spec-lab">08 · shape &amp; props</span><span class="spec-val">No props required.</span></div>
+      <div class="specrow"><span class="spec-lab">09 · cueing</span><span class="spec-val">"Ground hands and feet, lift the hips high and back to form an inverted V, pressing the chest toward the thighs and pedaling the heels to warm up the calves and hamstrings."</span></div>
+      <div class="specrow"><span class="spec-lab">10 · relational</span><span class="spec-val">Tagged as inversion, hamstring stretch, shoulder opener, spinal traction; counters into Child's Pose. <span class="need">groupings by feel: your call</span></span></div>
+      <div class="specrow"><span class="spec-lab">11 · safety</span><span class="spec-val">Flagged for high blood pressure, carpal tunnel, wrist injury, shoulder injury, pregnancy.</span></div>
+    </div>
+    <p style="text-indent:0;margin-top:6px">Six of eleven families answered in full; five printed as they stand, marked for your hand.</p>
+  </div>
+`;
+</script>
+</body>
+</html>

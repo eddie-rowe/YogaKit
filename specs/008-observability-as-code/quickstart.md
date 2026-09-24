@@ -61,7 +61,7 @@ guide's actual authority — this file is a fast local check, not a substitute f
 ## Run the routine by hand
 
 ```bash
-# Paste the contents of docs/routine_runs/autoobs/system-instructions.md into a session.
+# Paste the contents of docs/routines/autoobs/system-instructions.md into a session.
 ```
 
 Produces `docs/observation/digests/YYYY-MM-DD.md` and appends one line to
