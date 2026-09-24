@@ -275,6 +275,7 @@ jobs:
               exit 1
             fi
             echo "supabase start failed (attempt $attempt/$max_attempts), retrying in $((attempt * 10))s..." >&2
+            supabase stop || true
             sleep $((attempt * 10))
             attempt=$((attempt + 1))
           done
