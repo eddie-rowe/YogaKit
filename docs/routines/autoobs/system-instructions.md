@@ -18,10 +18,11 @@ Run /tools:03_observation:autoobs for an overnight health sweep of YogaKit (repo
 eddie-rowe/YogaKit, Datadog service:yogakit, env:prod, on us5.datadoghq.com).
 
 Query monitors, SLOs (read-view-availability, rum-error-free-sessions), Core Web
-Vitals + RUM error rate, API error rate/latency, synthetic uptime, and dashboard
-reachability. Derive one overall verdict — HEALTHY / DEGRADED / AT-RISK — from what
-those signals actually show. If a source is dark (no data), mark it NO-DATA and keep
-going; never fabricate a verdict.
+Vitals + RUM error rate, API error rate/latency, synthetic uptime, dashboard
+reachability, and config drift (`npm run datadog:drift-check` — never `datadog:apply`).
+Derive one overall verdict — HEALTHY / DEGRADED / AT-RISK — from what those signals
+actually show. If a source is dark (no data), mark it NO-DATA and keep going; never
+fabricate a verdict.
 
 Commit the digest to main: docs/observation/autoobs/YYYY-MM-DD.md (never overwrite a
 same-day file — append a "## Re-run HH:MM UTC" section instead).

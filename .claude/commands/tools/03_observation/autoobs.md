@@ -145,7 +145,22 @@ and would risk carrying view-level detail this command has no reason to touch).
 
 **Output**: reachable / not found.
 
-### 7. Digest + Log
+### 7. Config drift (`npm run datadog:drift-check`)
+
+Run `npm run datadog:drift-check` from the repo root. This is `datadog:diff` plus a
+classifier (`findUnexpectedDrift` in `scripts/lib/datadog-sync.mjs`) that separates the
+five documented, permanent synthetics companion monitors (`datadog/README.md`
+"Expected drift") from a real, unexpected gap — plain `datadog:diff`'s exit code never
+reflects drift at all, so this step exists specifically to catch what step 1's
+monitor-list cross-check could otherwise miss on a sweep-to-sweep basis.
+
+This step never mutates — it is `datadog:diff` under the hood, plus a stricter exit
+code. Never run `datadog:apply` from this command, here or anywhere else.
+
+**Output**: exit code (0/1) plus, if non-zero, the list of unexpected drift entries
+`datadog:drift-check` prints (type + name).
+
+### 8. Digest + Log
 
 Write `docs/observation/autoobs/YYYY-MM-DD.md`:
 
@@ -173,6 +188,10 @@ Write `docs/observation/autoobs/YYYY-MM-DD.md`:
 ## Dashboard
 [step 6 output]
 
+## Config drift
+[step 7 output — "clean" if datadog:drift-check exited 0, otherwise the unexpected
+drift entries it printed]
+
 ## Findings
 [Anything AT-RISK/BREACHED/DEGRADED, with the evidence. "None this sweep." if clean.
 Never a fix — record only; a fix is out of this command's scope.]
@@ -188,7 +207,7 @@ Append one line to `docs/planning/routine-log.md`:
 YYYY-MM-DD HH:MM /autoobs [STATUS] — overall: [HEALTHY/DEGRADED/AT-RISK]; monitors: [N ok / M alert]; digest: docs/observation/autoobs/YYYY-MM-DD.md
 ```
 
-### 8. Escalate (only if overall is AT-RISK)
+### 9. Escalate (only if overall is AT-RISK)
 
 Open or update one idempotent GitHub issue labelled `auto/observation` with the
 findings section, evidence, and links to the digest. If an open `auto/observation`
