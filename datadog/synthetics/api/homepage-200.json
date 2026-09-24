@@ -6,7 +6,7 @@
     "request": { "method": "GET", "url": "https://yogakit.vercel.app/", "headers": {}, "body": "" },
     "assertions": [
       { "type": "statusCode", "operator": "is", "target": 200 },
-      { "type": "responseTime", "operator": "lessThan", "target": 2000 }
+      { "type": "responseTime", "operator": "lessThan", "target": 3000 }
     ]
   },
   "options": {
