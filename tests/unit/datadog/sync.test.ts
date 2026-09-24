@@ -14,11 +14,15 @@ import {
   extractHandle,
   extractMetricNames,
   extractMonitorPlaceholder,
+  extractScopedQueries,
   extractSlug,
   extractSloPlaceholder,
+  findUnexpectedNoData,
   formatResultLine,
   markerTagFor,
+  NO_DATA_EXPECTED_TAG,
   planAction,
+  quietMetricNames,
   resolveSloPlaceholders,
   resolveMonitorPlaceholders,
   stripWidgetIds,
@@ -447,6 +451,136 @@ describe('metric and monitor-reference helpers', () => {
         'read-view-200': 'abc',
       }),
     ).toEqual(['abc'])
+  })
+})
+
+// #64: three monitors read No Data because validation probed a generic
+// `avg:<metric>{service,env}` reconstruction instead of the manifest's own
+// aggregation and tag filters. `extractScopedQueries` is the fix — it keeps the
+// filters, and `findUnexpectedNoData` is the second half — an evaluated-state check
+// that reads a live monitor's actual `overall_state`.
+describe('extractScopedQueries — #64 full-tag-set probe', () => {
+  it('keeps the aggregation and every tag filter, not just the bare metric name', () => {
+    expect(
+      extractScopedQueries({
+        query:
+          'sum(last_15m):sum:trace.web.request.hits.by_http_status{service:yogakit,env:prod,http.status_code:5*}.as_rate() / ' +
+          'sum:trace.web.request.hits{service:yogakit,env:prod}.as_rate() * 100 > 5',
+      }),
+    ).toEqual([
+      'sum:trace.web.request.hits.by_http_status{service:yogakit,env:prod,http.status_code:5*}',
+      'sum:trace.web.request.hits{service:yogakit,env:prod}',
+    ])
+  })
+
+  it('reproduces the #64 bug: the old bare-metric probe would have validated a query no monitor runs', () => {
+    // The pre-fix manifest querying the now-dead metric family.
+    const brokenManifest = {
+      query:
+        'sum(last_15m):sum:trace.next_js.BaseServer.handleRequest.hits.by_http_status{service:yogakit,env:prod,http.status_code:5*}.as_rate() / ' +
+        'sum:trace.next_js.BaseServer.handleRequest.hits{service:yogakit,env:prod}.as_rate() * 100 > 5',
+    }
+    const scoped = extractScopedQueries(brokenManifest)
+    // The old approach reconstructed `avg:<metric>{service:yogakit,env:prod}` from the
+    // bare name — for the numerator that silently drops `http.status_code:5*`, the
+    // exact filter that makes the metric never fire.
+    const oldStyleProbe = [...new Set(extractMetricNames(brokenManifest))].map(
+      (m) => `avg:${m}{service:yogakit,env:prod}`,
+    )
+    expect(scoped).toContain(
+      'sum:trace.next_js.BaseServer.handleRequest.hits.by_http_status{service:yogakit,env:prod,http.status_code:5*}',
+    )
+    expect(oldStyleProbe).not.toContain(
+      'sum:trace.next_js.BaseServer.handleRequest.hits.by_http_status{service:yogakit,env:prod,http.status_code:5*}',
+    )
+  })
+
+  it('extracts p95/avg-style single-metric queries with no ratio', () => {
+    expect(
+      extractScopedQueries({ query: 'avg(last_15m):p95:trace.web.request{service:yogakit,env:prod} > 5000000000' }),
+    ).toEqual(['p95:trace.web.request{service:yogakit,env:prod}'])
+  })
+
+  it('does not match log or SLO queries, which carry no aggregation:metric{} fragment', () => {
+    expect(extractScopedQueries({ query: 'logs("service:yogakit").index("*").rollup("count").last("30m") < 1' })).toEqual([])
+    expect(
+      extractScopedQueries({ query: 'error_budget("{{slo_id:yogakit:read-view-availability}}").over("30d") > 25' }),
+    ).toEqual([])
+  })
+
+  it('dedupes an identical fragment referenced more than once', () => {
+    expect(
+      extractScopedQueries({
+        query: 'sum:trace.web.request.hits{service:yogakit,env:prod} + sum:trace.web.request.hits{service:yogakit,env:prod}',
+      }),
+    ).toEqual(['sum:trace.web.request.hits{service:yogakit,env:prod}'])
+  })
+
+  it('excludes a fragment scoped by a dashboard template variable ($version) — not a literal, unprobeable', () => {
+    expect(
+      extractScopedQueries({ query: 'p95:trace.web.request{service:yogakit,env:prod,version:$version}' }),
+    ).toEqual([])
+  })
+
+  it('excludes a fragment guarded by .fill(0) — absence is expected and already handled', () => {
+    expect(
+      extractScopedQueries({
+        query:
+          'sum:trace.web.request.hits.by_http_status{service:yogakit,env:prod,http.status_code:5*}.as_rate().fill(0) / ' +
+          'sum:trace.web.request.hits{service:yogakit,env:prod}.as_rate() * 100 > 5',
+      }),
+    ).toEqual(['sum:trace.web.request.hits{service:yogakit,env:prod}'])
+  })
+})
+
+describe('quietMetricNames — #64 dashboard/monitor shared exemption', () => {
+  it('collects bare metric names from monitors tagged yogakit:no-data-expected', () => {
+    const rumMonitor = {
+      tags: ['yogakit:rum-telemetry-freshness', NO_DATA_EXPECTED_TAG],
+      query: 'sum(last_30m):sum:rum.measure.session{service:yogakit,env:prod}.as_count() < 1',
+    }
+    expect(quietMetricNames([rumMonitor])).toEqual(new Set(['rum.measure.session']))
+  })
+
+  it('ignores a monitor with real traffic even if it also queries a rum.* metric', () => {
+    const okMonitor = {
+      tags: ['yogakit:api-error-rate'],
+      query: 'sum(last_15m):sum:trace.web.request.hits{service:yogakit,env:prod}.as_rate() > 5',
+    }
+    expect(quietMetricNames([okMonitor])).toEqual(new Set())
+  })
+})
+
+describe('findUnexpectedNoData — #64 evaluated-state check', () => {
+  const okMonitor = { name: 'ok', tags: ['yogakit:api-error-rate'], overall_state: 'OK' }
+  const noDataMonitor = { name: 'broken', tags: ['yogakit:api-latency-p95'], overall_state: 'No Data' }
+  const expectedNoDataMonitor = {
+    name: 'rum, pre-launch',
+    tags: ['yogakit:rum-error-rate', NO_DATA_EXPECTED_TAG],
+    overall_state: 'No Data',
+  }
+  const unmanagedMonitor = { name: 'not ours', tags: ['team:other'], overall_state: 'No Data' }
+
+  it('flags an unannotated No Data monitor', () => {
+    expect(findUnexpectedNoData([okMonitor, noDataMonitor])).toEqual([
+      { slug: 'api-latency-p95', name: 'broken', id: undefined },
+    ])
+  })
+
+  it('does not flag a monitor tagged yogakit:no-data-expected', () => {
+    expect(findUnexpectedNoData([expectedNoDataMonitor])).toEqual([])
+  })
+
+  it('does not flag an OK monitor', () => {
+    expect(findUnexpectedNoData([okMonitor])).toEqual([])
+  })
+
+  it('ignores monitors with no yogakit:<slug> tag — not ours to judge', () => {
+    expect(findUnexpectedNoData([unmanagedMonitor])).toEqual([])
+  })
+
+  it('returns nothing for an empty monitor list', () => {
+    expect(findUnexpectedNoData([])).toEqual([])
   })
 })
 

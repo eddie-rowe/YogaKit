@@ -1022,3 +1022,37 @@ shipping the false one.
 is worse than no monitor — it produces a specific, confident, wrong answer
 ("100% available") instead of an honest "no signal." Same lesson as the entry above:
 review what a manifest can actually detect, not just that it applies cleanly.
+
+---
+
+## 2026-09-24 — Repair, don't retire, the three `#64` APM monitors; probe scoped queries, not bare metric names
+
+**Context:** `api-error-rate.json`, `api-latency-p95.json`, and
+`apm-telemetry-freshness.json` flipped `OK` → `No Data` on 2026-09-21 while raw APM
+spans showed healthy traffic (~2,031 req/24h, 0% errors). Root cause: the Next.js 16.3.5
+bump (`#42`, `337239e`) changed dd-trace's span naming from
+`trace.next_js.BaseServer.handleRequest*` to `trace.web.request*`, a clean cutover, not
+a partial outage. `validateLiveTelemetry` didn't catch it because it probed a
+reconstructed `avg:<metric>{service:yogakit,env:prod}` query, discarding each manifest's
+real aggregation and tag filters — it validated a query no monitor actually runs.
+
+**Decision:** Re-point all three monitors (and the equivalent `yogakit-health.json`
+dashboard widgets) at `trace.web.request*`, preserving their original aggregations,
+thresholds, and tag filters exactly. Separately, `api-error-rate.json`'s numerator
+(`http.status_code:5*`, zero occurrences ever) got `.fill(0)` appended so the ratio
+evaluates to 0% instead of `No Data` when there are no 5xx requests. Rewrote
+`validateLiveTelemetry` to probe each manifest's own scoped query fragment
+(`extractScopedQueries`) instead of a bare metric name, and added a second, independent
+check (`findUnexpectedNoData`) that reads each live monitor's real `overall_state` and
+fails on unannotated `No Data` — the tag `yogakit:no-data-expected` opts a monitor out
+when the absence is legitimate (pre-launch RUM, a stubbed synthetic).
+
+**Why repair over retire:** the underlying signal (server-side request telemetry) is
+real and healthy; only the query pointed at a dead metric family. Retiring a monitor
+that a real signal exists for would have silently reduced observability to work around
+a naming change, not fixed it.
+
+**Why not just widen the bare-name probe instead of switching to scoped queries:** the
+whole failure mode was a probe that couldn't see a numerator's tag filter. A wider bare
+name probe has the same blind spot. Only the manifest's actual query, filters included,
+proves the monitor itself can ever fire.

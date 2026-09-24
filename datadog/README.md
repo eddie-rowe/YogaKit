@@ -117,3 +117,43 @@ inheriting its name and tags, and that monitor is not addressable as a separate
 manifest. There is nothing under `synthetics/` to add; this drift is Datadog's own
 synthetics infrastructure surfacing under the `monitors` type, and is expected to
 persist across every run.
+
+### Monitors legitimately reading No Data pre-launch
+
+A monitor's `overall_state` can read `No Data` without anything being broken — RUM and
+the offline-read synthetic have zero real traffic before launch. Tag such a monitor
+`yogakit:no-data-expected` and `datadog:validate-live`'s evaluated-state check will
+skip it; anything untagged that reads `No Data` fails CI. Currently tagged this way:
+`rum-error-rate`, `rum-telemetry-freshness`, `web-vitals-inp`, `web-vitals-lcp`, and
+the `read-flow-offline` synthetic (its browser steps are a recorded stub, `status:
+paused` — see the manifest's own `message`).
+
+`rum-telemetry-freshness` has been No Data since 2026-09-10, older and unrelated to the
+Next.js metric-rename incident below — `rum.measure.session{service:yogakit}` appears
+to have no live series for this service at all pre-launch. Tracked as a known gap, not
+fixed as a side effect of `#64`.
+
+### `#64` — three APM monitors read No Data despite healthy traffic (fixed 2026-09-24)
+
+The Next.js 16.3.5 bump (`#42`, `337239e`) changed dd-trace's span naming: `dd-trace`
+stopped emitting `trace.next_js.BaseServer.handleRequest*` at 2026-09-21 18:29:59 UTC
+and started emitting the generic `trace.web.request*` at 18:00:00 UTC the same day — a
+clean cutover, not a partial outage. `api-error-rate.json`, `api-latency-p95.json`, and
+`apm-telemetry-freshness.json` still queried the dead family, so each read `No Data`
+while the service itself served ~2,031 req/24h at 0% errors. Fixed by re-pointing all
+three (plus the equivalent dashboard widgets in `yogakit-health.json`) at
+`trace.web.request*`.
+
+Separately, `api-error-rate.json`'s numerator (`http.status_code:5*`) has zero
+occurrences ever — Datadog counters emit no points at count zero, so that tag slice
+looks identical to "wrong metric name" to a raw query. Fixed by appending `.fill(0)` to
+the numerator so the ratio evaluates to 0% rather than `No Data` when there are no 5xx
+requests, and taught `datadog:validate-live`'s query-probe to skip any fragment guarded
+by `.fill(0)` (the absence is declared, not accidental).
+
+This is also why `validateLiveTelemetry` used to miss it: it reconstructed a generic
+`avg:<metric>{service:yogakit,env:prod}` probe from the bare metric name, discarding
+each manifest's real aggregation and tag filters — so it validated a query no monitor
+actually runs. It now probes the manifest's own scoped query fragment
+(`extractScopedQueries`) and separately reads each live monitor's real `overall_state`
+(`findUnexpectedNoData`), rather than only diffing manifest-declared keys.

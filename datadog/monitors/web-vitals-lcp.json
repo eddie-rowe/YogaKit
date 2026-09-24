@@ -3,7 +3,7 @@
   "type": "query alert",
   "query": "avg(last_1h):p75:rum.measure.view.largest_contentful_paint{service:yogakit,env:prod,!session_type:synthetics,!browser:HeadlessChrome} > 2500000000",
   "message": "Read-view LCP p75 exceeded the RULE-L6 mobile-performance floor for YogaKit. @syntheticstesting@gmail.com",
-  "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:web-vitals-lcp"],
+  "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:web-vitals-lcp", "yogakit:no-data-expected"],
   "options": {
     "notify_audit": false,
     "require_full_window": false,

@@ -3,7 +3,7 @@
   "type": "query alert",
   "query": "avg(last_1h):p75:rum.measure.view.loading_time{service:yogakit,env:prod,!session_type:synthetics,!browser:HeadlessChrome} > 4000000000",
   "message": "Real-user page-load p75 exceeded threshold for YogaKit. @syntheticstesting@gmail.com",
-  "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:web-vitals-inp"],
+  "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:web-vitals-inp", "yogakit:no-data-expected"],
   "options": {
     "notify_audit": false,
     "require_full_window": false,

@@ -3,7 +3,7 @@
   "type": "query alert",
   "query": "sum(last_15m):sum:rum.measure.session.error{service:yogakit,env:prod,!session_type:synthetics,!browser:HeadlessChrome}.as_count() / sum:rum.measure.session{service:yogakit,env:prod,!session_type:synthetics,!browser:HeadlessChrome}.as_count() * 100 > 5",
   "message": "Client-side error rate exceeded threshold for YogaKit. @syntheticstesting@gmail.com",
-  "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:rum-error-rate"],
+  "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:rum-error-rate", "yogakit:no-data-expected"],
   "options": {
     "notify_audit": false,
     "require_full_window": false,

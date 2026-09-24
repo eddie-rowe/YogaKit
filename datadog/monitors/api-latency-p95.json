@@ -1,7 +1,7 @@
 {
   "name": "[YogaKit] Server Request Latency p95 > 5s",
   "type": "query alert",
-  "query": "avg(last_15m):p95:trace.next_js.BaseServer.handleRequest{service:yogakit,env:prod} > 5000000000",
+  "query": "avg(last_15m):p95:trace.web.request{service:yogakit,env:prod} > 5000000000",
   "message": "Server-side request latency p95 exceeded threshold for YogaKit. @syntheticstesting@gmail.com",
   "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:api-latency-p95"],
   "options": {

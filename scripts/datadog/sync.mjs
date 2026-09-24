@@ -29,7 +29,9 @@ import {
   validateManifest,
   extractSloPlaceholder,
   resolveMonitorPlaceholders,
-  extractMetricNames,
+  extractScopedQueries,
+  findUnexpectedNoData,
+  quietMetricNames,
   resolveSloPlaceholders,
   dashboardTitleMatches,
   stripWidgetIds,
@@ -144,18 +146,40 @@ async function restRequest(env, method, urlPath, body) {
 async function validateLiveTelemetry(env, manifestsByType) {
   const end = Math.floor(Date.now() / 1000)
   const start = end - 24 * 60 * 60
-  const metrics = new Set()
+  // Probe each manifest's own scoped query fragment (aggregation, metric, and full tag
+  // filter) rather than a generic `avg:<metric>{service,env}` reconstruction — the
+  // #64 bug was exactly that reconstruction discarding a numerator's
+  // `http.status_code:5*` filter and a monitor's real aggregation, so it validated a
+  // query no monitor actually runs. See extractScopedQueries' doc comment.
+  const queries = new Set()
   for (const manifests of Object.values(manifestsByType)) {
     for (const { manifest } of manifests) {
-      for (const metric of extractMetricNames(manifest)) metrics.add(metric)
+      for (const query of extractScopedQueries(manifest)) queries.add(query)
     }
   }
 
+  // A metric a `yogakit:no-data-expected` monitor already declares pre-launch-quiet
+  // (e.g. RUM, with zero traffic before launch) is quiet everywhere it's queried, not
+  // just on that one monitor — a dashboard widget charting the same metric with a
+  // different tag scope would otherwise re-trip this probe with no way to annotate it.
+  const quiet = quietMetricNames((manifestsByType.monitors ?? []).map(({ manifest }) => manifest))
+
   const failures = []
-  for (const metric of [...metrics].sort()) {
-    const query = `avg:${metric}{service:yogakit,env:prod}`
+  for (const query of [...queries].sort()) {
+    const [, metric] = query.match(/^[a-z0-9]+:([A-Za-z0-9_.]+)\{/) ?? []
+    if (metric && quiet.has(metric)) continue
     const result = await restGet(env, `/api/v1/query?from=${start}&to=${end}&query=${encodeURIComponent(query)}`)
-    if (!result.series?.length) failures.push(`metric has no env:prod series in 24h: ${metric}`)
+    if (!result.series?.length) failures.push(`query has no series in 24h: ${query}`)
+  }
+
+  // Evaluated-state check (#64): a manifest can validate and still point at a metric
+  // that will never fire. Read the overall_state fetchLive('monitors') already returns
+  // and fail on unannotated No Data, rather than relying on the query-probe above to
+  // catch every case (it only covers the aggregation/tags this file can parse out of
+  // the query string, not e.g. a monitor's SLO- or log-based query).
+  const liveMonitors = await fetchLive(env, 'monitors')
+  for (const { slug, name } of findUnexpectedNoData(liveMonitors)) {
+    failures.push(`monitor reads No Data and is not tagged yogakit:no-data-expected: ${name} (yogakit:${slug})`)
   }
 
   const logResult = await restRequest(env, 'POST', '/api/v2/logs/events/search', {
@@ -189,7 +213,8 @@ async function validateLiveTelemetry(env, manifestsByType) {
     throw new Error(`live telemetry validation failed (${failures.length} issue(s))`)
   }
   console.log(
-    `Live telemetry OK: ${metrics.size} metric(s), ${syntheticUrls.size} synthetic URL(s) and logs active in env:prod.`,
+    `Live telemetry OK: ${queries.size} scoped quer${queries.size === 1 ? 'y' : 'ies'}, ` +
+      `${syntheticUrls.size} synthetic URL(s), logs active in env:prod, and no unexpected No Data monitors.`,
   )
 }
 

@@ -213,6 +213,82 @@ export function extractMetricNames(value) {
   return [...new Set([...matches].map((match) => match[1]))]
 }
 
+/**
+ * Return every `<aggregation>:<metric>{<scope>}` fragment referenced anywhere in a
+ * manifest — e.g. `sum:trace.web.request.hits{service:yogakit,env:prod}` — including
+ * the manifest's own tag filters, not just the bare metric name.
+ *
+ * This exists because `extractMetricNames` deliberately drops everything but the
+ * metric name, which is right for the retired-metric check but wrong for live
+ * validation: a monitor whose numerator filters `http.status_code:5*` and a monitor
+ * with no such filter can point at the same metric name while one has a real series
+ * and the other never will. Probing the bare name alone (`avg:<metric>{service,env}`)
+ * cannot tell them apart — this is the #64 root cause. Probing the exact fragment the
+ * monitor evaluates can.
+ */
+export function extractScopedQueries(value) {
+  // A trailing `.fill(0)` is the author explicitly declaring "this series may
+  // legitimately have zero points" (e.g. a 5xx-count tag slice with no errors ever) —
+  // Datadog counters emit no points at count 0, so a raw metrics-query probe of that
+  // exact fragment will always read "no series," a false alarm the fill(0) already
+  // handles at monitor-eval time. Exclude those fragments from the probe set.
+  const matches = (JSON.stringify(value) ?? '').matchAll(
+    /\b((?:sum|avg|min|max|count|p\d{2,3})):((?:trace|rum|synthetics|yogakit)\.[A-Za-z0-9_.]+)\{([^}]*)\}((?:\.[a-zA-Z_]+\([^)]*\))*)/g,
+  )
+  const fragments = new Set()
+  for (const [, aggregation, metric, scope, suffix] of matches) {
+    if (suffix.includes('.fill(0)')) continue
+    // A `$`-prefixed tag value (e.g. `version:$version`) is a dashboard template
+    // variable Datadog resolves client-side — probing it as a literal tag value
+    // always returns no series regardless of whether the metric itself is healthy.
+    if (scope.includes(':$')) continue
+    fragments.add(`${aggregation}:${metric}{${scope}}`)
+  }
+  return [...fragments]
+}
+
+/** The `yogakit:no-data-expected` tag marks a monitor pre-launch-legitimately-No-Data. */
+export const NO_DATA_EXPECTED_TAG = 'yogakit:no-data-expected'
+
+/**
+ * Bare metric names (e.g. `rum.measure.session`) referenced by a monitor manifest
+ * tagged `yogakit:no-data-expected` — pre-launch, these have zero series anywhere,
+ * on any manifest. A dashboard widget charting the same metric (with its own tag
+ * scope, e.g. `!session_type:synthetics`) has no monitor-style tag of its own to
+ * annotate, so the raw-query "no series" probe exempts by metric name instead of
+ * requiring an exact fragment match.
+ */
+export function quietMetricNames(monitorManifests) {
+  const names = new Set()
+  for (const manifest of monitorManifests) {
+    if (!manifest.tags?.includes(NO_DATA_EXPECTED_TAG)) continue
+    for (const fragment of extractScopedQueries(manifest)) {
+      const [, metric] = fragment.match(/^[a-z0-9]+:([A-Za-z0-9_.]+)\{/) ?? []
+      if (metric) names.add(metric)
+    }
+  }
+  return names
+}
+
+/**
+ * Given the live monitor objects `fetchLive('monitors')` returns, find every
+ * yogakit-managed monitor (tag-matched via `yogakit:<slug>`) whose `overall_state` is
+ * "No Data" and which is not explicitly annotated `yogakit:no-data-expected`.
+ *
+ * `overall_state` is already present on every object `fetchLive` returns — it is
+ * discarded before this call by the diff path (`normalizeForDiff`/`planAction` only
+ * compare manifest-declared keys), so this is a deliberate second read of the same
+ * fetch, not a new API call (FR: a monitor manifest can be valid and still reference a
+ * metric that will never fire — a monitor that cannot fire is worse than no monitor).
+ */
+export function findUnexpectedNoData(liveMonitors) {
+  return liveMonitors
+    .filter((m) => extractSlug(m.tags))
+    .filter((m) => m.overall_state === 'No Data')
+    .filter((m) => !(Array.isArray(m.tags) && m.tags.includes(NO_DATA_EXPECTED_TAG)))
+    .map((m) => ({ slug: extractSlug(m.tags), name: m.name, id: m.id }))
+}
+
 /** The `yogakit:<slug>` tag a monitor-ID placeholder references. */
 export function extractMonitorPlaceholder(value) {
   if (typeof value !== 'string') return null

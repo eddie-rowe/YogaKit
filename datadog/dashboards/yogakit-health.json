@@ -135,12 +135,12 @@
                     {
                       "data_source": "metrics",
                       "name": "errors",
-                      "query": "sum:trace.next_js.BaseServer.handleRequest.hits.by_http_status{service:yogakit,env:prod,version:$version,http.status_code:5*}.as_rate()"
+                      "query": "sum:trace.web.request.hits.by_http_status{service:yogakit,env:prod,version:$version,http.status_code:5*}.as_rate().fill(0)"
                     },
                     {
                       "data_source": "metrics",
                       "name": "requests",
-                      "query": "sum:trace.next_js.BaseServer.handleRequest.hits{service:yogakit,env:prod,version:$version}.as_rate()"
+                      "query": "sum:trace.web.request.hits{service:yogakit,env:prod,version:$version}.as_rate()"
                     }
                   ],
                   "formulas": [{ "formula": "errors / requests * 100", "alias": "error rate (%)" }],
@@ -162,7 +162,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "p95:trace.next_js.BaseServer.handleRequest{service:yogakit,env:prod,version:$version}"
+                      "query": "p95:trace.web.request{service:yogakit,env:prod,version:$version}"
                     }
                   ],
                   "formulas": [{ "formula": "query1" }],

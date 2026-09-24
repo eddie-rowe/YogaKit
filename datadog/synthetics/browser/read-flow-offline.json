@@ -14,7 +14,7 @@
     "monitor_name": "[YogaKit] Synthetic Browser: Read Flow Offline"
   },
   "locations": ["aws:us-east-1"],
-  "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:read-flow-offline"],
+  "tags": ["env:prod", "service:yogakit", "managed_by:git", "yogakit:read-flow-offline", "yogakit:no-data-expected"],
   "status": "paused",
   "message": "Stub — browser steps (load, go offline via devtools network throttling, reload, assert content still renders per RULE-L3/L4) must be recorded via the Datadog UI. Set status to 'live' after recording."
 }
