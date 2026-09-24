@@ -146,6 +146,15 @@ MCP-native lifecycle (no `/tools:02_development:up`, no Docker):
    Requirements, run them, and **confirm they fail with a meaningful error**
    (not a typo/import error). Commit the failing test first. A test that
    passes before you've implemented anything is not testing the change.
+
+   **Carve-out: changes with no vitest surface** (GitHub Actions YAML, other
+   pure infra/config with nothing for vitest to import or execute). Red/Green
+   doesn't apply — there is no test to fail first. The accepted proof shape
+   instead: run the full gate (step 4 below) green *before* any review-driven
+   fix and again *after*, plus a diff read against every acceptance criterion
+   in the issue, both recorded in the PR body. This is not a license to skip
+   verification for anything that merely lacks a test today — only for a
+   change with no vitest-testable surface at all.
 3. **Implement** — make the change until the tests pass (Green).
 4. **Gate** — run, and require green:
    ```
