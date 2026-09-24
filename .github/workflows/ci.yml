@@ -263,7 +263,22 @@ jobs:
           version: 2.117.0
 
       - name: Start Supabase and apply migrations
-        run: supabase start
+        # Retries on a transient ghcr.io image-pull failure (rate-limit or
+        # registry timeout) — this job otherwise dies before db-types-check.sh
+        # (the actual drift check) ever runs. See issue #67.
+        run: |
+          attempt=1
+          max_attempts=3
+          until supabase start; do
+            if [ "$attempt" -ge "$max_attempts" ]; then
+              echo "supabase start failed after $max_attempts attempts" >&2
+              exit 1
+            fi
+            echo "supabase start failed (attempt $attempt/$max_attempts), retrying in $((attempt * 10))s..." >&2
+            supabase stop || true
+            sleep $((attempt * 10))
+            attempt=$((attempt + 1))
+          done
 
       - name: Check generated types for drift
         run: bash scripts/db-types-check.sh
