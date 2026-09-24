@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Krama · Pose Data Model — Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Spline+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#23281f; --ink-soft:#5a6152; --ink-faint:#8b917f;
+    --paper:#e7e9e0; --card:#f3f4ee; --card-2:#eceee3;
+    --line:rgba(35,40,31,.14); --line-strong:rgba(35,40,31,.26);
+    --sage:#4e6152; --sage-deep:#33452e;
+    --ochre:#a9762f; --water:#4f7280;
+    --sage-tint:rgba(78,97,82,.10); --ochre-tint:rgba(169,118,47,.13); --water-tint:rgba(79,114,128,.12);
+    --shadow:0 1px 0 rgba(35,40,31,.04), 0 12px 34px -22px rgba(35,40,31,.4);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Spline Sans",system-ui,sans-serif; line-height:1.55;
+    font-size:15.5px; letter-spacing:.005em;
+    background-image:radial-gradient(rgba(35,40,31,.028) 1px, transparent 1px);
+    background-size:22px 22px;
+  }
+  .wrap{max-width:1080px; margin:0 auto; padding:0 24px}
+  .mono{font-family:"IBM Plex Mono",monospace}
+
+  /* ---- hero ---- */
+  header.hero{padding:64px 0 30px}
+  .eyebrow{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.24em;
+    text-transform:uppercase; color:var(--sage); margin:0 0 18px}
+  h1{font-family:"Fraunces",serif; font-weight:500; font-size:clamp(38px,6vw,68px);
+    line-height:1.02; letter-spacing:-.02em; margin:0 0 18px; max-width:16ch}
+  h1 em{font-style:italic; color:var(--sage-deep)}
+  .lede{font-size:18px; max-width:60ch; color:var(--ink-soft); margin:0 0 6px}
+  .team{margin-top:22px; font-size:14px; color:var(--ink-faint)}
+  .team b{color:var(--ink); font-weight:500}
+
+  /* ---- legend / controls ---- */
+  .legend{display:flex; flex-wrap:wrap; gap:10px 18px; align-items:center;
+    margin-top:30px; padding-top:22px; border-top:1px solid var(--line)}
+  .chip{display:inline-flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-soft)}
+  .dot{width:10px; height:10px; border-radius:50%}
+  .dot.geo{background:var(--water)} .dot.exp{background:var(--ochre)} .dot.core{background:var(--sage)}
+  .focusbtn{margin-left:auto; font-family:"Spline Sans",sans-serif; font-size:13.5px;
+    border:1px solid var(--line-strong); background:var(--card); color:var(--ink);
+    padding:9px 16px; border-radius:999px; cursor:pointer; transition:.18s; display:inline-flex; gap:9px; align-items:center}
+  .focusbtn:hover{border-color:var(--ochre); color:var(--ochre)}
+  .focusbtn .dot.exp{transition:.18s}
+  body.focus .focusbtn{background:var(--ochre); color:#fdf7ec; border-color:var(--ochre)}
+  body.focus .focusbtn .dot.exp{background:#fdf7ec}
+
+  /* ---- section scaffolding ---- */
+  section{padding:46px 0}
+  .part-tag{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.2em;
+    text-transform:uppercase; color:var(--ink-faint); margin:0 0 10px}
+  h2{font-family:"Fraunces",serif; font-weight:500; font-size:clamp(26px,3.4vw,36px);
+    letter-spacing:-.015em; margin:0 0 12px}
+  .section-note{max-width:64ch; color:var(--ink-soft); margin:0 0 30px}
+
+  /* ---- worked-pose banner ---- */
+  .worked{display:inline-flex; align-items:baseline; gap:12px; padding:9px 16px 9px 14px;
+    background:var(--sage-tint); border:1px solid var(--line); border-radius:10px; margin-bottom:26px}
+  .worked .k{font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--sage)}
+  .worked .v{font-family:"Fraunces",serif; font-style:italic; font-size:19px}
+  .worked .san{color:var(--ink-faint); font-size:13.5px}
+
+  /* ---- family accordion ---- */
+  .fam{border:1px solid var(--line); border-radius:14px; background:var(--card);
+    margin-bottom:14px; overflow:hidden; box-shadow:var(--shadow)}
+  .fam.geo-fam{border-color:rgba(79,114,128,.34)}
+  .fam-head{display:flex; align-items:center; gap:16px; width:100%; text-align:left;
+    padding:20px 22px; background:none; border:0; cursor:pointer; font-family:inherit; color:inherit}
+  .fam-idx{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-faint); width:26px; flex:none}
+  .fam-title{font-family:"Fraunces",serif; font-size:21px; font-weight:500; letter-spacing:-.01em}
+  .fam-sub{color:var(--ink-faint); font-size:13.5px; margin-left:2px}
+  .fam-count{margin-left:auto; font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-faint)}
+  .fam-caret{flex:none; transition:transform .22s; color:var(--ink-faint)}
+  .fam.open .fam-caret{transform:rotate(90deg)}
+  .fam-body{display:none; padding:2px 22px 12px}
+  .fam.open .fam-body{display:block}
+  .geo-flag{display:inline-block; margin-left:10px; font-family:"IBM Plex Mono",monospace;
+    font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--water);
+    border:1px solid rgba(79,114,128,.4); border-radius:5px; padding:2px 7px; vertical-align:middle}
+
+  /* ---- field rows ---- */
+  .field{display:grid; grid-template-columns:minmax(170px,220px) 1fr; gap:6px 22px;
+    padding:14px 4px; border-top:1px solid var(--line)}
+  .field:first-child{border-top:0}
+  .fkey{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--sage-deep); word-break:break-word; align-self:start; padding-top:1px}
+  .fkey .type{display:block; color:var(--ink-faint); font-size:11px; margin-top:3px}
+  .fmeaning{color:var(--ink)}
+  .fex{margin-top:7px; font-size:13px; color:var(--ink-soft)}
+  .fex .exlabel{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--ink-faint); margin-right:8px}
+  .fex code{background:var(--card-2); border:1px solid var(--line); border-radius:5px;
+    padding:1px 7px; font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--sage-deep)}
+  .expbadge{display:inline-flex; align-items:center; gap:6px; margin-top:8px;
+    font-size:12px; color:var(--ochre); background:var(--ochre-tint);
+    border:1px solid rgba(169,118,47,.3); border-radius:6px; padding:3px 9px}
+  .expbadge .dot{width:7px; height:7px}
+  .field.is-exp{background:linear-gradient(90deg,var(--ochre-tint),transparent 70%); border-radius:8px}
+
+  /* focus mode dims non-expert fields */
+  body.focus .field:not(.is-exp){opacity:.16; filter:grayscale(.5)}
+  body.focus .fam:not(:has(.is-exp)){opacity:.4}
+  body.focus .field:not(.is-exp) *{pointer-events:none}
+
+  /* ---- PART 2: the graph ---- */
+  .graph-card{background:var(--card); border:1px solid var(--line); border-radius:16px;
+    padding:8px; box-shadow:var(--shadow); margin-bottom:30px}
+  .graph-card svg{width:100%; height:auto; display:block}
+  .gnode circle{fill:var(--card-2); stroke:var(--line-strong); stroke-width:1.5; transition:.18s}
+  .gnode text{font-family:"Fraunces",serif; font-size:14px; fill:var(--ink); font-weight:500}
+  .gnode.active circle{fill:var(--sage-tint); stroke:var(--sage); stroke-width:2.5}
+  .gedge{stroke-width:1.6; fill:none; transition:.18s; opacity:.55}
+  .gedge.hot{opacity:1; stroke-width:3}
+  .glabel{font-family:"IBM Plex Mono",monospace; font-size:10px; fill:var(--ink-faint); text-transform:uppercase; letter-spacing:.08em}
+  .graph-key{display:flex; flex-wrap:wrap; gap:8px 18px; padding:14px 16px 6px}
+  .graph-key .chip{font-size:12px}
+  .swatch{width:20px; height:0; border-top-width:2.5px; border-top-style:solid}
+
+  /* ---- PART 2: delta / signature ---- */
+  .delta{display:grid; grid-template-columns:1fr 1.15fr 1fr; gap:0;
+    border:1px solid var(--line); border-radius:16px; overflow:hidden;
+    background:var(--card); box-shadow:var(--shadow)}
+  .fp{padding:24px 22px}
+  .fp.mid{background:var(--card-2); border-left:1px solid var(--line); border-right:1px solid var(--line)}
+  .fp-tag{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--ink-faint); margin-bottom:4px}
+  .fp-name{font-family:"Fraunces",serif; font-size:22px; font-weight:500; margin-bottom:2px; letter-spacing:-.01em}
+  .fp-san{color:var(--ink-faint); font-size:13px; font-style:italic; margin-bottom:18px}
+  .fp-row{margin:12px 0}
+  .fp-row .lab{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--ink-faint); display:block; margin-bottom:3px}
+  .fp-row .val{font-size:14px}
+  .fp-row .val.hl{color:var(--water); font-weight:500}
+  .mid-title{font-family:"Fraunces",serif; font-style:italic; font-size:16px; color:var(--sage-deep);
+    text-align:center; margin-bottom:16px}
+  .drow{display:flex; gap:10px; align-items:flex-start; padding:9px 0; border-top:1px dashed var(--line); font-size:13.5px}
+  .drow:first-of-type{border-top:0}
+  .darrow{color:var(--water); flex:none; font-family:"IBM Plex Mono",monospace}
+  .dtag{font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.08em; text-transform:uppercase;
+    padding:2px 6px; border-radius:4px; flex:none; margin-top:1px}
+  .dtag.der{background:var(--water-tint); color:var(--water); border:1px solid rgba(79,114,128,.3)}
+  .dtag.cur{background:var(--sage-tint); color:var(--sage-deep); border:1px solid rgba(78,97,82,.3)}
+  .dtext b{font-weight:600}
+
+  .friction{margin-top:26px; padding:22px; border:1px solid var(--line); border-radius:14px; background:var(--card)}
+  .friction-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px; flex-wrap:wrap; gap:8px}
+  .friction-head .lab{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-faint)}
+  .friction-head .score{font-family:"Fraunces",serif; font-size:30px; color:var(--sage-deep)}
+  .friction-head .score small{font-size:15px; color:var(--ink-faint)}
+  .meter{height:12px; border-radius:999px; background:var(--card-2); border:1px solid var(--line); overflow:hidden; position:relative}
+  .meter .fill{height:100%; width:15%; background:linear-gradient(90deg,var(--sage),var(--water)); border-radius:999px}
+  .meter-scale{display:flex; justify-content:space-between; font-size:11px; color:var(--ink-faint);
+    font-family:"IBM Plex Mono",monospace; margin-top:8px}
+  .friction-why{margin-top:16px; font-size:13.5px; color:var(--ink-soft); max-width:70ch}
+
+  .rule-callout{margin-top:26px; padding:22px 24px; border-left:3px solid var(--sage);
+    background:var(--sage-tint); border-radius:0 12px 12px 0}
+  .rule-callout .lab{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--sage); margin-bottom:8px}
+  .rule-callout p{margin:0; font-family:"Fraunces",serif; font-size:19px; line-height:1.4}
+
+  /* split derived/curated */
+  .split{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:26px}
+  .split .col{border:1px solid var(--line); border-radius:14px; padding:20px 22px; background:var(--card)}
+  .split .col h4{margin:0 0 4px; font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase}
+  .split .der h4{color:var(--water)} .split .cur h4{color:var(--sage-deep)}
+  .split .col .sub{color:var(--ink-faint); font-size:13px; margin-bottom:14px}
+  .split ul{margin:0; padding:0; list-style:none}
+  .split li{padding:7px 0; border-top:1px solid var(--line); font-size:13.5px; display:flex; gap:9px}
+  .split li:first-child{border-top:0}
+  .split li .mono{font-size:12px; color:var(--ink-soft)}
+
+  /* ---- open questions ---- */
+  .q{border-top:1px solid var(--line); padding:20px 0; display:grid; grid-template-columns:34px 1fr; gap:18px}
+  .q .num{font-family:"Fraunces",serif; font-style:italic; font-size:22px; color:var(--sage)}
+  .q h3{margin:0 0 6px; font-size:17px; font-family:"Spline Sans"; font-weight:600}
+  .q p{margin:0; color:var(--ink-soft); font-size:14.5px; max-width:70ch}
+
+  footer{padding:50px 0 70px; border-top:1px solid var(--line); margin-top:20px; color:var(--ink-faint); font-size:13px}
+  footer .mono{color:var(--sage)}
+
+  @media(max-width:820px){
+    .delta{grid-template-columns:1fr}
+    .fp.mid{border-left:0; border-right:0; border-top:1px solid var(--line); border-bottom:1px solid var(--line)}
+    .split{grid-template-columns:1fr}
+    .field{grid-template-columns:1fr}
+    .fkey{padding-top:0}
+  }
+  @media(prefers-reduced-motion:reduce){*{transition:none!important; scroll-behavior:auto}}
+  :focus-visible{outline:2px solid var(--water); outline-offset:3px; border-radius:4px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Krama · Pose Data Model · Working Draft</p>
+    <h1>A field guide to the <em>anatomy of a pose</em></h1>
+    <p class="lede">Every pose is a node carrying these dimensions. Every transition is the <em>difference</em> between two nodes. Model the node well and the sequence-chaining rules mostly compute themselves.</p>
+    <p class="team">For review by <b>Gioconda Parker</b> &amp; <b>Tavo Grijalva</b> (movement &amp; philosophy) with <b>Eddie</b> (build). Everything here is a proposal — the flagged fields are where your expertise defines the vocabulary.</p>
+
+    <div class="legend">
+      <span class="chip"><span class="dot core"></span> Core field</span>
+      <span class="chip"><span class="dot geo"></span> Geometry — feeds the transition engine</span>
+      <span class="chip"><span class="dot exp"></span> Needs your input</span>
+      <button class="focusbtn" id="focusBtn"><span class="dot exp"></span> Focus on what we need to decide</button>
+    </div>
+  </div>
+</header>
+
+<section id="node">
+  <div class="wrap">
+    <p class="part-tag">Part 1 — The Pose · a graph node</p>
+    <h2>64 dimensions, grouped into families</h2>
+    <p class="section-note">Your notebook list, organized and typed, plus the additions that were missing — mostly a <strong>geometry layer</strong> (where the body is in space), because that layer is what the transition engine reads. Each row shows the field, what it means in plain terms, and an example value from the worked pose.</p>
+
+    <div class="worked">
+      <span class="k">Worked example</span>
+      <span class="v">Downward-Facing Dog</span>
+      <span class="san">Adho Mukha Svanasana</span>
+    </div>
+
+    <div id="families"></div>
+  </div>
+</section>
+
+<section id="edge">
+  <div class="wrap">
+    <p class="part-tag">Part 2 — The Transition · a graph edge</p>
+    <h2>Poses are nodes; transitions are the deltas between them</h2>
+    <p class="section-note">Think of the practice as a graph. Poses are nodes carrying everything above; transitions are typed, weighted edges. Hover a pose to see how it connects.</p>
+
+    <div class="graph-card">
+      <svg id="graph" viewBox="0 0 900 380" role="img" aria-label="Graph of poses connected by transitions">
+        <g id="edges"></g>
+        <g id="nodes"></g>
+      </svg>
+      <div class="graph-key">
+        <span class="chip"><span class="swatch" style="border-color:#4e6152"></span> flow / deepening</span>
+        <span class="chip"><span class="swatch" style="border-color:#4f7280"></span> neutralizing</span>
+        <span class="chip"><span class="swatch" style="border-color:#a9762f"></span> counterpose / rebound</span>
+      </div>
+    </div>
+
+    <h2 style="font-size:clamp(22px,2.8vw,30px)">The move you were trying to place: Plank → Down Dog</h2>
+    <p class="section-note">Here is a single edge, exploded. Notice how little of it is new data — most of the link is just the <em>difference</em> between the two poses' geometry, which the engine can compute on its own.</p>
+
+    <div class="delta">
+      <div class="fp">
+        <div class="fp-tag">From · node</div>
+        <div class="fp-name">Plank</div>
+        <div class="fp-san">Phalakasana</div>
+        <div class="fp-row"><span class="lab">Base of support</span><span class="val hl">hands + feet</span></div>
+        <div class="fp-row"><span class="lab">Orientation</span><span class="val">prone · horizontal</span></div>
+        <div class="fp-row"><span class="lab">Center of gravity</span><span class="val">low–mid</span></div>
+        <div class="fp-row"><span class="lab">Spine</span><span class="val">neutral</span></div>
+        <div class="fp-row"><span class="lab">Hips / shoulders</span><span class="val">neutral · flexion 90°</span></div>
+        <div class="fp-row"><span class="lab">Energetic</span><span class="val">brahmana · active hold</span></div>
+      </div>
+
+      <div class="fp mid">
+        <div class="mid-title">what actually changes</div>
+        <div class="drow"><span class="dtag der">derived</span><span class="dtext"><span class="darrow">=</span> <b>Base of support: conserved.</b> Hands + feet before and after — nothing added or removed. The dominant reason this feels effortless.</span></div>
+        <div class="drow"><span class="dtag der">derived</span><span class="dtext"><span class="darrow">↑</span> <b>COG rises &amp; travels back</b> over the hips — one clean vector, no scatter.</span></div>
+        <div class="drow"><span class="dtag der">derived</span><span class="dtext"><span class="darrow">→</span> <b>Joints move monotonically:</b> hips neutral→flexion, shoulders 90°→overhead. Same direction, nothing fights.</span></div>
+        <div class="drow"><span class="dtag der">derived</span><span class="dtext"><span class="darrow">=</span> <b>Spine stays neutral</b> — continuation, not reversal.</span></div>
+        <div class="drow"><span class="dtag cur">curated</span><span class="dtext"><span class="darrow">✎</span> <b>Movement name:</b> “press the hips up and back.” <b>Breath:</b> exhale. Human vocabulary the engine can't invent.</span></div>
+      </div>
+
+      <div class="fp">
+        <div class="fp-tag">To · node</div>
+        <div class="fp-name">Down Dog</div>
+        <div class="fp-san">Adho Mukha Svanasana</div>
+        <div class="fp-row"><span class="lab">Base of support</span><span class="val hl">hands + feet</span></div>
+        <div class="fp-row"><span class="lab">Orientation</span><span class="val">inverted (mild)</span></div>
+        <div class="fp-row"><span class="lab">Center of gravity</span><span class="val">mid</span></div>
+        <div class="fp-row"><span class="lab">Spine</span><span class="val">neutral · long</span></div>
+        <div class="fp-row"><span class="lab">Hips / shoulders</span><span class="val">flexion 90° · overhead</span></div>
+        <div class="fp-row"><span class="lab">Energetic</span><span class="val">decompress · samana</span></div>
+      </div>
+    </div>
+
+    <div class="friction">
+      <div class="friction-head">
+        <span class="lab">Friction score · how smooth the edge is</span>
+        <span class="score">0.15 <small>/ 1.00 · very smooth</small></span>
+      </div>
+      <div class="meter"><div class="fill"></div></div>
+      <div class="meter-scale"><span>0 · seamless</span><span>0.5</span><span>1 · jarring</span></div>
+      <p class="friction-why">Low because base of support is conserved, there's no prone↔supine flip, the COG follows a single vector, and every joint change is monotonic. The sequencer prefers low-friction edges — and can flag a high-friction one as intentional (a deliberate rebound) rather than an accident.</p>
+    </div>
+
+    <div class="rule-callout">
+      <div class="lab">The generalizable rule</div>
+      <p>A transition flows when the base of support and orientation are conserved, and only the center of gravity plus a few joint angles change along one coherent vector. It's the same magic in chaturanga → up dog → down dog: hands and feet stay planted, the body just arcs over a fixed base.</p>
+    </div>
+
+    <div class="split">
+      <div class="col der">
+        <h4>Auto-derived from the nodes</h4>
+        <p class="sub">The engine proposes these from the two poses' geometry — no extra data entry.</p>
+        <ul>
+          <li><span class="mono">contact_continuity</span></li>
+          <li><span class="mono">orientation_change</span></li>
+          <li><span class="mono">cog_delta</span></li>
+          <li><span class="mono">joint_deltas</span> <span class="mono">· monotonic?</span></li>
+          <li><span class="mono">spinal_relationship</span></li>
+          <li><span class="mono">tissue_meridian_continuity</span></li>
+          <li><span class="mono">energetic_gradient</span> &amp; <span class="mono">friction_score</span></li>
+        </ul>
+      </div>
+      <div class="col cur">
+        <h4>Human-curated soul</h4>
+        <p class="sub">What no geometry captures — this is where the two of you are irreplaceable.</p>
+        <ul>
+          <li><span class="mono">movement_name</span> — what the teacher cues</li>
+          <li><span class="mono">breath_phase</span> — inhale / exhale drive</li>
+          <li><span class="mono">edge_type</span> — nuance of intent</li>
+          <li><span class="mono">cues</span> — words during the move</li>
+          <li><span class="mono">teacher_notes</span> — “these just feel good together”</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="questions">
+  <div class="wrap">
+    <p class="part-tag">Part 3 — For Gioconda &amp; Tavo</p>
+    <h2>The decisions that shape everything downstream</h2>
+    <div id="qlist"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Two schema files accompany this page: <span class="mono">pose.schema.json</span> and <span class="mono">transition.schema.json</span>. Fields flagged <span style="color:var(--ochre)">◐ needs your input</span> map to <span class="mono">x-expertInput</span> in the schema; auto-derived transition fields map to <span class="mono">x-derived</span>.</p>
+    <p class="mono" style="margin-top:10px">krama · pose-to-pose model · working draft for review</p>
+  </div>
+</footer>
+
+<script>
+/* ---------------- Pose node model (mirrors pose.schema.json) ---------------- */
+const FAMILIES = [
+  { id:"identity", title:"Identity & lineage", sub:"who the pose is",
+    fields:[
+      {k:"id", t:"string", m:"Permanent slug. Transitions & sequences reference the pose by this — never rename.", ex:"adho-mukha-svanasana"},
+      {k:"name_sanskrit / name_english", t:"string", m:"The pose's names, plus aliases students recognize.", ex:"Adho Mukha Svanasana"},
+      {k:"origin_story · sutra · companion_deity · synergistic_mantra", t:"string", m:"Lineage & mythic context that feeds the teacher's 'why' and the class theme."},
+      {k:"provenance", t:"object", m:"Who contributed this entry & how verified — matters for an open, community-built library."},
+    ]},
+  { id:"geometry", geo:true, title:"Geometry", sub:"where the body is in space",
+    fields:[
+      {k:"base_of_support", t:"enum[]", geo:true, m:"Which body parts bear on the floor. THE most important field for transitions — conserving it makes a link cheap.", ex:"[hands, feet]"},
+      {k:"orientation", t:"enum", geo:true, m:"Gross orientation. Flips between families (prone↔supine, floor↔standing) are the expensive moves.", ex:"inverted"},
+      {k:"cog_height", t:"enum", geo:true, m:"Height of the center of gravity. Changing level costs effort.", ex:"mid"},
+      {k:"spinal_action", t:"enum[]", geo:true, m:"What the spine does. Counterpose logic lives here — flexion answers extension. (Replaces the loose 'rotation' note.)", ex:"[neutral]"},
+      {k:"joint_config", t:"object[]", geo:true, m:"The structural fingerprint: each joint's action, angle & load. Formalizes your 'bicep flexion' idea. Transition friction is the delta across these.", ex:"hip flexion ~90°, shoulder overhead…"},
+      {k:"laterality", t:"enum", geo:true, m:"Symmetric or unilateral. Unilateral = both sides required (a hard validator rule).", ex:"symmetric"},
+      {k:"plane · kinetic_chain", t:"enum", m:"Dominant movement plane; open vs. closed chain (pairs with the PAILs/RAILs framing)."},
+    ]},
+  { id:"load", title:"Load & tissue", sub:"what the pose works",
+    fields:[
+      {k:"primary_tissue", t:"enum", m:"Muscle vs. connective tissue / joint capsule — the core of the yin/yang divide.", ex:"muscle"},
+      {k:"stress_type", t:"enum", exp:true, m:"Is the limit a stretch (tension) or tissue-into-tissue (compression)? Core yin vocabulary — confirm the taxonomy.", ex:"tension"},
+      {k:"target_regions", t:"string[]", exp:true, m:"Normalized region tags so 'hip-focused class' is queryable. Finalize the region list.", ex:"[hamstrings, calves…]"},
+      {k:"muscles", t:"object", m:"agonist / antagonist / stabilizers / tension_muscle — straight from your list."},
+      {k:"muscle_actions", t:"object[]", m:"Specific muscle→action pairs (your 'bicep flexion' example)."},
+      {k:"bones · joints · fascia", t:"string[]", m:"Named structures & fascial lines loaded."},
+      {k:"avg_caloric_expenditure", t:"number", exp:true, m:"Rough energy cost — confirm units (per-minute vs per-hold)."},
+    ]},
+  { id:"energetics", title:"Energetics & philosophy", sub:"how it moves energy",
+    fields:[
+      {k:"energetic_direction", t:"enum", exp:true, m:"brahmana / langhana / samana — building, reducing, balancing. PROPOSED as the single field that unifies purpose, autonomic tilt & thermal effect, giving the arc engine one axis. Key decision.", ex:"brahmana"},
+      {k:"thermal_effect · active_passive · autonomic_effect", t:"enum", m:"Heating/cooling; effort vs. surrender; sympathetic/parasympathetic tilt."},
+      {k:"purpose", t:"enum", exp:true, m:"Your strengthening↔softening intent. May be redundant with energetic_direction — decide if both stay."},
+      {k:"meridian", t:"string[]", m:"TCM lines loaded — central to yin, and a primary transition-continuity signal (deepen a line, then break it to rebound).", ex:"[Bladder]"},
+      {k:"element", t:"string[]", exp:true, m:"Five-Element association, connecting season + meridian. Experts to map."},
+      {k:"chakra · kosha · drishti", t:"mixed", m:"Subtle-body layers and gaze point."},
+      {k:"ayurvedic_category", t:"object", exp:true, m:"Dosha effects — define increases/decreases per vata/pitta/kapha."},
+      {k:"masculine_feminine · takes_up_space", t:"enum/bool", exp:true, m:"Your polarity + 'taking up space' notes — confirm meaning & scale."},
+      {k:"somatic_emotional", t:"string[]", exp:true, m:"Emotional associations (hips as release, heart as vulnerability). What lets a THEME thread through pose selection."},
+    ]},
+  { id:"breath", title:"Breath", sub:"how it meets the breath",
+    fields:[
+      {k:"breath_effect", t:"enum", m:"Does the shape compress or free the breath? Feeds pranayama pairing & the transition's breath phase.", ex:"neutral"},
+      {k:"companion_pranayama · breathing_cues", t:"string[]", m:"Breathwork that pairs, and cues to offer."},
+    ]},
+  { id:"difficulty", title:"Difficulty & progression", sub:"who it's for",
+    fields:[
+      {k:"complexity · accessibility · intensity", t:"int 1–5", m:"Scalar dials for filtering to the room.", ex:"2 · 3 · 3"},
+      {k:"progression_stage", t:"enum", exp:true, m:"Level within a progression toward a peak pose. Define the ladder."},
+      {k:"pails_rails_applicable · compatible_mobility_drills", t:"bool/[]", m:"FRC end-range work & prep drills (from your list)."},
+      {k:"population_modifications", t:"object[]", exp:true, m:"Turns scalar 'accessibility' into real variations per population (pregnancy, larger bodies, seniors…)."},
+      {k:"common_misalignments", t:"string[]", m:"Watch-points a teacher actively cues — distinct from contraindications."},
+    ]},
+  { id:"timing", title:"Timing", sub:"how long",
+    fields:[
+      {k:"min_hold_seconds · max_hold_seconds", t:"int", m:"Sensible hold range. Yin runs into minutes; yang into breaths.", ex:"15 – 60s"},
+    ]},
+  { id:"props", title:"Shape & props", sub:"how it's set up",
+    fields:[
+      {k:"pose_shape", t:"string", m:"Plain-language description of the shape for display."},
+      {k:"supporting_props · variations", t:"[]/object[]", m:"Props and named variations with how each differs.", ex:"blocks; bent-knee; three-legged"},
+    ]},
+  { id:"cueing", title:"Cueing", sub:"how it's taught",
+    fields:[
+      {k:"cues · micro_cues · assists", t:"string[]", m:"Entry cues, fine refinements once in the shape, and hands-on/verbal assists."},
+    ]},
+  { id:"relational", title:"Relational", sub:"how it connects",
+    fields:[
+      {k:"groupings", t:"string[]", exp:true, m:"Functional buckets (warm-ups / seated / backbends…). One pose can be in several. Define the set.", ex:"[transitional, mild-inversion]"},
+      {k:"counterposes", t:"id[]", m:"Poses that neutralize this one — now a first-class field, promoted from your 'transition' note.", ex:"[balasana, uttanasana]"},
+    ]},
+  { id:"safety", title:"Safety", sub:"the hard rules",
+    fields:[
+      {k:"contraindications", t:"string[]", exp:true, m:"Conditions under which the pose must NOT be offered. The validator treats these as inviolable. Your clinical eye matters most here.", ex:"wrist injury; high BP; late pregnancy"},
+    ]},
+];
+
+const OPEN_QS = [
+  {h:"Is energetic_direction the one axis to rule them all?", p:"We propose brahmana / langhana / samana as the single normalized energetic field that purpose, autonomic tilt, and thermal effect all resolve into — so the class-arc optimizer has one clean thing to sequence against. Does that hold up, or do you need them independent?"},
+  {h:"Where is the limit — tension or compression?", p:"For yin especially, whether a pose stops at a stretch or at bone/tissue compression changes everything about who can do it and how long. We've made stress_type its own field; help us define the taxonomy and tag the library."},
+  {h:"How does a meridian 'carry' across consecutive holds?", p:"The idea: staying in the same meridian line across poses deepens it, then a deliberate 'break-line' rebounds it. Is that how you'd actually chain a yin sequence, and what signals a line is 'complete'?"},
+  {h:"What makes two poses 'just feel good' together?", p:"The geometry gives us friction scores, but the teacher_notes field is for the pairings that work for reasons geometry can't see. What are the ones you reach for again and again? Those seed the graph's curated edges."},
+  {h:"How thorough must contraindications be for v1?", p:"These are the one set of hard rules the app will never override. How exhaustive do we make them before we'd trust the app to hand a sequence to a real room?"},
+];
+
+/* ---------------- render families ---------------- */
+const famWrap = document.getElementById("families");
+FAMILIES.forEach((fam, i) => {
+  const el = document.createElement("div");
+  el.className = "fam" + (fam.geo ? " geo-fam" : "") + (i < 2 ? " open" : "");
+  const nExp = fam.fields.filter(f=>f.exp).length;
+  el.innerHTML = `
+    <button class="fam-head" aria-expanded="${i<2}">
+      <span class="fam-idx">${String(i+1).padStart(2,"0")}</span>
+      <span>
+        <span class="fam-title">${fam.title}</span>
+        <span class="fam-sub"> — ${fam.sub}</span>
+        ${fam.geo ? '<span class="geo-flag">feeds transitions</span>' : ''}
+      </span>
+      <span class="fam-count">${fam.fields.length} field${fam.fields.length>1?"s":""}${nExp?` · ${nExp}◐`:""}</span>
+      <svg class="fam-caret" width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="fam-body">
+      ${fam.fields.map(f=>`
+        <div class="field ${f.exp?"is-exp":""}">
+          <div class="fkey">${f.k}<span class="type mono">${f.t}${f.geo?" · geometry":""}</span></div>
+          <div>
+            <div class="fmeaning">${f.m}</div>
+            ${f.ex?`<div class="fex"><span class="exlabel">Down Dog</span><code>${f.ex}</code></div>`:""}
+            ${f.exp?`<div class="expbadge"><span class="dot exp"></span> needs Gioconda &amp; Tavo's input</div>`:""}
+          </div>
+        </div>`).join("")}
+    </div>`;
+  el.querySelector(".fam-head").addEventListener("click", () => {
+    el.classList.toggle("open");
+    const b = el.querySelector(".fam-head");
+    b.setAttribute("aria-expanded", el.classList.contains("open"));
+  });
+  famWrap.appendChild(el);
+});
+
+/* ---------------- focus toggle ---------------- */
+document.getElementById("focusBtn").addEventListener("click", () => {
+  document.body.classList.toggle("focus");
+  if (document.body.classList.contains("focus")) {
+    document.querySelectorAll(".fam:not(.open)").forEach(f=>{
+      f.classList.add("open"); f.querySelector(".fam-head").setAttribute("aria-expanded","true");
+    });
+  }
+});
+
+/* ---------------- graph ---------------- */
+const NODES = [
+  {id:"plank", label:"Plank", x:150, y:110},
+  {id:"updog", label:"Up Dog", x:150, y:290},
+  {id:"downdog", label:"Down Dog", x:460, y:200},
+  {id:"child", label:"Child's Pose", x:770, y:110},
+  {id:"fold", label:"Forward Fold", x:770, y:290},
+];
+const EDGES = [
+  {a:"plank", b:"downdog", type:"neutral", label:"press back", hot:true},
+  {a:"plank", b:"updog", type:"flow", label:"inhale"},
+  {a:"updog", b:"downdog", type:"neutral", label:"exhale"},
+  {a:"downdog", b:"child", type:"rebound", label:"rebound"},
+  {a:"downdog", b:"fold", type:"flow", label:"walk up"},
+];
+const COLOR = {flow:"#4e6152", neutral:"#4f7280", rebound:"#a9762f"};
+const nodeById = Object.fromEntries(NODES.map(n=>[n.id,n]));
+const gEdges = document.getElementById("edges");
+const gNodes = document.getElementById("nodes");
+
+EDGES.forEach((e,i) => {
+  const A = nodeById[e.a], B = nodeById[e.b];
+  const mx = (A.x+B.x)/2, my=(A.y+B.y)/2 - 26;
+  const path = document.createElementNS("http://www.w3.org/2000/svg","path");
+  path.setAttribute("d", `M ${A.x} ${A.y} Q ${mx} ${my} ${B.x} ${B.y}`);
+  path.setAttribute("class", "gedge" + (e.hot?" hot":""));
+  path.setAttribute("stroke", COLOR[e.type]);
+  path.dataset.a = e.a; path.dataset.b = e.b;
+  gEdges.appendChild(path);
+  const lab = document.createElementNS("http://www.w3.org/2000/svg","text");
+  lab.setAttribute("x", mx); lab.setAttribute("y", my+4);
+  lab.setAttribute("text-anchor","middle"); lab.setAttribute("class","glabel");
+  lab.textContent = e.label;
+  gEdges.appendChild(lab);
+});
+
+NODES.forEach(n => {
+  const g = document.createElementNS("http://www.w3.org/2000/svg","g");
+  g.setAttribute("class","gnode"); g.dataset.id = n.id; g.setAttribute("tabindex","0");
+  g.innerHTML = `<circle cx="${n.x}" cy="${n.y}" r="46"></circle>
+    <text x="${n.x}" y="${n.y+5}" text-anchor="middle">${n.label}</text>`;
+  const hi = () => {
+    g.classList.add("active");
+    document.querySelectorAll(".gedge").forEach(p=>{
+      if(p.dataset.a===n.id||p.dataset.b===n.id) p.classList.add("hot");
+    });
+  };
+  const lo = () => {
+    g.classList.remove("active");
+    document.querySelectorAll(".gedge").forEach(p=>{
+      if(!(p.dataset.a==="plank"&&p.dataset.b==="downdog")) p.classList.remove("hot");
+    });
+  };
+  g.addEventListener("mouseenter", hi); g.addEventListener("mouseleave", lo);
+  g.addEventListener("focus", hi); g.addEventListener("blur", lo);
+  gNodes.appendChild(g);
+});
+
+/* ---------------- open questions ---------------- */
+const ql = document.getElementById("qlist");
+OPEN_QS.forEach((q,i)=>{
+  const d = document.createElement("div");
+  d.className="q";
+  d.innerHTML = `<div class="num">${String(i+1).padStart(2,"0")}</div>
+    <div><h3>${q.h}</h3><p>${q.p}</p></div>`;
+  ql.appendChild(d);
+});
+</script>
+</body>
+</html>

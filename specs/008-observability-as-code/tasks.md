@@ -55,7 +55,7 @@ see T048's note. Everything else in this feature is done.
 | T030 | `src/lib/dd-service-name.ts` — `normalizeServiceName`, ported from NextMove | — | ✅ |
 | T031 | Verify key-auth-only read path: `pup auth logout`, then run every documented query from env vars alone | FR-010, FR-011, SC-005 | ✅ (full `npm run datadog:diff` against all 17 manifests, zero OAuth session, no drift beyond the documented synthetic-monitor artifact) |
 | T032 | `.claude/commands/autoobs.md` — degrade-not-abort, per-step time budget, no background subagent, no `AskUserQuestion` | FR-014, FR-015 | ✅ |
-| T033 | `docs/routine_runs/autoobs/system-instructions.md` — thin wrapper; command file wins on conflict | — | ✅ |
+| T033 | `docs/routines/autoobs/system-instructions.md` — thin wrapper; command file wins on conflict | — | ✅ |
 | T034 | `docs/observation/.gitkeep`, `docs/planning/routine-log.md` — dated-output scaffolding | — | ✅ |
 | T035 | Run `/autoobs` by hand once end-to-end; confirm dated digest + one routine-log line | — | ✅ (2026-09-04 sweep: `docs/observation/autoobs/2026-09-04.md` + routine-log line; overall DEGRADED — expected, since RUM has no traffic yet — with all 8 manifest monitors/2 SLOs in sync and all 3 live synthetics passing) |
 

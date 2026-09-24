@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Book Evidence — Working Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Spline+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#23281f; --ink-soft:#5a6152; --ink-faint:#8b917f;
+    --paper:#e7e9e0; --card:#f3f4ee; --card-2:#eceee3;
+    --line:rgba(35,40,31,.14); --line-strong:rgba(35,40,31,.26);
+    --sage:#4e6152; --sage-deep:#33452e;
+    --ochre:#a9762f; --water:#4f7280;
+    --sage-tint:rgba(78,97,82,.10); --ochre-tint:rgba(169,118,47,.13); --water-tint:rgba(79,114,128,.12);
+    --shadow:0 1px 0 rgba(35,40,31,.04), 0 12px 34px -22px rgba(35,40,31,.4);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Spline Sans",system-ui,sans-serif; line-height:1.55;
+    font-size:15.5px; letter-spacing:.005em;
+    background-image:radial-gradient(rgba(35,40,31,.028) 1px, transparent 1px);
+    background-size:22px 22px;
+  }
+  .wrap{max-width:1080px; margin:0 auto; padding:0 24px}
+  .mono{font-family:"IBM Plex Mono",monospace}
+
+  /* ---- back-link header ---- */
+  header.hero{padding:44px 0 26px; border-bottom:1px solid var(--line)}
+  .backlink{display:inline-flex; align-items:center; gap:8px; font-family:"IBM Plex Mono",monospace;
+    font-size:12px; letter-spacing:.05em; color:var(--sage-deep); text-decoration:none; margin-bottom:18px}
+  .backlink:hover{text-decoration:underline}
+  .eyebrow{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.24em;
+    text-transform:uppercase; color:var(--sage); margin:0 0 16px}
+  h1{font-family:"Fraunces",serif; font-weight:500; font-size:clamp(30px,4.6vw,44px);
+    line-height:1.08; letter-spacing:-.015em; margin:0 0 14px; max-width:22ch}
+  .lede{font-size:16px; max-width:68ch; color:var(--ink-soft); margin:0}
+
+  section{padding:44px 0}
+  section + section{border-top:1px solid var(--line)}
+  .part-tag{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.2em;
+    text-transform:uppercase; color:var(--ink-faint); margin:0 0 10px}
+  h2{font-family:"Fraunces",serif; font-weight:500; font-size:clamp(24px,3vw,32px);
+    letter-spacing:-.015em; margin:0 0 12px}
+  .section-note{max-width:68ch; color:var(--ink-soft); margin:0 0 28px}
+
+  .worked{display:inline-flex; align-items:baseline; gap:12px; padding:9px 16px 9px 14px;
+    background:var(--sage-tint); border:1px solid var(--line); border-radius:10px; margin-bottom:26px}
+  .worked .k{font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--sage)}
+  .worked .v{font-family:"Fraunces",serif; font-style:italic; font-size:19px}
+  .worked.warn{background:var(--water-tint)} .worked.warn .k{color:var(--water)}
+  .worked.ochre{background:var(--ochre-tint)} .worked.ochre .k{color:var(--ochre)}
+
+  /* ---- distribution bars ---- */
+  .distgrid{display:grid; grid-template-columns:1fr 1fr; gap:26px 40px; margin-top:8px}
+  .distcard{padding:4px 0}
+  .distcard h4{margin:0 0 12px; font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint)}
+  .barrow{display:grid; grid-template-columns:110px 1fr 46px; align-items:center; gap:10px; margin-bottom:7px; font-size:13px}
+  .barrow .lab{color:var(--ink-soft)}
+  .bartrack{height:11px; background:var(--card-2); border:1px solid var(--line); border-radius:6px; overflow:hidden}
+  .barfill{height:100%; background:linear-gradient(90deg,var(--sage),var(--water)); border-radius:6px}
+  .barrow .n{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-faint); text-align:right}
+  .callout-stat{font-family:"Fraunces",serif; font-size:19px; margin:22px 0 0; max-width:64ch}
+  .callout-stat b{color:var(--sage-deep); font-style:italic}
+
+  /* ---- cluster cards ---- */
+  .clusters{display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:8px}
+  .clcard{border:1px solid var(--line); border-radius:14px; background:var(--card); padding:18px 20px; box-shadow:var(--shadow)}
+  .clcard.impure{border-color:rgba(169,118,47,.4)}
+  .clhead{display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:8px}
+  .clname{font-family:"Fraunces",serif; font-size:18px; font-weight:500}
+  .clcount{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-faint)}
+  .clpurity{display:inline-block; margin-top:2px; font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+    padding:2px 7px; border-radius:5px; background:var(--sage-tint); color:var(--sage-deep); border:1px solid rgba(78,97,82,.3)}
+  .clcard.impure .clpurity{background:var(--ochre-tint); color:var(--ochre); border-color:rgba(169,118,47,.35)}
+  .clslugs{font-size:12.5px; color:var(--ink-soft); margin:6px 0 10px; line-height:1.6}
+  .clslugs code{background:var(--card-2); border:1px solid var(--line); border-radius:5px; padding:1px 6px; font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--sage-deep); margin:0 2px 3px 0; display:inline-block}
+  .cltags{font-size:12px; color:var(--ink-faint)}
+  .cltags b{color:var(--water); font-weight:500}
+
+  .rule-callout{margin-top:26px; padding:22px 24px; border-left:3px solid var(--sage);
+    background:var(--sage-tint); border-radius:0 12px 12px 0}
+  .rule-callout .lab{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--sage); margin-bottom:8px}
+  .rule-callout p{margin:0; font-family:"Fraunces",serif; font-size:19px; line-height:1.4}
+  .rule-callout.ochre{border-left-color:var(--ochre); background:var(--ochre-tint)}
+  .rule-callout.ochre .lab{color:var(--ochre)}
+  .rule-callout.water{border-left-color:var(--water); background:var(--water-tint)}
+  .rule-callout.water .lab{color:var(--water)}
+
+  /* ---- shelf-comparison table ---- */
+  .gaptable{border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--card); box-shadow:var(--shadow)}
+  .gaprow{display:grid; grid-template-columns:1.5fr 2fr; gap:18px; padding:15px 22px; border-top:1px solid var(--line); align-items:baseline}
+  .gaprow:first-child{border-top:0; background:var(--card-2)}
+  .gaprow.head{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-faint)}
+  .gaprow .book{font-family:"Fraunces",serif; font-style:italic; font-size:16px}
+  .gaprow .auth{color:var(--ink-faint); font-size:12.5px; display:block; margin-top:1px}
+  .gaprow .unit{font-size:14px; color:var(--ink-soft)}
+  .gaprow.ours{background:var(--sage-tint)}
+  .gaprow.ours .book{color:var(--sage-deep); font-style:normal; font-weight:500}
+  .gaprow.ours .unit{color:var(--sage-deep); font-weight:500}
+
+  /* ---- co-authorship method columns ---- */
+  .method{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:8px}
+  .method .col{border:1px solid var(--line); border-radius:14px; padding:20px 22px; background:var(--card)}
+  .method .col h4{margin:0 0 8px; font-family:"Fraunces",serif; font-size:17px; font-weight:500}
+  .method .col p{margin:0; color:var(--ink-soft); font-size:13.5px}
+
+  /* ---- collision groups (finding B) ---- */
+  .collisions{display:flex; flex-wrap:wrap; gap:10px; margin:18px 0}
+  .cgroup{display:inline-flex; align-items:center; gap:8px; background:var(--card); border:1px solid var(--line);
+    border-radius:999px; padding:7px 8px 7px 14px; font-size:13px; box-shadow:var(--shadow)}
+  .cgroup .zero{font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--water); background:var(--water-tint);
+    border:1px solid rgba(79,114,128,.32); border-radius:999px; padding:2px 8px}
+  .cgroup code{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--sage-deep)}
+
+  /* ---- kinesphere triple table ---- */
+  .kinetable{border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--card); box-shadow:var(--shadow); margin-top:8px}
+  .kinerow{display:grid; grid-template-columns:52px 1.6fr 2fr; gap:16px; padding:11px 20px; border-top:1px solid var(--line); align-items:baseline; font-size:13px}
+  .kinerow:first-child{border-top:0; background:var(--card-2)}
+  .kinerow.head{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint)}
+  .kinerow .n{font-family:"IBM Plex Mono",monospace; color:var(--ink-faint)}
+  .kinerow .triple{font-family:"IBM Plex Mono",monospace; color:var(--sage-deep)}
+  .kinerow .eg{color:var(--ink-soft)}
+  .kinerow.flag{background:var(--ochre-tint)}
+  .kinerow.flag .triple{color:var(--ochre)}
+  .kinemore{font-size:12.5px; color:var(--ink-faint); padding:10px 20px; border-top:1px solid var(--line)}
+
+  /* ---- how-it-works: weight + worked-sum tables ---- */
+  .wtable{border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--card); box-shadow:var(--shadow); margin:8px 0}
+  .wrow{display:grid; grid-template-columns:110px 2.2fr 70px; gap:16px; padding:12px 20px; border-top:1px solid var(--line); align-items:baseline}
+  .wrow:first-child{border-top:0; background:var(--card-2)}
+  .wrow.head{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint)}
+  .wrow .term{font-family:"Fraunces",serif; font-style:italic; font-size:16px}
+  .wrow .rule{color:var(--ink-soft); font-size:13.5px}
+  .wrow .wt{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--sage-deep); text-align:right}
+  .wrow .pair{font-family:"IBM Plex Mono",monospace; font-size:13px}
+  .wrow .sum{color:var(--ink-soft); font-size:13px}
+  .wrow .score{font-family:"Fraunces",serif; font-style:italic; font-size:16px; text-align:right}
+
+  /* ---- errata ---- */
+  .errata{border:1px solid rgba(79,114,128,.35); border-radius:14px; background:var(--water-tint); padding:22px 24px; margin-top:8px}
+  .errata .taglab{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--water); margin-bottom:8px; display:block}
+  .errata p{margin:0; font-size:14.5px; max-width:72ch}
+  .errata p + p{margin-top:10px}
+
+  /* ---- open questions ---- */
+  .q{border-top:1px solid var(--line); padding:20px 0; display:grid; grid-template-columns:34px 1fr; gap:18px}
+  .q:first-child{border-top:0}
+  .q .num{font-family:"Fraunces",serif; font-style:italic; font-size:22px; color:var(--sage)}
+  .q h3{margin:0 0 6px; font-size:17px; font-family:"Spline Sans"; font-weight:600}
+  .q p{margin:0; color:var(--ink-soft); font-size:14.5px; max-width:70ch}
+
+  footer{padding:44px 0 60px; color:var(--ink-faint); font-size:13px}
+  footer .mono{color:var(--sage)}
+  footer a{color:var(--sage-deep)}
+
+  @media(max-width:820px){
+    .distgrid{grid-template-columns:1fr}
+    .clusters{grid-template-columns:1fr}
+    .kinerow{grid-template-columns:1fr; gap:2px}
+    .gaprow{grid-template-columns:1fr; gap:4px}
+    .method{grid-template-columns:1fr}
+    .wrow{grid-template-columns:1fr; gap:2px}
+    .wrow .wt, .wrow .score{text-align:left}
+  }
+  @media(prefers-reduced-motion:reduce){*{transition:none!important; scroll-behavior:auto}}
+  :focus-visible{outline:2px solid var(--water); outline-offset:3px; border-radius:4px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <a class="backlink" href="book-pages.html">← back to the book pages</a>
+    <p class="eyebrow">Book Evidence · Working Notes</p>
+    <h1>The workings behind the pages</h1>
+    <p class="lede">Every claim in <span class="mono">book-pages.html</span> that involves a number lives here, in full, with method. This document is technical on purpose — it's the second read, for whoever wants to verify rather than just trust. Nothing here is prose the book would print; it's the survey behind the map, and the reasoning for why the book takes the shape it does. Judgment calls, not verification, live in the <a href="book-feedback.html">feedback guide</a>.</p>
+  </div>
+</header>
+
+<section id="howitworks">
+  <div class="wrap">
+    <p class="part-tag">How The Number Works</p>
+    <h2>The formula behind every score in this book</h2>
+    <p class="section-note">Not degrees, not effort, not joint range. Friction is a weighted sum of five categorical comparisons between two poses — the only inputs are fields already in <span class="mono">data/poses/*.json</span>.</p>
+    <p class="section-note" style="margin-top:-4px">This is the full arithmetic behind every seam in <a href="book-pages.html#page-warrior">Part II</a> — the book itself moves straight to the seams.</p>
+
+    <div class="worked">
+      <span class="k">Formula</span>
+      <span class="v">.35·contact + .25·orientation + .20·height + .10·spine + .10·plane</span>
+    </div>
+
+    <div class="wtable">
+      <div class="wrow head"><span>Term</span><span>Rule</span><span>Weight</span></div>
+      <div class="wrow"><span class="term">Contact</span><span class="rule">Jaccard distance between the two <span class="mono">base_of_support</span> sets — 1 minus (shared parts ÷ total distinct parts)</span><span class="wt">0.35</span></div>
+      <div class="wrow"><span class="term">Orientation</span><span class="rule">1.0 if <span class="mono">orientation</span> differs; 0.5 if orientation holds but <span class="mono">level</span> differs; else 0</span><span class="wt">0.25</span></div>
+      <div class="wrow"><span class="term">Height</span><span class="rule"><span class="mono">cog_height</span> position on the ladder floor·low·mid·high, steps apart ÷ 3</span><span class="wt">0.20</span></div>
+      <div class="wrow"><span class="term">Spine</span><span class="rule">1 if <span class="mono">spinal_action</span> differs, else 0</span><span class="wt">0.10</span></div>
+      <div class="wrow"><span class="term">Plane</span><span class="rule">1 if <span class="mono">plane</span> differs; 0.5 if either pose is <span class="mono">multi</span>; else 0</span><span class="wt">0.10</span></div>
+    </div>
+    <p class="section-note" style="margin-top:-4px">Weights sum to exactly 1.00. Tiers: <span class="mono">&lt;0.34</span> easy, <span class="mono">&lt;0.67</span> costly, else abrupt — the words already printed in every page margin.</p>
+
+    <div class="wtable">
+      <div class="wrow head"><span>Pair</span><span>Arithmetic</span><span>Score</span></div>
+      <div class="wrow"><span class="pair">halfway lift → plank</span><span class="sum">.175 + .250 + .067 + .100 + .000</span><span class="score">0.592</span></div>
+      <div class="wrow"><span class="pair">butterfly → savasana</span><span class="sum">.350 + .250 + .067 + .100 + .000</span><span class="score">0.767</span></div>
+      <div class="wrow"><span class="pair">warrior-2 → reverse-warrior</span><span class="sum">.000 + .000 + .000 + .100 + .000</span><span class="score">0.100</span></div>
+      <div class="wrow"><span class="pair">plank → chaturanga</span><span class="sum">.000 + .000 + .000 + .000 + .000</span><span class="score">0.000</span></div>
+      <div class="wrow"><span class="pair">dangling → frog</span><span class="sum">.350 + .250 + .200 + .100 + .100</span><span class="score">1.000</span></div>
+    </div>
+
+    <p class="callout-stat">Across all 4,422 ordered pairs in the 67-pose library, <b>36 score exactly 0.000</b> and <b>102 score exactly 1.000</b> — both ends are real pages, not theoretical extremes. Median across all pairs: 0.667.</p>
+
+    <div class="rule-callout">
+      <div class="lab">Below chance</div>
+      <p>The 54 real seams across the three built-in flows average <b>0.335</b> — roughly half the <b>0.624</b> mean of an arbitrary pair. Teachers already sequence at well below the cost of chance, without ever seeing this number.</p>
+    </div>
+    <p class="section-note" style="margin-top:14px">Whether these five weights are the right five, in the right proportion, is a judgment call, not a computed fact — it's the first question in the <a href="book-feedback.html">feedback guide</a>.</p>
+  </div>
+</section>
+
+<section id="gap">
+  <div class="wrap">
+    <p class="part-tag">Where This Sits On The Shelf</p>
+    <h2>What other books are organized around</h2>
+    <p class="section-note">This territory has names already — Krishnamacharya's students, Ashtanga's counted transitions, Mark Stephens on moving between shapes. What it doesn't have is a way to write one transition down and compare it to another, the way a measure of music can be read cold by a stranger.</p>
+
+    <div class="gaptable">
+      <div class="gaprow head"><span>Book</span><span>What it's actually organized around</span></div>
+      <div class="gaprow">
+        <span class="book">Light on Yoga<span class="auth">B.K.S. Iyengar</span></span>
+        <span class="unit">the pose, one at a time, exhaustively</span>
+      </div>
+      <div class="gaprow">
+        <span class="book">Yoga Anatomy<span class="auth">Leslie Kaminoff</span></span>
+        <span class="unit">the pose, from the inside — what a hold does to the body</span>
+      </div>
+      <div class="gaprow">
+        <span class="book">The Complete Book of Vinyasa Yoga<span class="auth">Srivatsa Ramaswami</span></span>
+        <span class="unit">the passage, in words — breath-linked, sequence by sequence</span>
+      </div>
+      <div class="gaprow">
+        <span class="book">Yoga Sequencing<span class="auth">Mark Stephens</span></span>
+        <span class="unit">the whole class, plus a chapter on moving between shapes</span>
+      </div>
+      <div class="gaprow ours">
+        <span class="book">This book</span>
+        <span class="unit">the passage — scored, so two teachers can compare one on paper</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="method">
+  <div class="wrap">
+    <p class="part-tag">Why This Is Co-Authorship</p>
+    <h2>The method is the credibility</h2>
+    <p class="section-note">The model can measure a shape. It cannot tell you what to do with what it finds — that call needs years on a mat, not a schema.</p>
+    <div class="method">
+      <div class="col">
+        <h4>The data is real, not a mockup</h4>
+        <p>Every page comes from an app teachers actually use, and every number is computed, not invented for this pitch. What's missing is the half only a teacher can supply.</p>
+      </div>
+      <div class="col">
+        <h4>Atlases are made by more than one hand</h4>
+        <p>No historical atlas was drawn by one person — surveyors, engravers, editors, all credited. Cartographer and teacher is the honest structure here.</p>
+      </div>
+      <div class="col">
+        <h4>A shared instrument, not a writing credit</h4>
+        <p>The scoring above is a first draft of something yoga doesn't have. Co-deciding which questions belong, and what the numbers mean, is a career artifact.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="corpus">
+  <div class="wrap">
+    <p class="part-tag">The Corpus</p>
+    <h2>Straight counts across the library</h2>
+    <p class="section-note">67 poses in <span class="mono">data/poses/</span>, tagged against the Atlas schema (<span class="mono">docs/krama-atlas.md</span>). Not opinions about yoga — a description of this specific, growing library.</p>
+
+    <div class="distgrid" id="distgrid"></div>
+
+    <p class="callout-stat"><b>43 of 67 poses move in the sagittal plane alone.</b> Only 7 are coronal, 4 transverse. Yoga, as practiced here, is overwhelmingly a forward-and-back art.</p>
+  </div>
+</section>
+
+<section id="finding-a">
+  <div class="wrap">
+    <p class="part-tag">Finding A — Computed, Reproducible</p>
+    <h2>The families nobody computed</h2>
+    <p class="section-note">Single-link clustering over the full 67×67 friction matrix at threshold 0.20 yields 14 families, no categories asserted in advance. <strong>13 of the 14 are pure on a single field: <span class="mono">body_position</span></strong> (standing / supine / kneeling / seated / prone). Meanwhile the categories teachers plan by — <span class="mono">type_tags</span> like backbend, forward-fold, hip-opener, twist — are smeared almost evenly across every cluster.</p>
+
+    <div class="worked">
+      <span class="k">Method</span>
+      <span class="v">single-link clustering, friction ≤ 0.20, over data/poses/*.json</span>
+    </div>
+
+    <div class="clusters" id="clusters"></div>
+
+    <div class="rule-callout">
+      <div class="lab">The claim</div>
+      <p>Teachers plan by morphology — what the spine is doing. Flow is governed by posture — what the floor is holding and which way the body faces. Those are two different maps of the same 67 poses, and sequencing has mostly been taught with the wrong one.</p>
+    </div>
+  </div>
+</section>
+
+<section id="finding-b">
+  <div class="wrap">
+    <p class="part-tag">Finding B — Terra Incognita</p>
+    <h2>The map has blank regions</h2>
+    <p class="section-note"><strong>27</strong> of the 67 poses collide into 12 groups the friction engine cannot tell apart at all — identical on every one of the five geometry terms it currently reads, so the computed friction between them is exactly <span class="mono">0.000</span>.</p>
+
+    <div class="worked warn">
+      <span class="k">Worked case</span>
+      <span class="v">mountain → tree, score 0.000</span>
+    </div>
+    <p class="section-note" style="margin-top:-14px">One is a resting stance, the other a single-leg balance that asks for real attention — and on the five terms the engine reads today, they are the same pose. The cause is precise and fixable: <span class="mono">base_of_support</span> records <em>which</em> parts touch the floor, never <em>how many</em> — one foot and two feet are both just <span class="mono">["feet"]</span>. The missing resolution is exactly the two fields already flagged unbuilt in <span class="mono">docs/pose-model-review.html</span>: <span class="mono">joint_config</span> and laterality-as-count.</p>
+
+    <div class="collisions" id="collisions"></div>
+  </div>
+</section>
+
+<section id="arc-full">
+  <div class="wrap">
+    <p class="part-tag">Finding C — The Arc, In Full</p>
+    <h2>What the book's seam-by-seam line chart actually depends on</h2>
+    <p class="section-note">The line chart printed in <span class="mono">book-pages.html</span> plots all 33 seams of the heart-openers class in order — seam position on the x-axis, not elapsed minutes. That choice, and the phase regions named along the axis, carry two dependencies that don't survive being printed as a bare line. Both are stated here in full.</p>
+
+    <div class="worked">
+      <span class="k">Why seam position, not minutes</span>
+      <span class="v">the flow's authored measures total 35.3 minutes, not 60, and 26 of 33 seams fall in the first 7 authored minutes</span>
+    </div>
+    <p class="section-note" style="margin-top:-14px">A true elapsed-minutes x-axis would print a false clock and crush most of the seam-to-seam variation against the left edge. Plotting seam position instead is still the literal shape of the class — the phase boundaries just aren't evenly spaced in wall-clock time behind it.</p>
+
+    <div class="worked">
+      <span class="k">Attribution rule</span>
+      <span class="v">a seam is counted toward the phase of the item it enters, not the one it leaves</span>
+    </div>
+    <p class="section-note" style="margin-top:-14px">Swap the rule — attribute each seam to the earlier item's phase instead — and the phase boundaries drawn on the chart shift: the closing seam (0.867) moves into Cooldown, and Cooldown's own average rises from 0.379 to 0.486. The rule is a modeling choice, not a fact about the flow.</p>
+
+    <div class="worked warn">
+      <span class="k">Seams behind each phase region</span>
+      <span class="v">Opening n=1 · Warm-up n=16 · Standing n=7 · Peak n=3 · Cooldown n=5 · Closing n=1</span>
+    </div>
+    <p class="section-note" style="margin-top:-14px">Two of the six regions are a single seam. The chart plots every seam individually rather than averaging into six bars, which is exactly what keeps a one-seam region from reading as equivalent to a sixteen-seam one.</p>
+
+    <p class="callout-stat">The more durable finding sits underneath the line's overall shape: <b>seams that stay within one <span class="mono">body_position</span> average 0.159 (n=30, across all three flows). Seams that cross a body-position boundary average 0.556 (n=24) — 3.50×.</b> This is consistent with Finding A above (13 of 14 clusters are <span class="mono">body_position</span>-pure) and is very likely the real mechanism behind the chart's shape: stretches that stay in one posture family read as "quiet," stretches that change posture read as "loud," largely independent of which phase they're labeled.</p>
+
+    <div class="rule-callout water">
+      <div class="lab">Two confounds checked and ruled out</div>
+      <p>(1) Repeated poses within a flow do not explain the cheap middle: deduplicating repeated seams moves the Warm-up average only from 0.270 to 0.292. (2) Missing data does not explain any zero-cost seam: all 67 poses carry all six geometry fields the engine reads, so no seam scores low because a field was blank.</p>
+    </div>
+
+    <p class="section-note" style="margin-top:22px">All three flows in <span class="mono">data/flows/</span> are marked <span class="mono">isBuiltIn: true</span> with identical synthetic timestamps — they were composed for this library, not pulled from a teacher's real class history — worth saying plainly rather than calling them "already-taught classes."</p>
+  </div>
+</section>
+
+<section id="kinespheres">
+  <div class="wrap">
+    <p class="part-tag">A Question Worth Asking — Answered</p>
+    <h2>Do kinespheres already fill the gap?</h2>
+    <p class="section-note">This schema borrowed Laban's vocabulary for the space around a body at rest — <span class="mono">plane</span>, <span class="mono">level</span>, <span class="mono">zone</span> — which is a different thing from Labanotation itself, which does notate movement through time and has been adapted for physiotherapy, swimming, and dance forms outside yoga. The fair question isn't whether Labanotation works; it's whether these three borrowed fields, on their own, already amount to one. Computed answer: no, and the corpus shows exactly why.</p>
+
+    <div class="worked ochre">
+      <span class="k">Method</span>
+      <span class="v">distinct (plane, level, zone) triples across all 67 poses</span>
+    </div>
+
+    <div class="kinetable" id="kinetable"></div>
+    <p class="kinemore" id="kinemore"></p>
+
+    <div class="rule-callout ochre">
+      <div class="lab">The claim</div>
+      <p>These three kinesphere fields are a coordinate system for one body at rest, not a record of what changed between two. Adding them doesn't repair Finding B either — <span class="mono">mountain</span>, <span class="mono">tree</span>, and <span class="mono">dangling</span> share one triple, so they add no resolution exactly where the engine is already blind. The field actually worth developing is <span class="mono">zone</span> — near 26 · far 25 · mid-reach 16 — the best-distributed of the three and the only one describing how far the body reaches from its own centre; it is currently unweighted in the v0.1 friction formula. What makes this notation-capable isn't the kinesphere fields — it's that friction is already a difference operator.</p>
+    </div>
+  </div>
+</section>
+
+<section id="errata">
+  <div class="wrap">
+    <p class="part-tag">Errata</p>
+    <h2>A discrepancy, for the record</h2>
+    <div class="errata">
+      <span class="taglab">Finding D</span>
+      <p><span class="mono">docs/pose-model-review.html</span> headlines <span class="mono">plank → down-dog</span> at 0.15, "very smooth." The shipped engine computes <span class="mono">0.417</span>, tier 2 — because <span class="mono">down-dog</span> is tagged <span class="mono">orientation: inverted</span> against plank's <span class="mono">prone</span>, firing the orientation term at full weight.</p>
+      <p>The prose ("no prone↔supine flip") is true; the engine's orientation term isn't prone↔supine-only. Either the review doc oversells the pair, or <span class="mono">down-dog</span>'s orientation tag deserves a second look. Left uncorrected here — see the open questions below.</p>
+    </div>
+  </div>
+</section>
+
+<section id="questions">
+  <div class="wrap">
+    <p class="part-tag">Open Questions</p>
+    <h2>What would shape the data</h2>
+    <p class="section-note">These are schema questions, answerable by inspection of what's already tagged. The questions that only two working teachers can answer — the weights, whether a cheap seam is a good seam, what makes two poses feel good together — live in the <a href="book-feedback.html">feedback guide</a> instead.</p>
+    <div id="qlist"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Companion documents: <a href="book-pages.html" class="mono">docs/book-pages.html</a> · <a href="book-feedback.html" class="mono">docs/book-feedback.html</a> · <span class="mono">docs/krama-v0.1-spec.md</span> · <span class="mono">docs/krama-atlas.md</span> · <span class="mono">docs/pose-model-review.html</span> · <span class="mono">data/schemas/pose.schema.json</span> · <span class="mono">src/lib/friction/index.ts</span>.</p>
+    <p class="mono" style="margin-top:10px">book evidence · working notes</p>
+  </div>
+</footer>
+
+<script>
+/* =============================================================
+   All numeric content below is computed from data/poses/*.json
+   using the weights and formulas in src/lib/friction/index.ts.
+   ============================================================= */
+
+/* ---------------- corpus distributions ---------------- */
+const DISTRIBUTIONS = [
+  { title:"plane", rows:[["sagittal",43],["multi",13],["coronal",7],["transverse",4]] },
+  { title:"level (kinesphere)", rows:[["low",44],["middle",13],["high",10]] },
+  { title:"energetic_direction", rows:[["langhana",33],["brahmana",27],["samana",7]] },
+  { title:"orientation", rows:[["upright",42],["supine",13],["prone",10],["inverted",2]] },
+  { title:"spinal_action", rows:[["extension",21],["neutral",21],["flexion",15],["lateral",5],["rotation",5]] },
+  { title:"modes", rows:[["yin",43],["yang",22],["both",2]] },
+];
+const distWrap = document.getElementById("distgrid");
+DISTRIBUTIONS.forEach(d => {
+  const max = Math.max(...d.rows.map(r=>r[1]));
+  const card = document.createElement("div");
+  card.className = "distcard";
+  card.innerHTML = `<h4>${d.title}</h4>` + d.rows.map(([label,n]) => `
+    <div class="barrow">
+      <span class="lab">${label}</span>
+      <span class="bartrack"><span class="barfill" style="width:${(n/max*100).toFixed(0)}%"></span></span>
+      <span class="n">${n}</span>
+    </div>`).join("");
+  distWrap.appendChild(card);
+});
+
+/* ---------------- Finding A: computed clusters ---------------- */
+const CLUSTERS = [
+  { name:"Standing", body_position:"standing", n:14, purity:"pure", tags:"quad-stretch 7 · hip-opener 5 · lateral-stretch 5 · integration 4",
+    slugs:["chair","dangling","dragon-high-lunge","extended-side-angle","half-moon","halfway-lift","high-lunge","mountain","reverse-warrior","standing-forward-fold","tree","triangle","warrior-1","warrior-2"] },
+  { name:"Supine", body_position:"supine", n:13, purity:"pure", tags:"restorative 13 · sacrum-release 8 · outer-hip 5 · chest-opener 3",
+    slugs:["bananasana","bridge-yin","constructive-rest","eye-of-needle","happy-baby","legs-up-the-wall","rebound-supine","reclining-twist","savasana","supported-fish","supta-baddha-konasana","twisted-roots","windshield-wipers"] },
+  { name:"Kneeling", body_position:"kneeling", n:9, purity:"pure", tags:"spinal-traction 5 · hip-opener 5 · restorative 4 · groin-opener 4",
+    slugs:["anahatasana","cat-cow","child-pose","dragon-low-lunge","low-lunge","melting-heart","sleeping-swan","twisted-dragon","wide-knee-child"] },
+  { name:"Seated", body_position:"seated", n:9, purity:"pure", tags:"forward-fold 7 · spinal-traction 7 · hip-opener 6 · groin-opener 5",
+    slugs:["butterfly","caterpillar","easy-seat","half-butterfly","half-dragonfly","seated-stillness","shoelace-fold","square-fold","straddle"] },
+  { name:"Kneeling / Seated", body_position:"mixed — kneeling 2, seated 4", n:6, purity:"impure", tags:"restorative 4 · hip-opener 4 · groin-opener 4 · outer-hip 3",
+    slugs:["ankle-stretch","deer","dragon-sitting","shoelace","square","toe-squat"] },
+  { name:"Prone I", body_position:"prone", n:5, purity:"pure", tags:"backbend 3 · chest-opener 3 · integration 2",
+    slugs:["chaturanga","cobra","plank","seal","up-dog"] },
+  { name:"Prone II", body_position:"prone", n:3, purity:"pure", tags:"hip-flexor-release 2 · backbend 2 · spinal-compression 2",
+    slugs:["crocodile","half-frog","sphinx"] },
+  { name:"Seated pair", body_position:"seated", n:2, purity:"pure", tags:"backbend 2 · quad-stretch 2 · hip-flexor-release 2",
+    slugs:["half-saddle","saddle"] },
+];
+const clWrap = document.getElementById("clusters");
+CLUSTERS.forEach(c => {
+  const el = document.createElement("div");
+  el.className = "clcard" + (c.purity==="impure" ? " impure" : "");
+  el.innerHTML = `
+    <div class="clhead">
+      <span class="clname">${c.name}</span>
+      <span class="clcount">n = ${c.n}</span>
+    </div>
+    <span class="clpurity">${c.purity==="pure" ? "body_position pure" : "the one exception"}</span>
+    <div class="clslugs">${c.slugs.map(s=>`<code>${s}</code>`).join("")}</div>
+    <div class="cltags"><b>type_tags spread:</b> ${c.tags}</div>`;
+  clWrap.appendChild(el);
+});
+
+/* ---------------- Finding B: collision groups ---------------- */
+const COLLISIONS = [
+  ["chair","halfway-lift","high-lunge"],
+  ["extended-side-angle","reverse-warrior","triangle"],
+  ["legs-up-the-wall","rebound-supine","savasana"],
+  ["mountain","tree"],
+  ["chaturanga","plank"],
+  ["anahatasana","melting-heart"],
+  ["ankle-stretch","toe-squat"],
+  ["butterfly","caterpillar"],
+  ["easy-seat","seated-stillness"],
+  ["reclining-twist","twisted-roots"],
+  ["shoelace-fold","square-fold"],
+  ["shoelace","square"],
+];
+const colWrap = document.getElementById("collisions");
+COLLISIONS.forEach(group => {
+  const el = document.createElement("div");
+  el.className = "cgroup";
+  el.innerHTML = `<span class="zero">0.000</span> ` + group.map(s=>`<code>${s}</code>`).join(" = ");
+  colWrap.appendChild(el);
+});
+
+/* ---------------- kinesphere triples ---------------- */
+const KINE_TRIPLES = [
+  { n:14, triple:"sagittal · low · near", eg:"butterfly, child-pose, cobra, constructive-rest …", flag:true },
+  { n:10, triple:"sagittal · low · far", eg:"anahatasana, caterpillar, chaturanga, legs-up-the-wall …" },
+  { n:6, triple:"sagittal · low · mid-reach", eg:"bridge-yin, half-butterfly, half-frog, half-saddle …" },
+  { n:5, triple:"coronal · high · far", eg:"extended-side-angle, half-moon, reverse-warrior, triangle …" },
+  { n:4, triple:"sagittal · middle · near", eg:"ankle-stretch, cat-cow, standing-forward-fold, toe-squat" },
+  { n:3, triple:"sagittal · middle · mid-reach", eg:"chair, halfway-lift, high-lunge" },
+  { n:3, triple:"sagittal · high · near", eg:"dangling, mountain, tree", flag:true },
+  { n:3, triple:"multi · low · far", eg:"dragon-low-lunge, half-dragonfly, twisted-dragon" },
+  { n:3, triple:"transverse · low · mid-reach", eg:"reclining-twist, twisted-roots, windshield-wipers" },
+  { n:3, triple:"multi · low · mid-reach", eg:"shoelace-fold, sleeping-swan, supta-baddha-konasana" },
+];
+const kt = document.getElementById("kinetable");
+kt.innerHTML = `<div class="kinerow head"><span>n</span><span>plane · level · zone</span><span>example poses</span></div>` +
+  KINE_TRIPLES.map(k => `
+    <div class="kinerow${k.flag ? " flag" : ""}">
+      <span class="n">${k.n}</span>
+      <span class="triple">${k.triple}</span>
+      <span class="eg">${k.eg}</span>
+    </div>`).join("");
+document.getElementById("kinemore").textContent =
+  "19 distinct triples in total across 67 poses; the 9 not shown here each hold 1–2 poses. " +
+  "Flagged rows: the largest bucket (14 poses, spanning a seated forward fold to a prone backbend) and the mountain/tree/dangling row, which shows kinespherics adding no resolution where Finding B already found none.";
+
+/* ---------------- open questions: book-level first, then technical ---------------- */
+const OPEN_QS = [
+  {h:"Is energetic_direction the one axis to rule them all?", p:"Brahmana / langhana / samana as the single normalized field that purpose, autonomic tilt, and thermal effect all resolve into. Does that hold up, or do you need them independent?"},
+  {h:"Where is the limit — tension or compression?", p:"This is Bernie Clark's own framework, asked back at him: for yin especially, whether a pose stops at a stretch (tension) or at bone/tissue contact (compression) changes who can do it and for how long. No field for this exists in the schema yet — it would need to be added, then tagged across all 67 poses."},
+  {h:"How thorough must contraindications be for v1?", p:"The one set of hard rules the app will never override. How exhaustive before you'd trust the app to hand a sequence to a real room?"},
+  {h:"Is down-dog really inverted?", p:"The engine's orientation term treats down-dog's orientation tag (inverted) as a full flip from plank's prone, scoring that passage at 0.417 — while the pose-model review's prose calls the same pair 0.15, very smooth. Does down-dog belong in a mild-inversion category the orientation term should treat more gently, or is the review's number the one to fix?"},
+];
+const ql = document.getElementById("qlist");
+OPEN_QS.forEach((q,i)=>{
+  const d = document.createElement("div");
+  d.className = "q";
+  d.innerHTML = `<div class="num">${String(i+1).padStart(2,"0")}</div>
+    <div><h3>${q.h}</h3><p>${q.p}</p></div>`;
+  ql.appendChild(d);
+});
+</script>
+</body>
+</html>
