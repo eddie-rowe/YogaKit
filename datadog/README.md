@@ -118,6 +118,15 @@ manifest. There is nothing under `synthetics/` to add; this drift is Datadog's o
 synthetics infrastructure surfacing under the `monitors` type, and is expected to
 persist across every run.
 
+`npm run datadog:drift-check` (`--fail-on-drift`) is the scheduled version of this same
+diff (`.github/workflows/datadog-drift.yml`, weekly + `workflow_dispatch`) — it exits
+non-zero only for drift *not* on this expected list, via `findUnexpectedDrift` in
+`scripts/lib/datadog-sync.mjs`. Plain `datadog:diff`'s exit code is unaffected by drift
+either way (validation/apply failures only); this flag exists so an unattended job can
+actually catch a real gap instead of passing regardless of what drifted. Like every other
+Datadog job in this repo, it never applies — a real drift here is a signal to update the
+manifest or run `npm run datadog:apply` on purpose, not something CI fixes on its own.
+
 ### Monitors legitimately reading No Data pre-launch
 
 A monitor's `overall_state` can read `No Data` without anything being broken — RUM and

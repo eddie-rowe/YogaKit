@@ -247,6 +247,37 @@ export function extractScopedQueries(value) {
   return [...fragments]
 }
 
+/**
+ * Datadog auto-creates a companion alert monitor for every synthetics test, inheriting
+ * its name and tags — this is not unmanaged config, and is documented as permanent,
+ * expected drift under `--type monitors` (datadog/README.md's "Expected drift" section).
+ * Matched by name, not slug: these companion monitors carry no manifest-derived
+ * `yogakit:<slug>` tag of their own to match against, since there is no monitor
+ * manifest for them to begin with.
+ */
+export const EXPECTED_DRIFT_MONITOR_NAMES = [
+  '[YogaKit] Homepage Returns 200',
+  '[YogaKit] Poses Index Returns 200',
+  '[YogaKit] Read View Returns 200',
+  '[YogaKit] Read Flow Offline',
+  '[YogaKit] Read View RUM Session',
+]
+
+/**
+ * Given the `drift | live, not in repo` rows a sync run collects (type + name, the same
+ * shape `formatResultLine` prints), filter out the documented, permanent synthetics
+ * companion-monitor drift and return only genuinely unexpected entries — live objects
+ * tagged `service:yogakit` with no local manifest and no explanation on record.
+ *
+ * Mirrors `findUnexpectedNoData`'s shape: both solve "distinguish legitimate absence
+ * from a real gap" for a different Datadog surface (evaluated state vs. object drift).
+ */
+export function findUnexpectedDrift(driftEntries) {
+  return driftEntries.filter(
+    ({ type, name }) => !(type === 'monitors' && EXPECTED_DRIFT_MONITOR_NAMES.includes(name)),
+  )
+}
+
 /** The `yogakit:no-data-expected` tag marks a monitor pre-launch-legitimately-No-Data. */
 export const NO_DATA_EXPECTED_TAG = 'yogakit:no-data-expected'
 
