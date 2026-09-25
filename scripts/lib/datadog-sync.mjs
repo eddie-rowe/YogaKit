@@ -256,11 +256,11 @@ export function extractScopedQueries(value) {
  * manifest for them to begin with.
  */
 export const EXPECTED_DRIFT_MONITOR_NAMES = [
-  '[YogaKit] Homepage Returns 200',
-  '[YogaKit] Poses Index Returns 200',
-  '[YogaKit] Read View Returns 200',
-  '[YogaKit] Read Flow Offline',
-  '[YogaKit] Read View RUM Session',
+  '[YogaKit] Synthetic: Homepage Returns 200',
+  '[YogaKit] Synthetic: Poses Index Returns 200',
+  '[YogaKit] Synthetic: Read View Returns 200',
+  '[YogaKit] Synthetic Browser: Read Flow Offline',
+  '[YogaKit] Synthetic Browser: Read View RUM Session',
 ]
 
 /**
