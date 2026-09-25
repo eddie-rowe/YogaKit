@@ -284,24 +284,34 @@ with a 90-day end date; marking twice does not stack or extend.
 
 ### Tests for User Story 3
 
-- [ ] T046 [P] [US3] Unit test for `app_grant_ytt_completion` idempotency (second call is
-  a no-op) in `tests/integration/rls/cohort-graduation.test.ts`
-- [ ] T047 [P] [US3] Unit test for `app_entitlements()` union correctness — grant +
+- [X] T046 [P] [US3] Unit test for `app_grant_ytt_completion` idempotency (second call is
+  a no-op) in `tests/integration/rls/cohort-graduation.test.ts`. Landed as a SQL assertion
+  in `scripts/verify-migrations.sh` instead — no `tests/integration/rls/` directory exists
+  in this repo, and every other numbered RLS/idempotency proof (T032-T035, T041-T042,
+  T055) already lives there, run against real Postgres, not a mocked Vitest unit test.
+- [X] T047 [P] [US3] Unit test for `app_entitlements()` union correctness — grant +
   active subscription both present, neither lost — in `tests/unit/entitlements/resolve.test.ts`
-- [ ] T048 [P] [US3] RLS assertion: a non-authorized org member calling
+- [X] T048 [P] [US3] RLS assertion: a non-authorized org member calling
   `app_grant_ytt_completion` gets `insufficient_privilege`, in `scripts/verify-migrations.sh`
 - [ ] T049 [US3] E2E: create cohort → enroll student → mark graduated → verify
   `app_entitlements()` reflects the grant within the same session, extending
-  `tests/e2e-qa/auth-org-invite.spec.ts` (the One Om walkthrough's centerpiece)
+  `tests/e2e-qa/auth-org-invite.spec.ts` (the One Om walkthrough's centerpiece). Blocked on
+  the same gap `DECISIONS.md` records for #61: no scripted-login fixture exists yet.
 
 ### Implementation for User Story 3
 
-- [ ] T050 [US3] Create `src/app/org/[orgId]/cohorts/[cohortId]/page.tsx` — cohort
+- [X] T050 [US3] Create `src/app/org/[orgId]/cohorts/[cohortId]/page.tsx` — cohort
   roster + mark-graduated action, calls `app_grant_ytt_completion`
-- [ ] T051 [US3] Create `src/lib/entitlements/index.ts` — wraps `app_entitlements()` in
+- [X] T051 [US3] Create `src/lib/entitlements/index.ts` — wraps `app_entitlements()` in
   React `cache()` (contracts/entitlements-api.md)
 - [ ] T052 [US3] Add cohort-enrollment creation to the members/invite flow (T038/T039) so
-  a student invited with a cohort context lands enrolled, not just a bare org member
+  a student invited with a cohort context lands enrolled, not just a bare org member.
+  Deferred: this needs an `invitations.cohort_id` migration and an
+  `app_create_invitation`/`app_accept_invitation` signature change, which is its own
+  schema-touching PR, not something to fold into 7c unattended. In the meantime, 7c ships
+  a direct "enroll a member" control on the roster page (any existing org member,
+  authorized by `cohort_enrollments_insert_authorized_role`, no schema change) so the
+  cohort feature is usable without T052.
 
 **Checkpoint**: The One Om business loop (invite → accept → graduate → grant) works
 end-to-end.
