@@ -58,6 +58,11 @@ done
 
 psql -v ON_ERROR_STOP=1 -q <<'EOF'
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO authenticated;
+-- Supabase grants anon the same table-level privileges as authenticated and lets RLS
+-- do the real work; mirror that here so a T055-style "anon gets zero rows" assertion
+-- exercises RLS, not a permission-denied at the grant layer that bare Postgres would
+-- otherwise produce and real Supabase never would.
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO anon;
 
 -- Two orgs, three users: org A has owner + a plain member, org B has its own owner.
 INSERT INTO auth.users (id, email, email_confirmed_at) VALUES
@@ -133,6 +138,58 @@ END $do$;
 RESET ROLE;
 EOF
 
+# --- T041: a co-member can SELECT the other's profile_cards row, but gets zero rows
+# from profiles directly — profile_cards is "the ONLY identity data a co-member may
+# read" (20260826224201's own comment), and this is that boundary asserted rather
+# than left to the table comment.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000002';
+DO $do$
+DECLARE
+  v_card_count int;
+  v_profile_count int;
+BEGIN
+  SELECT count(*) INTO v_card_count FROM profile_cards
+    WHERE user_id = 'a0000000-0000-0000-0000-000000000001';
+  IF v_card_count <> 1 THEN
+    RAISE EXCEPTION 'a co-member could not read the other''s profile_cards row, got %', v_card_count;
+  END IF;
+
+  SELECT count(*) INTO v_profile_count FROM profiles
+    WHERE id = 'a0000000-0000-0000-0000-000000000001';
+  IF v_profile_count <> 0 THEN
+    RAISE EXCEPTION 'a co-member read % rows directly from profiles — profile_cards is supposed to be the only route', v_profile_count;
+  END IF;
+
+  RAISE NOTICE 'PASS T041 a co-member reads profile_cards but zero rows from profiles directly';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- T042 (placeholder, per tasks.md's own wording): assert no content table exists
+# that any non-owner role can query. Passes trivially today — there is no content
+# table yet — and becomes meaningful once 005 lands practice_reflections etc.
+# (plan.md's Constitution Check row VIII). The query itself is the useful part: it
+# will start failing the day a content table gains a non-owner-keyed policy, without
+# anyone having to remember to add a new assertion for it.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+DO $do$
+DECLARE v_bad text;
+BEGIN
+  SELECT string_agg(tablename || '.' || policyname, ', ') INTO v_bad
+    FROM pg_policies
+   WHERE schemaname = 'public'
+     AND cmd = 'SELECT'
+     AND tablename IN ('flow_item_notes', 'pose_notes', 'pose_favourites')
+     AND (coalesce(qual, '') !~* 'user_id = \( select auth\.uid\(\)' OR qual ~* '(org|cohort|team|role)');
+  IF v_bad IS NOT NULL THEN
+    RAISE EXCEPTION 'T042: a content table''s SELECT policy is not owner-only: %', v_bad;
+  END IF;
+  RAISE NOTICE 'PASS T042 no content table has a non-owner-readable SELECT policy (placeholder until 005 adds more)';
+END $do$;
+EOF
+
 # --- Last-owner removal is blocked with restrict_violation.
 psql -v ON_ERROR_STOP=1 -q <<'EOF'
 SET ROLE authenticated;
@@ -188,6 +245,39 @@ END $do$;
 RESET ROLE;
 EOF
 
+# --- T055: stripe_events returns zero rows for any role other than service_role. RLS
+# is on with zero policies defined for authenticated/anon, so a bare SELECT should
+# return zero rows rather than raise — worth asserting explicitly, since "RLS enabled,
+# no policy" reads the same in a migration diff whether it was deliberate or forgotten.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
+DO $do$
+DECLARE v_count int;
+BEGIN
+  SELECT count(*) INTO v_count FROM stripe_events;
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'authenticated read % rows from stripe_events; expected zero (no policy for this role)', v_count;
+  END IF;
+  RAISE NOTICE 'PASS T055 stripe_events returns zero rows for authenticated (no policy grants it any)';
+END $do$;
+RESET ROLE;
+EOF
+
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE anon;
+DO $do$
+DECLARE v_count int;
+BEGIN
+  SELECT count(*) INTO v_count FROM stripe_events;
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'anon read % rows from stripe_events; expected zero', v_count;
+  END IF;
+  RAISE NOTICE 'PASS T055 stripe_events returns zero rows for anon (no policy grants it any)';
+END $do$;
+RESET ROLE;
+EOF
+
 # --- Solo practitioner (T024): a brand-new user with zero memberships can read/update
 # their own profile, and sees zero rows in memberships/organizations — the solo path
 # needs no org row to exist at all, not just isolation across orgs.
@@ -225,7 +315,7 @@ BEGIN
     RAISE EXCEPTION 'solo user with no membership rows sees non-zero org/membership counts';
   END IF;
 
-  RAISE NOTICE 'PASS solo practitioner: reads/updates own profile, zero org/membership rows';
+  RAISE NOTICE 'PASS T024 solo practitioner: reads/updates own profile, zero org/membership rows';
 END $do$;
 RESET ROLE;
 EOF
@@ -252,7 +342,7 @@ BEGIN
   IF v_other_count <> 0 THEN
     RAISE EXCEPTION 'RLS leak: caller sees % rows of another user''s claimed_flows', v_other_count;
   END IF;
-  RAISE NOTICE 'PASS claimed_flows isolation: caller sees zero of another user''s rows';
+  RAISE NOTICE 'PASS T030 claimed_flows isolation: caller sees zero of another user''s rows';
 END $do$;
 RESET ROLE;
 EOF
