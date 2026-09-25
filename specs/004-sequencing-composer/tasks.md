@@ -283,8 +283,10 @@ has a later LCP still.
 - [X] T046 [US4] Fix the `bg-purple-50`/`bg-violet-50` chips in `ComposeFlowItem.tsx` — they
   collide with the sanctioned chakra hue (guardrails §2)
 - [X] T047 [US4] Rename the `compose-item-{index}` testid family so no testid is a prefix of
-  another (guardrails, added in `3e6b08d`). Then replace the hardcoded index list at
-  `tests/e2e-qa/walk2-compose.spec.ts:22` with a prefix selector
+  another (guardrails, added in `3e6b08d`) — done, `ComposeFlowItem.tsx:66` renders
+  `compose-row-${index}`. The second half — replacing the hardcoded index list at
+  `tests/e2e-qa/walk2-compose.spec.ts:22` with a prefix selector — is still outstanding;
+  that suite is human-maintained (autodev.md conventions), so out of scope here
 - [X] T048 [US4] FR-035: scroll position preserved across a reorder by drag and by button,
   guarded with a smoke test
 - [X] T049 [US4] Fix the two `set-state-in-effect` errors handed forward from `003` —
