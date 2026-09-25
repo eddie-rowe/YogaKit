@@ -118,4 +118,5 @@ Every string on this path goes through `009`'s copy-lint, which is CI-gating as 
 The rule most likely to bite here is the urgency one: a share revocation is not an emergency,
 and the copy should not read like one.
 
-**[OWNER SIGN-OFF]** — the sharing and revoke strings, once drafted in the US3 PR.
+The strings are drafted and shipped in `FlowShare.tsx`, staged for sign-off in
+`contracts/sharing-revoke-copy.md`. See that document for the owner nod.
