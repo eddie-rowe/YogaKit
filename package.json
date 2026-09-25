@@ -22,7 +22,10 @@
     "datadog:apply": "node scripts/datadog/sync.mjs --apply",
     "datadog:drift-check": "node scripts/datadog/sync.mjs --fail-on-drift",
     "lint:telemetry": "node scripts/check-telemetry-content-free.mjs",
-    "db:types": "bash scripts/db-types-local.sh"
+    "db:types": "bash scripts/db-types-local.sh",
+    "github:rulesets:validate": "node scripts/github/sync-rulesets.mjs --validate",
+    "github:rulesets:diff": "node scripts/github/sync-rulesets.mjs",
+    "github:rulesets:apply": "node scripts/github/sync-rulesets.mjs --apply"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.105.0",
