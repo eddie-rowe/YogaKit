@@ -163,8 +163,9 @@ absence of those fields.
   tests. Wire it into the export-for-sharing path only (`data-model.md` §6)
 - [X] T036 [P] [US3] I10: an item whose `pose_slug` no longer resolves renders legibly rather
   than failing the flow (FR-031)
-- [ ] T037 [US3] Sharing and revoke copy, through the copy-lint, stating that existing
-  duplicates are unaffected (FR-032) **[OWNER SIGN-OFF]**
+- [X] T037 [US3] Sharing and revoke copy, through the copy-lint, stating that existing
+  duplicates are unaffected (FR-032). Staged for sign-off in
+  `contracts/sharing-revoke-copy.md`
 
 **Gate**: every row of the invariant table in `contracts/flow-sharing.md` proven. ✅ **met**
 — I1–I7 and I9 against real Postgres in `scripts/verify-migrations.sh` (the `004 US3`
