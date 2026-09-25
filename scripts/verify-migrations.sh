@@ -1127,6 +1127,134 @@ END $do$;
 RESET ROLE;
 EOF
 
+# --- US3 (#61 7c) fixture: a cohort in Org A, and a plain 'student' member (no
+# owner/admin/teacher role, no cohort_teachers row) enrolled in it. Both T046 and T048
+# below read this same enrollment. Post-20260831190000, an auth.users insert alone
+# produces the profiles row via trg on_auth_user_created — a manual profiles insert
+# here would collide with it.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+INSERT INTO auth.users (id, email, email_confirmed_at) VALUES
+  ('a0000000-0000-0000-0000-000000000008', 'student-a@example.com', now());
+
+-- memberships has no direct INSERT policy for any role (by design — every
+-- membership is created via app_accept_invitation, never a raw insert), so
+-- student-a joins Org A the same way member-a did earlier in this file.
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
+DO $do$
+DECLARE
+  v_org_a uuid;
+  v_token text;
+BEGIN
+  SELECT id INTO v_org_a FROM organizations WHERE name = 'Org A';
+  SELECT raw_token INTO v_token FROM app_create_invitation(v_org_a, 'student-a@example.com', array['student']);
+  PERFORM set_config('app.test_student_token', v_token, false);
+END $do$;
+RESET ROLE;
+
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000008';
+DO $do$
+BEGIN
+  PERFORM app_accept_invitation(current_setting('app.test_student_token'));
+END $do$;
+RESET ROLE;
+
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
+DO $do$
+DECLARE
+  v_org_a uuid;
+  v_cohort_id uuid;
+BEGIN
+  SELECT id INTO v_org_a FROM organizations WHERE name = 'Org A';
+
+  INSERT INTO cohorts (org_id, name, kind)
+    VALUES (v_org_a, 'YTT 200 Cohort', 'ytt_200')
+    RETURNING id INTO v_cohort_id;
+
+  INSERT INTO cohort_enrollments (cohort_id, user_id, status)
+    VALUES (v_cohort_id, 'a0000000-0000-0000-0000-000000000008', 'enrolled');
+END $do$;
+RESET ROLE;
+EOF
+
+# --- T048: a non-authorized org member (plain 'student' role, not owner/admin/teacher,
+# no cohort_teachers row) calling app_grant_ytt_completion gets insufficient_privilege.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000008';
+DO $do$
+DECLARE
+  v_cohort_id uuid;
+BEGIN
+  SELECT id INTO v_cohort_id FROM cohorts WHERE name = 'YTT 200 Cohort';
+  BEGIN
+    PERFORM app_grant_ytt_completion(v_cohort_id, 'a0000000-0000-0000-0000-000000000008');
+    RAISE EXCEPTION 'expected insufficient_privilege from app_grant_ytt_completion for a non-authorized caller';
+  EXCEPTION WHEN insufficient_privilege THEN
+    RAISE NOTICE 'PASS T048 a non-authorized org member calling app_grant_ytt_completion gets insufficient_privilege';
+  END;
+END $do$;
+RESET ROLE;
+EOF
+
+# --- T046: app_grant_ytt_completion is idempotent — a second call on an
+# already-graduated enrollment is a no-op: no second entitlement_grants row, no
+# extended window, same grant returned.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
+DO $do$
+DECLARE
+  v_cohort_id uuid;
+  v_first_grant_id uuid;
+  v_second_grant_id uuid;
+  v_first_ends_at timestamptz;
+  v_second_ends_at timestamptz;
+BEGIN
+  SELECT id INTO v_cohort_id FROM cohorts WHERE name = 'YTT 200 Cohort';
+
+  SELECT id, ends_at INTO v_first_grant_id, v_first_ends_at
+    FROM app_grant_ytt_completion(v_cohort_id, 'a0000000-0000-0000-0000-000000000008');
+
+  SELECT id, ends_at INTO v_second_grant_id, v_second_ends_at
+    FROM app_grant_ytt_completion(v_cohort_id, 'a0000000-0000-0000-0000-000000000008');
+
+  IF v_first_grant_id <> v_second_grant_id OR v_first_ends_at <> v_second_ends_at THEN
+    RAISE EXCEPTION 'app_grant_ytt_completion is not idempotent: first=%, second=%, ends_at %/%',
+      v_first_grant_id, v_second_grant_id, v_first_ends_at, v_second_ends_at;
+  END IF;
+  -- entitlement_grants_select_own means only the grant's own owner can read
+  -- it back to count rows — carry the cohort id to the next SET ROLE via a
+  -- GUC (same session, still visible after RESET ROLE within one connection).
+  PERFORM set_config('app.test_cohort_id', v_cohort_id::text, false);
+END $do$;
+RESET ROLE;
+
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000008';
+DO $do$
+DECLARE
+  v_grant_count int;
+BEGIN
+  SELECT count(*) INTO v_grant_count FROM entitlement_grants
+    WHERE source = 'cohort_graduation'
+      AND source_ref = (
+        SELECT id FROM cohort_enrollments
+          WHERE cohort_id = current_setting('app.test_cohort_id')::uuid
+            AND user_id = 'a0000000-0000-0000-0000-000000000008'
+      );
+
+  IF v_grant_count <> 1 THEN
+    RAISE EXCEPTION 'app_grant_ytt_completion is not idempotent: % entitlement_grants rows for one graduation, expected 1',
+      v_grant_count;
+  END IF;
+  RAISE NOTICE 'PASS T046 app_grant_ytt_completion is idempotent: no second grant, no extended window';
+END $do$;
+RESET ROLE;
+EOF
+
 export PGDATABASE=postgres
 psql -q -c "DROP DATABASE yogakit_mig_verify"
 echo "MIGRATION VERIFICATION PASSED"

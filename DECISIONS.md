@@ -1097,3 +1097,31 @@ the query RLS would have blocked. `7b`–`7e`'s E2E coverage is therefore smoke-
 public/unauthenticated routes only; a future feature that needs real authenticated E2E
 coverage should treat "build a safe test-login path" as its own reviewed piece of work,
 not something to improvise inside an unrelated PR.
+
+---
+
+## 2026-09-25 — `#61` 7c: cohort enrollment is a direct roster control, not an invite-flow rider (T052 deferred)
+
+**Context:** `tasks.md` T052 asks that a student invited with a cohort context land
+enrolled, not just as a bare org member — i.e., fold cohort selection into
+`app_create_invitation`/`app_accept_invitation`. Building 7c (graduate + revoke) surfaced
+that there was no way to enroll anyone into a cohort at all short of raw SQL, which is a
+bigger prerequisite gap than T052 itself: without it, the roster this PR builds has no one
+in it under normal use.
+
+**Decision:** Ship a direct "enroll a member" control on the roster page
+(`CohortRosterClient.tsx`) — pick any existing org member not already enrolled, insert a
+`cohort_enrollments` row. Defer T052 (invite-time cohort selection) to its own PR.
+
+**Why:** the direct-enroll control needs no migration and no RPC change —
+`cohort_enrollments_insert_authorized_role` already gates the insert, so the UI is exactly
+as thin as `CohortsListClient.tsx`'s cohort-create form. T052 as literally specified is a
+schema change (`invitations.cohort_id`) plus a signature change to two `SECURITY DEFINER`
+RPCs that existing RLS assertions (T032–T035) already call positionally — a large enough
+surface, on auth/tenancy-critical functions, to deserve its own review rather than riding
+in on a roster-UI PR built unattended.
+
+**What this does not cover:** the "invite someone straight into a cohort" flow T052
+describes remains unbuilt — inviting a new (not-yet-a-member) student into a cohort still
+takes two steps (invite to the org, then enroll from the roster) until T052 ships
+separately.
