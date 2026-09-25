@@ -293,9 +293,12 @@ export function quietMetricNames(monitorManifests) {
   const names = new Set()
   for (const manifest of monitorManifests) {
     if (!manifest.tags?.includes(NO_DATA_EXPECTED_TAG)) continue
+    // Every fragment here came out of extractScopedQueries's own
+    // `<aggregation>:<metric>{<scope>}` regex, so this always matches with a
+    // non-empty metric group — no fallback needed for a shape that can't occur.
     for (const fragment of extractScopedQueries(manifest)) {
-      const [, metric] = fragment.match(/^[a-z0-9]+:([A-Za-z0-9_.]+)\{/) ?? []
-      if (metric) names.add(metric)
+      const [, metric] = fragment.match(/^[a-z0-9]+:([A-Za-z0-9_.]+)\{/)
+      names.add(metric)
     }
   }
   return names
