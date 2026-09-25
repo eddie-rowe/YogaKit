@@ -16,7 +16,7 @@
 #   - `app_entitlements('<other user>')` raises insufficient_privilege
 #
 # Later phases (US1-US5) append more DO blocks to this same file as their own
-# tasks require (T024, T032, T033, T041, T042, T048, T055) — same pattern as
+# tasks require (T024, T032, T033, T041, T042, T048, T054, T055) — same pattern as
 # tests/e2e-qa/auth-org-invite.spec.ts accumulating scenarios across phases.
 #
 # Usage: PGHOST=... PGUSER=postgres bash scripts/verify-migrations.sh
@@ -1158,6 +1158,86 @@ BEGIN
     RAISE EXCEPTION 'a shared flow its author deleted is still in the org''s list';
   END IF;
   RAISE NOTICE 'PASS US3 a soft-deleted flow leaves the org''s list while still shared';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- 7d fixture: a fresh user with no cohort/org involvement, isolated to the
+# billing assertions below so T054/T055 don't depend on the T047 union fixture
+# (whose subscription intentionally has a future current_period_end and must
+# stay untouched).
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+INSERT INTO auth.users (id, email, email_confirmed_at) VALUES
+  ('a0000000-0000-0000-0000-000000000009', 'billing-a@example.com', now());
+
+INSERT INTO subscriptions (user_id, stripe_subscription_id, plan_key, status, current_period_end)
+VALUES ('a0000000-0000-0000-0000-000000000009', 'sub_test_expiry', 'pro', 'active', now() - interval '1 day');
+EOF
+
+# --- T054: app_entitlements() closes access exactly at current_period_end, not
+# at cancellation time — the fix in 20260925010000_fix_entitlements_expiry.sql.
+# A subscription row stuck at status='active' with a past current_period_end
+# (a dropped webhook, an outage) must NOT appear in the union; the same row
+# with a future current_period_end must.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000009';
+DO $do$
+DECLARE
+  v_result jsonb;
+  v_sub_count int;
+BEGIN
+  v_result := app_entitlements('a0000000-0000-0000-0000-000000000009');
+  v_sub_count := jsonb_array_length(v_result -> 'subscriptions');
+  IF v_sub_count <> 0 THEN
+    RAISE EXCEPTION 'T054: a subscription past its current_period_end is still granting access (% rows)', v_sub_count;
+  END IF;
+  RAISE NOTICE 'PASS T054a a status=active subscription past current_period_end grants no access';
+END $do$;
+RESET ROLE;
+EOF
+
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+UPDATE subscriptions SET current_period_end = now() + interval '30 days'
+  WHERE stripe_subscription_id = 'sub_test_expiry';
+EOF
+
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000009';
+DO $do$
+DECLARE
+  v_result jsonb;
+  v_sub_count int;
+BEGIN
+  v_result := app_entitlements('a0000000-0000-0000-0000-000000000009');
+  v_sub_count := jsonb_array_length(v_result -> 'subscriptions');
+  IF v_sub_count <> 1 THEN
+    RAISE EXCEPTION 'T054: a subscription within its current_period_end should grant access, got % rows', v_sub_count;
+  END IF;
+  RAISE NOTICE 'PASS T054b a status=active subscription within current_period_end still grants access';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- T055: stripe_events is RLS-enabled with zero policies for any role —
+# fail-closed at no cost to the webhook path, which writes via service_role
+# (BYPASSRLS) and never through this policy surface at all.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+INSERT INTO stripe_events (stripe_event_id, processed_at) VALUES ('evt_test_055', now());
+EOF
+
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000009';
+DO $do$
+DECLARE v_count int;
+BEGIN
+  SELECT count(*) INTO v_count FROM stripe_events;
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'T055: authenticated role can see % stripe_events rows, expected 0', v_count;
+  END IF;
+  RAISE NOTICE 'PASS T055 stripe_events returns zero rows for any role other than service_role';
 END $do$;
 RESET ROLE;
 EOF

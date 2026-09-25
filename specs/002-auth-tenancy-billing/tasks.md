@@ -317,22 +317,27 @@ cancel and confirm access continues to period end.
 
 ### Tests for User Story 4
 
-- [ ] T053 [P] [US4] Unit test: duplicate webhook delivery (same `stripe_event_id`)
+- [X] T053 [P] [US4] Unit test: duplicate webhook delivery (same `stripe_event_id`)
   produces exactly one entitlement effect, in `tests/unit/entitlements/webhook-idempotency.test.ts`
-- [ ] T054 [P] [US4] Unit test: canceled subscription continues access until
-  `current_period_end`, then stops, in `tests/unit/entitlements/cancellation.test.ts`
-- [ ] T055 [P] [US4] RLS assertion: `stripe_events` returns zero rows for any role other
+- [X] T054 [P] [US4] Unit test: canceled subscription continues access until
+  `current_period_end`, then stops, in `tests/unit/entitlements/cancellation.test.ts` — plus
+  a migration (`20260925010000_fix_entitlements_expiry.sql`) closing a fail-open gap in
+  `app_entitlements()` that never checked `current_period_end`, and matching SQL assertions
+  T054a/T054b in `scripts/verify-migrations.sh`
+- [X] T055 [P] [US4] RLS assertion: `stripe_events` returns zero rows for any role other
   than `service_role`, in `scripts/verify-migrations.sh`
 - [ ] T056 [US4] E2E: subscribe → view plan → cancel → confirm access persists to period
   end, in `tests/e2e-qa/auth-org-invite.spec.ts` or a dedicated billing spec
 
 ### Implementation for User Story 4
 
-- [ ] T057 [US4] Create `src/app/billing/checkout/route.ts` — Stripe Checkout session
+- [X] T057 [US4] Create `src/app/billing/checkout/route.ts` — Stripe Checkout session
   creation, creates `stripe_customers` row if absent (contracts/billing-webhooks.md)
-- [ ] T058 [US4] Create `src/app/billing/page.tsx` — plan view, Stripe customer portal
-  link for manage/cancel
-- [ ] T059 [US4] Create `src/app/api/webhooks/stripe/route.ts` — signature verification,
+- [X] T058 [US4] Create `src/app/billing/page.tsx` — plan view, Stripe customer portal
+  link for manage/cancel — bundled into the 7d PR rather than split into a separate 7e
+  branch, since it was built in the same session; `src/app/billing/portal/route.ts` added
+  alongside for the actual portal-session creation
+- [X] T059 [US4] Create `src/app/api/webhooks/stripe/route.ts` — signature verification,
   `stripe_events` insert-or-noop idempotency, dispatch on `event.type`
   (contracts/billing-webhooks.md)
 - [ ] T060 [US4] Seed `plan_features` rows for the launch plan tier(s)
