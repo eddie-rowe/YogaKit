@@ -533,6 +533,10 @@ describe('extractScopedQueries — #64 full-tag-set probe', () => {
       }),
     ).toEqual(['sum:trace.web.request.hits{service:yogakit,env:prod}'])
   })
+
+  it('finds no scoped queries in an unserialisable value', () => {
+    expect(extractScopedQueries(undefined)).toEqual([])
+  })
 })
 
 describe('quietMetricNames — #64 dashboard/monitor shared exemption', () => {
