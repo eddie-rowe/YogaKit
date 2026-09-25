@@ -33,4 +33,22 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
+## Agent skills
+
+Third-party agent skills are vendored under `.agents/skills/` (gitignored — regenerable)
+and pinned in `skills-lock.json`, with per-agent symlinks committed under
+`.claude/skills/`. After a fresh clone, restore the vendored copies so the symlinks resolve:
+
+```bash
+npm run skills:restore
+```
+
+Datadog skills (`dd-pup`, `dd-monitors`, `dd-logs`, `dd-apm`, `dd-docs`,
+`dd-browser-sdk`, `triage-flaky-test`, `unblock-pr` from
+[datadog-labs/agent-skills](https://github.com/datadog-labs/agent-skills)) document the
+proper CLI (`pup`) and API interfaces for the surfaces the headless routines touch:
+monitors/SLOs/synthetics, APM traces, RUM, logs, docs, and CI pipelines. They require
+`pup` on PATH and authenticated (`pup auth login`) — the repo's Datadog config sync
+(`npm run datadog:*`) is independent of them and uses `DD_API_KEY` from `.env.local`.
+
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

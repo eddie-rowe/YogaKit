@@ -25,7 +25,8 @@
     "db:types": "bash scripts/db-types-local.sh",
     "github:rulesets:validate": "node scripts/github/sync-rulesets.mjs --validate",
     "github:rulesets:diff": "node scripts/github/sync-rulesets.mjs",
-    "github:rulesets:apply": "node scripts/github/sync-rulesets.mjs --apply"
+    "github:rulesets:apply": "node scripts/github/sync-rulesets.mjs --apply",
+    "skills:restore": "npx skills experimental_install"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.105.0",
