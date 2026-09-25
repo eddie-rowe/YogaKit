@@ -273,21 +273,21 @@ has a later LCP still.
 
 **Purpose**: Decomposition with the testid contract preserved exactly. **Story: US4.**
 
-- [ ] T043 [US4] Decompose `src/app/compose/ComposeClient.tsx` into `src/components/compose/`.
+- [X] T043 [US4] Decompose `src/app/compose/ComposeClient.tsx` into `src/components/compose/`.
   Every existing test identifier survives unchanged (FR-033, SC-011)
-- [ ] T044 [US4] The drag handle and the up/down reorder buttons stay sibling elements in the
+- [X] T044 [US4] The drag handle and the up/down reorder buttons stay sibling elements in the
   same row at every tested width — no overflow-menu collapse (FR-034, SC-012, UX-002)
-- [ ] T045 [US4] Adopt `describeEnergeticDirection` from
+- [X] T045 [US4] Adopt `describeEnergeticDirection` from
   `src/lib/pose-library/energetic-direction.ts` at `ComposeFlowItem.tsx:172`, which currently
   renders the bare Sanskrit token
-- [ ] T046 [US4] Fix the `bg-purple-50`/`bg-violet-50` chips in `ComposeFlowItem.tsx` — they
+- [X] T046 [US4] Fix the `bg-purple-50`/`bg-violet-50` chips in `ComposeFlowItem.tsx` — they
   collide with the sanctioned chakra hue (guardrails §2)
-- [ ] T047 [US4] Rename the `compose-item-{index}` testid family so no testid is a prefix of
+- [X] T047 [US4] Rename the `compose-item-{index}` testid family so no testid is a prefix of
   another (guardrails, added in `3e6b08d`). Then replace the hardcoded index list at
   `tests/e2e-qa/walk2-compose.spec.ts:22` with a prefix selector
-- [ ] T048 [US4] FR-035: scroll position preserved across a reorder by drag and by button,
+- [X] T048 [US4] FR-035: scroll position preserved across a reorder by drag and by button,
   guarded with a smoke test
-- [ ] T049 [US4] Fix the two `set-state-in-effect` errors handed forward from `003` —
+- [X] T049 [US4] Fix the two `set-state-in-effect` errors handed forward from `003` —
   `PoseDetailContent.tsx:74` and `PoseOverlay.tsx:92` — with `useSyncExternalStore`, per
   `src/lib/hooks/useClientValue.ts`
 
