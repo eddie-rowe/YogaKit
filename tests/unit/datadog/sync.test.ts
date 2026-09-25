@@ -595,6 +595,20 @@ describe('findUnexpectedNoData — #64 evaluated-state check', () => {
 // the classifier `--fail-on-drift` (#70) uses to close that blind spot: it separates the
 // five documented, permanent synthetics companion monitors from a real, unexpected gap.
 describe('findUnexpectedDrift — #70 repo-vs-live drift classifier', () => {
+  it('matches the live companion-monitor names exactly — #81 regression: the infix', () => {
+    // Bug: EXPECTED_DRIFT_MONITOR_NAMES omitted the "Synthetic: "/"Synthetic Browser: "
+    // infix Datadog actually prepends (per datadog/README.md's "Expected drift" section
+    // and each synthetics manifest's own `monitor_name`), so every real companion
+    // monitor was misclassified as unexpected drift on every run.
+    expect(EXPECTED_DRIFT_MONITOR_NAMES).toEqual([
+      '[YogaKit] Synthetic: Homepage Returns 200',
+      '[YogaKit] Synthetic: Poses Index Returns 200',
+      '[YogaKit] Synthetic: Read View Returns 200',
+      '[YogaKit] Synthetic Browser: Read Flow Offline',
+      '[YogaKit] Synthetic Browser: Read View RUM Session',
+    ])
+  })
+
   it('does not flag a documented synthetics companion monitor', () => {
     const entries = EXPECTED_DRIFT_MONITOR_NAMES.map((name) => ({ type: 'monitors', name }))
     expect(findUnexpectedDrift(entries)).toEqual([])
