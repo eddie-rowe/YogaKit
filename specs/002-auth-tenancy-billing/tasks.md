@@ -250,9 +250,9 @@ membership/role are mutually visible.
 
 ### Tests for User Story 5
 
-- [ ] T041 [P] [US5] RLS assertion: a co-member can `SELECT` the other's `profile_cards`
+- [X] T041 [P] [US5] RLS assertion: a co-member can `SELECT` the other's `profile_cards`
   row but gets zero rows from `profiles` directly, in `scripts/verify-migrations.sh`
-- [ ] T042 [P] [US5] RLS assertion (placeholder, to be filled in by feature 005 per
+- [X] T042 [P] [US5] RLS assertion (placeholder, to be filled in by feature 005 per
   plan.md's Constitution Check row VIII): assert no content table exists that any
   non-owner role can query — passes trivially today, becomes meaningful once `005` lands
 - [ ] T043 [US5] E2E: two org members, one views the member list, confirm no personal
@@ -321,7 +321,7 @@ cancel and confirm access continues to period end.
   produces exactly one entitlement effect, in `tests/unit/entitlements/webhook-idempotency.test.ts`
 - [ ] T054 [P] [US4] Unit test: canceled subscription continues access until
   `current_period_end`, then stops, in `tests/unit/entitlements/cancellation.test.ts`
-- [ ] T055 [P] [US4] RLS assertion: `stripe_events` returns zero rows for any role other
+- [X] T055 [P] [US4] RLS assertion: `stripe_events` returns zero rows for any role other
   than `service_role`, in `scripts/verify-migrations.sh`
 - [ ] T056 [US4] E2E: subscribe → view plan → cancel → confirm access persists to period
   end, in `tests/e2e-qa/auth-org-invite.spec.ts` or a dedicated billing spec
