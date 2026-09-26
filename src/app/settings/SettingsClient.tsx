@@ -118,18 +118,33 @@ export default function SettingsClient({
             <div data-testid="settings-orgs-list" className="space-y-2">
               {memberships.map(m =>
                 m.organizations ? (
-                  <Link
+                  <div
                     key={m.id}
                     data-testid={`settings-org-${m.organizations.id}`}
-                    href={`/org/${m.organizations.id}/members`}
                     className="kk-card px-3 py-2.5 flex items-center justify-between gap-2"
                   >
                     <span className="text-sm font-medium">{m.organizations.name}</span>
-                    <span className="text-xs" style={{ color: 'var(--muted)' }}>
-                      {m.roles.join(', ')}
-                      {m.status !== 'active' && ` · ${m.status}`}
+                    <span className="flex items-center gap-3">
+                      <Link
+                        href={`/org/${m.organizations.id}/members`}
+                        className="text-xs"
+                        style={{ color: 'var(--muted)' }}
+                      >
+                        Members
+                      </Link>
+                      <Link
+                        href={`/org/${m.organizations.id}/cohorts`}
+                        className="text-xs"
+                        style={{ color: 'var(--muted)' }}
+                      >
+                        Cohorts
+                      </Link>
+                      <span className="text-xs" style={{ color: 'var(--muted)' }}>
+                        {m.roles.join(', ')}
+                        {m.status !== 'active' && ` · ${m.status}`}
+                      </span>
                     </span>
-                  </Link>
+                  </div>
                 ) : null,
               )}
             </div>
