@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Square, SquareCheck } from 'lucide-react'
 import type { Pose, PoseTypeTag, MuscleGroup, FiveElement, NervousSystemEffect, SequencingPosition } from '@/lib/pose-types'
 import { allSearchableNames, resolveDisplayName } from '@/lib/pose-library/display-name'
 import PoseCard from './PoseCard'
@@ -185,6 +185,24 @@ export default function PosesClient({ poses }: Props) {
     filterTypeTags.length || filterMuscleGroups.length ||
     filterComplexityMax < 10 || filterRiskMax < 10
 
+  // FR-024: a zero-result combination must say which constraints produced it, since the
+  // AND-combining multi-select groups make an accidental over-narrowing easy. Read off the
+  // same filter state the result list itself is computed from, so this can't drift from
+  // what actually narrowed the list.
+  const activeFilterConstraints = useMemo(() => {
+    const constraints: string[] = []
+    if (search.trim()) constraints.push(`Search: "${search.trim()}"`)
+    if (filterPosition) constraints.push(`Position: ${filterPosition}`)
+    if (filterElement) constraints.push(`Element: ${filterElement}`)
+    if (filterNS) constraints.push(`Nervous system effect: ${filterNS}`)
+    if (filterSeqPosition) constraints.push(`Sequencing position: ${filterSeqPosition}`)
+    if (filterTypeTags.length) constraints.push(`Type tags: ${filterTypeTags.join(', ')}`)
+    if (filterMuscleGroups.length) constraints.push(`Muscle groups: ${filterMuscleGroups.join(', ')}`)
+    if (filterComplexityMax < 10) constraints.push(`Max complexity: ${filterComplexityMax}`)
+    if (filterRiskMax < 10) constraints.push(`Max injury risk: ${filterRiskMax}`)
+    return constraints
+  }, [search, filterPosition, filterElement, filterNS, filterSeqPosition, filterTypeTags, filterMuscleGroups, filterComplexityMax, filterRiskMax])
+
   // Only the filters living inside the Advanced panel (for the Advanced button indicator)
   const hasAdvancedFilters =
     filterNS || filterSeqPosition ||
@@ -256,9 +274,9 @@ export default function PosesClient({ poses }: Props) {
             ) : null}
           </div>
 
-          {/* Body position chips */}
+          {/* Body position chips — single-select */}
           <div className="flex flex-wrap gap-1 mt-2" data-testid="poses-category-filter">
-            <button onClick={() => setFilterPosition('')} data-active={!filterPosition} className="kk-chip px-3 py-1 text-xs">
+            <button onClick={() => setFilterPosition('')} data-active={!filterPosition} data-multiselect="false" className="kk-chip kk-filter-chip-tap px-3 py-1 text-xs">
               All
             </button>
             {BODY_POSITIONS.map(pos => (
@@ -266,23 +284,30 @@ export default function PosesClient({ poses }: Props) {
                 key={pos}
                 onClick={() => setFilterPosition(prev => prev === pos ? '' : pos)}
                 data-active={filterPosition === pos}
-                className="kk-chip px-3 py-1 text-xs capitalize"
+                data-multiselect="false"
+                className="kk-chip kk-filter-chip-tap px-3 py-1 text-xs capitalize"
               >
                 {pos}
               </button>
             ))}
           </div>
 
-          {/* Element chips */}
-          <div className="flex flex-wrap gap-1 mt-1.5">
-            <button onClick={() => setFilterElement('')} data-active={!filterElement} className="kk-chip px-3 py-1 text-xs">
+          {/* Element chips — single-select. `kk-filter-chip-tap` carries no colour
+              property (FR-026 note in globals.css), so it can sit alongside the active
+              branch's per-element tone classes without a specificity fight over
+              background/border — `kk-chip` itself is dropped there on purpose, only for
+              its background/color/border, never for sizing. */}
+          <div className="flex flex-wrap gap-1 mt-1.5" data-testid="poses-element-filter">
+            <button onClick={() => setFilterElement('')} data-active={!filterElement} data-multiselect="false" className="kk-chip kk-filter-chip-tap px-3 py-1 text-xs">
               All
             </button>
             {ELEMENTS.map(el => (
               <button
                 key={el}
                 onClick={() => setFilterElement(prev => prev === el ? '' : el)}
-                className={`px-3 py-1 text-xs rounded-full border capitalize transition-colors ${
+                data-active={filterElement === el}
+                data-multiselect="false"
+                className={`kk-filter-chip-tap px-3 py-1 text-xs rounded-full border capitalize transition-colors ${
                   filterElement === el
                     ? ELEMENT_CHIP_ACTIVE[el]
                     : 'kk-chip'
@@ -323,15 +348,17 @@ export default function PosesClient({ poses }: Props) {
               <div className="flex flex-wrap gap-3">
                 <div>
                   <label className="text-xs font-medium block mb-1" style={{ color: 'var(--muted)' }}>Nervous system effect</label>
-                  <div className="flex gap-1">
-                    <button onClick={() => setFilterNS('')} data-active={!filterNS} className="kk-chip px-2 py-1 text-xs">
+                  <div className="flex gap-1" data-testid="poses-ns-filter">
+                    <button onClick={() => setFilterNS('')} data-active={!filterNS} data-multiselect="false" className="kk-chip kk-filter-chip-tap px-2 py-1 text-xs">
                       All
                     </button>
                     {NS_OPTIONS.map(ns => (
                       <button
                         key={ns}
                         onClick={() => setFilterNS(prev => prev === ns ? '' : ns)}
-                        className={`px-2 py-1 text-xs rounded border capitalize transition-colors ${filterNS === ns ? NS_COLORS[ns] : 'kk-chip'}`}
+                        data-active={filterNS === ns}
+                        data-multiselect="false"
+                        className={`kk-filter-chip-tap px-2 py-1 text-xs rounded border capitalize transition-colors ${filterNS === ns ? NS_COLORS[ns] : 'kk-chip'}`}
                         style={{ transitionDuration: '150ms' }}
                       >
                         {ns}
@@ -342,8 +369,8 @@ export default function PosesClient({ poses }: Props) {
 
                 <div>
                   <label className="text-xs font-medium block mb-1" style={{ color: 'var(--muted)' }}>Sequencing position</label>
-                  <div className="flex flex-wrap gap-1">
-                    <button onClick={() => setFilterSeqPosition('')} data-active={!filterSeqPosition} className="kk-chip px-2 py-1 text-xs">
+                  <div className="flex flex-wrap gap-1" data-testid="poses-seq-filter">
+                    <button onClick={() => setFilterSeqPosition('')} data-active={!filterSeqPosition} data-multiselect="false" className="kk-chip kk-filter-chip-tap px-2 py-1 text-xs">
                       All
                     </button>
                     {SEQ_OPTIONS.map(pos => (
@@ -351,7 +378,8 @@ export default function PosesClient({ poses }: Props) {
                         key={pos}
                         onClick={() => setFilterSeqPosition(prev => prev === pos ? '' : pos)}
                         data-active={filterSeqPosition === pos}
-                        className="kk-chip px-2 py-1 text-xs capitalize"
+                        data-multiselect="false"
+                        className="kk-chip kk-filter-chip-tap px-2 py-1 text-xs capitalize"
                       >
                         {pos}
                       </button>
@@ -387,31 +415,43 @@ export default function PosesClient({ poses }: Props) {
               {/* Type tags */}
               <div>
                 <label className="text-xs font-medium block mb-1" style={{ color: 'var(--muted)' }}>Type tags (all selected must match)</label>
-                <div className="flex flex-wrap gap-1">
+                <div className="flex flex-wrap gap-1" data-testid="poses-type-tag-filter">
                   {TYPE_TAGS.map(tag => (
                     <button
                       key={tag}
                       onClick={() => toggleTypeTag(tag)}
                       data-active={filterTypeTags.includes(tag)}
-                      className="kk-chip px-3 py-1 text-xs"
+                      data-multiselect="true"
+                      className="kk-chip kk-filter-chip-tap px-3 py-1 text-xs inline-flex items-center gap-1"
                     >
+                      {filterTypeTags.includes(tag)
+                        ? <SquareCheck size={13} aria-hidden="true" />
+                        : <Square size={13} aria-hidden="true" />}
                       {tag}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Muscle groups */}
+              {/* Muscle groups — multi-select (AND-combining, FR-021). The checkbox glyph
+                  is the FR-020 affordance: it's rendered whether or not the chip is
+                  active, so a reader can tell this group combines constraints without
+                  selecting anything first (SC-008) — colour alone never carried that,
+                  and still doesn't (docs/design-research/05-catalog-search-filter.md). */}
               <div>
                 <label className="text-xs font-medium block mb-1" style={{ color: 'var(--muted)' }}>Muscle groups (all selected must match)</label>
-                <div className="flex flex-wrap gap-1">
+                <div className="flex flex-wrap gap-1" data-testid="poses-muscle-group-filter">
                   {MUSCLE_GROUPS.map(m => (
                     <button
                       key={m}
                       onClick={() => toggleMuscleGroup(m)}
                       data-active={filterMuscleGroups.includes(m)}
-                      className="kk-chip px-3 py-1 text-xs"
+                      data-multiselect="true"
+                      className="kk-chip kk-filter-chip-tap px-3 py-1 text-xs inline-flex items-center gap-1"
                     >
+                      {filterMuscleGroups.includes(m)
+                        ? <SquareCheck size={13} aria-hidden="true" />
+                        : <Square size={13} aria-hidden="true" />}
                       {m}
                     </button>
                   ))}
@@ -516,9 +556,14 @@ export default function PosesClient({ poses }: Props) {
       ) : (
       <main className="max-w-7xl mx-auto px-4 py-6">
         {filtered.length === 0 ? (
-          <div className="text-center py-20" style={{ color: 'var(--muted)' }}>
+          <div className="text-center py-20" style={{ color: 'var(--muted)' }} data-testid="poses-zero-results">
             <p className="text-lg">No poses match your filters.</p>
-            <button onClick={clearFilters} className="mt-2 text-sm underline transition-colors" style={{ transitionDuration: '150ms' }}>Clear filters</button>
+            {activeFilterConstraints.length > 0 && (
+              <ul className="mt-3 text-sm space-y-0.5" data-testid="poses-zero-results-constraints">
+                {activeFilterConstraints.map(c => <li key={c}>{c}</li>)}
+              </ul>
+            )}
+            <button onClick={clearFilters} className="mt-3 text-sm underline transition-colors" style={{ transitionDuration: '150ms' }}>Clear filters</button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
