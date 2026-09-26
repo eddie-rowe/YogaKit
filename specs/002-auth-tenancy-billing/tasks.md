@@ -286,7 +286,7 @@ with a 90-day end date; marking twice does not stack or extend.
 
 - [ ] T046 [P] [US3] Unit test for `app_grant_ytt_completion` idempotency (second call is
   a no-op) in `tests/integration/rls/cohort-graduation.test.ts`
-- [ ] T047 [P] [US3] Unit test for `app_entitlements()` union correctness — grant +
+- [X] T047 [P] [US3] Unit test for `app_entitlements()` union correctness — grant +
   active subscription both present, neither lost — in `tests/unit/entitlements/resolve.test.ts`
 - [ ] T048 [P] [US3] RLS assertion: a non-authorized org member calling
   `app_grant_ytt_completion` gets `insufficient_privilege`, in `scripts/verify-migrations.sh`
@@ -298,7 +298,7 @@ with a 90-day end date; marking twice does not stack or extend.
 
 - [ ] T050 [US3] Create `src/app/org/[orgId]/cohorts/[cohortId]/page.tsx` — cohort
   roster + mark-graduated action, calls `app_grant_ytt_completion`
-- [ ] T051 [US3] Create `src/lib/entitlements/index.ts` — wraps `app_entitlements()` in
+- [X] T051 [US3] Create `src/lib/entitlements/index.ts` — wraps `app_entitlements()` in
   React `cache()` (contracts/entitlements-api.md)
 - [ ] T052 [US3] Add cohort-enrollment creation to the members/invite flow (T038/T039) so
   a student invited with a cohort context lands enrolled, not just a bare org member

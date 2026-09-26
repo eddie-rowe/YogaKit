@@ -188,6 +188,41 @@ END $do$;
 RESET ROLE;
 EOF
 
+# --- T047: app_entitlements() union correctness. A user with both an active
+# subscription AND a live entitlement_grant must see both in the result — the
+# union must not drop one source in favor of the other, and must not
+# deduplicate them into one entry.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+INSERT INTO subscriptions (user_id, stripe_subscription_id, plan_key, status, current_period_end)
+VALUES ('a0000000-0000-0000-0000-000000000001', 'sub_test_union', 'pro', 'active', now() + interval '30 days');
+
+INSERT INTO entitlement_grants (user_id, source, starts_at, ends_at)
+VALUES ('a0000000-0000-0000-0000-000000000001', 'cohort_graduation', now() - interval '1 day', now() + interval '89 days');
+EOF
+
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
+DO $do$
+DECLARE
+  v_result jsonb;
+  v_sub_count int;
+  v_grant_count int;
+BEGIN
+  v_result := app_entitlements('a0000000-0000-0000-0000-000000000001');
+  v_sub_count := jsonb_array_length(v_result -> 'subscriptions');
+  v_grant_count := jsonb_array_length(v_result -> 'entitlement_grants');
+  IF v_sub_count <> 1 THEN
+    RAISE EXCEPTION 'T047: expected exactly 1 subscription in the union, got %', v_sub_count;
+  END IF;
+  IF v_grant_count <> 1 THEN
+    RAISE EXCEPTION 'T047: expected exactly 1 entitlement_grant in the union, got %', v_grant_count;
+  END IF;
+  RAISE NOTICE 'PASS T047 app_entitlements() union keeps both an active subscription and a live grant, neither lost';
+END $do$;
+RESET ROLE;
+EOF
+
 # --- Solo practitioner (T024): a brand-new user with zero memberships can read/update
 # their own profile, and sees zero rows in memberships/organizations — the solo path
 # needs no org row to exist at all, not just isolation across orgs.
