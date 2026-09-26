@@ -286,7 +286,7 @@ with a 90-day end date; marking twice does not stack or extend.
 
 - [ ] T046 [P] [US3] Unit test for `app_grant_ytt_completion` idempotency (second call is
   a no-op) in `tests/integration/rls/cohort-graduation.test.ts`
-- [ ] T047 [P] [US3] Unit test for `app_entitlements()` union correctness — grant +
+- [X] T047 [P] [US3] Unit test for `app_entitlements()` union correctness — grant +
   active subscription both present, neither lost — in `tests/unit/entitlements/resolve.test.ts`
 - [ ] T048 [P] [US3] RLS assertion: a non-authorized org member calling
   `app_grant_ytt_completion` gets `insufficient_privilege`, in `scripts/verify-migrations.sh`
@@ -298,7 +298,7 @@ with a 90-day end date; marking twice does not stack or extend.
 
 - [ ] T050 [US3] Create `src/app/org/[orgId]/cohorts/[cohortId]/page.tsx` — cohort
   roster + mark-graduated action, calls `app_grant_ytt_completion`
-- [ ] T051 [US3] Create `src/lib/entitlements/index.ts` — wraps `app_entitlements()` in
+- [X] T051 [US3] Create `src/lib/entitlements/index.ts` — wraps `app_entitlements()` in
   React `cache()` (contracts/entitlements-api.md)
 - [ ] T052 [US3] Add cohort-enrollment creation to the members/invite flow (T038/T039) so
   a student invited with a cohort context lands enrolled, not just a bare org member
@@ -317,22 +317,27 @@ cancel and confirm access continues to period end.
 
 ### Tests for User Story 4
 
-- [ ] T053 [P] [US4] Unit test: duplicate webhook delivery (same `stripe_event_id`)
+- [X] T053 [P] [US4] Unit test: duplicate webhook delivery (same `stripe_event_id`)
   produces exactly one entitlement effect, in `tests/unit/entitlements/webhook-idempotency.test.ts`
-- [ ] T054 [P] [US4] Unit test: canceled subscription continues access until
-  `current_period_end`, then stops, in `tests/unit/entitlements/cancellation.test.ts`
-- [ ] T055 [P] [US4] RLS assertion: `stripe_events` returns zero rows for any role other
+- [X] T054 [P] [US4] Unit test: canceled subscription continues access until
+  `current_period_end`, then stops, in `tests/unit/entitlements/cancellation.test.ts` — plus
+  a migration (`20260925010000_fix_entitlements_expiry.sql`) closing a fail-open gap in
+  `app_entitlements()` that never checked `current_period_end`, and matching SQL assertions
+  T054a/T054b in `scripts/verify-migrations.sh`
+- [X] T055 [P] [US4] RLS assertion: `stripe_events` returns zero rows for any role other
   than `service_role`, in `scripts/verify-migrations.sh`
 - [ ] T056 [US4] E2E: subscribe → view plan → cancel → confirm access persists to period
   end, in `tests/e2e-qa/auth-org-invite.spec.ts` or a dedicated billing spec
 
 ### Implementation for User Story 4
 
-- [ ] T057 [US4] Create `src/app/billing/checkout/route.ts` — Stripe Checkout session
+- [X] T057 [US4] Create `src/app/billing/checkout/route.ts` — Stripe Checkout session
   creation, creates `stripe_customers` row if absent (contracts/billing-webhooks.md)
-- [ ] T058 [US4] Create `src/app/billing/page.tsx` — plan view, Stripe customer portal
-  link for manage/cancel
-- [ ] T059 [US4] Create `src/app/api/webhooks/stripe/route.ts` — signature verification,
+- [X] T058 [US4] Create `src/app/billing/page.tsx` — plan view, Stripe customer portal
+  link for manage/cancel — bundled into the 7d PR rather than split into a separate 7e
+  branch, since it was built in the same session; `src/app/billing/portal/route.ts` added
+  alongside for the actual portal-session creation
+- [X] T059 [US4] Create `src/app/api/webhooks/stripe/route.ts` — signature verification,
   `stripe_events` insert-or-noop idempotency, dispatch on `event.type`
   (contracts/billing-webhooks.md)
 - [ ] T060 [US4] Seed `plan_features` rows for the launch plan tier(s)
