@@ -89,6 +89,10 @@ carries a `data-testid`. Naming: `{area}-{element}`, kebab-case, stable across r
 | Poses | `poses-detail-custom-field-{group}` | Field-group checkbox shown when the `custom` depth layer is active |
 | Poses | `poses-detail-energetic-direction` | Energetic-direction badge on pose detail — "Brahmana — building" (003 FR-012) |
 | Poses | `poses-clear-all-filters` | Clear-all affordance in the filter panel — **drifted**: shipped in 001, added to this table in 003 |
+| Poses | `poses-element-filter`, `poses-ns-filter`, `poses-seq-filter`, `poses-type-tag-filter`, `poses-muscle-group-filter` | Container for each catalog filter-chip group (003 US4, FR-020/FR-021/FR-026). `poses-category-filter` (body position) predates this row and keeps its own name |
+| Poses | `data-multiselect="true"\|"false"` on a filter chip | Which combining behaviour the chip's group has (FR-021) — a state attribute, not a testid, mirroring the `data-current` convention in the Read row below |
+| Poses | `poses-score-value-{field}-{slug}`, `poses-score-trigger-{field}-{slug}`, `poses-score-explanation-{field}-{slug}` | The catalog's derived-score display, its adjacent explanation trigger, and the disclosure it opens. `field` is `complexity` (Tier-1, always present) or `injury_risk` (Tier-2, present only when the pose has it) (003 US4 FR-022/FR-023, SC-009) |
+| Poses | `poses-zero-results`, `poses-zero-results-constraints` | The empty-result state, and the list of active constraints that produced it (003 US4 FR-024) |
 | Poses | `poses-body-diagram` | Wrapper for the anatomy column on pose detail. Absent entirely when no anatomy category holds data (003 FR-017) |
 | Poses | `body-diagram-tab-{muscles\|meridians\|joints\|chakras}` | Anatomy layer tab. Only rendered for categories holding data, and only when two or more do (003 FR-016) |
 | Poses | `body-diagram-single-{category}` | Heading shown in place of the tab set when exactly one category holds data |
