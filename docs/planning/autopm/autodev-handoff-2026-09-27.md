@@ -1,9 +1,9 @@
 # /autodev → /autoretro Handoff — 2026-09-27
 
 **Run time:** ~10:15-10:40 UTC (scheduled slot, headless MCP-native sweep)
-**Issues worked:** #100 (009 US3 operational-writing checks) — built, PR #102 opened.
-#101 attempted, blocked (see below). #96 attempted, blocked (see below). #97/#83/#82/#47
-carried, unchanged.
+**Issues worked:** #100 (009 US3 operational-writing checks) — built, PR #102 opened and
+merged. #101 attempted, blocked (see below). #96 attempted, blocked (see below).
+#97/#83/#82/#47 carried, unchanged.
 
 ## Queue at sweep start
 
@@ -59,9 +59,11 @@ be a reasonable follow-up but wasn't done here to stay within scope.
 - **#102** — `feat(009 US3): operational-writing structural checks (T024/T025,
   FR-023/FR-024)`, branch `autodev/100-operational-writing-checks`, closes #100.
   Gate green locally (tsc, lint:copy, validate:poses, lint:telemetry, test:coverage
-  100/100/100/100, eslint). CI triggered on push; not confirmed green within this
-  session's bounded check window — left for the next sweep's Step 1a to land once green,
-  per the routine's own "shipping a day later is fine, a hung session is not" rule.
+  100/100/100/100, eslint). Automated code review found two real false-positive risks
+  (bare "since" as always-causal; no negation awareness in the honesty check) — both
+  fixed and pushed with regression tests before merge. CI went green within the
+  session's bounded check window (`ci`, `db-verify`, `db-types-check`, `datadog-validate`
+  all success) — **merged** (squash, `b164969`).
 
 ## Skipped / held for human (unchanged)
 
