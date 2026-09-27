@@ -451,6 +451,13 @@ describe('checkDecisionFirst (009 US3, FR-023)', () => {
     const body = '**Run time:** ~09:00 UTC (hand-launched, scheduled slot)\n'
     expect(checkDecisionFirst(body, 'handoff.md')).toEqual([])
   })
+
+  it('does not flag "since" as a temporal preposition — only as a causal conjunction would be ambiguous', () => {
+    // Caught in review: "since" is as often plain time reference as causal reasoning,
+    // and this check has no suppression mechanism to escape a false positive from it.
+    const body = '## Summary\n\nSince 2024, we have shipped 12 releases without incident.\n'
+    expect(checkDecisionFirst(body, 'handoff.md')).toEqual([])
+  })
 })
 
 describe('checkOperationalHonesty (009 US3, FR-024)', () => {
@@ -497,6 +504,13 @@ describe('checkOperationalHonesty (009 US3, FR-024)', () => {
   it('does not flag a zero-shipped entry with no achievement framing, or an achievement entry with no zero-shipped signal', () => {
     expect(checkOperationalHonesty('0 PRs merged today.\n', 'FRICTION.md')).toEqual([])
     expect(checkOperationalHonesty('A productive day of research.\n', 'FRICTION.md')).toEqual([])
+  })
+
+  it('does not flag an entry that plainly denies achievement framing — the exact honesty FR-024 asks for', () => {
+    // Caught in review: an entry admitting nothing shipped, with no spin, was tripping
+    // the co-occurrence check purely because it contained the word being denied.
+    const doc = '2026-09-27 — 0 PRs merged today. Not a productive day, but nobody blocked either.\n'
+    expect(checkOperationalHonesty(doc, 'FRICTION.md')).toEqual([])
   })
 })
 

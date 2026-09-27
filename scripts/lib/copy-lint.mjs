@@ -309,7 +309,10 @@ const LEAD_HEADINGS = new Set(['summary', 'decision', 'tl;dr', 'tldr', 'ask'])
 const BURYING_HEADINGS = new Set(['background', 'context', 'motivation', 'history'])
 
 // The exact shape VOICE.md §2 names as the thing to avoid: "Because we found that...".
-const CAUSAL_OPENER = /^(?:because|since|given(?:\s+that)?|in\s+order\s+to|due\s+to|as\s+a\s+result\s+of)\b/i
+// "since" is deliberately excluded — it is as often the plain temporal preposition
+// ("Since 2024, we have shipped 12 releases") as the causal conjunction, and the
+// ambiguity makes it a false-positive risk this check has no way to suppress.
+const CAUSAL_OPENER = /^(?:because|given(?:\s+that)?|in\s+order\s+to|due\s+to|as\s+a\s+result\s+of)\b/i
 
 function firstProseLine(lines) {
   for (let i = 0; i < lines.length; i++) {
@@ -428,6 +431,11 @@ function splitEntries(text, filename) {
   return entries.map((e) => ({ startLine: e.startLine, text: e.lines.join('\n') }))
 }
 
+// Denies the achievement match immediately before it, so an entry that plainly
+// disclaims achievement ("Not a productive day, but...") isn't flagged for the exact
+// honesty FR-024 asks for.
+const NEGATION_BEFORE = /\b(?:not|no|n't|never|hardly)\s+(?:a\s+|an\s+)?$/i
+
 /**
  * @returns {Array} violations, shaped for `formatViolation`.
  */
@@ -436,7 +444,9 @@ export function checkOperationalHonesty(text, filename) {
   for (const entry of splitEntries(text, filename)) {
     const zeroShipped = ZERO_SHIPPED.exec(entry.text)
     const achievement = ACHIEVEMENT_FRAMING.exec(entry.text)
-    if (zeroShipped && achievement) {
+    const negated = achievement
+      && NEGATION_BEFORE.test(entry.text.slice(Math.max(0, achievement.index - 20), achievement.index))
+    if (zeroShipped && achievement && !negated) {
       violations.push({
         file: filename,
         line: entry.startLine,
@@ -476,7 +486,7 @@ export function coverageLimits() {
     'Structure: a screen built from individually compliant strings can still read as a countdown. RULE-C2 is about experience, not substrings.',
     'Language: English only. Localised copy is entirely uncovered.',
     'Decision-first (FR-023): only checks a heading\'s position and the opening line\'s shape. A decision buried in paragraph two, or a document with no heading at all, is not caught. No exception-marker suppression yet.',
-    'Operational honesty (FR-024): only flags a fixed zero-shipped phrase co-occurring with a fixed achievement-word list in the same entry. Other ways to spin an empty period are not caught. No exception-marker suppression yet.',
+    'Operational honesty (FR-024): only flags a fixed zero-shipped phrase co-occurring with a fixed achievement-word list in the same entry, unless the achievement word is directly negated ("not a productive day"). Other ways to spin an empty period, or a negation phrased further away, are not caught. No exception-marker suppression yet.',
   ]
 }
 
