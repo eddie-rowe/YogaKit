@@ -18,6 +18,8 @@ import {
   EXCLUDED_PATTERNS,
   SCAN_DIRS,
   SCAN_EXTENSIONS,
+  checkDecisionFirst,
+  checkOperationalHonesty,
   compileRules,
   coverageLimits,
   decodeEntities,
@@ -378,8 +380,123 @@ describe('reporting', () => {
     expect(report).toContain('1 suppressed by an explicit, reasoned exception')
   })
 
-  it('names five distinct coverage limits, matching VOICE.md §6', () => {
-    expect(coverageLimits()).toHaveLength(5)
+  it('names seven distinct coverage limits, matching VOICE.md §6 plus the two 009 US3 checks', () => {
+    expect(coverageLimits()).toHaveLength(7)
+  })
+})
+
+describe('checkDecisionFirst (009 US3, FR-023)', () => {
+  it('fails a PR-body-shaped sample that buries the decision behind background and a causal preamble', () => {
+    const body = [
+      '# PR Title',
+      '',
+      '## Background',
+      '',
+      'Because the friction weights were producing seam indicators teachers disagreed',
+      'with in about a third of cases, we reviewed the geometry fields at Tier 1.',
+      '',
+      '## Decision',
+      '',
+      'Change the weight constant.',
+    ].join('\n')
+    const violations = checkDecisionFirst(body, 'pr-body.md')
+    expect(violations.map((v) => v.ruleId)).toEqual(['VOICE-DECISION-FIRST', 'VOICE-DECISION-FIRST'])
+    expect(violations[0].matched).toBe('background')
+    expect(violations[0].line).toBe(3)
+    expect(violations[1].matched.toLowerCase()).toBe('because')
+    expect(violations[1].line).toBe(5)
+  })
+
+  it('passes a spec-text-shaped sample that leads with the decision, per VOICE.md §2\'s own example', () => {
+    const body = [
+      '## Summary',
+      '',
+      'The friction weights are changing. Teachers disagreed with about a third of seam',
+      'indicators; the fix is in the weight constant, not the algorithm.',
+    ].join('\n')
+    expect(checkDecisionFirst(body, 'spec.md')).toEqual([])
+  })
+
+  it('flags a burying heading with no lead heading anywhere, and finds no prose line to check', () => {
+    const violations = checkDecisionFirst('## Background\n', 'handoff.md')
+    expect(violations).toHaveLength(1)
+    expect(violations[0].matched).toBe('background')
+  })
+
+  it('does not flag a burying heading that comes after the lead heading', () => {
+    const body = [
+      '## Summary',
+      '',
+      'We are shipping a fix for the entitlements bug.',
+      '',
+      '## Context',
+      '',
+      'Some additional background for readers who want it.',
+    ].join('\n')
+    expect(checkDecisionFirst(body, 'handoff.md')).toEqual([])
+  })
+
+  it('flags a causal opener even under a Summary heading — the opener rule is independent of heading order', () => {
+    const violations = checkDecisionFirst('## Summary\n\nBecause we found a defect, we are shipping a fix.\n', 'handoff.md')
+    expect(violations).toHaveLength(1)
+    expect(violations[0].matched.toLowerCase()).toBe('because')
+  })
+
+  it('strips a bold label prefix before checking the opening line', () => {
+    const violations = checkDecisionFirst('**Context:** Because it broke, we fixed it.\n', 'handoff.md')
+    expect(violations).toHaveLength(1)
+  })
+
+  it('leaves an ordinary operational-writing opener alone', () => {
+    const body = '**Run time:** ~09:00 UTC (hand-launched, scheduled slot)\n'
+    expect(checkDecisionFirst(body, 'handoff.md')).toEqual([])
+  })
+})
+
+describe('checkOperationalHonesty (009 US3, FR-024)', () => {
+  it('fails a DECISIONS.md-shaped entry that frames a nothing-shipped period as achievement', () => {
+    const doc = [
+      '# Decisions',
+      '',
+      '## 2026-09-27 — nothing shipped today',
+      '',
+      'Zero PRs merged today, but it was a productive sweep with steady progress on planning.',
+      '',
+      '## 2026-09-26 — an unrelated decision',
+      '',
+      'We chose to do X because of Y.',
+    ].join('\n')
+    const violations = checkOperationalHonesty(doc, 'DECISIONS.md')
+    expect(violations).toHaveLength(1)
+    expect(violations[0].ruleId).toBe('VOICE-OPERATIONAL-HONESTY')
+    expect(violations[0].text).toContain('nothing shipped today')
+  })
+
+  it('passes a DECISIONS.md-shaped entry that states nothing shipped plainly', () => {
+    const doc = [
+      '## 2026-09-26 — nothing shipped',
+      '',
+      '0 PRs merged today. Everything open is still waiting on an owner nod.',
+    ].join('\n')
+    expect(checkOperationalHonesty(doc, 'DECISIONS.md')).toEqual([])
+  })
+
+  it('fails a FRICTION.md-shaped entry with the same co-occurrence, and leaves an unrelated entry alone', () => {
+    const doc = [
+      '',
+      '2026-09-26 — 0 PRs merged, a strong day of progress on the backlog',
+      'regardless of what actually shipped.',
+      '',
+      '2026-09-27 — a normal entry about a bug found in the service worker.',
+    ].join('\n')
+    const violations = checkOperationalHonesty(doc, 'FRICTION.md')
+    expect(violations).toHaveLength(1)
+    expect(violations[0].text).toContain('strong day of progress')
+  })
+
+  it('does not flag a zero-shipped entry with no achievement framing, or an achievement entry with no zero-shipped signal', () => {
+    expect(checkOperationalHonesty('0 PRs merged today.\n', 'FRICTION.md')).toEqual([])
+    expect(checkOperationalHonesty('A productive day of research.\n', 'FRICTION.md')).toEqual([])
   })
 })
 
