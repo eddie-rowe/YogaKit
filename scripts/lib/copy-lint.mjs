@@ -298,6 +298,170 @@ export function lintSource(source, filename, compiledRules) {
   return { violations, scanned: strings.length, suppressed, malformed: malformed.map((m) => ({ file: filename, ...m })) }
 }
 
+/**
+ * 009 US3 (FR-023): operational writing (PR bodies, and the retro/handoff notes the
+ * autonomous routines write) leads with the decision or summary, per VOICE.md §2.
+ * Deliberately narrow — it checks a heading's position and the opening line's shape,
+ * not the reasoning in between. `DECISIONS.md` is out of scope by design: VOICE.md §5
+ * asks it to record the reasoning first, the opposite rule.
+ */
+const LEAD_HEADINGS = new Set(['summary', 'decision', 'tl;dr', 'tldr', 'ask'])
+const BURYING_HEADINGS = new Set(['background', 'context', 'motivation', 'history'])
+
+// The exact shape VOICE.md §2 names as the thing to avoid: "Because we found that...".
+// "since" is deliberately excluded — it is as often the plain temporal preposition
+// ("Since 2024, we have shipped 12 releases") as the causal conjunction, and the
+// ambiguity makes it a false-positive risk this check has no way to suppress.
+const CAUSAL_OPENER = /^(?:because|given(?:\s+that)?|in\s+order\s+to|due\s+to|as\s+a\s+result\s+of)\b/i
+
+function firstProseLine(lines) {
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim()
+    if (trimmed.length === 0) continue
+    if (/^#{1,6}\s/.test(trimmed)) continue
+    return { index: i, text: trimmed }
+  }
+  return null
+}
+
+/**
+ * @returns {Array} violations, shaped for `formatViolation`.
+ */
+export function checkDecisionFirst(text, filename) {
+  const lines = text.split('\n')
+  const violations = []
+
+  const headings = []
+  lines.forEach((raw, i) => {
+    const m = /^(#{1,6})\s+(.+)$/.exec(raw.trim())
+    if (m) headings.push({ line: i + 1, title: m[2].trim().toLowerCase() })
+  })
+
+  const firstLead = headings.find((h) => LEAD_HEADINGS.has(h.title))
+  const firstBurying = headings.find((h) => BURYING_HEADINGS.has(h.title))
+  if (firstBurying && (!firstLead || firstBurying.line < firstLead.line)) {
+    violations.push({
+      file: filename,
+      line: firstBurying.line,
+      column: 1,
+      ruleId: 'VOICE-DECISION-FIRST',
+      ruleSource: 'FR-023',
+      ruleTitle: 'Decision-first structure (VOICE.md §2)',
+      matched: firstBurying.title,
+      text: `a "${firstBurying.title}" heading precedes the decision/summary`,
+    })
+  }
+
+  const prose = firstProseLine(lines)
+  if (prose) {
+    const stripped = prose.text.replace(/^\*\*[^*]+:\*\*\s*/, '').replace(/^[*_]+\s*/, '')
+    const match = CAUSAL_OPENER.exec(stripped)
+    if (match) {
+      violations.push({
+        file: filename,
+        line: prose.index + 1,
+        column: 1,
+        ruleId: 'VOICE-DECISION-FIRST',
+        ruleSource: 'FR-023',
+        ruleTitle: 'Decision-first structure (VOICE.md §2)',
+        matched: match[0],
+        text: prose.text,
+      })
+    }
+  }
+
+  return violations
+}
+
+/**
+ * 009 US3 (FR-024): a `DECISIONS.md`/`FRICTION.md` entry reporting a nothing-shipped
+ * period must say so plainly, not dress it up as achievement (VOICE.md §5, "be plain
+ * about what is not done"). Checked as co-occurrence, the same technique
+ * `compileRules`'s `coOccurrence` already uses for RULE-C2/C6: a bare "0 PRs merged" is
+ * fine, a bare "great progress" is fine, the two together in one entry are not.
+ */
+const ZERO_SHIPPED = new RegExp(
+  [
+    '\\b(?:0|zero|no)\\s+(?:prs?|pull\\s+requests?)\\s+(?:merged|opened|shipped)\\b',
+    '\\bnothing\\s+(?:was\\s+)?(?:shipped|merged)\\b',
+    '\\bno\\s+(?:changes|commits|work)\\s+(?:shipped|merged|landed)\\b',
+  ].join('|'),
+  'i',
+)
+const ACHIEVEMENT_FRAMING = new RegExp(
+  [
+    '\\bproductive\\b', '\\bsuccessful\\b', '\\bgreat\\s+(?:progress|day|sweep|week)\\b',
+    '\\bsmooth\\s+sailing\\b', '\\bon\\s+track\\b', '\\bsteady\\s+progress\\b',
+    '\\bstrong\\s+(?:day|progress|momentum)\\b', '\\bsolid\\s+(?:day|progress)\\b',
+    '\\bwins?\\b', '\\baccomplish(?:ed|ment)?\\b', '\\bachiev(?:ed|ement)?\\b',
+  ].join('|'),
+  'i',
+)
+
+/** Splits operational-writing text into its dated entries, by the file's own shape. */
+function splitEntries(text, filename) {
+  const lines = text.split('\n')
+  const entries = []
+  let current = null
+
+  if (/decisions\.md$/i.test(filename)) {
+    // DECISIONS.md: each entry is a `## ` heading and everything until the next one.
+    lines.forEach((raw, i) => {
+      if (/^##\s+/.test(raw.trim())) {
+        if (current) entries.push(current)
+        current = { startLine: i + 1, lines: [raw] }
+      } else if (current) {
+        current.lines.push(raw)
+      }
+    })
+  } else {
+    // FRICTION.md: each entry is a blank-line-delimited paragraph.
+    lines.forEach((raw, i) => {
+      if (raw.trim().length === 0) {
+        if (current) entries.push(current)
+        current = null
+        return
+      }
+      if (!current) current = { startLine: i + 1, lines: [] }
+      current.lines.push(raw)
+    })
+  }
+  if (current) entries.push(current)
+
+  return entries.map((e) => ({ startLine: e.startLine, text: e.lines.join('\n') }))
+}
+
+// Denies the achievement match immediately before it, so an entry that plainly
+// disclaims achievement ("Not a productive day, but...") isn't flagged for the exact
+// honesty FR-024 asks for.
+const NEGATION_BEFORE = /\b(?:not|no|n't|never|hardly)\s+(?:a\s+|an\s+)?$/i
+
+/**
+ * @returns {Array} violations, shaped for `formatViolation`.
+ */
+export function checkOperationalHonesty(text, filename) {
+  const violations = []
+  for (const entry of splitEntries(text, filename)) {
+    const zeroShipped = ZERO_SHIPPED.exec(entry.text)
+    const achievement = ACHIEVEMENT_FRAMING.exec(entry.text)
+    const negated = achievement
+      && NEGATION_BEFORE.test(entry.text.slice(Math.max(0, achievement.index - 20), achievement.index))
+    if (zeroShipped && achievement && !negated) {
+      violations.push({
+        file: filename,
+        line: entry.startLine,
+        column: 1,
+        ruleId: 'VOICE-OPERATIONAL-HONESTY',
+        ruleSource: 'FR-024',
+        ruleTitle: 'Plain about what is not done (VOICE.md §5)',
+        matched: `${zeroShipped[0]} … ${achievement[0]}`,
+        text: entry.text.trim().slice(0, 100),
+      })
+    }
+  }
+  return violations
+}
+
 /** One violation, formatted for a terminal (FR-013): where, which rule, and the words. */
 export function formatViolation(v) {
   const quoted = v.text.length > 100 ? `${v.text.slice(0, 97)}…` : v.text
@@ -321,6 +485,8 @@ export function coverageLimits() {
     'Tone: condescension, false cheer, hedging, and second-person diagnosis all pass. Those are VOICE.md §1–§3b, enforced in review.',
     'Structure: a screen built from individually compliant strings can still read as a countdown. RULE-C2 is about experience, not substrings.',
     'Language: English only. Localised copy is entirely uncovered.',
+    'Decision-first (FR-023): only checks a heading\'s position and the opening line\'s shape. A decision buried in paragraph two, or a document with no heading at all, is not caught. No exception-marker suppression yet.',
+    'Operational honesty (FR-024): only flags a fixed zero-shipped phrase co-occurring with a fixed achievement-word list in the same entry, unless the achievement word is directly negated ("not a productive day"). Other ways to spin an empty period, or a negation phrased further away, are not caught. No exception-marker suppression yet.',
   ]
 }
 

@@ -25,6 +25,8 @@ import {
   EXCLUDED_PATTERNS,
   compileRules,
   lintSource,
+  checkDecisionFirst,
+  checkOperationalHonesty,
   formatReport,
 } from './lib/copy-lint.mjs'
 
@@ -72,6 +74,33 @@ for (const file of files) {
   suppressed.push(...result.suppressed)
   malformed.push(...result.malformed)
   stringsScanned += result.scanned
+}
+
+// 009 US3 (FR-023/FR-024): the operational writing the routines themselves produce.
+// Skipped under --dir — that flag exists only to prove the US1 gate fails on a seeded
+// violation, and isn't a request to also scan these fixed, named files.
+if (dirFlag === -1) {
+  const readMarkdown = (dir) =>
+    fs.existsSync(dir)
+      ? fs.readdirSync(dir, { withFileTypes: true })
+          .filter((e) => e.isFile() && e.name.endsWith('.md'))
+          .map((e) => path.join(dir, e.name))
+      : []
+
+  const decisionFirstFiles = [
+    ...readMarkdown(path.join(repoRoot, 'docs/planning/retro')),
+    ...readMarkdown(path.join(repoRoot, 'docs/planning/autopm')),
+  ]
+  for (const file of decisionFirstFiles) {
+    violations.push(...checkDecisionFirst(fs.readFileSync(file, 'utf8'), path.relative(repoRoot, file)))
+  }
+
+  const operationalHonestyFiles = ['DECISIONS.md', 'FRICTION.md']
+    .map((f) => path.join(repoRoot, f))
+    .filter((f) => fs.existsSync(f))
+  for (const file of operationalHonestyFiles) {
+    violations.push(...checkOperationalHonesty(fs.readFileSync(file, 'utf8'), path.relative(repoRoot, file)))
+  }
 }
 
 console.log(

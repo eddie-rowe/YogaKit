@@ -37,12 +37,12 @@ Status as of 2026-09-01. US1 and US2 are complete; US3 is not started.
 | T022 | Run over today's `src/`; resolve the one hit | FR-022 | ✅ — one hit, a factual token expiry, resolved with a reasoned exception rather than a rewrite |
 | T023 | Prove the gate fails: seeded violation via `--dir`, exit 1 | SC-002 | ✅ |
 
-## Phase 3 — US3: operational writing (P2) — deferred
+## Phase 3 — US3: operational writing (P2)
 
 | # | Task | FR | State |
 |---|---|---|---|
-| T024 | Structural checks over PR bodies and spec text | FR-023 | ⬜ not started |
-| T025 | Decision-first check on `DECISIONS.md` / `FRICTION.md` entries | FR-024 | ⬜ not started |
+| T024 | Structural checks over PR bodies and spec text | FR-023 | ✅ |
+| T025 | Decision-first check on `DECISIONS.md` / `FRICTION.md` entries | FR-024 | ✅ |
 
 ## Open against another feature
 

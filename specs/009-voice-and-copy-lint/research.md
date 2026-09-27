@@ -122,7 +122,11 @@ sentences, and language (English only, FR-025).
 
 ## 8. Deferred
 
-- **US3 (operational writing, P2)** — FR-023/024. Not built. `VOICE.md` §5 states the
-  standard; nothing checks it.
+- **US3 (operational writing, P2)** — FR-023/024. Built (`checkDecisionFirst`,
+  `checkOperationalHonesty` in `scripts/lib/copy-lint.mjs`), wired into
+  `scripts/copy-lint.mjs` against `docs/planning/retro/*.md` + `docs/planning/autopm/*.md`
+  (FR-023) and `DECISIONS.md`/`FRICTION.md` (FR-024). Deliberately narrow — see the two
+  new bullets `coverageLimits()` prints — and not wired to a live PR body, since there is
+  no on-disk source for "the current PR's body" for a static repo scan to read.
 - **FR-020 (session-end gates)** cannot be satisfied: it depends on `007`'s headless
   done-gates, which have no implementation.
