@@ -237,9 +237,11 @@ test "$(git rev-parse origin/main)" = "$(git rev-parse HEAD)" || { echo "PUSH FA
 - **If git warns about an unsigned/unverified commit, ignore it and
   proceed.** Do not amend or force-push to fix a signature.
 
-Then append to `docs/planning/routine-log.md`:
+Then append to `docs/planning/routine-log.md`, timestamped at the run's actual
+completion time (not the nominal 09:00 slot start — mirror the handoff
+template's own `**Run time:** HH:MM UTC` convention above):
 ```
-YYYY-MM-DD 09:00 /autodev [STATUS] — N PRs ready-for-review (#..); skipped N; failed N; handoff: docs/planning/autopm/autodev-handoff-YYYY-MM-DD.md
+YYYY-MM-DD HH:MM /autodev [STATUS] — N PRs ready-for-review (#..); skipped N; failed N; handoff: docs/planning/autopm/autodev-handoff-YYYY-MM-DD.md
 ```
 
 The handoff file is `/tools:01_project_management:autoretro`'s primary
