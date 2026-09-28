@@ -16,8 +16,9 @@
 #   - `app_entitlements('<other user>')` raises insufficient_privilege
 #
 # Later phases (US1-US5) append more DO blocks to this same file as their own
-# tasks require (T024, T032, T033, T041, T042, T048, T055) — same pattern as
-# tests/e2e-qa/auth-org-invite.spec.ts accumulating scenarios across phases.
+# tasks require (T024, T032, T033, T041, T042, T048, T055, T070-T074) — same
+# pattern as tests/e2e-qa/auth-org-invite.spec.ts accumulating scenarios across
+# phases.
 #
 # Usage: PGHOST=... PGUSER=postgres bash scripts/verify-migrations.sh
 #        (creates and drops database yogakit_mig_verify)
@@ -1125,6 +1126,264 @@ BEGIN
   RAISE NOTICE 'PASS US3 a soft-deleted flow leaves the org''s list while still shared';
 END $do$;
 RESET ROLE;
+EOF
+
+# ===========================================================================
+# 003 US6a — pose_favourites / pose_notes (T070-T073, specs/003-pose-library/
+# tasks.md Phase 8, contracts/pose-personalization.md). Both tables are keyed
+# solely on the caller (user_id = (select auth.uid())), same shape as
+# claimed_flows and flow_item_notes.
+#
+# T074 (the signed-out pose read path issues no Supabase call) is a Vitest test
+# on client code, not a DB assertion — and Phase 8 is explicitly "no UI", so
+# there is no read-path hook yet for it to run against. It rides with Phase 9
+# (favourites/notes UI) instead.
+# ===========================================================================
+
+# Fixture for T070's cohort-teacher reader (RULE-V5): a cohort teacher listed only in
+# cohort_teachers — not an org-wide owner/admin/teacher role — must be as blind to a
+# student's pose_notes/pose_favourites as anyone else. Every prior assertion in this
+# harness exercises app_has_org_role; none has exercised cohort_teachers as the
+# boundary, and pose_notes/pose_favourites carry no cohort-aware policy at all, so this
+# is the cheapest place to prove RULE-V5 rather than leave it asserted only in prose.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+INSERT INTO auth.users (id, email, email_confirmed_at) VALUES
+  ('a0000000-0000-0000-0000-000000000008', 'cohort-teacher-a@example.com', now());
+INSERT INTO profiles (id, display_name, timezone) VALUES
+  ('a0000000-0000-0000-0000-000000000008', 'Cohort Teacher A', 'America/Denver')
+ON CONFLICT (id) DO UPDATE SET display_name = excluded.display_name;
+INSERT INTO memberships (org_id, user_id, roles, status)
+SELECT id, 'a0000000-0000-0000-0000-000000000008', array['student'], 'active'
+  FROM organizations WHERE name = 'Org A';
+
+DO $do$
+DECLARE v_cohort uuid;
+BEGIN
+  INSERT INTO cohorts (org_id, name, kind)
+  SELECT id, 'YTT 200 Cohort', 'ytt200' FROM organizations WHERE name = 'Org A'
+  RETURNING id INTO v_cohort;
+
+  -- 000008 is listed as the cohort's teacher but holds only 'student' org-wide —
+  -- app_has_org_role(...) is false for them; only cohort_teachers grants them anything.
+  INSERT INTO cohort_teachers (cohort_id, user_id)
+  VALUES (v_cohort, 'a0000000-0000-0000-0000-000000000008');
+
+  -- 000007 (Member A Plain, from the 004 US3 fixtures above) is the enrolled student.
+  INSERT INTO cohort_enrollments (cohort_id, user_id)
+  VALUES (v_cohort, 'a0000000-0000-0000-0000-000000000007');
+END $do$;
+EOF
+
+# Owner A (0001) and the enrolled student (0007) each write a favourite and a note.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
+INSERT INTO pose_favourites (user_id, pose_slug) VALUES
+  ('a0000000-0000-0000-0000-000000000001', 'downward-facing-dog');
+INSERT INTO pose_notes (user_id, pose_slug, body) VALUES
+  ('a0000000-0000-0000-0000-000000000001', 'downward-facing-dog', 'Owner A: soften the knees.');
+RESET ROLE;
+EOF
+
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000007';
+INSERT INTO pose_favourites (user_id, pose_slug) VALUES
+  ('a0000000-0000-0000-0000-000000000007', 'child-s-pose');
+INSERT INTO pose_notes (user_id, pose_slug, body) VALUES
+  ('a0000000-0000-0000-0000-000000000007', 'child-s-pose', 'Student: knees wide, big toes touch.');
+RESET ROLE;
+EOF
+
+# --- T070 (I1/I2, SC-011): a second account — including an org admin sharing an
+# organization with the author — reading a note by any means, including by explicit
+# `id`, receives zero rows. Extended with the cohort-teacher reader RULE-V5 names
+# specifically (not just an org admin): four readers, all must see zero of someone
+# else's rows.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000007';
+DO $do$
+DECLARE v_fav int; v_note int;
+BEGIN
+  SELECT count(*) INTO v_fav FROM pose_favourites WHERE user_id = 'a0000000-0000-0000-0000-000000000001';
+  SELECT count(*) INTO v_note FROM pose_notes WHERE user_id = 'a0000000-0000-0000-0000-000000000001';
+  IF (v_fav, v_note) IS DISTINCT FROM (0, 0) THEN
+    RAISE EXCEPTION 'a co-member read another user''s pose_favourites/pose_notes: % favs, % notes', v_fav, v_note;
+  END IF;
+  RAISE NOTICE 'PASS T070 a plain co-member reads zero rows of another user''s pose_favourites/pose_notes';
+END $do$;
+RESET ROLE;
+EOF
+
+# 000002 (Member A, from the Phase 4 escalation fixtures) holds 'admin' in Org A —
+# the literal "org admin sharing an organization with the author" case T070 names.
+# Checked both by a bare select and by the note's explicit id, per T070's wording.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000002';
+DO $do$
+DECLARE v_fav int; v_note int; v_by_id int;
+BEGIN
+  SELECT count(*) INTO v_fav FROM pose_favourites WHERE user_id = 'a0000000-0000-0000-0000-000000000001';
+  SELECT count(*) INTO v_note FROM pose_notes WHERE user_id = 'a0000000-0000-0000-0000-000000000001';
+  SELECT count(*) INTO v_by_id FROM pose_notes
+   WHERE pose_slug = 'downward-facing-dog' AND user_id = 'a0000000-0000-0000-0000-000000000001';
+  IF (v_fav, v_note, v_by_id) IS DISTINCT FROM (0, 0, 0) THEN
+    RAISE EXCEPTION 'an org admin read another user''s pose_favourites/pose_notes: % favs, % notes, % by id', v_fav, v_note, v_by_id;
+  END IF;
+  RAISE NOTICE 'PASS T070 an org admin sharing an org with the author reads zero rows, including by explicit lookup';
+END $do$;
+RESET ROLE;
+EOF
+
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000008';
+DO $do$
+DECLARE v_fav int; v_note int;
+BEGIN
+  SELECT count(*) INTO v_fav FROM pose_favourites WHERE user_id = 'a0000000-0000-0000-0000-000000000007';
+  SELECT count(*) INTO v_note FROM pose_notes WHERE user_id = 'a0000000-0000-0000-0000-000000000007';
+  IF (v_fav, v_note) IS DISTINCT FROM (0, 0) THEN
+    RAISE EXCEPTION 'a cohort teacher read their enrolled student''s pose_favourites/pose_notes: % favs, % notes', v_fav, v_note;
+  END IF;
+  RAISE NOTICE 'PASS T070 RULE-V5: a cohort teacher (not an org admin) reads zero rows of an enrolled student''s pose_favourites/pose_notes';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- T071 (I3): an update cannot move a row to another user_id. The update policy's
+# `with check` is the same predicate as the insert policy's, so a caller cannot use
+# UPDATE to relabel their own row as someone else's.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
+DO $do$
+BEGIN
+  BEGIN
+    UPDATE pose_favourites SET pose_slug = pose_slug, user_id = 'a0000000-0000-0000-0000-000000000007'
+     WHERE user_id = 'a0000000-0000-0000-0000-000000000001' AND pose_slug = 'downward-facing-dog';
+    RAISE EXCEPTION 'expected moving a pose_favourites row to another user_id to be rejected';
+  EXCEPTION WHEN insufficient_privilege OR check_violation THEN
+    NULL;
+  END;
+  BEGIN
+    UPDATE pose_notes SET user_id = 'a0000000-0000-0000-0000-000000000007'
+     WHERE user_id = 'a0000000-0000-0000-0000-000000000001' AND pose_slug = 'downward-facing-dog';
+    RAISE EXCEPTION 'expected moving a pose_notes row to another user_id to be rejected';
+  EXCEPTION WHEN insufficient_privilege OR check_violation THEN
+    NULL;
+  END;
+  RAISE NOTICE 'PASS T071 an update cannot move a pose_favourites/pose_notes row to another user_id';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- T072: neither table has gained a column a policy could join against an org,
+# cohort, team, or role — mirrors 004 C1's I1 for flow_item_notes. Holds against a
+# migration nobody has written yet.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+DO $do$
+DECLARE v_bad text;
+BEGIN
+  SELECT string_agg(table_name || '.' || column_name, ', ') INTO v_bad
+    FROM information_schema.columns
+   WHERE table_schema = 'public' AND table_name IN ('pose_favourites', 'pose_notes')
+     AND (column_name ~ '(org|cohort|team|role|visib|shared|public)');
+  IF v_bad IS NOT NULL THEN
+    RAISE EXCEPTION 'pose_favourites/pose_notes gained a joinable column: % — see contracts/pose-personalization.md', v_bad;
+  END IF;
+  RAISE NOTICE 'PASS T072 pose_favourites/pose_notes have no org/cohort/role/visibility column';
+END $do$;
+EOF
+
+# --- Bonus, unlabeled: every policy on both tables is keyed on the caller alone —
+# four policies each, none mentioning an org/cohort/team/role, the SELECT policy
+# plain user_id. Not one of tasks.md's numbered assertions, but the same mechanical
+# check 004 C1's I2 runs for flow_item_notes, and cheap insurance alongside T072.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+DO $do$
+DECLARE
+  v_tbl text;
+  v_count int;
+  v_bad   text;
+  v_sel   text;
+BEGIN
+  FOREACH v_tbl IN ARRAY ARRAY['pose_favourites', 'pose_notes'] LOOP
+    SELECT count(*) INTO v_count FROM pg_policies
+     WHERE schemaname = 'public' AND tablename = v_tbl;
+    IF v_count <> 4 THEN
+      RAISE EXCEPTION 'expected exactly 4 policies on %, found %', v_tbl, v_count;
+    END IF;
+
+    SELECT string_agg(policyname, ', ') INTO v_bad FROM pg_policies
+     WHERE schemaname = 'public' AND tablename = v_tbl
+       AND (coalesce(qual, '') || ' ' || coalesce(with_check, '')) ~ '(org|cohort|team|role)';
+    IF v_bad IS NOT NULL THEN
+      RAISE EXCEPTION 'a % policy mentions an org/cohort/role: %', v_tbl, v_bad;
+    END IF;
+
+    SELECT qual INTO v_sel FROM pg_policies
+     WHERE schemaname = 'public' AND tablename = v_tbl AND cmd = 'SELECT';
+    IF v_sel !~ 'user_id' THEN
+      RAISE EXCEPTION 'the % SELECT policy is not keyed on the caller: %', v_tbl, v_sel;
+    END IF;
+  END LOOP;
+  RAISE NOTICE 'PASS pose_favourites/pose_notes policies are keyed on the caller alone';
+END $do$;
+EOF
+
+# --- Bonus, unlabeled: pose_slug carries no FK and no CHECK (T068's migration-time
+# property, asserted rather than only described) — Postgres is not a second authority
+# over pose identity (RULE-O6). A slug absent from the pose library JSON is accepted.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000001';
+DO $do$
+BEGIN
+  INSERT INTO pose_favourites (user_id, pose_slug) VALUES
+    ('a0000000-0000-0000-0000-000000000001', 'not-a-real-pose-slug');
+  INSERT INTO pose_notes (user_id, pose_slug, body) VALUES
+    ('a0000000-0000-0000-0000-000000000001', 'not-a-real-pose-slug', 'note on an absent slug');
+  RAISE NOTICE 'PASS T068 pose_slug carries no FK/CHECK: a slug absent from the pose library is accepted';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- T073 (I5, SC-013): deleting the auth.users row leaves zero rows in either table.
+# A dedicated throwaway account, not one reused elsewhere in this file, so the
+# deletion cannot be mistaken for cleaning up a row some other assertion still needs.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+INSERT INTO auth.users (id, email, email_confirmed_at) VALUES
+  ('a0000000-0000-0000-0000-000000000009', 'to-be-deleted@example.com', now());
+INSERT INTO profiles (id, display_name, timezone) VALUES
+  ('a0000000-0000-0000-0000-000000000009', 'Deleted Soon', 'America/Denver')
+ON CONFLICT (id) DO UPDATE SET display_name = excluded.display_name;
+EOF
+
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000009';
+INSERT INTO pose_favourites (user_id, pose_slug) VALUES
+  ('a0000000-0000-0000-0000-000000000009', 'triangle');
+INSERT INTO pose_notes (user_id, pose_slug, body) VALUES
+  ('a0000000-0000-0000-0000-000000000009', 'triangle', 'a note that must not survive account deletion');
+RESET ROLE;
+EOF
+
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+DELETE FROM auth.users WHERE id = 'a0000000-0000-0000-0000-000000000009';
+DO $do$
+DECLARE v_fav int; v_note int;
+BEGIN
+  SELECT count(*) INTO v_fav FROM pose_favourites WHERE user_id = 'a0000000-0000-0000-0000-000000000009';
+  SELECT count(*) INTO v_note FROM pose_notes WHERE user_id = 'a0000000-0000-0000-0000-000000000009';
+  IF (v_fav, v_note) IS DISTINCT FROM (0, 0) THEN
+    RAISE EXCEPTION 'deleting auth.users left rows behind: % favs, % notes', v_fav, v_note;
+  END IF;
+  RAISE NOTICE 'PASS T073 deleting the auth.users row cascades to zero pose_favourites/pose_notes rows';
+END $do$;
 EOF
 
 export PGDATABASE=postgres

@@ -311,28 +311,31 @@ Ships in the same commit as Phase 4.
 Per `contracts/pose-personalization.md` and `data-model.md` §5. **No UI in this phase** —
 its whole claim is that FR-033 is verifiable from the schema alone.
 
-- [ ] T066 [US6] Migration creating `pose_favourites` and `pose_notes`, modelled on
+- [X] T066 [US6] Migration creating `pose_favourites` and `pose_notes`, modelled on
   `supabase/migrations/20260826224207_claimed_flows.sql:11-36`: `user_id` FK to
   `auth.users` with `on delete cascade`, RLS enabled, four policies each
   `user_id = (select auth.uid())`, the update policy carrying both `using` and `with check`
-- [ ] T067 [US6] `unique (user_id, pose_slug)` on both tables, so favouriting is idempotent
+- [X] T067 [US6] `unique (user_id, pose_slug)` on both tables, so favouriting is idempotent
   and there is one mutable note per pose
-- [ ] T068 [US6] `pose_slug text not null` with **no FK and no CHECK** — enumerating valid
+- [X] T068 [US6] `pose_slug text not null` with **no FK and no CHECK** — enumerating valid
   slugs in Postgres would make the database a second authority over pose identity against
   FR-003 and RULE-O6, and FR-039's quiet degradation then falls out of the client-side join
-- [ ] T069 [US6] Regenerate `src/types/database.ts`; `scripts/db-types-check.sh` drift-checks
+- [X] T069 [US6] Regenerate `src/types/database.ts`; `scripts/db-types-check.sh` drift-checks
   it in CI
-- [ ] T070 [P] [US6] RLS test I1/I2 (SC-011): a second account — including an org admin
+- [X] T070 [P] [US6] RLS test I1/I2 (SC-011): a second account — including an org admin
   sharing an organization with the author — reading a note by any means, including by explicit
-  `id`, receives zero rows
-- [ ] T071 [P] [US6] RLS test I3: an update cannot move a row to another `user_id`
-- [ ] T072 [P] [US6] Test I4 over `information_schema.columns`: neither table has a column
+  `id`, receives zero rows. Extended past this task's own wording to add a cohort-teacher
+  reader (RULE-V5), not just an org admin — the harness had no such fixture anywhere
+- [X] T071 [P] [US6] RLS test I3: an update cannot move a row to another `user_id`
+- [X] T072 [P] [US6] Test I4 over `information_schema.columns`: neither table has a column
   referencing an org, cohort, or role. This is the only invariant that protects itself against
   a *later* migration (RULE-V2)
-- [ ] T073 [P] [US6] Test I5 (SC-013): deleting the `auth.users` row leaves zero rows in
+- [X] T073 [P] [US6] Test I5 (SC-013): deleting the `auth.users` row leaves zero rows in
   either table
 - [ ] T074 [P] [US6] Test I7 (SC-012): the signed-out pose read path issues no Supabase call.
-  The one a well-meaning refactor breaks by accident
+  The one a well-meaning refactor breaks by accident. **Not done here**: there is no
+  read-path hook yet to test against — Phase 8 is deliberately schema/RLS-only, no UI.
+  Rides with Phase 9's favourites/notes UI PR instead
 
 ---
 
