@@ -15,7 +15,7 @@ import type { Flow, FlowItem, LayerName, Phase } from '@/lib/flow/types'
 import { isStillnessNode } from '@/lib/flow/types'
 import { allSearchableNames } from '@/lib/pose-library/display-name'
 import { buildFrictionMatrix } from '@/lib/friction'
-import { validateLite } from '@/lib/validator/lite'
+import { validateLite, type ValidatorWarning } from '@/lib/validator/lite'
 import { saveFlow, getFlow, getAllFlows } from '@/lib/storage/flow-store'
 import { queueUpsert } from '@/lib/storage/sync'
 import { CURRENT_SCHEMA_VERSION } from '@/lib/storage/krama-file'
@@ -149,10 +149,20 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
     return buildFrictionMatrix(used)
   }, [sortedItems, poseBySlug])
 
+  // Dismissals live in component state only — deliberately not persisted anywhere, so
+  // a new session shows the warning again (004 US6). Keyed by (kind, item) so the same
+  // condition re-occurring at a different item still surfaces.
+  const [dismissed, setDismissed] = useState<Set<string>>(() => new Set())
+  const warningKey = (w: ValidatorWarning) => `${w.code}:${w.itemId ?? 'flow'}`
+
   const warnings = useMemo(
-    () => flow ? validateLite(flow, poses) : [],
-    [flow, poses]
+    () => (flow ? validateLite(flow, poses) : []).filter(w => !dismissed.has(warningKey(w))),
+    [flow, poses, dismissed]
   )
+
+  function dismissWarning(w: ValidatorWarning) {
+    setDismissed(prev => new Set(prev).add(warningKey(w)))
+  }
 
   function setLayerAndPersist(next: LayerName) {
     haptics.tick()
@@ -335,13 +345,15 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
         <ComposeToolbar onAddStillness={addStillness} onAddPhase={addPhase} totalSeconds={total} />
 
         {/* Validator warnings — never block save */}
-        <ComposeWarnings warnings={warnings} />
+        <ComposeWarnings warnings={warnings} onDismiss={dismissWarning} />
 
         <ComposeFlowList
           items={sortedItems}
           poseBySlug={poseBySlug}
           frictionMatrix={frictionMatrix}
           layer={layer}
+          warnings={warnings}
+          onDismissWarning={dismissWarning}
           sensors={sensors}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
