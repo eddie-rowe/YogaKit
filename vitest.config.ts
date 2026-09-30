@@ -41,6 +41,9 @@ export default defineConfig({
         // never had. Same argument again: a check that asserts a constitutional
         // guarantee and is itself untested is a claim, not a gate.
         'scripts/lib/telemetry-check.mjs',
+        // 007 T009: the routine-log validator (#48 guardrail) — a CI gate that asserts
+        // "no routine credited with a run it has no evidence for" and was itself untested.
+        'scripts/lib/routine-log.mjs',
         // scripts/lib/sourcemaps.mjs and scripts/lib/dd-version.mjs are deliberately
         // NOT here. Their existing tests still run; they just no longer gate at 100%,
         // because the owner's call is that Datadog plumbing does not earn new unit
