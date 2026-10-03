@@ -2,7 +2,7 @@
 
 **Feature**: `009-voice-and-copy-lint` | **Plan**: [plan.md](./plan.md)
 
-Status as of 2026-09-01. US1 and US2 are complete; US3 is not started.
+Status as of 2026-10-03. US1, US2 and US3 are complete (US3: T024/T025, shipped in #102).
 
 ## Phase 1 — US2: the voice standard (P1) ✅
 
