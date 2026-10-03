@@ -24,7 +24,7 @@ dependency blocking an early start.
 | T006 | `scripts/validate-routine-log.mjs` — parse every `docs/planning/routine-log.md` line; assert each `(date, routine)` run claim has a first-party artifact at the path that routine's spec declares | FR-030, FR-035 | ✅ (merged, `#48`, PR #58) |
 | T007 | Wire `validate-routine-log.mjs` into `ci.yml` as a blocking step, no `\|\| true` | FR-030 | ✅ (merged, `#48`, PR #58) |
 | T008 | `docs/planning/routines.md` "Shared guardrails" — no routine may attribute shipped work to another routine without that routine's own first-party artifact | FR-030 | ✅ (merged, `#48`) |
-| T009 | `tests/unit/routine-log/validate.test.ts` — bring the validator under `vitest.config.ts` `coverage.include`, incl. a seeded-violation case | FR-030 | now |
+| T009 | `tests/unit/routine-log/validate.test.ts` — bring the validator under `vitest.config.ts` `coverage.include`, incl. a seeded-violation case | FR-030 | ✅ (`#110`; `tests/unit/routine-log/validate.test.ts`, `scripts/lib/routine-log.mjs` in `coverage.include`) |
 | T010 | A period in which nothing shipped is reported as a period in which nothing shipped, not omitted from the retro | FR-031 | sequenced (autoretro spec text, not yet audited against this FR) |
 
 ## Phase 2 — US2: labelled work-consumption with an owner-gate (P1, sequenced)
@@ -52,7 +52,7 @@ dependency blocking an early start.
 | T024 | Every routine bounded — no polling/busy-wait, time-boxed checks | FR-019 | sequenced |
 | T025 | Every routine appends exactly one line per run to `routine-log.md` | FR-020 | sequenced (already the convention; `validate-routine-log.mjs` enforces the shape) |
 | T026 | Every routine fully autonomous, never calls an interactive prompt | FR-021 | sequenced (already stated: "Never call `AskUserQuestion`") |
-| T027 | Every routine commits only to trunk, verifies branch before acting | FR-022 | sequenced (already stated; guard is currently vacuous — `autoretro.md:54-55`, `autodev.md:223` use `\|\| echo` instead of an exiting guard) |
+| T027 | Every routine commits only to trunk, verifies branch before acting | FR-022 | ✅ (`#114`; guards in `autodev.md`, `autoretro.md`, `autopm.md` now `exit 1`) |
 | T028 | Routine steps run in sequence within one session, no background subagent | FR-023 | sequenced |
 | T029 | Routines coupled only through dated handoff files committed to trunk | FR-024 | sequenced |
 | T030 | Missing upstream handoff — locate the most recent prior one and note staleness | FR-025 | sequenced |
@@ -94,4 +94,4 @@ dependency blocking an early start.
 
 | # | Task | FR | Owner |
 |---|---|---|---|
-| T049 | RULE-C5 operational-writing checks (P2) | — | `009-voice-and-copy-lint` US3, not started |
+| T049 | RULE-C5 operational-writing checks (P2) | — | `009-voice-and-copy-lint` US3 — shipped in `#102` (T024/T025) |
