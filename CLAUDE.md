@@ -3,7 +3,7 @@
 <!-- SPECKIT START -->
 `docs/krama-v0.1-spec.md` is the historical, human-facing spec for the original
 local-first v0.1 product — it is superseded (not deleted) by the v1.0 platform pivot.
-For the current plan, read: `specs/004-sequencing-composer/plan.md`
+For the current plan, read: `specs/005-daily-sadhana/plan.md`
 
 The v1.0 platform pivot (multi-tenant, authenticated, billed) ships as five product
 features, in dependency order: `002-auth-tenancy-billing` → `003-pose-library` →
@@ -36,6 +36,9 @@ Key artifacts:
   `specs/004-sequencing-composer/plan.md`, `specs/004-sequencing-composer/research.md`,
   `specs/004-sequencing-composer/data-model.md`, `specs/004-sequencing-composer/tasks.md`
 - 004 author-boundary contract:           `specs/004-sequencing-composer/contracts/flow-sharing.md`
+- 005 spec + plan (daily sadhana):       `specs/005-daily-sadhana/spec.md`,
+  `specs/005-daily-sadhana/design-input.md`, `specs/005-daily-sadhana/plan.md`,
+  `specs/005-daily-sadhana/tasks.md`
 - UX design research (21 reports):      `docs/design-research/README.md`
 - Per-feature staged UX decisions:      `specs/00{3,4,5,6}-*/design-input.md`
 - Voice standard (product + ops copy): `VOICE.md` — the authority the copy-lint encodes;
