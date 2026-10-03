@@ -15,6 +15,7 @@ import {
   parseReviewRecord,
   tier1Coverage,
 } from './lib/tier1-report.mjs'
+import { findUnresolvedEmotions, validateThemeTaxonomy } from './lib/theme-taxonomy.mjs'
 
 const sha256 = value => createHash('sha256').update(value).digest('hex')
 
@@ -88,6 +89,26 @@ for (const file of files) {
       `⚠️  ${file}: sanskrit "${data.sanskrit}" contains a parenthetical or "variation" — consider moving that semantic to tradition_names or modes[].`
     )
   }
+}
+
+// 003 US5 / T065 / SC-010: theme-taxonomy.json and pose.schema.json's emotion enum are
+// two hand-edited sources of truth for the same closed set — Ajv's per-file enum check
+// (above) can't see them drift from *each other*, only from the pose data. Hard-fails,
+// unlike the Tier-2 report below, because FR-029 requires the taxonomy stay closed.
+const themeTaxonomy = JSON.parse(
+  fs.readFileSync(path.join(here, '../data/schemas/theme-taxonomy.json'), 'utf8')
+)
+const emotionEnum = schema.properties?.emotional_release_potential?.items?.properties?.emotion?.enum ?? []
+const taxonomyErrors = [
+  ...validateThemeTaxonomy(themeTaxonomy, emotionEnum),
+  ...findUnresolvedEmotions(poses, new Set(themeTaxonomy.map(t => t.slug))),
+]
+if (taxonomyErrors.length > 0) {
+  console.error(`\n❌ Theme taxonomy cross-check failed (T065, SC-010):`)
+  for (const err of taxonomyErrors) console.error(`   ${err}`)
+  errors += taxonomyErrors.length
+} else {
+  console.log(`\n✅ Theme taxonomy cross-check: all ${themeTaxonomy.length} entries resolve, every pose emotion resolves.`)
 }
 
 // FR-007. Printed above the Tier-2 report and unconditionally, pass or fail: a gate that

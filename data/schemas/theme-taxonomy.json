@@ -1,0 +1,80 @@
+[
+  {
+    "slug": "grief",
+    "label": "Grief",
+    "subhead": "Poses that open the chest and ribs, where held breath tends to gather.",
+    "tcm_organs": ["lung", "kidney", "stomach"]
+  },
+  {
+    "slug": "fear",
+    "label": "Fear",
+    "subhead": "Poses working the low back, kidneys, and inner legs — the body's deepest reserves.",
+    "tcm_organs": ["kidney"]
+  },
+  {
+    "slug": "frustration",
+    "label": "Frustration",
+    "subhead": "Side-body and outer-hip work, along the channels associated with stalled momentum.",
+    "tcm_organs": ["gallbladder"]
+  },
+  {
+    "slug": "vulnerability",
+    "label": "Vulnerability",
+    "subhead": "Front-body opening. Exposing the soft surfaces is the whole of the shape.",
+    "tcm_organs": ["kidney", "heart", "liver"]
+  },
+  {
+    "slug": "control",
+    "label": "Control",
+    "subhead": "Poses that ask the grip to soften rather than the range to increase.",
+    "tcm_organs": ["liver", "gallbladder"]
+  },
+  {
+    "slug": "courage",
+    "label": "Courage",
+    "subhead": "Heart-opening shapes that widen the chest without bracing it.",
+    "tcm_organs": ["heart", "kidney"]
+  },
+  {
+    "slug": "surrender",
+    "label": "Surrender",
+    "subhead": "Supported, long-held shapes where the work is in stopping.",
+    "tcm_organs": ["stomach", "kidney", "lung"]
+  },
+  {
+    "slug": "groundedness",
+    "label": "Groundedness",
+    "subhead": "Weight low and wide, with the belly and legs taking the load.",
+    "tcm_organs": ["stomach", "kidney", "spleen"]
+  },
+  {
+    "slug": "anger",
+    "label": "Anger",
+    "subhead": "Liver-channel work through the inner thigh and side waist.",
+    "tcm_organs": ["liver"]
+  },
+  {
+    "slug": "openness",
+    "label": "Openness",
+    "subhead": "Shapes that widen across the collarbones and the front of the shoulders.",
+    "tcm_organs": ["heart", "lung"]
+  },
+  {
+    "slug": "letting-go",
+    "label": "Letting go",
+    "subhead": "Passive spinal work along the back line, where holding is habitual.",
+    "tcm_organs": ["bladder", "liver", "gallbladder"]
+  },
+  {
+    "slug": "trust",
+    "label": "Trust",
+    "subhead": "Shapes that need support to enter, and settle once it is there.",
+    "tcm_organs": ["kidney", "heart"]
+  },
+  {
+    "slug": "integration",
+    "label": "Integration",
+    "subhead": "Neutral, quieting shapes for the space after stronger work.",
+    "tcm_organs": ["liver", "stomach"]
+  }
+]

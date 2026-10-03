@@ -285,12 +285,18 @@
         "required": ["emotion", "tcm_organ"],
         "additionalProperties": false,
         "properties": {
-          "emotion": { "type": "string", "minLength": 1 },
+          "emotion": {
+            "enum": [
+              "grief", "fear", "frustration", "vulnerability", "control",
+              "courage", "surrender", "groundedness", "anger", "openness",
+              "letting-go", "trust", "integration"
+            ]
+          },
           "tcm_organ": { "type": "string", "minLength": 1 },
           "notes": { "type": "string" }
         }
       },
-      "description": "Emotions traditionally associated with the targeted meridians/organs. Supports trauma-informed teaching."
+      "description": "Emotions traditionally associated with the targeted meridians/organs. Supports trauma-informed teaching. `emotion` is a closed taxonomy (data/schemas/theme-taxonomy.json, FR-029) — enumerating it here is the enforcement point, not a duplicate of the taxonomy file."
     },
     "sequencing_position": {
       "type": "array",
