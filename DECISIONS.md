@@ -1056,3 +1056,44 @@ a naming change, not fixed it.
 whole failure mode was a probe that couldn't see a numerator's tag filter. A wider bare
 name probe has the same blind spot. Only the manifest's actual query, filters included,
 proves the monitor itself can ever fire.
+
+---
+
+## 2026-09-25 — `#61` cohort/billing UI: RLS assertions carry the authorization proof, not a new E2E login fixture
+
+**Context:** `#61`'s cohort and billing PRs (`7b`–`7e`) are the first features to put
+real authorization-sensitive UI (cohort rosters, graduation, Stripe billing) behind
+Playwright's E2E suite. `tests/e2e-qa/auth-org-invite.spec.ts:6-12` already documents that
+there is no authenticated E2E login in this repo — Google OAuth and email OTP are both
+unexercisable from a scripted Playwright run, so every existing E2E spec in this suite
+stays on the unauthenticated surface. The backlog plan that scoped `#61`
+(`i-met-with-giaconda-declarative-dewdrop.md`) flagged this explicitly and asked for the
+choice to be made in `7b`, not deferred to `7e`: either build a `storageState` fixture
+now, or keep E2E on unauthenticated surface and let `verify-migrations.sh` carry
+authorization proof.
+
+**Decision:** Keep E2E on unauthenticated surface for `7b`–`7e`. Do not build a
+`storageState` fixture, a test-only magic-link, or any other authenticated-login shortcut
+for Playwright in this pass. Authorization behavior for cohorts and billing — the thing an
+authenticated E2E run would otherwise be proving — is covered instead by
+`scripts/verify-migrations.sh`'s RLS assertions (T041/T042/T046-T048/T053-T055 and the
+existing cross-org/cross-account isolation blocks), which already run against real
+Postgres in CI.
+
+**Why:** a `storageState` fixture needs *some* way to actually authenticate a scripted
+browser — either a real OAuth/OTP flow (not automatable today) or a new test-only
+authentication bypass endpoint. The latter is a change to production auth surface, not a
+test-infrastructure change: a bypass that only fires in a test environment is still a
+bypass, and getting its guard condition wrong is the kind of mistake that is expensive
+and embarrassing to discover later. That is exactly the sort of decision this session
+should not make unilaterally inside a feature PR — building it deserves its own review,
+not a rider on a cohort-roster UI change. `verify-migrations.sh` already proves the
+authorization properties that matter (a co-member/admin/cohort-teacher cannot read another
+account's practice content or entitlements) with no such tradeoff.
+
+**What this does not cover:** UI-level regressions that RLS can't see — a page that
+fetches correctly under RLS but renders the wrong thing, or a client bug that never issues
+the query RLS would have blocked. `7b`–`7e`'s E2E coverage is therefore smoke-level on
+public/unauthenticated routes only; a future feature that needs real authenticated E2E
+coverage should treat "build a safe test-login path" as its own reviewed piece of work,
+not something to improvise inside an unrelated PR.
