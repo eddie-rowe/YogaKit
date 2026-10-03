@@ -8,6 +8,8 @@ import type { FlowItem, LayerName } from '@/lib/flow/types'
 import { resolveItemName } from '@/lib/pose-library/display-name'
 import { describeEnergeticDirection } from '@/lib/pose-library/energetic-direction'
 import { SECONDS_PER_BREATH } from '@/lib/flow/duration'
+import type { ValidatorWarning } from '@/lib/validator/lite'
+import ComposeWarningMarker from './ComposeWarningMarker'
 
 // The one sanctioned non-accent color for pose-content chips (guardrails §2): the
 // same chakra hue as CATEGORY_HUES.chakras in src/components/poses/BodyDiagram.tsx,
@@ -30,6 +32,8 @@ interface Props {
   isLast: boolean
   next: FlowItem | undefined
   seam: SeamInfo | undefined
+  warnings?: ValidatorWarning[]
+  onDismissWarning?: (warning: ValidatorWarning) => void
   onMove: (index: number, direction: -1 | 1) => void
   onUpdate: (id: string, patch: Partial<FlowItem>) => void
   onRemove: (id: string) => void
@@ -45,6 +49,8 @@ export default function ComposeFlowItem({
   isLast,
   next,
   seam,
+  warnings = [],
+  onDismissWarning,
   onMove,
   onUpdate,
   onRemove,
@@ -142,6 +148,10 @@ export default function ComposeFlowItem({
             <X size={16} />
           </button>
         </div>
+        {onDismissWarning &&
+          warnings.map(w => (
+            <ComposeWarningMarker key={w.code} warning={w} onDismiss={onDismissWarning} />
+          ))}
         {(layer !== 'simple') && (
           <input
             data-testid={`compose-item-notes-${index}`}
