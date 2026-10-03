@@ -1,7 +1,14 @@
 'use client'
 
+import { useState } from 'react'
+import { Info } from 'lucide-react'
 import type { Pose, FiveElement } from '@/lib/pose-types'
 import { resolveDisplayName } from '@/lib/pose-library/display-name'
+import {
+  complexityExplanation,
+  injuryRiskExplanation,
+  SCORE_EXPLANATION_FOOTER,
+} from './score-explanation'
 
 interface Props {
   pose: Pose
@@ -14,6 +21,85 @@ const ELEMENT_DOT_COLORS: Record<FiveElement, string> = {
   earth: 'bg-yellow-500',
   metal: 'bg-gray-400',
   water: 'bg-blue-500',
+}
+
+type ScoreField = 'complexity' | 'injury_risk'
+
+// FR-022/023, SC-009: a short static explanation, reachable in place from the number
+// itself — a disclosure, not a separate page. `complexity` is Tier-1 (always rendered);
+// `injury_risk` is Tier-2 and rendered only when present, so the 67/67 coverage the pose
+// library happens to have today never becomes a load-bearing assumption here.
+function ScoreExplanationGroup({ pose }: { pose: Pose }) {
+  const [open, setOpen] = useState<ScoreField | null>(null)
+  const name = resolveDisplayName(pose)
+  const complexity = complexityExplanation(pose.complexity, pose.source)
+  const injuryRisk =
+    pose.injury_risk != null ? injuryRiskExplanation(pose.injury_risk, pose.source) : null
+  const openCopy = open === 'complexity' ? complexity : open === 'injury_risk' ? injuryRisk : null
+
+  function toggle(field: ScoreField) {
+    setOpen(prev => (prev === field ? null : field))
+  }
+
+  return (
+    <div className="px-4 pb-3 -mt-1 space-y-1.5">
+      <div className="flex flex-wrap items-center gap-1.5 text-xs">
+        <span
+          data-testid={`poses-score-value-complexity-${pose.slug}`}
+          className="px-2 py-0.5 rounded-full"
+          style={{ background: 'var(--surface-raised)', color: 'var(--foreground)' }}
+        >
+          {complexity.heading}
+        </span>
+        <button
+          type="button"
+          data-testid={`poses-score-trigger-complexity-${pose.slug}`}
+          aria-expanded={open === 'complexity'}
+          aria-label={`What the complexity score for ${name} reflects`}
+          onClick={() => toggle('complexity')}
+          className="p-1 rounded-full transition-colors"
+          style={{ color: 'var(--muted)', transitionDuration: '150ms' }}
+        >
+          <Info size={14} aria-hidden="true" />
+        </button>
+
+        {injuryRisk && (
+          <>
+            <span
+              data-testid={`poses-score-value-injury_risk-${pose.slug}`}
+              className="px-2 py-0.5 rounded-full"
+              style={{ background: 'var(--surface-raised)', color: 'var(--foreground)' }}
+            >
+              {injuryRisk.heading}
+            </span>
+            <button
+              type="button"
+              data-testid={`poses-score-trigger-injury_risk-${pose.slug}`}
+              aria-expanded={open === 'injury_risk'}
+              aria-label={`What the injury-risk score for ${name} reflects`}
+              onClick={() => toggle('injury_risk')}
+              className="p-1 rounded-full transition-colors"
+              style={{ color: 'var(--muted)', transitionDuration: '150ms' }}
+            >
+              <Info size={14} aria-hidden="true" />
+            </button>
+          </>
+        )}
+      </div>
+
+      {open && openCopy && (
+        <div
+          data-testid={`poses-score-explanation-${open}-${pose.slug}`}
+          className="text-xs rounded-lg p-2.5 space-y-1.5"
+          style={{ background: 'var(--surface-raised)' }}
+        >
+          <p style={{ color: 'var(--foreground)' }}>{openCopy.body}</p>
+          <p style={{ color: 'var(--muted)' }}>{openCopy.lineage}</p>
+          <p style={{ color: 'var(--muted)' }}>{SCORE_EXPLANATION_FOOTER}</p>
+        </div>
+      )}
+    </div>
+  )
 }
 
 export default function PoseCard({ pose, onOpen }: Props) {
@@ -51,6 +137,10 @@ export default function PoseCard({ pose, onOpen }: Props) {
           </div>
         </div>
       </button>
+
+      {/* Outside the open-detail button — a nested <button> would be invalid HTML, and
+          the explanation trigger must not also open the pose overlay (FR-022). */}
+      <ScoreExplanationGroup pose={pose} />
     </article>
   )
 }
