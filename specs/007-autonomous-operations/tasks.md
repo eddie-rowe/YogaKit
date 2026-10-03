@@ -35,7 +35,7 @@ dependency blocking an early start.
 | T012 | Additive-safe classification limited to no-blast-radius changes (docs, tests, non-schema code) | FR-007 | sequenced |
 | T013 | Owner-gated classification includes, at minimum, migrations (DROP/RENAME/backfill), RLS, auth, billing | FR-008 | sequenced (already true of `auto/needs-human` per `routines.md`) |
 | T014 | A constitution-bending change is always classified owner-gated, never an exception | FR-009 | sequenced |
-| T015 | `.github/ISSUE_TEMPLATE/feature.md` — Acceptance Criteria, Test Requirements, Spec Reference, Codebase Area | FR-010 | sequenced |
+| T015 | `.github/ISSUE_TEMPLATE/feature.md` — Acceptance Criteria, Test Requirements, Spec Reference, Codebase Area | FR-010 | ✅ |
 | T016 | Build routine never creates a branch/PR/issue outside the labelled, groomed queue | FR-011 | sequenced |
 | T017 | Owner-gated blockers aggregate into one idempotent digest issue, never per-issue spam | FR-012 | sequenced (`auto/owner-digest` label already exists) |
 
