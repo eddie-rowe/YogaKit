@@ -114,3 +114,46 @@ describe('ComposeFlowItem chip colors (T046)', () => {
     expect((tissueChip as HTMLElement).style.backgroundColor).toBeTruthy()
   })
 })
+
+// 004 US5 s3–s6 — seam node presence, tier geometry, hover affordance.
+describe('ComposeFlowItem seam (US5)', () => {
+  function renderWithNext(seam: { tier: 1 | 2 | 3; reasons: string[] } | undefined) {
+    return render(
+      <ComposeFlowItem
+        item={makeItem()}
+        index={0}
+        pose={makePose()}
+        stillness={false}
+        layer="simple"
+        isFirst={true}
+        isLast={false}
+        next={makeItem({ id: 'item-2', order: 1 })}
+        seam={seam}
+        onMove={vi.fn()}
+        onUpdate={vi.fn()}
+        onRemove={vi.fn()}
+      />
+    )
+  }
+
+  it('keeps a seam node for an adjacent pair with no friction result (floor)', () => {
+    renderWithNext(undefined)
+    const seam = screen.getByTestId('compose-seam-0-1')
+    expect(seam.getAttribute('data-tier')).toBe('1')
+  })
+
+  it('encodes tier as length and weight, not height alone', () => {
+    renderWithNext({ tier: 3, reasons: ['a'] })
+    const seam = screen.getByTestId('compose-seam-0-1')
+    expect(seam.style.getPropertyValue('--seam-length')).toBe('100%')
+    expect(seam.style.getPropertyValue('--seam-weight')).toBe('3px')
+    expect(seam.style.getPropertyValue('--seam-gap')).toBe('0.5rem')
+  })
+
+  it('makes the explanatory text reachable and the seam focusable', () => {
+    renderWithNext({ tier: 2, reasons: ['plane change'] })
+    const seam = screen.getByTestId('compose-seam-0-1')
+    expect(seam.getAttribute('tabindex')).toBe('0')
+    expect(seam.getAttribute('title')).toBe('plane change')
+  })
+})
