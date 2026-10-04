@@ -36,6 +36,8 @@ Key artifacts:
   `specs/004-sequencing-composer/plan.md`, `specs/004-sequencing-composer/research.md`,
   `specs/004-sequencing-composer/data-model.md`, `specs/004-sequencing-composer/tasks.md`
 - 004 author-boundary contract:           `specs/004-sequencing-composer/contracts/flow-sharing.md`
+- 006 spec + plan (profile & settings):   `specs/006-profile-settings/spec.md`,
+  `specs/006-profile-settings/plan.md`, `specs/006-profile-settings/tasks.md`
 - UX design research (21 reports):      `docs/design-research/README.md`
 - Per-feature staged UX decisions:      `specs/00{3,4,5,6}-*/design-input.md`
 - Voice standard (product + ops copy): `VOICE.md` — the authority the copy-lint encodes;
