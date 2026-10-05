@@ -2,7 +2,7 @@
 
 **Run time:** ~10:25 UTC
 **Issues worked:** #124 (006 US1 visibleSections). Skipped: #107/#106 (PRs #122/#109 already open, labeled auto/needs-human), #101 (touches PR #90 db types, RLS-adjacent), #96 (needs Datadog credentials), #111/#108/#97/#83/#82/#47 (auto/needs-human).
-**PRs opened:** #125 — autodev/124-visible-sections; CI pending at end of bounded window, left for next sweep's Step 1a merge.
+**PRs opened:** #125 — autodev/124-visible-sections; CI green (all checks), squash-merged 61c7730 after the window.
 **Dependabot:** none open.
 **Runbooks written:** none
 **Gate results:** tsc / lint:copy / validate:poses / lint:telemetry / test:coverage all pass locally (100% coverage held).
