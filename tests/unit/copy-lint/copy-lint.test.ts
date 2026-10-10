@@ -515,10 +515,10 @@ describe('checkOperationalHonesty (009 US3, FR-024)', () => {
 })
 
 describe('scoping', () => {
-  it('scans the user-facing directories and not src/lib', () => {
-    expect(SCAN_DIRS).toEqual(['src/app', 'src/components'])
+  it('scans the user-facing directories and the settings strings, not the engine modules', () => {
+    expect(SCAN_DIRS).toEqual(['src/app', 'src/components', 'src/lib/settings'])
     // RULE-H6's modules author no copy; lint noise on that path is worse than no cover.
-    expect(SCAN_DIRS.some((d) => d.startsWith('src/lib'))).toBe(false)
+    expect(SCAN_DIRS.some((d) => /^src\/lib\/(friction|validator)/.test(d))).toBe(false)
   })
 
   it('scans TS and TSX only', () => {
