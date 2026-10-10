@@ -1,8 +1,10 @@
 'use client'
 
+import { Fragment, useState } from 'react'
 import {
   DndContext,
   type DragEndEvent,
+  type DragOverEvent,
   type SensorDescriptor,
   type SensorOptions,
 } from '@dnd-kit/core'
@@ -11,6 +13,7 @@ import type { Pose } from '@/lib/pose-types'
 import type { FlowItem, LayerName } from '@/lib/flow/types'
 import { isStillnessNode } from '@/lib/flow/types'
 import type { FrictionMatrix } from '@/lib/friction'
+import { insertionGapIndex } from '@/lib/flow/seam-geometry'
 import ComposeFlowItem from './ComposeFlowItem'
 
 interface Props {
@@ -42,6 +45,12 @@ export default function ComposeFlowList({
   onUpdate,
   onRemove,
 }: Props) {
+  const [gapIndex, setGapIndex] = useState<number | null>(null)
+  const indexOf = (id: unknown) => items.findIndex(i => i.id === id)
+  const handleDragOver = (event: DragOverEvent) => {
+    if (!event.over) return setGapIndex(null)
+    setGapIndex(insertionGapIndex(indexOf(event.active.id), indexOf(event.over.id)))
+  }
   return (
     <div className="space-y-1">
       {items.length === 0 && (
@@ -49,7 +58,14 @@ export default function ComposeFlowList({
           Search above to add your first pose.
         </p>
       )}
-      <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}>
+      <DndContext sensors={sensors} onDragStart={onDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={e => {
+          setGapIndex(null)
+          onDragEnd(e)
+        }}
+        onDragCancel={() => setGapIndex(null)}
+      >
         <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
           {items.map((item, index) => {
             const pose = poseBySlug.get(item.poseSlug)
@@ -59,8 +75,9 @@ export default function ComposeFlowList({
               ? frictionMatrix[pose.slug]?.[next.poseSlug]
               : undefined
             return (
+              <Fragment key={item.id}>
+                {gapIndex === index && <div data-testid="compose-insertion-gap" className="kk-insertion-gap" aria-hidden />}
               <ComposeFlowItem
-                key={item.id}
                 item={item}
                 index={index}
                 pose={pose}
@@ -74,6 +91,10 @@ export default function ComposeFlowList({
                 onUpdate={onUpdate}
                 onRemove={onRemove}
               />
+                {gapIndex === items.length && index === items.length - 1 && (
+                  <div data-testid="compose-insertion-gap" className="kk-insertion-gap" aria-hidden />
+                )}
+              </Fragment>
             )
           })}
         </SortableContext>

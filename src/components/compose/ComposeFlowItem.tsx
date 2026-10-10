@@ -8,6 +8,8 @@ import type { FlowItem, LayerName } from '@/lib/flow/types'
 import { resolveItemName } from '@/lib/pose-library/display-name'
 import { describeEnergeticDirection } from '@/lib/pose-library/energetic-direction'
 import { SECONDS_PER_BREATH } from '@/lib/flow/duration'
+import { seamGeometry } from '@/lib/flow/seam-geometry'
+import type { FrictionTier } from '@/lib/friction'
 
 // The one sanctioned non-accent color for pose-content chips (guardrails §2): the
 // same chakra hue as CATEGORY_HUES.chakras in src/components/poses/BodyDiagram.tsx,
@@ -16,7 +18,7 @@ import { SECONDS_PER_BREATH } from '@/lib/flow/duration'
 const CHAKRA_HUE = { background: '#faf5ff', color: '#7e22ce' }
 
 interface SeamInfo {
-  tier: number
+  tier: FrictionTier
   reasons: string[]
 }
 
@@ -183,22 +185,43 @@ export default function ComposeFlowItem({
           </div>
         )}
       </div>
-      {next && seam && (
-        <div
-          data-testid={`compose-seam-${index}-${index + 1}`}
-          data-tier={seam.tier}
-          className="kk-seam px-3 py-1"
-          title={seam.reasons.join('; ')}
-        >
-          <span className="kk-seam-line" />
-          <span>
-            tier {seam.tier}
-            {seam.reasons.length > 0 && layer !== 'expert' && `: ${seam.reasons[0]}`}
-            {seam.reasons.length > 0 && layer === 'expert' && `: ${seam.reasons.join(', ')}`}
-          </span>
-          <span className="kk-seam-line" />
-        </div>
+      {next && (
+        <Seam
+          index={index}
+          seam={seam ?? { tier: 1, reasons: [] }}
+          layer={layer}
+        />
       )}
+    </div>
+  )
+}
+
+/** Every adjacent pair keeps a seam node, even at the floor tier (US5 s6). Tier is
+ *  carried by line length + weight (and extra row gap at the top), set as CSS vars so
+ *  long flows need no shape redraw (s7). */
+function Seam({ index, seam, layer }: { index: number; seam: SeamInfo; layer: LayerName }) {
+  const geo = seamGeometry(seam.tier)
+  const style = {
+    '--seam-length': `${geo.lengthPct}%`,
+    '--seam-weight': `${geo.weightPx}px`,
+    '--seam-gap': `${geo.rowGapRem}rem`,
+  } as React.CSSProperties
+  return (
+    <div
+      data-testid={`compose-seam-${index}-${index + 1}`}
+      data-tier={seam.tier}
+      className="kk-seam px-3 py-1"
+      style={style}
+      tabIndex={0}
+      title={seam.reasons.join('; ') || undefined}
+    >
+      <span className="kk-seam-line" />
+      <span>
+        tier {seam.tier}
+        {seam.reasons.length > 0 && layer !== 'expert' && `: ${seam.reasons[0]}`}
+        {seam.reasons.length > 0 && layer === 'expert' && `: ${seam.reasons.join(', ')}`}
+      </span>
+      <span className="kk-seam-line" />
     </div>
   )
 }

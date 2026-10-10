@@ -296,23 +296,44 @@ input[type=range] {
 .pose-row[data-current="true"] .read-pose-name { font-size: 1.875rem; }
 .pose-row[data-current="true"].kk-stillness .read-pose-name { font-size: 1.5rem; }
 
-/* Seam indicator between adjacent flow items — a hairline whose weight communicates
-   friction tier, never color-only (accent-neutral, per the single-accent rule). */
+/* Seam indicator between adjacent flow items — tier is encoded by line length and
+   weight (set per-seam as --seam-length / --seam-weight / --seam-gap), never height or
+   color alone (accent-neutral, per the single-accent rule). Hover/focus lifts the seam
+   to full-contrast text so it reads as interactive and its explanation is reachable. */
 .kk-seam {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   color: var(--muted);
   font-size: 0.75rem;
-  transition: color 160ms ease;
+  padding-block: calc(0.25rem + var(--seam-gap, 0rem));
+  cursor: help;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+.kk-seam:hover,
+.kk-seam:focus-visible {
+  color: var(--foreground);
 }
 .kk-seam-line {
-  flex: 1;
-  height: 1px;
+  flex: 0 1 calc(var(--seam-length, 40%) / 2);
+  height: var(--seam-weight, 1px);
   background: var(--border);
 }
-.kk-seam[data-tier="2"] .kk-seam-line { height: 2px; }
-.kk-seam[data-tier="3"] .kk-seam-line { height: 2px; background: var(--muted); }
+.kk-seam[data-tier="3"] .kk-seam-line { background: var(--muted); }
+
+/* Compose drag insertion gap: opens where the dragged row will land. Plain height
+   ease within the motion budget — no bounce (guardrails §2). */
+.kk-insertion-gap {
+  height: 0;
+  border-radius: 0.5rem;
+  border: 1px dashed var(--border);
+  opacity: 0;
+  animation: kk-gap-open var(--duration-fast) var(--ease-standard) forwards;
+}
+@keyframes kk-gap-open {
+  to { height: 2.75rem; opacity: 1; }
+}
 
 /* Compose drag-reorder: a quiet, certain lift — never a bounce (guardrails §2). */
 .kk-drag-item {
