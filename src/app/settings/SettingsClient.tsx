@@ -2,10 +2,25 @@
 
 import Link from 'next/link'
 
-import { SECTIONS, Section, NotYet, type SectionId } from './sections/Section'
+import { visibleSections, type SectionId as LibSectionId } from '@/lib/settings/sections'
+import { Section, NotYet, type SectionId } from './sections/Section'
 import ProfileSection from './sections/ProfileSection'
 import AppearanceSection from './sections/AppearanceSection'
 import SecuritySection from './sections/SecuritySection'
+
+// The DOM anchors predate visibleSections; they stay as they are so existing
+// links and data-testids don't move (docs/krama-guardrails.md).
+const ANCHOR: Record<LibSectionId, SectionId> = {
+  profile: 'profile',
+  appearance: 'appearance',
+  notifications: 'notifications',
+  privacy: 'privacy',
+  'account-security': 'security',
+  data: 'data',
+  billing: 'billing',
+  memberships: 'orgs',
+  studio: 'studio',
+}
 
 export interface Membership {
   id: string
@@ -29,20 +44,22 @@ export default function SettingsClient({
   displayName,
   timezone,
   memberships,
-  isStudioLead,
 }: Props) {
-  // 006 FR-003/FR-004: these are absent entirely for a solo practitioner, not
-  // greyed out and not tooltipped. Someone practising alone should never see
-  // studio, cohort or seat language at all — a disabled control still teaches
-  // them the app is about something they didn't ask for.
-  const hasOrgs = memberships.length > 0
-  const visible = new Set<SectionId>(
-    SECTIONS.map(s => s.id).filter(id => {
-      if (id === 'orgs') return hasOrgs
-      if (id === 'studio') return isStudioLead
-      return true
-    }),
-  )
+  // 006 FR-001..FR-005: which sections exist, and in what order, is decided once
+  // by visibleSections; this component only renders what it returns. Conditional
+  // sections are absent entirely for a solo practitioner, not greyed out and not
+  // tooltipped — a disabled control still teaches them the app is about something
+  // they didn't ask for.
+  const sections = visibleSections({
+    orgs: memberships.map(m => ({
+      id: m.organizations?.id ?? m.id,
+      name: m.organizations?.name ?? '',
+      role: m.roles.includes('owner') ? 'owner' : m.roles.includes('admin') ? 'admin' : 'member',
+    })),
+  })
+  const has = (id: LibSectionId) => sections.some(s => s.id === id)
+  const hasOrgs = has('memberships')
+  const hasStudio = has('studio')
 
   return (
     <div className="kk-page">
@@ -58,14 +75,14 @@ export default function SettingsClient({
             where search starts to earn its place, so this is a list of anchors and
             nothing more (docs/design-research/19-settings-profile.md). */}
         <nav data-testid="settings-index" aria-label="Settings sections" className="flex flex-wrap gap-x-4 gap-y-1.5">
-          {SECTIONS.filter(s => visible.has(s.id)).map(section => (
+          {sections.map(section => (
             <a
               key={section.id}
-              href={`#${section.id}`}
+              href={`#${ANCHOR[section.id]}`}
               className="text-sm underline underline-offset-4"
               style={{ color: 'var(--muted)' }}
             >
-              {section.title}
+              {section.label}
             </a>
           ))}
         </nav>
@@ -143,7 +160,7 @@ export default function SettingsClient({
           </Section>
         )}
 
-        {isStudioLead && (
+        {hasStudio && (
           /* Separated by the heading and the spacing above it only — 006 FR-006
              and SC-004 hold the interface at one accent, so no second colour and
              no boxed "admin" treatment. */
