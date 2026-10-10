@@ -22,7 +22,7 @@ import ts from 'typescript'
  * `src/lib` is deliberately absent: it holds the friction engine and validator-lite,
  * which author no copy, and scanning them would put lint noise on RULE-H6's path.
  */
-export const SCAN_DIRS = ['src/app', 'src/components']
+export const SCAN_DIRS = ['src/app', 'src/components', 'src/lib/settings']
 
 /** Extensions worth parsing. */
 export const SCAN_EXTENSIONS = ['.ts', '.tsx']
@@ -481,7 +481,7 @@ export function formatViolation(v) {
 export function coverageLimits() {
   return [
     'Interpolated copy: only the literal fragments of a template are read. A string assembled from variables is invisible.',
-    'Location: only src/app and src/components are scanned. data/poses (authored content), migrations, and emails are not.',
+    'Location: only src/app, src/components and src/lib/settings are scanned. data/poses (authored content), migrations, and emails are not.',
     'Tone: condescension, false cheer, hedging, and second-person diagnosis all pass. Those are VOICE.md §1–§3b, enforced in review.',
     'Structure: a screen built from individually compliant strings can still read as a countdown. RULE-C2 is about experience, not substrings.',
     'Language: English only. Localised copy is entirely uncovered.',
