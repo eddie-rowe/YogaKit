@@ -248,6 +248,19 @@ input[type=range] {
   border-color: var(--accent);
 }
 
+/* FR-026: every catalog filter-value chip meets a 40px touch-target floor, on any
+   pointer type. Unlike `.kk-chip`'s own coarse-pointer-only bump above, a filter chip's
+   whole job is to be tapped to change the result set, so it doesn't get the mouse-
+   density exception. Declares no colour property, so a per-value tone (element,
+   nervous-system effect) can sit on the same element without a specificity fight
+   against `.kk-chip`'s own background/color/border. */
+.kk-filter-chip-tap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+}
+
 .kk-input {
   background: var(--surface);
   color: var(--foreground);

@@ -249,29 +249,40 @@ Ships in the same commit as Phase 4.
 
 ---
 
-## Phase 6: US4 — filter affordances and score explanations (P2) — *deferred*
+## Phase 6: US4 — filter affordances and score explanations (P2) — shipped in `#82`
 
-**Blocked on**: `contracts/score-explanation.md` sign-off (T005).
+**Was blocked on**: `contracts/score-explanation.md` sign-off (T005). Built against the
+already-drafted contract per the owner's call on `#82`: build now, hold the PR for the
+copy sign-off before merge rather than waiting on sign-off before starting.
 
-- [ ] T048 [US4] Give multi-select chip groups an affordance beyond active-state colour, so
-  an inactive multi-select is distinguishable from an inactive single-select (FR-020, SC-008)
-- [ ] T049 [US4] Confirm multi-select result sets combine rather than replace, consistent
-  with the affordance shown (FR-021)
-- [ ] T050 [US4] Render `complexity` and `injury_risk` for the first time — neither appears
+- [x] T048 [US4] Give multi-select chip groups an affordance beyond active-state colour, so
+  an inactive multi-select is distinguishable from an inactive single-select (FR-020, SC-008) —
+  a checkbox glyph (`Square`/`SquareCheck`) on type-tag and muscle-group chips, present
+  whether or not the chip is active
+- [x] T049 [US4] Confirm multi-select result sets combine rather than replace, consistent
+  with the affordance shown (FR-021) — already true in `PosesClient`'s `.every(...)`
+  filters; `data-multiselect` now makes the behaviour a queryable attribute per chip
+- [x] T050 [US4] Render `complexity` and `injury_risk` for the first time — neither appears
   in the UI today, only as sort options and two max sliders. `complexity` unconditionally
   (Tier-1); `injury_risk` behind a `!= null` guard (Tier-2, `plan.md` decision 1), so today's
-  67/67 coverage does not become load-bearing
-- [ ] T051 [US4] Add the in-place explanation from `contracts/score-explanation.md`
+  67/67 coverage does not become load-bearing — `PoseCard.tsx`
+- [x] T051 [US4] Add the in-place explanation from `contracts/score-explanation.md`
   (FR-022, FR-023). It must not claim a computation: these are authored integers, and the
-  friction engine never reads either field
-- [ ] T052 [US4] State which constraints produced a zero-result filter combination (FR-024)
-- [ ] T053 [US4] Make clear-all reachable from the top level whenever any filter is active,
-  independent of the advanced panel's state (FR-025)
-- [ ] T054 [P] [US4] Test SC-009 mechanically: every rendered score node has an adjacent
-  explanation trigger, so the ratio cannot silently drop below 100%
-- [ ] T055 [P] [US4] Copy test rejecting "calculated", "derived", "computed", "the engine"
-  in the explanation strings — what keeps the contract true after the PR that introduced it
-- [ ] T056 [P] [US4] Assert the 40px touch-target floor on every filter chip (FR-026)
+  friction engine never reads either field — `src/app/poses/score-explanation.ts`, copy
+  verbatim from the contract, still awaiting owner sign-off (see CLAUDE.md)
+- [x] T052 [US4] State which constraints produced a zero-result filter combination (FR-024)
+- [x] T053 [US4] Make clear-all reachable from the top level whenever any filter is active,
+  independent of the advanced panel's state (FR-025) — already true; unchanged
+- [x] T054 [P] [US4] Test SC-009 mechanically: every rendered score node has an adjacent
+  explanation trigger, so the ratio cannot silently drop below 100% —
+  `tests/unit/poses/score-explanation.test.tsx`
+- [x] T055 [P] [US4] Copy test rejecting "calculated", "derived", "computed", "the engine"
+  in the explanation strings — what keeps the contract true after the PR that introduced it —
+  `tests/unit/poses/score-explanation.test.tsx` (negation-aware: the contract's own
+  compliant copy says "not calculated" and "not derived from the sequencing engine")
+- [x] T056 [P] [US4] Assert the 40px touch-target floor on every filter chip (FR-026) —
+  `tests/unit/poses/filter-chip-touch-target.test.tsx`; fixed the active-branch element/NS
+  chips that previously dropped `kk-chip` (and its sizing) entirely on activation
 
 ---
 
