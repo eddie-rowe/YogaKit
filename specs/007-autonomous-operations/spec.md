@@ -328,6 +328,15 @@ security policy on an additive-safe branch and confirming the check refuses it.
   validator, row-level security, or the Daily Sadhana surface MUST carry the
   constitution-verification note that governance already requires — including pull
   requests the loop opens.
+- **FR-039**: For a `feat:` issue, the build routine MUST validate against the pull
+  request's own preview deployment, resolved by SHA, not a static environment URL that
+  cannot contain the change under test. If the deployed environment gates access (SSO,
+  deployment protection, or application auth), the routine MUST clear that gate through a
+  documented, credential-based path before treating the flow as unreachable — a gate the
+  loop never attempts to clear MUST NOT be reported as "deferred"; it is unresolved
+  capability, and the environment setup responsible for providing that capability MUST be
+  committed to the repo as the source of record, not held only in an external settings
+  field.
 
 ### Key Entities *(include if feature involves data)*
 
