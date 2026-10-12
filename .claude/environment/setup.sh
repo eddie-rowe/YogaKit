@@ -5,7 +5,9 @@
 # This is SELF-CONTAINED on purpose: paste this entire file into the "Setup
 # script" field in the environment settings. Do NOT point the env at the repo
 # path — pasting makes it survive the repo being wiped or re-cloned. Keep this
-# repo copy in sync as the source of record.
+# repo copy in sync as the source of record — and re-paste it into the
+# environment every time this file changes; the environment holds a copy, not
+# a reference, so an edit here has no effect until it is pasted again.
 #
 # Design rule (learned from the July 2026 outages): ONLY `npm ci` may fail the
 # setup. Every other step is best-effort and must never exit non-zero — a single
@@ -41,7 +43,7 @@ if [ -z "$APP_DIR" ] || [ ! -d "$APP_DIR" ]; then
   ls -la "$CWD" >&2
   exit 1
 fi
-REPO_ROOT="${APP_DIR%/YogaKit}"
+REPO_ROOT="$(cd "$APP_DIR" && git rev-parse --show-toplevel 2>/dev/null || echo "$APP_DIR")"
 echo "==> Found app directory: $APP_DIR"
 
 # --- CRITICAL: app dependencies (the ONLY step allowed to fail setup) ------
@@ -125,7 +127,7 @@ fi
 echo "$PUP_OK" > "$REPO_ROOT/.datadog-cli-available" 2>/dev/null || true
 
 echo "==> Checking env vars (WARN only — never fatal)"
-# App-login vars: routines/skills use the DDOG_SYNTHETIC_* names; TESTING_* are aliases.
+# App-login vars: routines/skills use the TESTING_* names; DDOG_SYNTHETIC_* are aliases.
 [ -n "${TESTING_URL:-}" ] && echo "   OK: TESTING_URL set" \
   || echo "   WARNING: TESTING_URL unset — falls back to the issue's own PR preview, resolved via the GitHub Deployments API"
 [ -n "${DDOG_SYNTHETIC_TESTING_EMAIL:-}${TESTING_EMAIL:-}" ] \
@@ -138,10 +140,11 @@ echo "==> Checking env vars (WARN only — never fatal)"
   || echo "   WARNING: VERCEL_AUTOMATION_BYPASS_SECRET unset — PR preview deploys are behind Vercel SSO and unreachable"
 # Dedicated Supabase test account for auth-gated browser validation. Preview
 # deploys share the PRODUCTION Supabase project (branching is off), so this
-# must be a clearly-named account, never a human's.
-[ -n "${TESTING_SUPABASE_EMAIL:-}" ] \
-  && echo "   OK: TESTING_SUPABASE_EMAIL set — auth-gated routes can be session-minted via Supabase admin generateLink" \
-  || echo "   WARNING: TESTING_SUPABASE_EMAIL unset — auth-gated browser validation will skip"
+# must be a clearly-named account, never a human's. Account provisioned
+# 2026-10 (007 T050 / FR-039): synthetics-tester@gmail.com.
+[ -n "${TESTING_EMAIL:-}${DDOG_SYNTHETIC_TESTING_EMAIL:-}" ] && [ -n "${TESTING_PASSWORD:-}${DDOG_SYNTHETIC_TESTING_PASSWORD:-}" ] \
+  && echo "   OK: TESTING_EMAIL/TESTING_PASSWORD set — auth-gated routes can be session-minted via signInWithPassword" \
+  || echo "   WARNING: TESTING_EMAIL/TESTING_PASSWORD unset — auth-gated browser validation will skip"
 # Gmail OAuth self-heal (autodev /reconnect-oauth, script-based, no browser).
 gmail_ready=1
 for v in GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET ENCRYPTION_KEY NEXT_PUBLIC_SUPABASE_URL SUPABASE_SECRET_KEY; do
