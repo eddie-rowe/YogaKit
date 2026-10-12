@@ -239,9 +239,16 @@ MCP-native lifecycle (no `/tools:02_development:up`, no Docker):
 
       Check `cat .gh-available` first, the way step 5 checks
       `.playwright-available`. A `0` means `gh` is missing or its token is
-      invalid — both observed 2026-10-12, as "gh is unavailable" and as "token
-      in `GH_TOKEN` is invalid". Either is an **environment fault to report**,
-      not a cue to scrape the preview URL out of the `vercel[bot]` PR comment.
+      invalid, and is an **environment fault to report** — not a cue to scrape
+      the preview URL out of the `vercel[bot]` PR comment.
+
+      **Read the flag; never restate a capability claim from this file as an
+      observation.** A 2026-10-12 run reported "`gh` is unavailable" having
+      copied the phrase from an earlier note here without testing it — `gh api`
+      worked in that session, so a resolvable preview was reported as
+      unresolvable and `feat:` PRs were held for nothing (corrected in
+      `67abba1`). A note in a spec describes what was once true somewhere; only
+      the flag and a live command describe this session.
       The GitHub MCP exposes no deployments or deployment-statuses tool, so
       there is no first-party substitute; a scraped URL is not tied to the head
       SHA and can silently validate a stale build.

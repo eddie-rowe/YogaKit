@@ -160,8 +160,13 @@ echo "==> [best-effort] Installing GitHub CLI (gh)"
 # autodev needs `gh` for two things the GitHub MCP cannot do: resolve a PR's own
 # preview deployment via `gh api repos/.../deployments` + `/statuses` (the MCP
 # exposes no deployments tool), and read commit statuses tied to a head SHA.
-# The 2026-10-12 run reported "gh is unavailable" — this script never installed
-# it, so the spec and the environment disagreed about what existed.
+#
+# The image has shipped `gh` in practice (confirmed working 2026-10-12, see
+# 67abba1), so this block is usually a no-op that reports "already present".
+# It is here so the capability is guaranteed rather than inherited, and more
+# importantly so `.gh-available` exists: a run that reads a flag cannot invent
+# a capability claim, which is exactly what happened on 2026-10-12 when a sweep
+# reported `gh` unavailable without testing it and held PRs for nothing.
 GH_OK=0
 if command -v gh >/dev/null 2>&1; then
   GH_OK=1; echo "   gh already present ($(gh --version 2>/dev/null | head -1 || echo installed))"
