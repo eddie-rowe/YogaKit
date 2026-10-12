@@ -80,21 +80,35 @@ if npx playwright install --with-deps chromium 2>&1; then
   # 2026-10-12. Point it at the chromium binary `playwright` (a transitive dep
   # of `@playwright/test`, so this resolves post-`npm ci` with no extra
   # install) already knows how to find, via the CLI's own default config path.
-  CHROMIUM_PATH="$(node -e "console.log(require('playwright').chromium.executablePath())" 2>/dev/null || true)"
+  CHROMIUM_PATH="$(cd "$APP_DIR" && node -e "console.log(require('playwright').chromium.executablePath())" 2>/dev/null || true)"
+  # Fallback when the node resolve fails (e.g. PLAYWRIGHT_BROWSERS_PATH points at a
+  # pre-baked image dir the local `playwright` copy doesn't know about). Observed
+  # 2026-10-12: this image ships Chromium under /opt/pw-browsers, not ~/.cache.
+  if [ -z "$CHROMIUM_PATH" ] || [ ! -x "$CHROMIUM_PATH" ]; then
+    CHROMIUM_PATH="$(find "${PLAYWRIGHT_BROWSERS_PATH:-/opt/pw-browsers}" "$HOME/.cache/ms-playwright" \
+      -maxdepth 3 -type f \( -name headless_shell -o -name chrome \) 2>/dev/null | head -1 || true)"
+  fi
   if [ -n "$CHROMIUM_PATH" ] && [ -x "$CHROMIUM_PATH" ]; then
-    mkdir -p "$APP_DIR/.playwright"
-    cat > "$APP_DIR/.playwright/cli.config.json" <<JSON
+    # --config defaults to `.playwright/cli.config.json` resolved against the CWD,
+    # and a routine's CWD is not guaranteed to be APP_DIR, so write both locations.
+    for d in "$APP_DIR" "$REPO_ROOT"; do
+      mkdir -p "$d/.playwright" 2>/dev/null || continue
+      cat > "$d/.playwright/cli.config.json" <<JSON
 {"browser":{"browserName":"chromium","launchOptions":{"executablePath":"$CHROMIUM_PATH","headless":true,"args":["--no-sandbox"]}}}
 JSON
+    done
     echo "   OK: wrote .playwright/cli.config.json -> $CHROMIUM_PATH"
   else
-    echo "   WARNING: could not resolve chromium executablePath — playwright-cli will try its 'chrome' channel default and likely fail"
+    echo "   WARNING: could not resolve a chromium executable — playwright-cli will try its 'chrome' channel default and fail with \"Chromium distribution 'chrome' is not found\""
   fi
-  if { playwright-cli open "about:blank" && playwright-cli close; } >/dev/null 2>&1 \
-    || { npx playwright-cli open "about:blank" && npx playwright-cli close; } >/dev/null 2>&1; then
+  CFG="$APP_DIR/.playwright/cli.config.json"
+  if { playwright-cli open --config="$CFG" "about:blank" && playwright-cli close; } >/dev/null 2>&1 \
+    || { npx playwright-cli open --config="$CFG" "about:blank" && npx playwright-cli close; } >/dev/null 2>&1; then
     PLAYWRIGHT_OK=1; echo "   OK: playwright-cli launched a browser"
   else
     echo "   WARNING: playwright-cli could not launch — browser validation deferred"
+    playwright-cli open --config="$CFG" "about:blank" 2>&1 | head -5 | sed 's/^/     /' || true
+    playwright-cli close >/dev/null 2>&1 || true
   fi
 else
   echo "   WARNING: Chromium/OS-dep install failed — browser validation deferred (does NOT block routines)"

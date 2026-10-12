@@ -169,8 +169,25 @@ MCP-native lifecycle (no `/tools:02_development:up`, no Docker):
 5. **Browser-validate with `playwright-cli`.** For a `feat:` issue this is
    **REQUIRED, not deferrable**. First check `cat .playwright-available` at
    the repo root (written by the environment setup script) — `0` or missing
-   means the CLI never launched this session; go straight to the headless
-   fallback below rather than spending time on steps 1-4. `playwright-cli`'s
+   means the CLI never launched this session.
+
+   A `0` here is an **environment fault to report, not a condition to work
+   around**. It means `setup.sh` in the environment settings is stale or its
+   chromium probe failed, and the only fix is owner-side (re-paste the file).
+   Say so explicitly in the run summary — "`.playwright-available` = 0, env
+   setup script stale, browser validation skipped" — so it shows up as a
+   blocked environment rather than as a routine that chose to skip. Then use
+   the headless fallback at the end of this step rather than spending time on
+   substeps 1-4. Two consecutive runs (2026-10-11, 2026-10-12) held `feat:`
+   PRs for exactly this and the handoffs did not make the cause legible.
+
+   `playwright-cli` resolves `--config` against the CWD, defaulting to
+   `.playwright/cli.config.json`; `setup.sh` writes that file pointing at the
+   real chromium `executablePath`. `--browser` is **not** a substitute — it
+   accepts only `chrome`, `firefox`, `webkit`, `msedge`, and the bundled
+   chromium is reachable by config alone. Without the config the CLI tries its
+   `chrome` channel default and fails with "Chromium distribution 'chrome' is
+   not found". `playwright-cli`'s
    subcommand set differs by version (Homebrew's local build vs. the
    `@playwright/cli` npm package `setup.sh` installs in the cloud) — if a
    command below is unrecognized, check `playwright-cli --help` for the
@@ -185,6 +202,14 @@ MCP-native lifecycle (no `/tools:02_development:up`, no Docker):
       PREVIEW_URL=$(gh api "repos/eddie-rowe/YogaKit/deployments/$D/statuses" --jq '.[0].environment_url')
       ```
       Fall back to `TESTING_URL` only if no deployment exists for the head SHA.
+
+      If `gh` is unauthenticated (`token in GH_TOKEN is invalid`, observed
+      2026-10-12), that is an **environment fault to report**, same as a `0`
+      in `.playwright-available` — not a cue to scrape the preview URL out of
+      the `vercel[bot]` PR comment. The GitHub MCP exposes no deployments or
+      deployment-statuses tool, so there is no first-party substitute; a
+      scraped URL is not tied to the head SHA and can silently validate a
+      stale build.
    2. **Clear Vercel Deployment Protection** — the first navigation to
       `PREVIEW_URL` must append
       `?x-vercel-protection-bypass=$VERCEL_AUTOMATION_BYPASS_SECRET&x-vercel-set-bypass-cookie=true`,
@@ -198,42 +223,66 @@ MCP-native lifecycle (no `/tools:02_development:up`, no Docker):
       project (branching is off) — this account is dedicated and
       unmistakably named for exactly that reason.
 
-      Supabase admin `generateLink`, **type `recovery`**, against
-      `TESTING_EMAIL` → feed the resulting `hashed_token` to
-      `/auth/confirm?token_hash=...&type=recovery&next=<route>`
-      (`src/app/auth/confirm/route.ts`), which mints the session
-      server-side via `verifyOtp`. Use `recovery`, not `email` — that
-      route's `KNOWN_TYPES` is `['email', 'recovery', 'invite']`, and
-      `generateLink`'s magic-link type is `magiclink`, which is not in
-      that list and will redirect to `error=link_expired`. `recovery` is
-      the one `generateLink` type that is also in `KNOWN_TYPES`.
-      ```bash
-      TOKEN=$(curl -s -X POST "$NEXT_PUBLIC_SUPABASE_URL/auth/v1/admin/generate_link" \
-        -H "apikey: $SUPABASE_SECRET_KEY" -H "Authorization: Bearer $SUPABASE_SECRET_KEY" \
-        -H "Content-Type: application/json" \
-        -d "{\"type\":\"recovery\",\"email\":\"$TESTING_EMAIL\"}" | jq -r '.hashed_token')
-      playwright-cli goto "$PREVIEW_URL/auth/confirm?token_hash=$TOKEN&type=recovery&next=<route>"
-      ```
-
-      **Fallback** if `generateLink` is unavailable: mint the session
-      directly in the page context. The app has no password field in its
-      UI (`SignInClient.tsx` only offers Google OAuth and
-      `signInWithOtp`), so use `playwright-cli eval` (page-context JS, not
-      `run-code`, which runs Node-side Playwright API code and cannot
-      reach `document.cookie`):
+      **Primary — page-context `signInWithPassword`.** Proven 2026-10-12
+      against PR `#129`'s preview: returned `ok`, and `/settings` rendered
+      authenticated after a reload. The app has no password field in its UI
+      (`SignInClient.tsx` only offers Google OAuth and `signInWithOtp`), so
+      drive the SDK directly with `playwright-cli eval` — page-context JS,
+      **not `run-code`**, which invokes `async page => …` Node-side with a
+      Playwright handle and cannot reach `document.cookie`. Interpolate the
+      env vars in the shell so no secret is echoed:
       ```bash
       playwright-cli eval "async () => {
         const { createBrowserClient } = await import('https://esm.sh/@supabase/ssr@0.12.5')
-        const sb = createBrowserClient('<NEXT_PUBLIC_SUPABASE_URL>', '<NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY>')
-        const { error } = await sb.auth.signInWithPassword({ email: '<TESTING_EMAIL>', password: '<TESTING_PASSWORD>' })
+        const sb = createBrowserClient('$NEXT_PUBLIC_SUPABASE_URL', '$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY')
+        const { error } = await sb.auth.signInWithPassword({ email: '$TESTING_EMAIL', password: '$TESTING_PASSWORD' })
         return error ? error.message : 'ok'
       }"
       playwright-cli reload
       ```
       This works because `src/lib/supabase/client.ts` uses the same
-      `createBrowserClient` (`@supabase/ssr`), which stores the session in
-      a `document.cookie` entry the server client reads — an
-      independently-loaded copy writes the same cookie.
+      `createBrowserClient` (`@supabase/ssr`), which stores the session in a
+      `document.cookie` entry the server client reads — an independently
+      loaded copy writes the same cookie.
+
+      **Verify the identity, every run.** The authenticated page must render
+      `syntheticstesting@gmail.com`. Any other address means the environment's
+      `TESTING_EMAIL` has drifted from the one account that is supposed to
+      exist — report it and stop, rather than validating as an identity nobody
+      intended. This assertion is here because a 2026-10-12 run rendered the
+      retired `synthetics-tester@gmail.com` and only caught it by chance: the
+      cloud environment keeps its own env-var store, so a credential change in
+      `.env.local` does not propagate there.
+
+      **Fallback — Supabase admin `generateLink`, type `recovery`.** Feed the
+      resulting `hashed_token` to
+      `/auth/confirm?token_hash=...&type=recovery&next=<route>`
+      (`src/app/auth/confirm/route.ts`), which mints the session server-side
+      via `verifyOtp`. Use `recovery`, not `email` — that route's
+      `KNOWN_TYPES` is `['email', 'recovery', 'invite']`, and `generateLink`'s
+      magic-link type is `magiclink`, which is not in that list and will
+      redirect to `error=link_expired`. `recovery` is the one `generateLink`
+      type that is also in `KNOWN_TYPES`.
+
+      This path is **unproven**: on 2026-10-12 it returned a null
+      `hashed_token` against a live preview, for reasons still unexplained
+      (the run discarded the response body). So capture the diagnostic when it
+      fires, and never print the token itself:
+      ```bash
+      curl -s -w '\nHTTP %{http_code}\n' -X POST "$NEXT_PUBLIC_SUPABASE_URL/auth/v1/admin/generate_link" \
+        -H "apikey: $SUPABASE_SECRET_KEY" -H "Authorization: Bearer $SUPABASE_SECRET_KEY" \
+        -H "Content-Type: application/json" \
+        -d "{\"type\":\"recovery\",\"email\":\"$TESTING_EMAIL\"}" \
+        | jq -r 'if .hashed_token then "TOKEN_PRESENT" else "NO_TOKEN code=\(.code // .error_code // "?") msg=\(.msg // .error_description // "?")" end'
+      ```
+      Report the HTTP status and the `code`/`msg` in the run summary. That is
+      the only way the null-token cause gets explained.
+
+      **Fall through on any outcome other than an authenticated page** — a
+      `signInWithPassword` return other than `ok`, a null token, a non-2xx, or
+      a landing on `/auth/sign-in`. Do not read a failure narrowly as "the
+      mechanism is available, so the fallback does not apply"; the test is
+      whether a session exists, not whether an endpoint responded.
    4. Exercise the affected flow against the issue's Acceptance Criteria and
       attach snapshot/screenshot evidence to the PR body.
 

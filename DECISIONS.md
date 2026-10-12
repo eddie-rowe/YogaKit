@@ -1128,3 +1128,58 @@ in `.env.local` now both point at `syntheticstesting@gmail.com`.
 **Why:** One synthetic test identity, not two with overlapping purpose. A second
 account would have meant autodev authenticating as a different "user" than the one
 Datadog monitors already attribute synthetic/alert activity to, with no benefit.
+
+## 2026-10-12 — Correction: the duplicate account was never deleted, and credentials live in two stores
+
+**Context:** The entry above states the duplicate `synthetics-tester@gmail.com` was
+deleted. It was not. The `DELETE /auth/v1/admin/users/<id>` call was refused by the
+Claude Code auto-mode classifier and no alternative was attempted, so the account
+still exists. The entry was written ahead of the action and never corrected.
+
+A later smoke run then rendered `synthetics-tester@gmail.com` on an authenticated
+`/settings` page in the cloud environment — which surfaced the more useful finding:
+**the cloud environment keeps its own env-var store**, independent of `.env.local`.
+Pointing `TESTING_EMAIL` at the consolidated address locally did nothing to the
+environment the routines actually run in.
+
+**Decision:** Treat every credential change as a three-place operation — the Supabase
+account, `.env.local`, and the cloud environment's env-var store — and verify the
+third by assertion rather than assumption. `autodev.md` step 5.3 now requires the
+authenticated page to render `syntheticstesting@gmail.com` and to stop if it does not.
+The duplicate account's deletion is deferred and must happen *after* the environment
+variable is repointed, not before: until then that account is the only identity the
+cloud routine can authenticate as, so deleting it first would break the one working
+session-mint path.
+
+**Why:** The original entry's claim was unverifiable from the repo, and the drift it
+hid cost two routine runs. An assertion in the routine spec catches the class of bug;
+a corrected log entry only catches this instance.
+
+## 2026-10-12 — `signInWithPassword` becomes the primary session-mint path; `generateLink` demoted to fallback
+
+**Context:** The 2026-10-12 entry above made `generateLink` type `recovery` →
+`/auth/confirm` the primary mechanism and page-context `signInWithPassword` the
+fallback, on the reasoning that the former keeps the password server-side. First live
+exercise, against PR `#129`'s preview: `generateLink` returned a null `hashed_token`,
+so `/auth/confirm` landed on `/auth/sign-in?error=link_expired`. The cause is still
+unexplained — the run discarded the response body and a retry to capture it was
+refused as credential materialization. The `signInWithPassword` fallback returned `ok`
+and `/settings` rendered authenticated.
+
+**Decision:** Swap them. `playwright-cli eval` + `createBrowserClient` +
+`signInWithPassword` is primary; `generateLink` type `recovery` is the fallback, marked
+unproven, and must now capture the HTTP status and the error `code`/`msg` when it
+fires. The fallback trigger is restated as *any* outcome other than an authenticated
+page — the previous wording, "if `generateLink` is unavailable", would not have fired
+on a null token, which is how a responding-but-useless endpoint could have blocked the
+whole gate.
+
+**Why:** Nothing unproven belongs on the critical path of a `feat:` PR gate. The
+reasoning for the old order was sound in the abstract and wrong in fact, and the cost
+of being wrong — `feat:` PRs held indefinitely — is much higher than the cost accepted
+here.
+
+**Accepted cost:** `TESTING_PASSWORD` now enters page context and `playwright-cli`
+snapshot files (`.playwright-cli/`, gitignored but written to disk) on every validated
+PR. This raises the priority of rotating it, which must be done in all three places
+named in the entry above.
