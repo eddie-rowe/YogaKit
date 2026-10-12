@@ -267,21 +267,30 @@ MCP-native lifecycle (no `/tools:02_development:up`, no Docker):
 
       **Primary — page-context `signInWithPassword`.** Proven 2026-10-12
       against PR `#129`'s preview: returned `ok`, and `/settings` rendered
-      authenticated after a reload. The app has no password field in its UI
-      (`SignInClient.tsx` only offers Google OAuth and `signInWithOtp`), so
-      drive the SDK directly with `playwright-cli eval` — page-context JS,
-      **not `run-code`**, which invokes `async page => …` Node-side with a
-      Playwright handle and cannot reach `document.cookie`. Interpolate the
-      env vars in the shell so no secret is echoed:
+      `syntheticstesting@gmail.com` after a reload. The app has no password
+      field in its UI (`SignInClient.tsx` only offers Google OAuth and
+      `signInWithOtp`), so drive the SDK directly with `playwright-cli eval` —
+      page-context JS, **not `run-code`**, which invokes `async page => …`
+      Node-side with a Playwright handle and cannot reach `document.cookie`.
+
+      **`eval` echoes the script it evaluates back into its own output.** On
+      2026-10-12 that printed `TESTING_PASSWORD` into a session transcript.
+      Shell interpolation is not enough on its own — the interpolated script is
+      what gets echoed. Always redirect the output and read back only the
+      result line:
       ```bash
       playwright-cli eval "async () => {
         const { createBrowserClient } = await import('https://esm.sh/@supabase/ssr@0.12.5')
         const sb = createBrowserClient('$NEXT_PUBLIC_SUPABASE_URL', '$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY')
         const { error } = await sb.auth.signInWithPassword({ email: '$TESTING_EMAIL', password: '$TESTING_PASSWORD' })
         return error ? error.message : 'ok'
-      }"
+      }" > /tmp/mint.log 2>&1
+      grep -A2 '### Result' /tmp/mint.log    # expect: ok
+      rm -f /tmp/mint.log
       playwright-cli reload
       ```
+      Never print the raw output of an `eval` that carries a credential, and
+      never paste that script into a PR comment or a handoff as evidence.
       This works because `src/lib/supabase/client.ts` uses the same
       `createBrowserClient` (`@supabase/ssr`), which stores the session in a
       `document.cookie` entry the server client reads — an independently
@@ -327,6 +336,14 @@ MCP-native lifecycle (no `/tools:02_development:up`, no Docker):
       whether a session exists, not whether an endpoint responded.
    4. Exercise the affected flow against the issue's Acceptance Criteria and
       attach snapshot/screenshot evidence to the PR body.
+
+   **A PR with no rendered surface is not browser-blocked.** Before holding a
+   `feat:` PR for validation, check whether it actually renders anything: a
+   pure module, a hook not yet wired into a component, or a test-only change
+   has nothing for a browser to assert. Say "no rendered surface" and treat the
+   PR as validated. On 2026-10-12 `#154` and `#155` were held three sweeps for
+   missing browser validation and then found to have no UI surface at all — the
+   hold was never applicable.
 
    If the browser can't launch, or no preview/`TESTING_URL` resolves, or the
    protection bypass or test account is missing, fall back to a headless

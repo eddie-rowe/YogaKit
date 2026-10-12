@@ -1225,3 +1225,40 @@ you cannot access this content". Reads work, and so does `git push`.
 the work from `#91`-`#94` does not re-enter the queue on closure alone. `#61` spans
 cohort UI and Stripe billing, owner-gated by FR-008 either way, so it wants
 splitting before grooming — a scoping decision, deliberately left to the owner.
+
+## 2026-10-12 — Correction and addendum: the fixture works, `eval` leaks the password, and nothing was browser-blocked
+
+**Context:** Two autodev follow-up commits (`67abba1`, `3fd8ff7`) landed while the
+drain above was being written, and between them they overturn three claims made
+earlier the same day.
+
+**1. The browser-validation fixture works end to end.** `#129` was validated
+against its own preview: session minted on the primary `signInWithPassword` path,
+`/settings` rendered `syntheticstesting@gmail.com`, seven index entries resolved,
+screenshot at `docs/planning/retro/2026-10-12-pr129-settings.png`. Wall D is
+closed. The `generateLink` null-token cause remains unexplained, but it is now the
+fallback and no longer on the critical path.
+
+**2. `playwright-cli eval` echoes the script it evaluates**, which printed
+`TESTING_PASSWORD` into a session transcript. When the primacy swap was decided,
+the accepted cost was recorded as "page context and snapshot files on disk". That
+understated it — the transcript is a wider surface than the disk. `autodev.md` now
+redirects `eval` output and greps for `### Result` rather than printing it, and
+forbids pasting a credential-carrying `eval` into a PR comment or handoff.
+`TESTING_PASSWORD` needs rotating in all three places named in the entry above.
+
+**3. Nothing was actually browser-blocked.** `#154` and `#155` were held for three
+sweeps on missing browser validation and then found to have no rendered surface at
+all — `#154`'s hook is not wired into `SettingsClient` yet and `#155` is test-only.
+So of the thirteen held PRs, eleven were stale and two were never eligible for the
+hold. Zero were blocked by the thing every handoff named as the blocker.
+`autodev.md` now says plainly that a PR with no rendered surface is not
+browser-blocked.
+
+**Why this matters more than the individual fixes:** "browser validation could not
+run" was true once, became a habit, and then became the stated reason for holds it
+did not explain — including one PR that had already been validated and two that had
+nothing to validate. A `0` in a flag file and a live command describe this session;
+a sentence in a spec describes what was once true somewhere. `autodev.md` now says
+that too, after a run copied its "gh is unavailable" note and reported it as an
+observation without testing it.
