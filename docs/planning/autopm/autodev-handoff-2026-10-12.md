@@ -42,3 +42,12 @@
 ## What /autoretro should capture
 - No-UI 006 tasks (T027/T028/T040/T045) are now exhausted; remaining 006 work is owner-blocked on #129.
 - Trivial: @ts-expect-error on the untyped .mjs import was unnecessary (allowJs).
+
+## Second sweep (scheduled 09:00 slot, later firing)
+
+**Issues worked:** none — no new build.
+**PRs merged:** 0. **Dependabot:** none open.
+**Why no work:** every open `ready-for-dev` auto-ok issue (#106 #107 #127 #131 #132) already has an open PR (#109 #122 #129 #155 #154) held `auto/needs-human` because feat browser validation could not run (no preview session; not merged unverified). #108/#111/#82/#83/#47/#97 are `auto/needs-human`. #101 needs a local Supabase stack (no `supabase` CLI here; docker only) and touches PR #90's RLS branch. #96 is a live `datadog:apply` (not a PR build), left for the owner.
+**Environment:** `.playwright-available` = 1, but `gh` is unavailable, so the preview deployment URL could not be resolved from the Deployments API; no MCP substitute exists.
+**Gate:** not run (no code changed).
+**CI failures:** none observed.
