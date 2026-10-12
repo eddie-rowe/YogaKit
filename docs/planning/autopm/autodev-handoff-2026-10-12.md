@@ -12,3 +12,17 @@
 
 ## What /autoretro should capture
 - 16th day with no browser validation for `feat:` PRs; #129/#109/#122 stay held, which also blocks #127/#131/#132/#106/#107. Owner action (merge or validate those PRs) unblocks the queue.
+
+## Addendum — second sweep (scheduled run)
+
+**Issues worked:** #132 (T019), #131 (T020) — both `auto-ok`, no migration/RLS/auth/billing.
+**PRs opened:** #154 (#132, `autodev/132-role-change-next-load`), #155 (#131, `autodev/131-settings-prefs-offline`) — both labeled `ready-for-review` + `auto/needs-human`, not merged.
+**Gate results:** tsc / lint:copy / validate:poses / lint:telemetry / test:coverage (100%) green on both.
+**Browser validation:** not performed (auth-gated `/settings`; no preview session) — feat PRs are not auto-merged unverified.
+**Dependabot:** none open. **Prior-run PRs (#109/#122/#129):** unchanged, still `auto/needs-human`.
+**Skipped:** #127 (PR #129 open), #106/#107 (PRs open), #101/#96 (need live Supabase/Datadog credentials), #47/#82/#83/#97/#108/#111 (`auto/needs-human`).
+
+## What /autoretro should capture
+- #131 audit found no gap; its tests are confirmations (no Red phase applies).
+- #132's hook is not wired into `SettingsClient` until #129 merges.
+- Browser-validation gap continues to block every feat: PR from auto-merging.
