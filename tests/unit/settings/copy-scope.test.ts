@@ -2,7 +2,6 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 
-// @ts-expect-error — untyped .mjs module
 import { SCAN_DIRS, compileRules, lintSource } from '../../../scripts/lib/copy-lint.mjs'
 
 const root = path.join(__dirname, '../../..')
