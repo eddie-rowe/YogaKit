@@ -33,7 +33,7 @@
 
 **Run time:** ~10:30 UTC (third sweep of the day)
 **Issues worked:** #156, #157, #158 (all auto-ok, parallel-safe)
-**PRs opened:** #159 (#156), #160 (#157), #161 (#158) — CI still running at end of window; left for next sweep Step 1a (not labelled dev-failure: nothing failed)
+**PRs opened:** #159 (#156), #160 (#157), #161 (#158) — CI still running at end of window; CI went green within the window; all three squash-merged (#159 #160 #161)
 **Prior PRs:** #129/#154/#155/#122/#109/#105/#99/#98 are CI-green or held auto/needs-human (feat without browser validation / owner copy sign-off); left as is.
 **Dependabot:** none open.
 **Gate results:** tsc / lint:copy / validate:poses / lint:telemetry / test:coverage green on all three (684 tests).
