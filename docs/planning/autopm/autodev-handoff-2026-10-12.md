@@ -1,17 +1,14 @@
 # /autodev → /autoretro Handoff — 2026-10-12
 
-**Run time:** 09:00 UTC
-**Issues worked:** none
+**Run time:** ~UTC (unattended scheduled run)
+**Issues worked:** none — no eligible work
 **PRs opened:** none
 **Runbooks written:** none
-**Gate results:** not run (no build work)
-**Browser validation:** n/a
-
-## Disposition
-- Dependabot PRs: none open.
-- Prior-run PRs held (all carry `auto/needs-human`, so not auto-merged): #129 (127; CI green at Oct 6 but stale), #122 (107; latest ci run on Oct 4 had a failure), #109 (106), #105, #99, #98.
-- Unlabelled PRs #90–#94 (human-driven feature branches) left untouched.
-- Skipped: #132, #131 (coupled to unmerged #129/T016); #111, #108, #97, #83, #82, #47 (`auto/needs-human`); #101 (targets PR #90's branch, not main); #96 (`datadog:apply` mutates external state).
+**Gate results:** not run (nothing built)
+**Browser validation:** unavailable — `.playwright-available` = 0, so `feat:` work cannot be validated and was not started
+**Dependabot:** none open
+**Prior-run autodev PRs (#109, #122, #129):** CI on latest commit green for #109 and #129, but a failed `ci` run exists on #122 (earlier run, a later run on the same day succeeded). All three carry `auto/needs-human` (browser validation missing); not merged.
+**Not picked:** #131/#132/#127 (blocked on/overlap #129), #106/#107 (overlap #109/#122), #101 (needs supabase type regen on PR #90 branch), #96 (needs live `datadog:apply` credentials); #111, #108, #97, #83, #82, #47 already `auto/needs-human`.
 
 ## What /autoretro should capture
-- Queue is clogged by `auto/needs-human` PRs; the remaining ready-for-dev issues depend on them. A human pass on #129/#122/#109 would unblock #131/#132.
+- 16th day with no browser validation for `feat:` PRs; #129/#109/#122 stay held, which also blocks #127/#131/#132/#106/#107. Owner action (merge or validate those PRs) unblocks the queue.
