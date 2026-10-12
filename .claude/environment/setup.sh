@@ -74,6 +74,22 @@ if npx playwright install --with-deps chromium 2>&1; then
   else
     echo "   WARNING: @playwright/cli global install failed — falling back to 'npx playwright-cli'"
   fi
+  # `playwright-cli open` defaults to the `chrome` channel (a separate Chrome
+  # for Testing distribution), not the vanilla `chromium` build the line above
+  # installs — "Chromium distribution 'chrome' is not found" confirmed live
+  # 2026-10-12. Point it at the chromium binary `playwright` (a transitive dep
+  # of `@playwright/test`, so this resolves post-`npm ci` with no extra
+  # install) already knows how to find, via the CLI's own default config path.
+  CHROMIUM_PATH="$(node -e "console.log(require('playwright').chromium.executablePath())" 2>/dev/null || true)"
+  if [ -n "$CHROMIUM_PATH" ] && [ -x "$CHROMIUM_PATH" ]; then
+    mkdir -p "$APP_DIR/.playwright"
+    cat > "$APP_DIR/.playwright/cli.config.json" <<JSON
+{"browser":{"browserName":"chromium","launchOptions":{"executablePath":"$CHROMIUM_PATH","headless":true,"args":["--no-sandbox"]}}}
+JSON
+    echo "   OK: wrote .playwright/cli.config.json -> $CHROMIUM_PATH"
+  else
+    echo "   WARNING: could not resolve chromium executablePath — playwright-cli will try its 'chrome' channel default and likely fail"
+  fi
   if { playwright-cli open "about:blank" && playwright-cli close; } >/dev/null 2>&1 \
     || { npx playwright-cli open "about:blank" && npx playwright-cli close; } >/dev/null 2>&1; then
     PLAYWRIGHT_OK=1; echo "   OK: playwright-cli launched a browser"
