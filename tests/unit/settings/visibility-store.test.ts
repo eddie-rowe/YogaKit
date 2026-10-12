@@ -1,0 +1,56 @@
+import { describe, expect, it, vi } from 'vitest'
+import { createVisibilityStore } from '@/lib/settings/visibility-store'
+
+describe('visibility store (FR-014, FR-016)', () => {
+  it('two subscribers stay in sync synchronously', () => {
+    const s = createVisibilityStore('shared')
+    const a = vi.fn()
+    const b = vi.fn()
+    s.subscribe(a)
+    s.subscribe(b)
+    s.requestRevoke()
+    expect(a).toHaveBeenCalledTimes(1)
+    expect(b).toHaveBeenCalledTimes(1)
+    expect(s.get()).toBe('pending-record')
+  })
+  it('unsubscribe stops notifications', () => {
+    const s = createVisibilityStore('shared')
+    const a = vi.fn()
+    const off = s.subscribe(a)
+    off()
+    s.requestRevoke()
+    expect(a).not.toHaveBeenCalled()
+  })
+  it('pending-record never reads as revoked until markRecorded', () => {
+    const s = createVisibilityStore('shared')
+    s.requestRevoke()
+    expect(s.get()).not.toBe('revoked')
+    s.markRecorded()
+    expect(s.get()).toBe('revoked')
+  })
+  it('markRecorded without a pending revoke is a no-op', () => {
+    const s = createVisibilityStore('shared')
+    const a = vi.fn()
+    s.subscribe(a)
+    s.markRecorded()
+    expect(s.get()).toBe('shared')
+    expect(a).not.toHaveBeenCalled()
+  })
+  it('idempotent set emits once', () => {
+    const s = createVisibilityStore('shared')
+    const a = vi.fn()
+    s.subscribe(a)
+    s.requestRevoke()
+    s.requestRevoke()
+    expect(a).toHaveBeenCalledTimes(1)
+  })
+  it('share restores shared and emits', () => {
+    const s = createVisibilityStore('revoked')
+    const a = vi.fn()
+    s.subscribe(a)
+    s.share()
+    s.share()
+    expect(s.get()).toBe('shared')
+    expect(a).toHaveBeenCalledTimes(1)
+  })
+})
