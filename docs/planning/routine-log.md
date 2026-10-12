@@ -104,3 +104,4 @@ YYYY-MM-DD HH:MM /autoobs [STATUS] — overall: [HEALTHY/DEGRADED/AT-RISK]; moni
 2026-10-12 10:00 /autodev [OK] — 0 PRs merged; 0 dependabot merged; 2 PRs opened held auto/needs-human (#154 #155); skipped 11; failed 0; handoff: docs/planning/autopm/autodev-handoff-2026-10-12.md
 2026-10-12 08:06 /autoobs [OK] — overall: DEGRADED; monitors: 13 ok / 2 alert (2 no-data); digest: docs/observation/autoobs/2026-10-12.md
 2026-10-12 11:00 /autopm [OK] — 3 new ready-for-dev auto-ok (#156, #157, #158); board: Needs Attention (owner-blocked, no stall, last merge #150 1d ago); scans: eslint clean, audit 0 vulns, no Dependabot; focus: 006 US2/US3/US4 no-UI; owner-digest #38 unchanged; handoff: docs/planning/autopm/autopm-handoff-2026-10-12.md
+2026-10-12 10:40 /autodev [OK] — 0 PRs merged (3 opened, CI pending: #159 #160 #161, next sweep merges); 0 dependabot merged; skipped 10 (needs-human/owner-blocked); failed 0; handoff: docs/planning/autopm/autodev-handoff-2026-10-12.md

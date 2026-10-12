@@ -26,3 +26,19 @@
 - #131 audit found no gap; its tests are confirmations (no Red phase applies).
 - #132's hook is not wired into `SettingsClient` until #129 merges.
 - Browser-validation gap continues to block every feat: PR from auto-merging.
+
+---
+
+## /autodev → /autoretro Handoff — 2026-10-12
+
+**Run time:** ~10:30 UTC (third sweep of the day)
+**Issues worked:** #156, #157, #158 (all auto-ok, parallel-safe)
+**PRs opened:** #159 (#156), #160 (#157), #161 (#158) — CI still running at end of window; left for next sweep Step 1a (not labelled dev-failure: nothing failed)
+**Prior PRs:** #129/#154/#155/#122/#109/#105/#99/#98 are CI-green or held auto/needs-human (feat without browser validation / owner copy sign-off); left as is.
+**Dependabot:** none open.
+**Gate results:** tsc / lint:copy / validate:poses / lint:telemetry / test:coverage green on all three (684 tests).
+**Browser validation:** N/A — pure modules and a test-only change.
+
+## What /autoretro should capture
+- No-UI 006 tasks (T027/T028/T040/T045) are now exhausted; remaining 006 work is owner-blocked on #129.
+- Trivial: @ts-expect-error on the untyped .mjs import was unnecessary (allowJs).
