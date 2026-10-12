@@ -5,7 +5,9 @@
 # This is SELF-CONTAINED on purpose: paste this entire file into the "Setup
 # script" field in the environment settings. Do NOT point the env at the repo
 # path — pasting makes it survive the repo being wiped or re-cloned. Keep this
-# repo copy in sync as the source of record.
+# repo copy in sync as the source of record — and re-paste it into the
+# environment every time this file changes; the environment holds a copy, not
+# a reference, so an edit here has no effect until it is pasted again.
 #
 # Design rule (learned from the July 2026 outages): ONLY `npm ci` may fail the
 # setup. Every other step is best-effort and must never exit non-zero — a single
@@ -41,7 +43,7 @@ if [ -z "$APP_DIR" ] || [ ! -d "$APP_DIR" ]; then
   ls -la "$CWD" >&2
   exit 1
 fi
-REPO_ROOT="${APP_DIR%/YogaKit}"
+REPO_ROOT="$(cd "$APP_DIR" && git rev-parse --show-toplevel 2>/dev/null || echo "$APP_DIR")"
 echo "==> Found app directory: $APP_DIR"
 
 # --- CRITICAL: app dependencies (the ONLY step allowed to fail setup) ------
