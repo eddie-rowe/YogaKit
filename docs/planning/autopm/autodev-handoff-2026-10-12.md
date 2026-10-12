@@ -51,3 +51,10 @@
 **Environment:** `.playwright-available` = 1. CORRECTION: an earlier version of this line said `gh` was unavailable. That was copied from autodev.md's note on a prior run and never tested; `gh api` (Deployments API, by SHA) works in this session, so preview URLs are resolvable. Browser validation of the held PRs was attempted afterwards (see below).
 **Gate:** not run (no code changed).
 **CI failures:** none observed.
+
+### Browser validation follow-up (same day, after the gh correction)
+- Preview URLs resolved via `gh api` Deployments (by branch head SHA) for all five held PRs; all deployments `success`.
+- **#129 (T016, SettingsClient): validated** on its preview. Session minted with the primary `signInWithPassword` path; page rendered `syntheticstesting@gmail.com`. 7 index entries = 7 sections, all anchors resolve, no conditional sections for a zero-org account, testids unchanged. Evidence comment posted on the PR; screenshot `docs/planning/retro/2026-10-12-pr129-settings.png`. Member/owner variants not browser-checkable (test account has no org). Stays `auto/needs-human`: head predates current main, merge needs owner approval.
+- #154 and #155: no rendered surface (hook not yet wired; test-only), so there is nothing to browser-validate.
+- #109 and #122 (compose): not attempted this session (need a signed-in drag/warning flow); still unvalidated.
+- **Incident:** `playwright-cli eval` echoes the evaluated script back into its output, which printed `TESTING_PASSWORD` (for `syntheticstesting`) into this session's transcript. Candidate for rotation. autodev.md's snippet should redirect output to a file and grep for `### Result`, as done on the second call.
