@@ -74,6 +74,22 @@ if npx playwright install --with-deps chromium 2>&1; then
   else
     echo "   WARNING: @playwright/cli global install failed — falling back to 'npx playwright-cli'"
   fi
+  # `playwright-cli open` defaults to the `chrome` channel (a separate Chrome
+  # for Testing distribution), not the vanilla `chromium` build the line above
+  # installs — "Chromium distribution 'chrome' is not found" confirmed live
+  # 2026-10-12. Point it at the chromium binary `playwright` (a transitive dep
+  # of `@playwright/test`, so this resolves post-`npm ci` with no extra
+  # install) already knows how to find, via the CLI's own default config path.
+  CHROMIUM_PATH="$(node -e "console.log(require('playwright').chromium.executablePath())" 2>/dev/null || true)"
+  if [ -n "$CHROMIUM_PATH" ] && [ -x "$CHROMIUM_PATH" ]; then
+    mkdir -p "$APP_DIR/.playwright"
+    cat > "$APP_DIR/.playwright/cli.config.json" <<JSON
+{"browser":{"browserName":"chromium","launchOptions":{"executablePath":"$CHROMIUM_PATH","headless":true,"args":["--no-sandbox"]}}}
+JSON
+    echo "   OK: wrote .playwright/cli.config.json -> $CHROMIUM_PATH"
+  else
+    echo "   WARNING: could not resolve chromium executablePath — playwright-cli will try its 'chrome' channel default and likely fail"
+  fi
   if { playwright-cli open "about:blank" && playwright-cli close; } >/dev/null 2>&1 \
     || { npx playwright-cli open "about:blank" && npx playwright-cli close; } >/dev/null 2>&1; then
     PLAYWRIGHT_OK=1; echo "   OK: playwright-cli launched a browser"
@@ -140,8 +156,9 @@ echo "==> Checking env vars (WARN only — never fatal)"
   || echo "   WARNING: VERCEL_AUTOMATION_BYPASS_SECRET unset — PR preview deploys are behind Vercel SSO and unreachable"
 # Dedicated Supabase test account for auth-gated browser validation. Preview
 # deploys share the PRODUCTION Supabase project (branching is off), so this
-# must be a clearly-named account, never a human's. Account provisioned
-# 2026-10 (007 T050 / FR-039): synthetics-tester@gmail.com.
+# must be a clearly-named account, never a human's. Same identity Datadog
+# monitors already notify (`@syntheticstesting@gmail.com`, `datadog/`) —
+# password added 2026-10 (007 T050 / FR-039) so autodev can also log in as it.
 [ -n "${TESTING_EMAIL:-}${DDOG_SYNTHETIC_TESTING_EMAIL:-}" ] && [ -n "${TESTING_PASSWORD:-}${DDOG_SYNTHETIC_TESTING_PASSWORD:-}" ] \
   && echo "   OK: TESTING_EMAIL/TESTING_PASSWORD set — auth-gated routes can be session-minted via signInWithPassword" \
   || echo "   WARNING: TESTING_EMAIL/TESTING_PASSWORD unset — auth-gated browser validation will skip"

@@ -1080,3 +1080,51 @@ so there is nothing new to keep in sync with `SignInClient.tsx`.
 
 **Caveat:** preview deployments share the **production** Supabase project (branching is
 off), so this is a real row in production, kept out of any cohort/org that matters.
+
+## 2026-10-12 — Supersedes 2026-10-11 entry: `run-code` is Node-side, use `eval` + `generateLink` type `recovery`
+
+**Context:** The 2026-10-11 entry chose `playwright-cli run-code` to mint a session via
+`signInWithPassword` in the page context, reasoning that it would write the same
+`document.cookie` the app's server client reads. That reasoning was wrong about the
+mechanism: `run-code <code>` (per both the CLI's `--help` and
+`.claude/skills/playwright-cli/references/running-code.md`) invokes `async page => {...}`
+**in Node**, with a Playwright `page` handle — there is no `document` there. The
+snippet shipped in `autodev.md` step 5.3 was also not even a function, compounding the
+error. Separately, the documented fallback (`generateLink` type `email` →
+`/auth/confirm?type=email`) was also wrong: `generateLink` has no `email` type (the
+magic-link type is `magiclink`), and `src/app/auth/confirm/route.ts`'s `KNOWN_TYPES` is
+`['email', 'recovery', 'invite']` — `magiclink` isn't in it, so that path redirects to
+`error=link_expired`.
+
+**Decision:** Swap the primacy. `generateLink` type `recovery` → `/auth/confirm` is now
+primary (both values are real and the route accepts them); `signInWithPassword` via
+`playwright-cli eval` — the actual page-context subcommand — is the fallback.
+
+**Why not caught before shipping:** the prior session verified the Supabase side (user
+creation, password grant via raw REST) exhaustively, but took the CLI subcommand
+semantics from the skill's `run-code` geolocation examples without checking whether the
+*invoked function's execution context* was page or Node — an unverified assumption
+about a tool, not about the app.
+
+## 2026-10-12 — One synthetic identity, not two: `syntheticstesting@gmail.com` supersedes `synthetics-tester@gmail.com`
+
+**Context:** The 2026-10-11 entry (`synthetics-tester@gmail.com` / `TESTING_PASSWORD`)
+created a brand-new Supabase user for autodev's browser-validation fixture, without
+checking whether a synthetic identity already existed. One did:
+`syntheticstesting@gmail.com`, created 2026-08-31, confirmed, `display_name` "Synthetics
+Testing" — already the notification handle on every Datadog monitor and synthetic
+(`@syntheticstesting@gmail.com`, ~20 files under `datadog/`, `scripts/datadog/sync.mjs`),
+but with no password set. A live login attempt against the new address failed with
+`Invalid login credentials` not because the password was wrong, but because it was on
+the wrong account.
+
+**Decision:** Set the password on the existing `syntheticstesting@gmail.com` account
+(preserving its id, `created_at`, and display name) and delete the duplicate
+`synthetics-tester@gmail.com`. Both owned nothing beyond the auto-created
+`profile_cards` row (`flows`, `memberships`, `claimed_flows`, `organizations` all 0 for
+each), so there was no data to migrate. `TESTING_EMAIL` / `DDOG_SYNTHETIC_TESTING_EMAIL`
+in `.env.local` now both point at `syntheticstesting@gmail.com`.
+
+**Why:** One synthetic test identity, not two with overlapping purpose. A second
+account would have meant autodev authenticating as a different "user" than the one
+Datadog monitors already attribute synthetic/alert activity to, with no benefit.

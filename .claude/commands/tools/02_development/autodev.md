@@ -170,7 +170,13 @@ MCP-native lifecycle (no `/tools:02_development:up`, no Docker):
    **REQUIRED, not deferrable**. First check `cat .playwright-available` at
    the repo root (written by the environment setup script) — `0` or missing
    means the CLI never launched this session; go straight to the headless
-   fallback below rather than spending time on steps 1-4.
+   fallback below rather than spending time on steps 1-4. `playwright-cli`'s
+   subcommand set differs by version (Homebrew's local build vs. the
+   `@playwright/cli` npm package `setup.sh` installs in the cloud) — if a
+   command below is unrecognized, check `playwright-cli --help` for the
+   closest equivalent (page-context JS runs under `eval`, not `run-code`,
+   on at least one observed version) rather than assuming the step is
+   unsupported.
    1. **Resolve the target** — this PR's own preview deployment, not a
       static `TESTING_URL` (which cannot contain unmerged code):
       ```bash
@@ -186,35 +192,48 @@ MCP-native lifecycle (no `/tools:02_development:up`, no Docker):
       rest of the session — no params needed on later navigations. If
       `VERCEL_AUTOMATION_BYPASS_SECRET` is unset, this step cannot succeed.
    3. **Mint a session** for auth-gated routes using the dedicated
-      `TESTING_EMAIL` / `TESTING_PASSWORD` account (`synthetics-tester`,
-      never a real user's account). The app has no password field in its
+      `TESTING_EMAIL` / `TESTING_PASSWORD` account (`syntheticstesting`,
+      the same identity Datadog monitors already notify — never a real
+      user's account). Preview deploys share the **production** Supabase
+      project (branching is off) — this account is dedicated and
+      unmistakably named for exactly that reason.
+
+      Supabase admin `generateLink`, **type `recovery`**, against
+      `TESTING_EMAIL` → feed the resulting `hashed_token` to
+      `/auth/confirm?token_hash=...&type=recovery&next=<route>`
+      (`src/app/auth/confirm/route.ts`), which mints the session
+      server-side via `verifyOtp`. Use `recovery`, not `email` — that
+      route's `KNOWN_TYPES` is `['email', 'recovery', 'invite']`, and
+      `generateLink`'s magic-link type is `magiclink`, which is not in
+      that list and will redirect to `error=link_expired`. `recovery` is
+      the one `generateLink` type that is also in `KNOWN_TYPES`.
+      ```bash
+      TOKEN=$(curl -s -X POST "$NEXT_PUBLIC_SUPABASE_URL/auth/v1/admin/generate_link" \
+        -H "apikey: $SUPABASE_SECRET_KEY" -H "Authorization: Bearer $SUPABASE_SECRET_KEY" \
+        -H "Content-Type: application/json" \
+        -d "{\"type\":\"recovery\",\"email\":\"$TESTING_EMAIL\"}" | jq -r '.hashed_token')
+      playwright-cli goto "$PREVIEW_URL/auth/confirm?token_hash=$TOKEN&type=recovery&next=<route>"
+      ```
+
+      **Fallback** if `generateLink` is unavailable: mint the session
+      directly in the page context. The app has no password field in its
       UI (`SignInClient.tsx` only offers Google OAuth and
-      `signInWithOtp`), so mint the session directly in the page context
-      with `playwright-cli run-code`, from the preview origin so the
-      cookie lands on the right host:
-      ```js
-      const { createBrowserClient } = await import('https://esm.sh/@supabase/ssr@0.12.5')
-      const supabase = createBrowserClient(
-        '<NEXT_PUBLIC_SUPABASE_URL>', '<NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY>'
-      )
-      await supabase.auth.signInWithPassword({
-        email: '<TESTING_EMAIL>', password: '<TESTING_PASSWORD>'
-      })
+      `signInWithOtp`), so use `playwright-cli eval` (page-context JS, not
+      `run-code`, which runs Node-side Playwright API code and cannot
+      reach `document.cookie`):
+      ```bash
+      playwright-cli eval "async () => {
+        const { createBrowserClient } = await import('https://esm.sh/@supabase/ssr@0.12.5')
+        const sb = createBrowserClient('<NEXT_PUBLIC_SUPABASE_URL>', '<NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY>')
+        const { error } = await sb.auth.signInWithPassword({ email: '<TESTING_EMAIL>', password: '<TESTING_PASSWORD>' })
+        return error ? error.message : 'ok'
+      }"
+      playwright-cli reload
       ```
       This works because `src/lib/supabase/client.ts` uses the same
       `createBrowserClient` (`@supabase/ssr`), which stores the session in
       a `document.cookie` entry the server client reads — an
-      independently-loaded copy writes the same cookie. Reload, then
-      navigate to the route under test. Preview deploys share the
-      **production** Supabase project (branching is off) — this account
-      is dedicated and unmistakably named for exactly that reason.
-
-      **Fallback** if the CDN import is ever blocked: Supabase admin
-      `generateLink` (type `email`) against `TESTING_EMAIL` → feed the
-      resulting `token_hash` to
-      `/auth/confirm?token_hash=...&type=email&next=<route>`
-      (`src/app/auth/confirm/route.ts`), which mints the session
-      server-side via `verifyOtp`.
+      independently-loaded copy writes the same cookie.
    4. Exercise the affected flow against the issue's Acceptance Criteria and
       attach snapshot/screenshot evidence to the PR body.
 
