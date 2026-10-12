@@ -48,6 +48,6 @@
 **Issues worked:** none — no new build.
 **PRs merged:** 0. **Dependabot:** none open.
 **Why no work:** every open `ready-for-dev` auto-ok issue (#106 #107 #127 #131 #132) already has an open PR (#109 #122 #129 #155 #154) held `auto/needs-human` because feat browser validation could not run (no preview session; not merged unverified). #108/#111/#82/#83/#47/#97 are `auto/needs-human`. #101 needs a local Supabase stack (no `supabase` CLI here; docker only) and touches PR #90's RLS branch. #96 is a live `datadog:apply` (not a PR build), left for the owner.
-**Environment:** `.playwright-available` = 1, but `gh` is unavailable, so the preview deployment URL could not be resolved from the Deployments API; no MCP substitute exists.
+**Environment:** `.playwright-available` = 1. CORRECTION: an earlier version of this line said `gh` was unavailable. That was copied from autodev.md's note on a prior run and never tested; `gh api` (Deployments API, by SHA) works in this session, so preview URLs are resolvable. Browser validation of the held PRs was attempted afterwards (see below).
 **Gate:** not run (no code changed).
 **CI failures:** none observed.
