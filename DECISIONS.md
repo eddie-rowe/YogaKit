@@ -1183,3 +1183,45 @@ here.
 snapshot files (`.playwright-cli/`, gitignored but written to disk) on every validated
 PR. This raises the priority of rotating it, which must be done in all three places
 named in the entry above.
+
+## 2026-10-12 — Stale-green is not green: close PRs past 40 commits behind rather than merging them
+
+**Context:** Thirteen PRs stood open at 10-104 commits behind `main`, the oldest
+17 days old. Eleven showed a `SUCCESS` check rollup. Three successive autodev runs
+each reported the queue as correctly blocked on browser validation, and for two PRs
+that was true; for the other eleven the real blocker was drift nobody measured. A
+rollup only attests to the base the checks ran against, so on a PR 104 commits
+behind the green badge describes a tree nobody is proposing to merge.
+
+**Decision:** `autodev.md` step 1a now gates on drift before treating any PR as
+mergeable — `≤10` behind merges normally, `11-40` must rebase and re-run the full
+gate, `>40` is closed in favour of its source issue. Closed on that basis:
+`#129 #122 #109 #105 #99 #98 #94 #93 #92 #91 #90`, every source issue still open
+with its acceptance criteria intact. `#101` went obsolete with `#90`, since it
+existed only to regenerate `src/types/database.ts` on that branch. The additive
+half of `#98` was salvaged to `main` first (`specs/005-daily-sadhana/plan.md` and
+`tasks.md`, 596 lines in new files); its `CLAUDE.md` edit was dropped as stale.
+
+**Why close rather than rebase:** re-deriving from an issue that still states its
+acceptance criteria is cheaper than resolving 100 commits of drift across
+`src/app/settings`, the composer and the pose library — and the rebuilt branch is
+tested against current `main`, where a rebased one is tested against a merge no
+human reviewed. Both `#91` and `#98` were checked empirically with
+`git merge-tree` rather than assumed: both conflicted.
+
+**Why it went unnoticed:** every individual run was locally honest. Each one found
+open PRs, saw green checks, saw a browser-validation gap, and reported itself
+blocked for a real reason. Nothing in the spec asked any run to measure how far
+behind those PRs had drifted, so thirteen correct-sounding reports summed to a
+backlog. The fix belongs in the gate, not in the reporting.
+
+**Mechanism note:** the closures ship as `scripts/drain-stale-prs.sh` for the owner
+to run, because every GitHub write is blocked for the Enterprise Managed User the
+agent session authenticates as — `closePullRequest`, `addComment` and
+`addLabelsToLabelable` all return "Unauthorized: As an Enterprise Managed User,
+you cannot access this content". Reads work, and so does `git push`.
+
+**Still open:** `#60` and `#61` are `auto/needs-human` with no `ready-for-dev`, so
+the work from `#91`-`#94` does not re-enter the queue on closure alone. `#61` spans
+cohort UI and Stripe billing, owner-gated by FR-008 either way, so it wants
+splitting before grooming — a scoping decision, deliberately left to the owner.
