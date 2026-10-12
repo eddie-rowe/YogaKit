@@ -192,10 +192,11 @@ MCP-native lifecycle (no `/tools:02_development:up`, no Docker):
       rest of the session — no params needed on later navigations. If
       `VERCEL_AUTOMATION_BYPASS_SECRET` is unset, this step cannot succeed.
    3. **Mint a session** for auth-gated routes using the dedicated
-      `TESTING_EMAIL` / `TESTING_PASSWORD` account (`synthetics-tester`,
-      never a real user's account). Preview deploys share the
-      **production** Supabase project (branching is off) — this account
-      is dedicated and unmistakably named for exactly that reason.
+      `TESTING_EMAIL` / `TESTING_PASSWORD` account (`syntheticstesting`,
+      the same identity Datadog monitors already notify — never a real
+      user's account). Preview deploys share the **production** Supabase
+      project (branching is off) — this account is dedicated and
+      unmistakably named for exactly that reason.
 
       Supabase admin `generateLink`, **type `recovery`**, against
       `TESTING_EMAIL` → feed the resulting `hashed_token` to

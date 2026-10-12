@@ -156,8 +156,9 @@ echo "==> Checking env vars (WARN only — never fatal)"
   || echo "   WARNING: VERCEL_AUTOMATION_BYPASS_SECRET unset — PR preview deploys are behind Vercel SSO and unreachable"
 # Dedicated Supabase test account for auth-gated browser validation. Preview
 # deploys share the PRODUCTION Supabase project (branching is off), so this
-# must be a clearly-named account, never a human's. Account provisioned
-# 2026-10 (007 T050 / FR-039): synthetics-tester@gmail.com.
+# must be a clearly-named account, never a human's. Same identity Datadog
+# monitors already notify (`@syntheticstesting@gmail.com`, `datadog/`) —
+# password added 2026-10 (007 T050 / FR-039) so autodev can also log in as it.
 [ -n "${TESTING_EMAIL:-}${DDOG_SYNTHETIC_TESTING_EMAIL:-}" ] && [ -n "${TESTING_PASSWORD:-}${DDOG_SYNTHETIC_TESTING_PASSWORD:-}" ] \
   && echo "   OK: TESTING_EMAIL/TESTING_PASSWORD set — auth-gated routes can be session-minted via signInWithPassword" \
   || echo "   WARNING: TESTING_EMAIL/TESTING_PASSWORD unset — auth-gated browser validation will skip"

@@ -1105,3 +1105,26 @@ creation, password grant via raw REST) exhaustively, but took the CLI subcommand
 semantics from the skill's `run-code` geolocation examples without checking whether the
 *invoked function's execution context* was page or Node — an unverified assumption
 about a tool, not about the app.
+
+## 2026-10-12 — One synthetic identity, not two: `syntheticstesting@gmail.com` supersedes `synthetics-tester@gmail.com`
+
+**Context:** The 2026-10-11 entry (`synthetics-tester@gmail.com` / `TESTING_PASSWORD`)
+created a brand-new Supabase user for autodev's browser-validation fixture, without
+checking whether a synthetic identity already existed. One did:
+`syntheticstesting@gmail.com`, created 2026-08-31, confirmed, `display_name` "Synthetics
+Testing" — already the notification handle on every Datadog monitor and synthetic
+(`@syntheticstesting@gmail.com`, ~20 files under `datadog/`, `scripts/datadog/sync.mjs`),
+but with no password set. A live login attempt against the new address failed with
+`Invalid login credentials` not because the password was wrong, but because it was on
+the wrong account.
+
+**Decision:** Set the password on the existing `syntheticstesting@gmail.com` account
+(preserving its id, `created_at`, and display name) and delete the duplicate
+`synthetics-tester@gmail.com`. Both owned nothing beyond the auto-created
+`profile_cards` row (`flows`, `memberships`, `claimed_flows`, `organizations` all 0 for
+each), so there was no data to migrate. `TESTING_EMAIL` / `DDOG_SYNTHETIC_TESTING_EMAIL`
+in `.env.local` now both point at `syntheticstesting@gmail.com`.
+
+**Why:** One synthetic test identity, not two with overlapping purpose. A second
+account would have meant autodev authenticating as a different "user" than the one
+Datadog monitors already attribute synthetic/alert activity to, with no benefit.
