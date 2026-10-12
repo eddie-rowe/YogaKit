@@ -1262,3 +1262,44 @@ nothing to validate. A `0` in a flag file and a live command describe this sessi
 a sentence in a spec describes what was once true somewhere. `autodev.md` now says
 that too, after a run copied its "gh is unavailable" note and reported it as an
 observation without testing it.
+
+## 2026-10-12 — Plan purchasability is derived from Stripe, not declared in the schema
+
+**Context:** T060 needed `plan_features` seeded before checkout could work at all
+— the route gates every `plan_key` on that table, so an empty table meant
+`unknown_plan` for every plan and a billing page whose only non-subscriber state
+was "There is nothing to subscribe to yet". Seeding it raised a second question the
+schema has no answer for: `org_seat` grants real features, but an organization
+provisions it. A person cannot buy one. Nothing in `plan_features` distinguishes
+"a plan that grants features" from "a plan a person can purchase".
+
+**Decision:** A plan is self-serve exactly when `plan_features` names it **and**
+Stripe has an active Price whose `lookup_key` matches the `plan_key`. No
+`self_serve` column, no allow-list constant in application code. `org_seat` is
+withheld from the billing page by having no self-serve Price, and
+`src/lib/stripe/plans.ts` never has to know why.
+
+**Why:** Those are already the two gates `src/app/billing/checkout/route.ts`
+applies — `plan_features` at :41, `lookup_key` at :46. Deriving the UI from the
+same two facts means a Subscribe button cannot offer something checkout would
+then reject with `unknown_plan`; the alternative keeps a third source of truth in
+sync with two existing ones by hand. It also keeps "features as data"
+(`docs/design/002-schema.md:189-190`) honest: re-cutting a tier stays an
+INSERT/DELETE plus a Stripe Price, never a deploy.
+
+**The catalogue is sourced, not invented.** Plan keys come from
+`contracts/entitlements-api.md:14-15`; feature keys are the four RULE-O7
+enumerates as gateable. There is deliberately no `pose_library` or
+`read_own_flows` key — RULE-O6/O7 keep that data readable with no account or
+entitlement, and a key existing for it would invite the gate the constitution
+forbids. A unit test asserts their absence so a later tier re-cut cannot add one
+quietly.
+
+**Placeholder:** `pro` is seeded at $12/month in the Stripe sandbox. No spec,
+issue or constitution rule states a price, so this is a stand-in chosen to make
+checkout exercisable end to end, not a pricing decision. Stripe Prices are
+immutable, so changing it means creating a new Price and moving the `lookup_key`.
+
+**Not applied to production.** The seed ships as a migration and is unapplied;
+FR-008 makes migrations owner-gated, so production `plan_features` is still empty
+and checkout still returns `unknown_plan` there until the owner runs it.
