@@ -114,6 +114,40 @@ A PR still pending/failing is left for a later sweep (or labeled
 issues that already have an open PR" idempotency — skip *rebuilding* the
 issue, but do *merge* its green PR.
 
+#### Staleness gate — green is not green on a stale base
+
+**Before treating any PR as mergeable, measure its drift:**
+```bash
+git fetch origin
+git rev-list --count origin/main ^origin/<headRefName>
+```
+A `SUCCESS` rollup only attests to the base the checks ran against. On a PR
+tens of commits behind, that base no longer exists, so the badge is evidence
+about a tree nobody is proposing to merge.
+
+- **≤ 10 behind** — treat the rollup as current. Merge per the normal rules.
+- **11-40 behind** — rebase onto `origin/main`, push, and re-run the full gate.
+  Merge only on the post-rebase result.
+- **> 40 behind** — do **not** rebase and do **not** merge. Close the PR, state
+  the commits-behind count and the source issue in the closing comment, and
+  confirm that issue is open with `ready-for-dev` so it re-enters the queue.
+  Re-deriving from an issue that still states its acceptance criteria is
+  cheaper than resolving that much drift, and the rebuilt branch is tested
+  against current main instead of against an unreviewed merge.
+
+Report every staleness action in the handoff. **Never count a stale-green PR
+as "held" for an unrelated reason** — on 2026-10-12 thirteen PRs stood open at
+10-104 commits behind while successive runs each reported the queue as
+correctly blocked on browser validation. Only two of them actually were.
+
+#### Trust `main` over the search index
+
+`mcp__github__list_pull_requests` and the issue search have returned a stale
+snapshot — on 2026-10-12 they omitted `#156`-`#161`, which `main` recorded as
+merged hours earlier. `git log origin/main` and `docs/planning/routine-log.md`
+are first-party and authoritative. When the two disagree, prefer `main`, say so
+in the handoff, and do not rebuild an issue whose merge `main` already records.
+
 ### 1b. Merge safe Dependabot PRs (connector-independent throughput)
 
 Idle Dependabot PRs are safe throughput that turns NO-OP days into shipped
@@ -203,13 +237,14 @@ MCP-native lifecycle (no `/tools:02_development:up`, no Docker):
       ```
       Fall back to `TESTING_URL` only if no deployment exists for the head SHA.
 
-      If `gh` is unauthenticated (`token in GH_TOKEN is invalid`, observed
-      2026-10-12), that is an **environment fault to report**, same as a `0`
-      in `.playwright-available` — not a cue to scrape the preview URL out of
-      the `vercel[bot]` PR comment. The GitHub MCP exposes no deployments or
-      deployment-statuses tool, so there is no first-party substitute; a
-      scraped URL is not tied to the head SHA and can silently validate a
-      stale build.
+      Check `cat .gh-available` first, the way step 5 checks
+      `.playwright-available`. A `0` means `gh` is missing or its token is
+      invalid — both observed 2026-10-12, as "gh is unavailable" and as "token
+      in `GH_TOKEN` is invalid". Either is an **environment fault to report**,
+      not a cue to scrape the preview URL out of the `vercel[bot]` PR comment.
+      The GitHub MCP exposes no deployments or deployment-statuses tool, so
+      there is no first-party substitute; a scraped URL is not tied to the head
+      SHA and can silently validate a stale build.
    2. **Clear Vercel Deployment Protection** — the first navigation to
       `PREVIEW_URL` must append
       `?x-vercel-protection-bypass=$VERCEL_AUTOMATION_BYPASS_SECRET&x-vercel-set-bypass-cookie=true`,

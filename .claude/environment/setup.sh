@@ -156,6 +156,53 @@ elif [ "$PUP_OK" -eq 1 ]; then
 fi
 echo "$PUP_OK" > "$REPO_ROOT/.datadog-cli-available" 2>/dev/null || true
 
+echo "==> [best-effort] Installing GitHub CLI (gh)"
+# autodev needs `gh` for two things the GitHub MCP cannot do: resolve a PR's own
+# preview deployment via `gh api repos/.../deployments` + `/statuses` (the MCP
+# exposes no deployments tool), and read commit statuses tied to a head SHA.
+# The 2026-10-12 run reported "gh is unavailable" — this script never installed
+# it, so the spec and the environment disagreed about what existed.
+GH_OK=0
+if command -v gh >/dev/null 2>&1; then
+  GH_OK=1; echo "   gh already present ($(gh --version 2>/dev/null | head -1 || echo installed))"
+else
+  case "$(uname -m)" in
+    x86_64|amd64)  GH_ARCH="linux_amd64" ;;
+    aarch64|arm64) GH_ARCH="linux_arm64" ;;
+    *)             GH_ARCH="" ;;
+  esac
+  # Resolve the current release rather than pinning: gh is a stable CLI and a
+  # stale pin here is a silent capability loss, not a reproducibility win.
+  GH_VERSION="$(curl -fsSL https://api.github.com/repos/cli/cli/releases/latest 2>/dev/null \
+    | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p' | head -1 || true)"
+  if [ -n "$GH_ARCH" ] && [ -n "$GH_VERSION" ]; then
+    url="https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_${GH_ARCH}.tar.gz"
+    tmp="$(mktemp -d)"
+    if curl -fsSL "$url" -o "$tmp/gh.tgz" && tar -xzf "$tmp/gh.tgz" -C "$tmp"; then
+      binpath="$(find "$tmp" -type f -name gh -perm -u+x | head -1 || true)"
+      if [ -n "$binpath" ]; then
+        if install -m 0755 "$binpath" /usr/local/bin/gh 2>/dev/null; then :; else
+          mkdir -p "$HOME/.local/bin" && install -m 0755 "$binpath" "$HOME/.local/bin/gh" && export PATH="$HOME/.local/bin:$PATH"
+        fi
+        command -v gh >/dev/null 2>&1 && { GH_OK=1; echo "   OK: gh v${GH_VERSION} installed"; }
+      fi
+    fi
+    rm -rf "$tmp"
+  fi
+  [ "$GH_OK" -eq 1 ] || echo "   WARNING: gh install failed — PR preview resolution (autodev step 5.3.1) unavailable"
+fi
+# Auth check. gh reads GH_TOKEN/GITHUB_TOKEN from the env — no interactive login.
+if [ "$GH_OK" -eq 1 ]; then
+  if [ -z "${GH_TOKEN:-}${GITHUB_TOKEN:-}" ]; then
+    echo "   WARNING: gh installed but GH_TOKEN/GITHUB_TOKEN unset — browser validation cannot resolve a preview URL"; GH_OK=0
+  elif gh api user --jq .login >/dev/null 2>&1; then
+    echo "   OK: gh authenticated as $(gh api user --jq .login 2>/dev/null)"
+  else
+    echo "   WARNING: gh installed but the token is invalid — observed 2026-10-12 as 'token in GH_TOKEN is invalid'"; GH_OK=0
+  fi
+fi
+echo "$GH_OK" > "$REPO_ROOT/.gh-available" 2>/dev/null || true
+
 echo "==> Checking env vars (WARN only — never fatal)"
 # App-login vars: routines/skills use the TESTING_* names; DDOG_SYNTHETIC_* are aliases.
 [ -n "${TESTING_URL:-}" ] && echo "   OK: TESTING_URL set" \
