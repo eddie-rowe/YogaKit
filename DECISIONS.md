@@ -1056,3 +1056,27 @@ a naming change, not fixed it.
 whole failure mode was a probe that couldn't see a numerator's tag filter. A wider bare
 name probe has the same blind spot. Only the manifest's actual query, filters included,
 proves the monitor itself can ever fire.
+
+## 2026-10-11 — Browser-validation auth fixture: no password field, `signInWithPassword` via `run-code`
+
+**Context:** Closing wall D of the 15-day browser-validation gap (`007` T050, FR-039)
+required a Supabase test account `playwright-cli` could authenticate as headlessly.
+`src/app/auth/sign-in/SignInClient.tsx` offers only `signInWithOAuth` (Google) and
+`signInWithOtp` — no password field exists anywhere in `src/`. The owner provided
+`TESTING_EMAIL=synthetics-tester@gmail.com` / `TESTING_PASSWORD`.
+
+**Decision:** Create the Supabase user via `POST /auth/v1/admin/users`
+(`email_confirm: true`) rather than adding a password-login UI. Mint its session in
+`playwright-cli run-code` by independently loading `@supabase/ssr`'s
+`createBrowserClient` in the page context and calling `signInWithPassword` — this
+writes the same `document.cookie` entry the app's own server client reads, with zero
+app-code change. `generateLink` → `/auth/confirm` (server-side `verifyOtp`) stays
+documented as the fallback if the CDN import is ever blocked.
+
+**Why:** Adding a password field would mean building and maintaining a login path real
+users never see, purely for automation — a second, divergent auth surface. The
+`run-code` approach reuses the exact library and cookie format the app already trusts,
+so there is nothing new to keep in sync with `SignInClient.tsx`.
+
+**Caveat:** preview deployments share the **production** Supabase project (branching is
+off), so this is a real row in production, kept out of any cohort/org that matters.

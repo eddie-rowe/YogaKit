@@ -127,7 +127,7 @@ fi
 echo "$PUP_OK" > "$REPO_ROOT/.datadog-cli-available" 2>/dev/null || true
 
 echo "==> Checking env vars (WARN only — never fatal)"
-# App-login vars: routines/skills use the DDOG_SYNTHETIC_* names; TESTING_* are aliases.
+# App-login vars: routines/skills use the TESTING_* names; DDOG_SYNTHETIC_* are aliases.
 [ -n "${TESTING_URL:-}" ] && echo "   OK: TESTING_URL set" \
   || echo "   WARNING: TESTING_URL unset — falls back to the issue's own PR preview, resolved via the GitHub Deployments API"
 [ -n "${DDOG_SYNTHETIC_TESTING_EMAIL:-}${TESTING_EMAIL:-}" ] \
@@ -140,10 +140,11 @@ echo "==> Checking env vars (WARN only — never fatal)"
   || echo "   WARNING: VERCEL_AUTOMATION_BYPASS_SECRET unset — PR preview deploys are behind Vercel SSO and unreachable"
 # Dedicated Supabase test account for auth-gated browser validation. Preview
 # deploys share the PRODUCTION Supabase project (branching is off), so this
-# must be a clearly-named account, never a human's.
-[ -n "${TESTING_SUPABASE_EMAIL:-}" ] \
-  && echo "   OK: TESTING_SUPABASE_EMAIL set — auth-gated routes can be session-minted via Supabase admin generateLink" \
-  || echo "   WARNING: TESTING_SUPABASE_EMAIL unset — auth-gated browser validation will skip"
+# must be a clearly-named account, never a human's. Account provisioned
+# 2026-10 (007 T050 / FR-039): synthetics-tester@gmail.com.
+[ -n "${TESTING_EMAIL:-}${DDOG_SYNTHETIC_TESTING_EMAIL:-}" ] && [ -n "${TESTING_PASSWORD:-}${DDOG_SYNTHETIC_TESTING_PASSWORD:-}" ] \
+  && echo "   OK: TESTING_EMAIL/TESTING_PASSWORD set — auth-gated routes can be session-minted via signInWithPassword" \
+  || echo "   WARNING: TESTING_EMAIL/TESTING_PASSWORD unset — auth-gated browser validation will skip"
 # Gmail OAuth self-heal (autodev /reconnect-oauth, script-based, no browser).
 gmail_ready=1
 for v in GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET ENCRYPTION_KEY NEXT_PUBLIC_SUPABASE_URL SUPABASE_SECRET_KEY; do

@@ -185,13 +185,36 @@ MCP-native lifecycle (no `/tools:02_development:up`, no Docker):
       or the preview 302s to `vercel.com/sso-api`. The cookie carries for the
       rest of the session — no params needed on later navigations. If
       `VERCEL_AUTOMATION_BYPASS_SECRET` is unset, this step cannot succeed.
-   3. **Mint a session** for auth-gated routes **using Supabase tooling
-      only** (no raw REST, no psql): Supabase admin `generateLink` (type
-      `email`) against `TESTING_SUPABASE_EMAIL` → feed the resulting
-      `token_hash` to `/auth/confirm?token_hash=...&type=email&next=<route>`
-      (`src/app/auth/confirm/route.ts`), then navigate to the route under
-      test. Preview deploys share the **production** Supabase project
-      (branching is off) — never use a real user's account for this.
+   3. **Mint a session** for auth-gated routes using the dedicated
+      `TESTING_EMAIL` / `TESTING_PASSWORD` account (`synthetics-tester`,
+      never a real user's account). The app has no password field in its
+      UI (`SignInClient.tsx` only offers Google OAuth and
+      `signInWithOtp`), so mint the session directly in the page context
+      with `playwright-cli run-code`, from the preview origin so the
+      cookie lands on the right host:
+      ```js
+      const { createBrowserClient } = await import('https://esm.sh/@supabase/ssr@0.12.5')
+      const supabase = createBrowserClient(
+        '<NEXT_PUBLIC_SUPABASE_URL>', '<NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY>'
+      )
+      await supabase.auth.signInWithPassword({
+        email: '<TESTING_EMAIL>', password: '<TESTING_PASSWORD>'
+      })
+      ```
+      This works because `src/lib/supabase/client.ts` uses the same
+      `createBrowserClient` (`@supabase/ssr`), which stores the session in
+      a `document.cookie` entry the server client reads — an
+      independently-loaded copy writes the same cookie. Reload, then
+      navigate to the route under test. Preview deploys share the
+      **production** Supabase project (branching is off) — this account
+      is dedicated and unmistakably named for exactly that reason.
+
+      **Fallback** if the CDN import is ever blocked: Supabase admin
+      `generateLink` (type `email`) against `TESTING_EMAIL` → feed the
+      resulting `token_hash` to
+      `/auth/confirm?token_hash=...&type=email&next=<route>`
+      (`src/app/auth/confirm/route.ts`), which mints the session
+      server-side via `verifyOtp`.
    4. Exercise the affected flow against the issue's Acceptance Criteria and
       attach snapshot/screenshot evidence to the PR body.
 
