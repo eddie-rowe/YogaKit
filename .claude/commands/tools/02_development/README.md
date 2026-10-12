@@ -60,7 +60,7 @@ flowchart LR
 | [`/merge`](merge.md) | Merge PR | PR #, strategy | Pre-merge validation, `gh pr merge` | Merged PR, local sync |
 | [`/finalize`](finalize.md) | Close issue | Issue # | Agent orchestration (inline) | Issue closed, prompting log |
 | [`/team-dev`](team-dev.md) | Parallel batch processing | Issue #s (space-separated) | Agent Teams orchestration | Waves of parallel PRs, merged sequentially |
-| [`/autodev`](autodev.md) | Autonomous dev sweep (daily routine) | None | MCP-native: plan → tests → implement → `tsc --noEmit`+`lint:copy`+`validate:poses`+`lint:telemetry`+`test:coverage` → browser-validate via `playwright-cli` → PR → review on `ready-for-dev` issues (no Docker/`/up`/`/test`-act; no E2E tests authored) | Auto-merged PRs on `main` (squash); failures held `auto/dev-failure` |
+| [`/autodev`](autodev.md) | Autonomous dev sweep (daily routine) | None | MCP-native: plan → tests → implement → `tsc --noEmit`+`lint:copy`+`validate:poses`+`lint:telemetry`+`test:coverage` → browser-validate via `playwright-cli` against PR preview (Vercel bypass + Supabase session) → PR → review on `ready-for-dev` issues (no Docker/`/up`/`/test`-act; no E2E tests authored) | Auto-merged PRs on `main` (squash); failures held `auto/dev-failure` |
 
 ## Autonomous routine
 

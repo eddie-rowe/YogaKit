@@ -59,9 +59,13 @@ possibly-hung agent.
 - **Validate by driving the live app, not by writing new E2E test files.**
   This routine **must not author new Playwright specs** under `tests/e2e-qa/`
   (`playwright.config.qa.ts`) — that suite is human-maintained. Instead, use
-  the `playwright-cli` skill against `TESTING_URL` to manually exercise
-  whatever the change touches and capture evidence. If `TESTING_URL` is
-  unset, note validation as **deferred to a full-env run**; never fake a pass.
+  the `playwright-cli` skill to manually exercise whatever the change
+  touches and capture evidence, against **the PR's own preview deployment**,
+  resolved via the GitHub Deployments API (see "Browser-validate with
+  `playwright-cli`" below) — not a static `TESTING_URL`, which by
+  construction cannot contain unmerged code. Fall back to `TESTING_URL` only
+  when no deployment exists for the head SHA. If no target resolves at all,
+  note validation as **deferred to a full-env run**; never fake a pass.
 - **Labels:** open PRs `ready-for-review`; failures escalate as
   `auto/dev-failure`.
 - **Autonomy boundary:** merge green PRs automatically via GitHub auto-merge
@@ -163,15 +167,41 @@ MCP-native lifecycle (no `/tools:02_development:up`, no Docker):
    A failure stops *this* issue (don't open a PR for failing work); continue
    to the next.
 5. **Browser-validate with `playwright-cli`.** For a `feat:` issue this is
-   **REQUIRED, not deferrable**: drive the deployed app
-   (`TESTING_URL`), exercise the affected flow against the issue's
-   Acceptance Criteria, and attach snapshot/screenshot evidence to the PR
-   body. If the browser can't launch or `TESTING_URL` is unset, fall back to
-   a headless assertion against Supabase/`pup` where possible; only if NO
-   verification path exists, label the PR `auto/needs-human` (do NOT
-   auto-merge an unverified feature). **Never fake a pass, never write new
-   Playwright specs under `tests/e2e-qa/`.** (Security/tech-debt/Dependabot
-   fixes may still defer browser validation as before.)
+   **REQUIRED, not deferrable**. First check `cat .playwright-available` at
+   the repo root (written by the environment setup script) — `0` or missing
+   means the CLI never launched this session; go straight to the headless
+   fallback below rather than spending time on steps 1-4.
+   1. **Resolve the target** — this PR's own preview deployment, not a
+      static `TESTING_URL` (which cannot contain unmerged code):
+      ```bash
+      SHA="$(git rev-parse HEAD)"
+      D=$(gh api "repos/eddie-rowe/YogaKit/deployments?sha=$SHA" --jq '.[0].id')
+      PREVIEW_URL=$(gh api "repos/eddie-rowe/YogaKit/deployments/$D/statuses" --jq '.[0].environment_url')
+      ```
+      Fall back to `TESTING_URL` only if no deployment exists for the head SHA.
+   2. **Clear Vercel Deployment Protection** — the first navigation to
+      `PREVIEW_URL` must append
+      `?x-vercel-protection-bypass=$VERCEL_AUTOMATION_BYPASS_SECRET&x-vercel-set-bypass-cookie=true`,
+      or the preview 302s to `vercel.com/sso-api`. The cookie carries for the
+      rest of the session — no params needed on later navigations. If
+      `VERCEL_AUTOMATION_BYPASS_SECRET` is unset, this step cannot succeed.
+   3. **Mint a session** for auth-gated routes **using Supabase tooling
+      only** (no raw REST, no psql): Supabase admin `generateLink` (type
+      `email`) against `TESTING_SUPABASE_EMAIL` → feed the resulting
+      `token_hash` to `/auth/confirm?token_hash=...&type=email&next=<route>`
+      (`src/app/auth/confirm/route.ts`), then navigate to the route under
+      test. Preview deploys share the **production** Supabase project
+      (branching is off) — never use a real user's account for this.
+   4. Exercise the affected flow against the issue's Acceptance Criteria and
+      attach snapshot/screenshot evidence to the PR body.
+
+   If the browser can't launch, or no preview/`TESTING_URL` resolves, or the
+   protection bypass or test account is missing, fall back to a headless
+   assertion against Supabase/`pup` where possible; only if NO verification
+   path exists, label the PR `auto/needs-human` (do NOT auto-merge an
+   unverified feature). **Never fake a pass, never write new Playwright specs
+   under `tests/e2e-qa/`.** (Security/tech-debt/Dependabot fixes may still
+   defer browser validation as before.)
 
 ### 3. Reflect
 
@@ -268,7 +298,7 @@ structured input:
 
 ```
 Dev sweep: N issues worked ([parallel/sequential])
-Gate: N/N green (tsc + lint:copy + validate:poses + lint:telemetry + test:coverage); browser-validated via playwright-cli [yes vs TESTING_URL | deferred]
+Gate: N/N green (tsc + lint:copy + validate:poses + lint:telemetry + test:coverage); browser-validated via playwright-cli [yes vs PR preview | yes vs TESTING_URL | deferred]
 PRs merged to main: #.. , #.. (squash, CI passed)
 Left for human (CI failed or timeout): #.. [reason] | none
 Held for human (no auto-ok): #.. [migration/auth/billing] | none
@@ -281,7 +311,8 @@ Failed gate (no PR opened): #.. [reason] | none
 The feature backlog (`specs/00{2,3,4,5,6}-*/tasks.md`, in dependency order)
 is grouped into features, each with an acceptance gate. Do NOT report a
 feature done — and do not advance to the next one — until its gate is
-verified end-to-end against the deployed app (`TESTING_URL`). Run this check
+verified end-to-end against the deployed app (the feature's own PR preview,
+resolved as in step 5 above; `TESTING_URL` as fallback). Run this check
 when the last issue of a feature merges. If a gate fails, keep the feature
 open, file an `auto/dev-failure`-style issue describing the failing
 criterion, and do not start the next feature.
