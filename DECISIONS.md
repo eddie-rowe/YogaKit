@@ -1080,3 +1080,28 @@ so there is nothing new to keep in sync with `SignInClient.tsx`.
 
 **Caveat:** preview deployments share the **production** Supabase project (branching is
 off), so this is a real row in production, kept out of any cohort/org that matters.
+
+## 2026-10-12 — Supersedes 2026-10-11 entry: `run-code` is Node-side, use `eval` + `generateLink` type `recovery`
+
+**Context:** The 2026-10-11 entry chose `playwright-cli run-code` to mint a session via
+`signInWithPassword` in the page context, reasoning that it would write the same
+`document.cookie` the app's server client reads. That reasoning was wrong about the
+mechanism: `run-code <code>` (per both the CLI's `--help` and
+`.claude/skills/playwright-cli/references/running-code.md`) invokes `async page => {...}`
+**in Node**, with a Playwright `page` handle — there is no `document` there. The
+snippet shipped in `autodev.md` step 5.3 was also not even a function, compounding the
+error. Separately, the documented fallback (`generateLink` type `email` →
+`/auth/confirm?type=email`) was also wrong: `generateLink` has no `email` type (the
+magic-link type is `magiclink`), and `src/app/auth/confirm/route.ts`'s `KNOWN_TYPES` is
+`['email', 'recovery', 'invite']` — `magiclink` isn't in it, so that path redirects to
+`error=link_expired`.
+
+**Decision:** Swap the primacy. `generateLink` type `recovery` → `/auth/confirm` is now
+primary (both values are real and the route accepts them); `signInWithPassword` via
+`playwright-cli eval` — the actual page-context subcommand — is the fallback.
+
+**Why not caught before shipping:** the prior session verified the Supabase side (user
+creation, password grant via raw REST) exhaustively, but took the CLI subcommand
+semantics from the skill's `run-code` geolocation examples without checking whether the
+*invoked function's execution context* was page or Node — an unverified assumption
+about a tool, not about the app.
