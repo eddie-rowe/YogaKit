@@ -80,21 +80,35 @@ if npx playwright install --with-deps chromium 2>&1; then
   # 2026-10-12. Point it at the chromium binary `playwright` (a transitive dep
   # of `@playwright/test`, so this resolves post-`npm ci` with no extra
   # install) already knows how to find, via the CLI's own default config path.
-  CHROMIUM_PATH="$(node -e "console.log(require('playwright').chromium.executablePath())" 2>/dev/null || true)"
+  CHROMIUM_PATH="$(cd "$APP_DIR" && node -e "console.log(require('playwright').chromium.executablePath())" 2>/dev/null || true)"
+  # Fallback when the node resolve fails (e.g. PLAYWRIGHT_BROWSERS_PATH points at a
+  # pre-baked image dir the local `playwright` copy doesn't know about). Observed
+  # 2026-10-12: this image ships Chromium under /opt/pw-browsers, not ~/.cache.
+  if [ -z "$CHROMIUM_PATH" ] || [ ! -x "$CHROMIUM_PATH" ]; then
+    CHROMIUM_PATH="$(find "${PLAYWRIGHT_BROWSERS_PATH:-/opt/pw-browsers}" "$HOME/.cache/ms-playwright" \
+      -maxdepth 3 -type f \( -name headless_shell -o -name chrome \) 2>/dev/null | head -1 || true)"
+  fi
   if [ -n "$CHROMIUM_PATH" ] && [ -x "$CHROMIUM_PATH" ]; then
-    mkdir -p "$APP_DIR/.playwright"
-    cat > "$APP_DIR/.playwright/cli.config.json" <<JSON
+    # --config defaults to `.playwright/cli.config.json` resolved against the CWD,
+    # and a routine's CWD is not guaranteed to be APP_DIR, so write both locations.
+    for d in "$APP_DIR" "$REPO_ROOT"; do
+      mkdir -p "$d/.playwright" 2>/dev/null || continue
+      cat > "$d/.playwright/cli.config.json" <<JSON
 {"browser":{"browserName":"chromium","launchOptions":{"executablePath":"$CHROMIUM_PATH","headless":true,"args":["--no-sandbox"]}}}
 JSON
+    done
     echo "   OK: wrote .playwright/cli.config.json -> $CHROMIUM_PATH"
   else
-    echo "   WARNING: could not resolve chromium executablePath — playwright-cli will try its 'chrome' channel default and likely fail"
+    echo "   WARNING: could not resolve a chromium executable — playwright-cli will try its 'chrome' channel default and fail with \"Chromium distribution 'chrome' is not found\""
   fi
-  if { playwright-cli open "about:blank" && playwright-cli close; } >/dev/null 2>&1 \
-    || { npx playwright-cli open "about:blank" && npx playwright-cli close; } >/dev/null 2>&1; then
+  CFG="$APP_DIR/.playwright/cli.config.json"
+  if { playwright-cli open --config="$CFG" "about:blank" && playwright-cli close; } >/dev/null 2>&1 \
+    || { npx playwright-cli open --config="$CFG" "about:blank" && npx playwright-cli close; } >/dev/null 2>&1; then
     PLAYWRIGHT_OK=1; echo "   OK: playwright-cli launched a browser"
   else
     echo "   WARNING: playwright-cli could not launch — browser validation deferred"
+    playwright-cli open --config="$CFG" "about:blank" 2>&1 | head -5 | sed 's/^/     /' || true
+    playwright-cli close >/dev/null 2>&1 || true
   fi
 else
   echo "   WARNING: Chromium/OS-dep install failed — browser validation deferred (does NOT block routines)"
@@ -141,6 +155,58 @@ elif [ "$PUP_OK" -eq 1 ]; then
   echo "   WARNING: pup installed but DD_API_KEY/DD_APP_KEY unset — set them for headless Datadog access"; PUP_OK=0
 fi
 echo "$PUP_OK" > "$REPO_ROOT/.datadog-cli-available" 2>/dev/null || true
+
+echo "==> [best-effort] Installing GitHub CLI (gh)"
+# autodev needs `gh` for two things the GitHub MCP cannot do: resolve a PR's own
+# preview deployment via `gh api repos/.../deployments` + `/statuses` (the MCP
+# exposes no deployments tool), and read commit statuses tied to a head SHA.
+#
+# The image has shipped `gh` in practice (confirmed working 2026-10-12, see
+# 67abba1), so this block is usually a no-op that reports "already present".
+# It is here so the capability is guaranteed rather than inherited, and more
+# importantly so `.gh-available` exists: a run that reads a flag cannot invent
+# a capability claim, which is exactly what happened on 2026-10-12 when a sweep
+# reported `gh` unavailable without testing it and held PRs for nothing.
+GH_OK=0
+if command -v gh >/dev/null 2>&1; then
+  GH_OK=1; echo "   gh already present ($(gh --version 2>/dev/null | head -1 || echo installed))"
+else
+  case "$(uname -m)" in
+    x86_64|amd64)  GH_ARCH="linux_amd64" ;;
+    aarch64|arm64) GH_ARCH="linux_arm64" ;;
+    *)             GH_ARCH="" ;;
+  esac
+  # Resolve the current release rather than pinning: gh is a stable CLI and a
+  # stale pin here is a silent capability loss, not a reproducibility win.
+  GH_VERSION="$(curl -fsSL https://api.github.com/repos/cli/cli/releases/latest 2>/dev/null \
+    | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p' | head -1 || true)"
+  if [ -n "$GH_ARCH" ] && [ -n "$GH_VERSION" ]; then
+    url="https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_${GH_ARCH}.tar.gz"
+    tmp="$(mktemp -d)"
+    if curl -fsSL "$url" -o "$tmp/gh.tgz" && tar -xzf "$tmp/gh.tgz" -C "$tmp"; then
+      binpath="$(find "$tmp" -type f -name gh -perm -u+x | head -1 || true)"
+      if [ -n "$binpath" ]; then
+        if install -m 0755 "$binpath" /usr/local/bin/gh 2>/dev/null; then :; else
+          mkdir -p "$HOME/.local/bin" && install -m 0755 "$binpath" "$HOME/.local/bin/gh" && export PATH="$HOME/.local/bin:$PATH"
+        fi
+        command -v gh >/dev/null 2>&1 && { GH_OK=1; echo "   OK: gh v${GH_VERSION} installed"; }
+      fi
+    fi
+    rm -rf "$tmp"
+  fi
+  [ "$GH_OK" -eq 1 ] || echo "   WARNING: gh install failed — PR preview resolution (autodev step 5.3.1) unavailable"
+fi
+# Auth check. gh reads GH_TOKEN/GITHUB_TOKEN from the env — no interactive login.
+if [ "$GH_OK" -eq 1 ]; then
+  if [ -z "${GH_TOKEN:-}${GITHUB_TOKEN:-}" ]; then
+    echo "   WARNING: gh installed but GH_TOKEN/GITHUB_TOKEN unset — browser validation cannot resolve a preview URL"; GH_OK=0
+  elif gh api user --jq .login >/dev/null 2>&1; then
+    echo "   OK: gh authenticated as $(gh api user --jq .login 2>/dev/null)"
+  else
+    echo "   WARNING: gh installed but the token is invalid — observed 2026-10-12 as 'token in GH_TOKEN is invalid'"; GH_OK=0
+  fi
+fi
+echo "$GH_OK" > "$REPO_ROOT/.gh-available" 2>/dev/null || true
 
 echo "==> Checking env vars (WARN only — never fatal)"
 # App-login vars: routines/skills use the TESTING_* names; DDOG_SYNTHETIC_* are aliases.

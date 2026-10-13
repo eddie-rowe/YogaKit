@@ -48,6 +48,7 @@ next-env.d.ts
 .playwright
 .playwright-available
 .datadog-cli-available
+.gh-available
 .claude/worktrees/
 
 # vendored third-party skills (regenerable from skills-lock.json)

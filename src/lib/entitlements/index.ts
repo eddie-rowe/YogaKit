@@ -96,3 +96,47 @@ export function activePlanKeys(entitlements: Entitlements): string[] {
   for (const sa of entitlements.seat_assignments) keys.add(sa.plan_key)
   return [...keys]
 }
+
+// Pure projection of plan_features rows onto a set of active plan_keys. Kept
+// separate from the fetch below so the mapping is unit-testable without a
+// database, and so a caller that already holds plan_features (the billing page
+// reads them to render what a plan includes) does not pay for a second query.
+//
+// Deliberately NOT an authorization check, for the same reason as
+// hasActiveEntitlement: RLS and app_entitlements()' own escalation guard are
+// authoritative. A feature key absent here means "do not render the
+// affordance", never "the server will refuse".
+export function featureKeysForPlans(
+  planFeatures: PlanFeature[],
+  planKeys: string[],
+): string[] {
+  const active = new Set(planKeys)
+  const features = new Set<string>()
+  for (const row of planFeatures) {
+    if (active.has(row.plan_key)) features.add(row.feature_key)
+  }
+  return [...features].sort()
+}
+
+export interface PlanFeature {
+  plan_key: string
+  feature_key: string
+}
+
+// Every (plan_key, feature_key) pair. plan_features is not tenant data —
+// `plan_features_select_any_authenticated` returns all rows to any signed-in
+// user so the client can render what a plan includes *before* purchase
+// (20260826224205_entitlements_billing.sql:21-25).
+export async function getPlanFeatures(): Promise<PlanFeature[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase.from('plan_features').select('plan_key, feature_key')
+  if (error) throw error
+  return (data ?? []) as PlanFeature[]
+}
+
+// The feature keys a user actually has right now, derived from their active
+// plans. This is the `activeFeatureKeys` the module comment above has promised
+// since 7a shipped without it.
+export async function activeFeatureKeys(entitlements: Entitlements): Promise<string[]> {
+  return featureKeysForPlans(await getPlanFeatures(), activePlanKeys(entitlements))
+}
