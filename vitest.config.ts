@@ -8,7 +8,11 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./tests/setup.ts'],
-    exclude: ['**/node_modules/**', '**/.claude/worktrees/**', 'tests/e2e/**', 'tests/e2e-qa/**'],
+    // `.agents/` holds vendored third-party skills (gitignored, regenerable from
+    // skills-lock.json). Their own test files are never committed, so CI never sees
+    // them — without this exclude the local gate fails on files CI does not have,
+    // which makes the local run disagree with the thing it is meant to predict.
+    exclude: ['**/node_modules/**', '**/.claude/worktrees/**', '**/.agents/**', 'tests/e2e/**', 'tests/e2e-qa/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],

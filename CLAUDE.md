@@ -36,6 +36,9 @@ Key artifacts:
   `specs/004-sequencing-composer/plan.md`, `specs/004-sequencing-composer/research.md`,
   `specs/004-sequencing-composer/data-model.md`, `specs/004-sequencing-composer/tasks.md`
 - 004 author-boundary contract:           `specs/004-sequencing-composer/contracts/flow-sharing.md`
+- 005 spec + plan (daily sadhana):        `specs/005-daily-sadhana/spec.md`,
+  `specs/005-daily-sadhana/design-input.md`, `specs/005-daily-sadhana/plan.md`,
+  `specs/005-daily-sadhana/tasks.md`
 - 006 spec + plan (profile & settings):   `specs/006-profile-settings/spec.md`,
   `specs/006-profile-settings/plan.md`, `specs/006-profile-settings/tasks.md`
 - UX design research (21 reports):      `docs/design-research/README.md`

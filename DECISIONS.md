@@ -1128,3 +1128,178 @@ in `.env.local` now both point at `syntheticstesting@gmail.com`.
 **Why:** One synthetic test identity, not two with overlapping purpose. A second
 account would have meant autodev authenticating as a different "user" than the one
 Datadog monitors already attribute synthetic/alert activity to, with no benefit.
+
+## 2026-10-12 — Correction: the duplicate account was never deleted, and credentials live in two stores
+
+**Context:** The entry above states the duplicate `synthetics-tester@gmail.com` was
+deleted. It was not. The `DELETE /auth/v1/admin/users/<id>` call was refused by the
+Claude Code auto-mode classifier and no alternative was attempted, so the account
+still exists. The entry was written ahead of the action and never corrected.
+
+A later smoke run then rendered `synthetics-tester@gmail.com` on an authenticated
+`/settings` page in the cloud environment — which surfaced the more useful finding:
+**the cloud environment keeps its own env-var store**, independent of `.env.local`.
+Pointing `TESTING_EMAIL` at the consolidated address locally did nothing to the
+environment the routines actually run in.
+
+**Decision:** Treat every credential change as a three-place operation — the Supabase
+account, `.env.local`, and the cloud environment's env-var store — and verify the
+third by assertion rather than assumption. `autodev.md` step 5.3 now requires the
+authenticated page to render `syntheticstesting@gmail.com` and to stop if it does not.
+The duplicate account's deletion is deferred and must happen *after* the environment
+variable is repointed, not before: until then that account is the only identity the
+cloud routine can authenticate as, so deleting it first would break the one working
+session-mint path.
+
+**Why:** The original entry's claim was unverifiable from the repo, and the drift it
+hid cost two routine runs. An assertion in the routine spec catches the class of bug;
+a corrected log entry only catches this instance.
+
+## 2026-10-12 — `signInWithPassword` becomes the primary session-mint path; `generateLink` demoted to fallback
+
+**Context:** The 2026-10-12 entry above made `generateLink` type `recovery` →
+`/auth/confirm` the primary mechanism and page-context `signInWithPassword` the
+fallback, on the reasoning that the former keeps the password server-side. First live
+exercise, against PR `#129`'s preview: `generateLink` returned a null `hashed_token`,
+so `/auth/confirm` landed on `/auth/sign-in?error=link_expired`. The cause is still
+unexplained — the run discarded the response body and a retry to capture it was
+refused as credential materialization. The `signInWithPassword` fallback returned `ok`
+and `/settings` rendered authenticated.
+
+**Decision:** Swap them. `playwright-cli eval` + `createBrowserClient` +
+`signInWithPassword` is primary; `generateLink` type `recovery` is the fallback, marked
+unproven, and must now capture the HTTP status and the error `code`/`msg` when it
+fires. The fallback trigger is restated as *any* outcome other than an authenticated
+page — the previous wording, "if `generateLink` is unavailable", would not have fired
+on a null token, which is how a responding-but-useless endpoint could have blocked the
+whole gate.
+
+**Why:** Nothing unproven belongs on the critical path of a `feat:` PR gate. The
+reasoning for the old order was sound in the abstract and wrong in fact, and the cost
+of being wrong — `feat:` PRs held indefinitely — is much higher than the cost accepted
+here.
+
+**Accepted cost:** `TESTING_PASSWORD` now enters page context and `playwright-cli`
+snapshot files (`.playwright-cli/`, gitignored but written to disk) on every validated
+PR. This raises the priority of rotating it, which must be done in all three places
+named in the entry above.
+
+## 2026-10-12 — Stale-green is not green: close PRs past 40 commits behind rather than merging them
+
+**Context:** Thirteen PRs stood open at 10-104 commits behind `main`, the oldest
+17 days old. Eleven showed a `SUCCESS` check rollup. Three successive autodev runs
+each reported the queue as correctly blocked on browser validation, and for two PRs
+that was true; for the other eleven the real blocker was drift nobody measured. A
+rollup only attests to the base the checks ran against, so on a PR 104 commits
+behind the green badge describes a tree nobody is proposing to merge.
+
+**Decision:** `autodev.md` step 1a now gates on drift before treating any PR as
+mergeable — `≤10` behind merges normally, `11-40` must rebase and re-run the full
+gate, `>40` is closed in favour of its source issue. Closed on that basis:
+`#129 #122 #109 #105 #99 #98 #94 #93 #92 #91 #90`, every source issue still open
+with its acceptance criteria intact. `#101` went obsolete with `#90`, since it
+existed only to regenerate `src/types/database.ts` on that branch. The additive
+half of `#98` was salvaged to `main` first (`specs/005-daily-sadhana/plan.md` and
+`tasks.md`, 596 lines in new files); its `CLAUDE.md` edit was dropped as stale.
+
+**Why close rather than rebase:** re-deriving from an issue that still states its
+acceptance criteria is cheaper than resolving 100 commits of drift across
+`src/app/settings`, the composer and the pose library — and the rebuilt branch is
+tested against current `main`, where a rebased one is tested against a merge no
+human reviewed. Both `#91` and `#98` were checked empirically with
+`git merge-tree` rather than assumed: both conflicted.
+
+**Why it went unnoticed:** every individual run was locally honest. Each one found
+open PRs, saw green checks, saw a browser-validation gap, and reported itself
+blocked for a real reason. Nothing in the spec asked any run to measure how far
+behind those PRs had drifted, so thirteen correct-sounding reports summed to a
+backlog. The fix belongs in the gate, not in the reporting.
+
+**Mechanism note:** the closures ship as `scripts/drain-stale-prs.sh` for the owner
+to run, because every GitHub write is blocked for the Enterprise Managed User the
+agent session authenticates as — `closePullRequest`, `addComment` and
+`addLabelsToLabelable` all return "Unauthorized: As an Enterprise Managed User,
+you cannot access this content". Reads work, and so does `git push`.
+
+**Still open:** `#60` and `#61` are `auto/needs-human` with no `ready-for-dev`, so
+the work from `#91`-`#94` does not re-enter the queue on closure alone. `#61` spans
+cohort UI and Stripe billing, owner-gated by FR-008 either way, so it wants
+splitting before grooming — a scoping decision, deliberately left to the owner.
+
+## 2026-10-12 — Correction and addendum: the fixture works, `eval` leaks the password, and nothing was browser-blocked
+
+**Context:** Two autodev follow-up commits (`67abba1`, `3fd8ff7`) landed while the
+drain above was being written, and between them they overturn three claims made
+earlier the same day.
+
+**1. The browser-validation fixture works end to end.** `#129` was validated
+against its own preview: session minted on the primary `signInWithPassword` path,
+`/settings` rendered `syntheticstesting@gmail.com`, seven index entries resolved,
+screenshot at `docs/planning/retro/2026-10-12-pr129-settings.png`. Wall D is
+closed. The `generateLink` null-token cause remains unexplained, but it is now the
+fallback and no longer on the critical path.
+
+**2. `playwright-cli eval` echoes the script it evaluates**, which printed
+`TESTING_PASSWORD` into a session transcript. When the primacy swap was decided,
+the accepted cost was recorded as "page context and snapshot files on disk". That
+understated it — the transcript is a wider surface than the disk. `autodev.md` now
+redirects `eval` output and greps for `### Result` rather than printing it, and
+forbids pasting a credential-carrying `eval` into a PR comment or handoff.
+`TESTING_PASSWORD` needs rotating in all three places named in the entry above.
+
+**3. Nothing was actually browser-blocked.** `#154` and `#155` were held for three
+sweeps on missing browser validation and then found to have no rendered surface at
+all — `#154`'s hook is not wired into `SettingsClient` yet and `#155` is test-only.
+So of the thirteen held PRs, eleven were stale and two were never eligible for the
+hold. Zero were blocked by the thing every handoff named as the blocker.
+`autodev.md` now says plainly that a PR with no rendered surface is not
+browser-blocked.
+
+**Why this matters more than the individual fixes:** "browser validation could not
+run" was true once, became a habit, and then became the stated reason for holds it
+did not explain — including one PR that had already been validated and two that had
+nothing to validate. A `0` in a flag file and a live command describe this session;
+a sentence in a spec describes what was once true somewhere. `autodev.md` now says
+that too, after a run copied its "gh is unavailable" note and reported it as an
+observation without testing it.
+
+## 2026-10-12 — Plan purchasability is derived from Stripe, not declared in the schema
+
+**Context:** T060 needed `plan_features` seeded before checkout could work at all
+— the route gates every `plan_key` on that table, so an empty table meant
+`unknown_plan` for every plan and a billing page whose only non-subscriber state
+was "There is nothing to subscribe to yet". Seeding it raised a second question the
+schema has no answer for: `org_seat` grants real features, but an organization
+provisions it. A person cannot buy one. Nothing in `plan_features` distinguishes
+"a plan that grants features" from "a plan a person can purchase".
+
+**Decision:** A plan is self-serve exactly when `plan_features` names it **and**
+Stripe has an active Price whose `lookup_key` matches the `plan_key`. No
+`self_serve` column, no allow-list constant in application code. `org_seat` is
+withheld from the billing page by having no self-serve Price, and
+`src/lib/stripe/plans.ts` never has to know why.
+
+**Why:** Those are already the two gates `src/app/billing/checkout/route.ts`
+applies — `plan_features` at :41, `lookup_key` at :46. Deriving the UI from the
+same two facts means a Subscribe button cannot offer something checkout would
+then reject with `unknown_plan`; the alternative keeps a third source of truth in
+sync with two existing ones by hand. It also keeps "features as data"
+(`docs/design/002-schema.md:189-190`) honest: re-cutting a tier stays an
+INSERT/DELETE plus a Stripe Price, never a deploy.
+
+**The catalogue is sourced, not invented.** Plan keys come from
+`contracts/entitlements-api.md:14-15`; feature keys are the four RULE-O7
+enumerates as gateable. There is deliberately no `pose_library` or
+`read_own_flows` key — RULE-O6/O7 keep that data readable with no account or
+entitlement, and a key existing for it would invite the gate the constitution
+forbids. A unit test asserts their absence so a later tier re-cut cannot add one
+quietly.
+
+**Placeholder:** `pro` is seeded at $12/month in the Stripe sandbox. No spec,
+issue or constitution rule states a price, so this is a stand-in chosen to make
+checkout exercisable end to end, not a pricing decision. Stripe Prices are
+immutable, so changing it means creating a new Price and moving the `lookup_key`.
+
+**Not applied to production.** The seed ships as a migration and is unapplied;
+FR-008 makes migrations owner-gated, so production `plan_features` is still empty
+and checkout still returns `unknown_plan` there until the owner runs it.
