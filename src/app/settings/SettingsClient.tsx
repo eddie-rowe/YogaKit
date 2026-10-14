@@ -1,8 +1,12 @@
 'use client'
 
+import { Fragment, type ReactNode } from 'react'
 import Link from 'next/link'
 
-import { SECTIONS, Section, NotYet, type SectionId } from './sections/Section'
+import { useLoadTimeSections } from '@/lib/settings/use-load-time-sections'
+import type { AccountState, OrgRole, SectionId } from '@/lib/settings/sections'
+
+import { Section, NotYet } from './sections/Section'
 import ProfileSection from './sections/ProfileSection'
 import AppearanceSection from './sections/AppearanceSection'
 import SecuritySection from './sections/SecuritySection'
@@ -20,7 +24,26 @@ interface Props {
   displayName: string
   timezone: string
   memberships: Membership[]
-  isStudioLead: boolean
+}
+
+// visibleSections ids -> the anchor ids and headings the page already ships (testids unchanged).
+const ANCHOR: Partial<Record<SectionId, string>> = { 'account-security': 'security', memberships: 'orgs' }
+const TITLE: Record<SectionId, string> = {
+  profile: 'Profile',
+  appearance: 'Appearance',
+  notifications: 'Notifications',
+  privacy: 'Privacy',
+  'account-security': 'Account & security',
+  data: 'Your data',
+  billing: 'Billing',
+  memberships: 'Organizations',
+  studio: 'Studio',
+}
+
+function roleOf(roles: string[]): OrgRole {
+  if (roles.includes('owner')) return 'owner'
+  if (roles.includes('admin')) return 'admin'
+  return 'member'
 }
 
 export default function SettingsClient({
@@ -29,20 +52,113 @@ export default function SettingsClient({
   displayName,
   timezone,
   memberships,
-  isStudioLead,
 }: Props) {
-  // 006 FR-003/FR-004: these are absent entirely for a solo practitioner, not
-  // greyed out and not tooltipped. Someone practising alone should never see
-  // studio, cohort or seat language at all — a disabled control still teaches
-  // them the app is about something they didn't ask for.
-  const hasOrgs = memberships.length > 0
-  const visible = new Set<SectionId>(
-    SECTIONS.map(s => s.id).filter(id => {
-      if (id === 'orgs') return hasOrgs
-      if (id === 'studio') return isStudioLead
-      return true
-    }),
-  )
+  // 006 FR-001/003/004: the section list (order and presence) comes from visibleSections,
+  // derived once per load. Conditional sections are absent entirely for a solo practitioner,
+  // not greyed out and not tooltipped — a disabled control still teaches them the app is
+  // about something they didn't ask for.
+  const state: AccountState = {
+    orgs: memberships.flatMap(m =>
+      m.organizations
+        ? [{ id: m.organizations.id, name: m.organizations.name, role: roleOf(m.roles ?? []) }]
+        : [],
+    ),
+  }
+  const sections = useLoadTimeSections(state)
+  const hasOrgs = sections.some(sec => sec.id === 'memberships')
+
+  const rendered: Record<SectionId, ReactNode> = {
+    profile: (
+    <ProfileSection displayName={displayName} timezone={timezone} />
+    ),
+    appearance: (
+    <AppearanceSection />
+    ),
+    notifications: (
+    <Section id="notifications" title="Notifications">
+      <NotYet>
+        There is nothing to be notified about yet. Practice reminders arrive with Daily
+        Sadhana, and they will be opt-in when they do.
+      </NotYet>
+    </Section>
+    ),
+    privacy: (
+    <Section id="privacy" title="Privacy">
+      <NotYet>
+        Your journal, reflections and notes are yours alone — that is enforced in the
+        database, not by this screen, so there is no switch here that could weaken it.
+        Controls for what a teacher can see arrive alongside cohorts.
+      </NotYet>
+    </Section>
+    ),
+    'account-security': (
+    <SecuritySection email={email} provider={provider} />
+    ),
+    data: (
+    <Section id="data" title="Your data">
+      <p className="text-sm leading-relaxed">
+        Every flow exports to a <code className="text-xs">.krama.json</code> file you own
+        outright, from the{' '}
+        <Link href="/flows" data-testid="settings-data-export" className="underline underline-offset-4">
+          Flows
+        </Link>{' '}
+        list. Nothing is locked in.
+      </p>
+      <NotYet>
+        Deleting your account isn’t built yet. Until it is, ask and it will be done by hand —
+        no waiting period, no retention window.
+      </NotYet>
+    </Section>
+    ),
+    billing: (
+    <Section id="billing" title="Billing">
+      <NotYet>
+        Nothing is charged and there is nothing to manage. The pose library stays readable
+        without an account or a subscription, whatever else changes.
+      </NotYet>
+    </Section>
+    ),
+    memberships: (
+    <Section id="orgs" title="Organizations">
+      <div data-testid="settings-orgs-list" className="space-y-2">
+        {memberships.map(m =>
+          m.organizations ? (
+            <Link
+              key={m.id}
+              data-testid={`settings-org-${m.organizations.id}`}
+              href={`/org/${m.organizations.id}/members`}
+              className="kk-card px-3 py-2.5 flex items-center justify-between gap-2"
+            >
+              <span className="text-sm font-medium">{m.organizations.name}</span>
+              <span className="text-xs" style={{ color: 'var(--muted)' }}>
+                {m.roles.join(', ')}
+                {m.status !== 'active' && ` · ${m.status}`}
+              </span>
+            </Link>
+          ) : null,
+        )}
+      </div>
+      <Link
+        data-testid="settings-org-new"
+        href="/org/new"
+        className="kk-btn-outline inline-block px-3 py-1.5 text-sm"
+      >
+        Create an organization
+      </Link>
+    </Section>
+    ),
+    studio: (
+    /* Separated by the heading and the spacing above it only — 006 FR-006
+       and SC-004 hold the interface at one accent, so no second colour and
+       no boxed "admin" treatment. */
+    <Section id="studio" title="Studio">
+      <NotYet>
+        Rosters and invitations live on each organization’s own page for now. Teaching
+        tools — cohorts, shared sequences, seat management — arrive with Daily Sadhana.
+      </NotYet>
+    </Section>
+    ),
+  }
 
   return (
     <div className="kk-page">
@@ -58,102 +174,21 @@ export default function SettingsClient({
             where search starts to earn its place, so this is a list of anchors and
             nothing more (docs/design-research/19-settings-profile.md). */}
         <nav data-testid="settings-index" aria-label="Settings sections" className="flex flex-wrap gap-x-4 gap-y-1.5">
-          {SECTIONS.filter(s => visible.has(s.id)).map(section => (
+          {sections.map(section => (
             <a
               key={section.id}
-              href={`#${section.id}`}
+              href={`#${ANCHOR[section.id] ?? section.id}`}
               className="text-sm underline underline-offset-4"
               style={{ color: 'var(--muted)' }}
             >
-              {section.title}
+              {TITLE[section.id]}
             </a>
           ))}
         </nav>
 
-        <ProfileSection displayName={displayName} timezone={timezone} />
-
-        <AppearanceSection />
-
-        <Section id="notifications" title="Notifications">
-          <NotYet>
-            There is nothing to be notified about yet. Practice reminders arrive with Daily
-            Sadhana, and they will be opt-in when they do.
-          </NotYet>
-        </Section>
-
-        <Section id="privacy" title="Privacy">
-          <NotYet>
-            Your journal, reflections and notes are yours alone — that is enforced in the
-            database, not by this screen, so there is no switch here that could weaken it.
-            Controls for what a teacher can see arrive alongside cohorts.
-          </NotYet>
-        </Section>
-
-        <SecuritySection email={email} provider={provider} />
-
-        <Section id="data" title="Your data">
-          <p className="text-sm leading-relaxed">
-            Every flow exports to a <code className="text-xs">.krama.json</code> file you own
-            outright, from the{' '}
-            <Link href="/flows" data-testid="settings-data-export" className="underline underline-offset-4">
-              Flows
-            </Link>{' '}
-            list. Nothing is locked in.
-          </p>
-          <NotYet>
-            Deleting your account isn’t built yet. Until it is, ask and it will be done by hand —
-            no waiting period, no retention window.
-          </NotYet>
-        </Section>
-
-        <Section id="billing" title="Billing">
-          <NotYet>
-            Nothing is charged and there is nothing to manage. The pose library stays readable
-            without an account or a subscription, whatever else changes.
-          </NotYet>
-        </Section>
-
-        {hasOrgs && (
-          <Section id="orgs" title="Organizations">
-            <div data-testid="settings-orgs-list" className="space-y-2">
-              {memberships.map(m =>
-                m.organizations ? (
-                  <Link
-                    key={m.id}
-                    data-testid={`settings-org-${m.organizations.id}`}
-                    href={`/org/${m.organizations.id}/members`}
-                    className="kk-card px-3 py-2.5 flex items-center justify-between gap-2"
-                  >
-                    <span className="text-sm font-medium">{m.organizations.name}</span>
-                    <span className="text-xs" style={{ color: 'var(--muted)' }}>
-                      {m.roles.join(', ')}
-                      {m.status !== 'active' && ` · ${m.status}`}
-                    </span>
-                  </Link>
-                ) : null,
-              )}
-            </div>
-            <Link
-              data-testid="settings-org-new"
-              href="/org/new"
-              className="kk-btn-outline inline-block px-3 py-1.5 text-sm"
-            >
-              Create an organization
-            </Link>
-          </Section>
-        )}
-
-        {isStudioLead && (
-          /* Separated by the heading and the spacing above it only — 006 FR-006
-             and SC-004 hold the interface at one accent, so no second colour and
-             no boxed "admin" treatment. */
-          <Section id="studio" title="Studio">
-            <NotYet>
-              Rosters and invitations live on each organization’s own page for now. Teaching
-              tools — cohorts, shared sequences, seat management — arrive with Daily Sadhana.
-            </NotYet>
-          </Section>
-        )}
+        {sections.map(sec => (
+          <Fragment key={sec.id}>{rendered[sec.id]}</Fragment>
+        ))}
 
         {/* Someone with no organization should still be able to make one; it just
             isn't a settings section until they have. */}
