@@ -115,3 +115,4 @@ YYYY-MM-DD HH:MM /autoobs [STATUS] — overall: [HEALTHY/DEGRADED/AT-RISK]; moni
 2026-10-14 08:02 /autoobs [OK] — overall: DEGRADED; monitors: 9 ok / 2 alert; digest: docs/observation/autoobs/2026-10-14.md
 2026-10-14 07:00 /autopm [OK] — 4 issues ready-for-dev (#127, #106, #107, #96); board: Needs Attention; focus: 006 US1 settings + 004 composer; handoff: docs/planning/autopm/autopm-handoff-2026-10-14.md
 2026-10-14 10:40 /autodev [OK] — 1 PRs merged (#163, closes #127); 0 dependabot merged; skipped 8 (#106 #107 not started; #96 creds; 5 needs-human); failed 0; handoff: docs/planning/autopm/autodev-handoff-2026-10-14.md
+2026-10-14 17:00 /autoretro [OK] — shipped 1 PR (#163 by /autodev, dev-complete); momentum STEADY-STATE-OWNER-BLOCKED; carry: slice #106/#107 for preview validation; CEO brief: docs/planning/ceo-brief/2026-10-14.md
