@@ -9,10 +9,6 @@ import SettingsClient, { type Membership } from './SettingsClient'
 // does its own check.
 export const dynamic = 'force-dynamic'
 
-/** Which roles make the studio section relevant. Read off the memberships we
- *  already fetched rather than a second query — the roles array is right there. */
-const STUDIO_ROLES = ['owner', 'admin']
-
 export default async function SettingsPage() {
   const supabase = await createClient()
   const { data: userData } = await supabase.auth.getUser()
@@ -41,7 +37,6 @@ export default async function SettingsPage() {
       displayName={profile?.display_name ?? ''}
       timezone={profile?.timezone ?? ''}
       memberships={memberships}
-      isStudioLead={memberships.some(m => m.roles?.some(role => STUDIO_ROLES.includes(role)))}
     />
   )
 }
