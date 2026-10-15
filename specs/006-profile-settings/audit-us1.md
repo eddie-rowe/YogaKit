@@ -1,20 +1,27 @@
-# 006 US1 audit — shipped settings/account vs FR-001..FR-007 (T013)
+# 006 US1 audit — shipped settings vs FR-001..FR-007 (T013)
 
-Read-only audit of `src/app/settings/` and `src/app/account/page.tsx` at `main` (2026-10-08).
-This is completion, not a rebuild (plan disagreement 1). No source changed.
+Read-only audit of `src/app/settings/`, `src/app/account/page.tsx`, `src/lib/settings/sections.ts`
+on `main` at `eebaa15`. No behaviour change; no testid changed.
 
-| FR | Status | Evidence | Closed by |
-|----|--------|----------|-----------|
-| FR-001 single route, visible index, nothing URL-only | **partial** | Single route `src/app/settings/page.tsx`; `/account` redirects to it (`src/app/account/page.tsx:8`). Index is `nav[data-testid=settings-index]` (`SettingsClient.tsx:60-71`) built from `SECTIONS`. Gap: index filters by the local `visible` set, but section bodies are hand-placed JSX (`SettingsClient.tsx:73-167`), so index and body can drift. The `/org/new` entry (`:136`, `:160`) is reachable from the page but is not an indexed section. | T016 |
-| FR-002 fixed section order | **partial** | `SECTIONS` array order matches the spec (`sections/Section.tsx:10-20`) and the index follows it. The body order is separately hard-coded and matches today only by hand. A parallel `visibleSections` exists in `src/lib/settings/sections.ts:44` (T014) but `SettingsClient` does not use it; the two lists name sections differently (`Data export and delete` vs `Your data`, `sections.ts:40`). | T016 |
-| FR-003 org memberships absent (not disabled) with no org | **met** | `hasOrgs` gate, section not rendered (`SettingsClient.tsx:38`, `:116`) and filtered out of the index (`:41`). Gap in the shell only: the section has no role-change or leave affordance, see FR-007. | T016 (single source), T018 (shell) |
-| FR-004 studio absent unless owner/admin | **met** | `isStudioLead` from `STUDIO_ROLES` (`page.tsx:185`, `:215`); gated in render (`SettingsClient.tsx:146`) and index (`:42`). Role is read once per server render, so a role change takes effect on next load (compatible with FR-039); not asserted by a test. | T019 |
-| FR-005 studio names the governed org | **gap** | Studio body is a single `NotYet` paragraph (`SettingsClient.tsx:150-154`); it names no organization. `sections.ts` already carries `governedOrgs` (`:53`) but the UI does not consume it. | T017, T018 |
-| FR-006 separation by spacing/hairlines/labels, one accent | **partial** | No second accent colour is used (`SettingsClient.tsx:147-149` comment; `Section` uses only `--muted`). Separation is the shared `space-y-10` only, with no hairline or distinguishing label. | T017 |
-| FR-007 immovable settings say why | **partial** | `NotYet` states plain-language reasons for notifications, privacy, data delete, billing, studio (`SettingsClient.tsx:77-155`). No silently inert controls found; `ProfileSection` Save is disabled only while unchanged/saving (`ProfileSection.tsx:108`), which is feedback not an immovable setting. Gaps: notifications, data export/delete and org memberships are placeholders rather than the section shells T018 specifies; org rows show a role but no statement of what the account cannot change. | T018 |
+| FR | Verdict | Evidence |
+|----|---------|----------|
+| FR-001 single route, visible index, no URL-only section | **Pass** | One route `src/app/settings/page.tsx`; index `<nav data-testid="settings-index">` built from `visibleSections` at `SettingsClient.tsx:176-187`; `/account` redirects to `/settings` (`account/page.tsx:9`). Every rendered section has an index anchor. |
+| FR-002 fixed order | **Pass** | Order comes from `ALWAYS` + pushes in `src/lib/settings/sections.ts:34-55`; render loop `SettingsClient.tsx:189-191` iterates the same array, so index and body cannot drift. |
+| FR-003 memberships only with ≥1 org, absent otherwise | **Pass** | `sections.ts:46-48`; solo account gets a plain "Teaching a group?" link instead (`SettingsClient.tsx:195-202`), not a disabled section. |
+| FR-004 studio only for owner/admin | **Pass** | `sections.ts:49-54`. `roleOf` (`SettingsClient.tsx:43-47`) maps owner > admin > member. |
+| FR-005 studio names the governed org(s) | **Gap** | The studio block rendered in `SettingsClient.tsx:150-160` is a static `NotYet` paragraph and ignores `governedOrgs`. The shell that does name the org (`sections/StudioSection.tsx:7-9`) is not imported by `SettingsClient`. Maps to **T017**. |
+| FR-006 studio separation by spacing/hairlines/labels only, no second accent | **Partial** | No accent colour is introduced anywhere (only `var(--muted)`). The hairline treatment exists only in the unused `StudioSection.tsx:7` (`borderBottom`). Inline block has no hairline. Maps to **T017**. |
+| FR-007 uneditable control states why | **Partial** | Inline `NotYet` text exists for notifications, privacy, data, billing, studio (`SettingsClient.tsx:77-159`). Shells `NotificationsSection`, `DataSection`, `OrgMembershipsSection`, `StudioSection` exist with `*-why` testids and unit tests (`tests/unit/settings/section-shells.test.tsx`) but are dead code in the shipped page, so the tested copy differs from the rendered copy. Maps to **T018**. |
 
-## Cross-cutting notes
+## Other observations (no new issue needed)
 
-- **Two section lists.** `SECTIONS` (UI) and `visibleSections` (pure, tested in T015) must collapse to one; T016 should render from `visibleSections` and delete the local filter.
-- **T020 prerequisite.** `page.tsx:190` redirects unauthenticated visitors to sign-in. Settings is a write surface, so this is acceptable, but cached personal preferences (appearance) must still render with defaults when storage is unavailable; `AppearanceSection.tsx` should be checked under T020 (FR-010, FR-036, RULE-L3/L4).
-- **Testids.** Existing testids (`settings-index`, `settings-section-*`, `settings-orgs-list`, `settings-org-*`, `settings-org-new`, `settings-data-export`) must not change (US1 gate).
+- `sections/Section.tsx:9-20` exports a `SECTIONS` table whose ids (`security`, `orgs`) differ from
+  `lib/settings/sections.ts` `SectionId`; `SettingsClient` bridges with `ANCHOR`
+  (`SettingsClient.tsx:30`). Harmless; T018 should keep the DOM ids stable.
+- `SettingsClient.tsx:70-161` has inconsistent indentation inside `rendered`; cosmetic.
+
+## Gap → task map
+
+- FR-005, FR-006 → T017 (#165)
+- FR-007 → T018 (#166)
+- No further follow-up issues required.
