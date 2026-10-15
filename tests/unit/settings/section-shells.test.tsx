@@ -30,7 +30,7 @@ describe('settings section shells', () => {
   })
 
   it('Studio names the organization its controls govern', () => {
-    render(<StudioSection orgName="Lotus Studio" />)
+    render(<StudioSection orgs={[{ id: 'o1', name: 'Lotus Studio' }]} />)
     expect(screen.getByTestId('settings-section-studio')).toBeTruthy()
     expect(screen.getByTestId('settings-studio-org').textContent).toContain('Lotus Studio')
     expect(screen.getByTestId('settings-studio-why').textContent!.length).toBeGreaterThan(20)

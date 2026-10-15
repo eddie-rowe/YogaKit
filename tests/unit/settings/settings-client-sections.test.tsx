@@ -88,4 +88,38 @@ describe('SettingsClient sections (T016)', () => {
     })
     expect(renderedSectionIds()).toContain('studio')
   })
+
+  it('studio controls name only the governed org (owner of one, member of another)', () => {
+    mount([org('a', ['owner']), org('b', ['member'])])
+    const lines = screen.getAllByTestId('settings-studio-org').map((el) => el.textContent)
+    expect(lines).toHaveLength(1)
+    expect(lines[0]).toContain('Org a')
+    expect(lines[0]).not.toContain('Org b')
+  })
+
+  it('studio names every governed org when several apply', () => {
+    mount([org('a', ['owner']), org('b', ['admin'])])
+    expect(screen.getAllByTestId('settings-studio-org')).toHaveLength(2)
+  })
+
+  it('studio is absent for zero-org and member-only accounts', () => {
+    const { unmount } = mount([])
+    expect(screen.queryByTestId('settings-section-studio')).toBeNull()
+    unmount()
+    mount([org('a', ['member'])])
+    expect(screen.queryByTestId('settings-studio-org')).toBeNull()
+  })
+
+  it('every non-editable section states why (zero-org, member, owner)', () => {
+    for (const ms of [[], [org('a', ['member'])], [org('a', ['owner'])]]) {
+      const { unmount } = mount(ms)
+      expect(screen.getByTestId('settings-notifications-why').textContent!.length).toBeGreaterThan(20)
+      expect(screen.getByTestId('settings-data-why').textContent!.length).toBeGreaterThan(20)
+      if (ms.length) expect(screen.getByTestId('settings-orgs-why').textContent!.length).toBeGreaterThan(20)
+      if (ms.some((m) => m.roles.includes('owner'))) {
+        expect(screen.getByTestId('settings-studio-why').textContent!.length).toBeGreaterThan(20)
+      }
+      unmount()
+    }
+  })
 })
