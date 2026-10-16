@@ -11,6 +11,7 @@ import type { Pose } from '@/lib/pose-types'
 import type { FlowItem, LayerName } from '@/lib/flow/types'
 import { isStillnessNode } from '@/lib/flow/types'
 import type { FrictionMatrix } from '@/lib/friction'
+import type { ValidatorWarning } from '@/lib/validator/lite'
 import ComposeFlowItem from './ComposeFlowItem'
 
 interface Props {
@@ -18,6 +19,8 @@ interface Props {
   poseBySlug: Map<string, Pose>
   frictionMatrix: FrictionMatrix
   layer: LayerName
+  warnings?: ValidatorWarning[]
+  onDismissWarning?: (warning: ValidatorWarning) => void
   sensors: SensorDescriptor<SensorOptions>[]
   onDragStart: () => void
   onDragEnd: (event: DragEndEvent) => void
@@ -35,6 +38,8 @@ export default function ComposeFlowList({
   poseBySlug,
   frictionMatrix,
   layer,
+  warnings = [],
+  onDismissWarning,
   sensors,
   onDragStart,
   onDragEnd,
@@ -70,6 +75,8 @@ export default function ComposeFlowList({
                 isLast={index === items.length - 1}
                 next={next}
                 seam={seam}
+                warnings={warnings.filter(w => w.itemId === item.id)}
+                onDismissWarning={onDismissWarning}
                 onMove={onMove}
                 onUpdate={onUpdate}
                 onRemove={onRemove}

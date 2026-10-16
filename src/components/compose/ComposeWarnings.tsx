@@ -1,25 +1,24 @@
 'use client'
 
 import type { ValidatorWarning } from '@/lib/validator/lite'
+import ComposeWarningMarker from './ComposeWarningMarker'
 
 interface Props {
   warnings: ValidatorWarning[]
+  onDismiss: (warning: ValidatorWarning) => void
 }
 
-/** Validator-lite warnings — informational only, never blocks save. Split out of
- *  `ComposeClient.tsx` (004 T043). */
-export default function ComposeWarnings({ warnings }: Props) {
+/** Flow-level validator-lite warnings — the ones not tied to a single item. Item
+ *  warnings render anchored to their row instead (004 US6). Informational only,
+ *  never blocks save. */
+export default function ComposeWarnings({ warnings, onDismiss }: Props) {
   return (
     <>
-      {warnings.map(w => (
-        <div
-          key={`${w.code}-${w.itemId ?? 'flow'}`}
-          data-testid={`validator-warning-${w.code}`}
-          className="kk-warning px-3 py-2 text-sm"
-        >
-          {w.message}
-        </div>
-      ))}
+      {warnings
+        .filter(w => !w.itemId)
+        .map(w => (
+          <ComposeWarningMarker key={w.code} warning={w} onDismiss={onDismiss} />
+        ))}
     </>
   )
 }
