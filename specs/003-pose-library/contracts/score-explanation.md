@@ -1,7 +1,28 @@
-# Contract: Score Explanation Copy — **[OWNER SIGN-OFF REQUIRED]**
+# Contract: Score Explanation Copy — **SIGNED OFF 2026-10-17**
 
-**Status**: Drafted, awaiting sign-off. Nothing is implemented against this yet.
-**Consumed by**: US4 (FR-022, FR-023, SC-009), deferred to its own PR.
+**Status**: Signed off 2026-10-17 by the owner. Approved as drafted — the copy
+below is binding and implementable; no changes were requested.
+**Consumed by**: US4 (FR-022, FR-023, SC-009), tracked on `#82`.
+
+## Sign-off ruling
+
+Approving this document also rules on the spec correction it raises, which is the
+substantive part of the sign-off rather than the copy:
+
+**FR-023's "describe contributing geometry factors" is descriptive of intent, not
+binding.** It cannot be binding, because its premise is false: `complexity` and
+`injury_risk` are hand-authored integers in the pose JSON (`integer 1..10` in
+`data/schemas/pose.schema.json`), present on 67/67 poses, and `src/lib/friction/`
+reads neither. There is no computation, so there are no contributing factors to
+describe and no weighting constants to leak.
+
+Writing "calculated from the pose's geometry" would satisfy FR-023's letter and
+break Principle II's "never a black box" by inventing a mechanism that does not
+exist — strictly worse than showing a bare number. Explaining an editorial
+judgement, which is what the number honestly is, is the correct reading.
+
+Recorded in `DECISIONS.md` (2026-10-17) and already carried as a correction in
+`research.md`.
 
 ---
 

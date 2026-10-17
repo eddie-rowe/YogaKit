@@ -1341,3 +1341,45 @@ conclusion — the gap recurred twice precisely because nothing recorded it.
 **Known remaining limit:** one account cannot browser-check member-vs-owner
 contrast. `autodev.md` now says to state that plainly rather than reporting the
 whole owner path as unverifiable.
+
+## 2026-10-17 — FR-023's "geometry factors" is descriptive, not binding; and the theme taxonomy closes at 14
+
+**Context:** Two 003 copy contracts had sat at `[OWNER SIGN-OFF REQUIRED]` for
+weeks, blocking `#82` and `#83`. Neither was waiting on engineering. Both are
+signed off as of today; two rulings in them are decisions rather than approvals and
+belong here.
+
+**Decision 1 — FR-023 is descriptive of intent, not binding.** The spec's Derived
+Score entity says `complexity` and `injury_risk` are "computed from pose geometry"
+and asks the explanation to "describe contributing geometry factors". That premise
+is false: both are hand-authored integers in the pose JSON (`integer 1..10`,
+present on 67/67 poses) and `src/lib/friction/` reads neither. Nothing computes
+them.
+
+Honouring FR-023 literally would mean writing "calculated from the pose's
+geometry", which invents a mechanism that does not exist — satisfying the letter of
+the rule while breaking Principle II's "never a black box", and leaving the reader
+worse off than a bare number would. The copy therefore explains an editorial
+judgement, which is what the number honestly is. Signing off
+`contracts/score-explanation.md` rules that this is the correct reading of FR-023.
+
+**Decision 2 — the theme taxonomy closes at 14, not the 13 proposed.** FR-029 says
+the taxonomy "MUST remain the existing curated, closed set"; there is no closed set
+(`emotion` is free text, 38 distinct values across 101 occurrences, three spellings
+of grief), so FR-029 establishes one rather than preserving it. Of the five merges
+the contract flagged, the three held with medium or high confidence stand and both
+low-confidence ones are reversed: `sadness` becomes its own theme, and the bridging
+pose `grief and letting go` moves to `letting-go` rather than `grief`.
+
+**Why `sadness` is separate:** it is a browsable lens, not an assessment, and
+someone looking for "sadness" should not be told they are grieving. The contract's
+supporting argument for merging also does not survive checking — it claims the two
+`sadness` poses are "both gentle forward folds", but `supported-fish` is an
+anterior chest opening (`brahmana`, lung) and `butterfly` is a forward drape
+(`langhana`, liver). Opposite shapes on opposite meridians. The merge rested
+partly on a false premise.
+
+**Also ruled:** `chronic vigilance` and `stored pelvic emotion` do not become
+themes. One names a clinical nervous-system state, the other a body location, and a
+browsable theme called "Chronic vigilance" would diagnose the reader on a catalog
+page.

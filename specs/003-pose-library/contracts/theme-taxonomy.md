@@ -1,7 +1,65 @@
-# Contract: Theme Taxonomy — **[OWNER SIGN-OFF REQUIRED]**
+# Contract: Theme Taxonomy — **SIGNED OFF 2026-10-17**
 
-**Status**: Drafted, awaiting sign-off. Nothing is implemented against this yet.
-**Consumed by**: US5 (FR-027, FR-029, SC-010), deferred to its own PR.
+**Status**: Signed off 2026-10-17 by the owner. Approved **with two reversals** —
+the closed set is **14 themes, not 13**. See "Sign-off rulings" immediately below;
+where this document's original proposal and the rulings disagree, the rulings win.
+**Consumed by**: US5 (FR-027, FR-029, SC-010), tracked on `#83`.
+
+## Sign-off rulings
+
+The five calls this document flagged, ruled. Both low-confidence merges were
+reversed; the three the author held with medium or high confidence stand.
+
+| # | Call | Author's confidence | Ruling |
+|---|---|---|---|
+| 1 | `sadness` → `grief` | low | **REVERSED.** `sadness` becomes its own theme. Grief and sadness are not the same feeling, and this is a browsable lens: someone looking for "sadness" should not be told they are grieving. The stated supporting argument is also factually wrong — see below. |
+| 2 | `letting-go` kept separate from `grief` | low | **Separation upheld, and the bridge pose moves.** `grief and letting go` goes to `letting-go`, not `grief` — the author called placing it under grief "arguably the wrong half", and it is. The pose's work is the release. |
+| 3 | `anger` kept separate from `frustration` | high | **Upheld.** TCM splits them cleanly (liver vs gallbladder) and so does the practice. |
+| 4 | `safety` → `groundedness` | medium | **Upheld.** `grounding and security` literally bridges the two; keeping both would orphan that pose. |
+| 5 | `conflict` → `control` | low | **Upheld.** Single occurrence, same organ. Revisit if a second appears. |
+
+Also upheld: **`chronic vigilance` and `stored pelvic emotion` do not become
+themes.** One names a clinical nervous-system state, the other a body location.
+A browsable theme called "Chronic vigilance" would diagnose the reader on a
+catalog page.
+
+### Correction: the two `sadness` poses are not the same shape
+
+Ruling 1's original argument was that the merge is "defensible (lung/liver
+overlap, and the two poses reading 'sadness' are both gentle forward folds)".
+The second half is wrong, checked against the data:
+
+| Pose | Shape | `energetic_direction` | TCM organ for `sadness` |
+|---|---|---|---|
+| `supported-fish` | anterior chest and intercostal opening over a prop | `brahmana` | lung |
+| `butterfly` | forward drape into the inner groin and hip crease | `langhana` | liver |
+
+They are opposite shapes on opposite meridians — one expands the front body, the
+other folds it. So the merge rested partly on a premise that does not hold, which
+independently supports the reversal rather than merely permitting it.
+
+What the two actually share is being deep-tissue, long-held and supported. The
+subhead below describes that, not a fold.
+
+### Resulting counts after the reversals
+
+| Slug | n | Change from the table below |
+|---|---|---|
+| `sadness` | 2 | **new** — unmerged from `grief` |
+| `grief` | 14 | loses `sadness` (2) and `grief and letting go` (1) |
+| `letting-go` | 4 | gains `grief and letting go` (1) |
+
+**Still 101 occurrences across 14 themes. Nothing dropped.** Every other row in
+the proposal table stands unchanged.
+
+### Subhead for the new theme
+
+| Slug | Subhead |
+|---|---|
+| `sadness` | Deep-tissue holds at the chest and inner groin, along the lung and liver lines. |
+
+Written to the same rule as the other thirteen: anatomy and intent, never the
+reader's inner state.
 
 ---
 
