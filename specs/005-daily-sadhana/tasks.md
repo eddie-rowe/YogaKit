@@ -63,12 +63,12 @@ resolved technical unknowns, and open (not fill) the copy contract decision #6 o
 **Independent test**: `research.md` and `data-model.md` exist and every open question they
 raise has a stated resolution, not a "TODO." No code changes in this phase.
 
-- [ ] T005 [P] Author `specs/005-daily-sadhana/research.md` — resolve: the local-day
+- [x] T005 [P] Author `specs/005-daily-sadhana/research.md` — resolve: the local-day
   library choice (decision #1; `Intl.DateTimeFormat` vs. a dependency), whether the
   offline check-in queue is a genuinely new `idb` store or a generalization of `004`'s
   `outbox.ts`, the exact shape of `computeStreak()`'s grace-budget consumption rule, and
   the dashboard route's placement in `src/app/`
-- [ ] T006 [P] Author `specs/005-daily-sadhana/data-model.md` — the five tables in full
+- [x] T006 [P] Author `specs/005-daily-sadhana/data-model.md` — the five tables in full
   (`intentions`, `practice_checkins`, `practice_reflections`, `practice_ritual_state`,
   `practice_milestones`), `practice_guidance_dismissals`, every RLS policy body, and the
   `data/sadhana/grace-budget.json` shape (decision #4)
@@ -78,7 +78,7 @@ raise has a stated resolution, not a "TODO." No code changes in this phase.
   against. This contract is opened, not closed, in this phase — no guidance entry is
   authored until it is signed off, the same deferral `003` used for
   `contracts/theme-taxonomy.md`
-- [ ] T008 [P] Record decision #3's resolution (no streak repair, ever) as a one-line
+- [x] T008 [P] Record decision #3's resolution (no streak repair, ever) as a one-line
   note in `data-model.md`'s intro rather than a schema element — there is no table for a
   mechanic that does not exist. This is documentation, not implementation, and is listed
   here so the decision is traceable to a concrete artifact rather than only to `plan.md`'s
