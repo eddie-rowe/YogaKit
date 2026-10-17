@@ -137,7 +137,7 @@ the new RULE-V5 assertion (T015).
 beside the fields, confirm a second account cannot read the note, confirm an offline
 check-in survives a reload and flushes with no user action once online.
 
-- [ ] T019 [US1] `src/lib/sadhana/local-day.ts` — `resolveLocalDay()`, computed from the
+- [x] T019 [US1] `src/lib/sadhana/local-day.ts` — `resolveLocalDay()`, computed from the
   browser's current timezone at submission, never at open (FR-005, decision #1)
 - [ ] T020 [US1] `src/lib/storage/checkin-outbox.ts` — the offline queue, per
   `research.md`'s decision on reuse-vs-new (T005); a check-in made offline is never lost
