@@ -10,6 +10,8 @@ import { Section, NotYet } from './sections/Section'
 import ProfileSection from './sections/ProfileSection'
 import AppearanceSection from './sections/AppearanceSection'
 import SecuritySection from './sections/SecuritySection'
+import NotificationsSection from './sections/NotificationsSection'
+import StudioSection from './sections/StudioSection'
 
 export interface Membership {
   id: string
@@ -74,14 +76,7 @@ export default function SettingsClient({
     appearance: (
     <AppearanceSection />
     ),
-    notifications: (
-    <Section id="notifications" title="Notifications">
-      <NotYet>
-        There is nothing to be notified about yet. Practice reminders arrive with Daily
-        Sadhana, and they will be opt-in when they do.
-      </NotYet>
-    </Section>
-    ),
+    notifications: <NotificationsSection />,
     privacy: (
     <Section id="privacy" title="Privacy">
       <NotYet>
@@ -104,10 +99,12 @@ export default function SettingsClient({
         </Link>{' '}
         list. Nothing is locked in.
       </p>
-      <NotYet>
-        Deleting your account isn’t built yet. Until it is, ask and it will be done by hand —
-        no waiting period, no retention window.
-      </NotYet>
+      <div data-testid="settings-data-why">
+        <NotYet>
+          Deleting your account isn’t built yet. Until it is, ask and it will be done by hand —
+          no waiting period, no retention window.
+        </NotYet>
+      </div>
     </Section>
     ),
     billing: (
@@ -138,6 +135,11 @@ export default function SettingsClient({
           ) : null,
         )}
       </div>
+      <div data-testid="settings-orgs-why">
+        <NotYet>
+          Your role is set by the organization’s owner, so it changes with them rather than here.
+        </NotYet>
+      </div>
       <Link
         data-testid="settings-org-new"
         href="/org/new"
@@ -147,17 +149,7 @@ export default function SettingsClient({
       </Link>
     </Section>
     ),
-    studio: (
-    /* Separated by the heading and the spacing above it only — 006 FR-006
-       and SC-004 hold the interface at one accent, so no second colour and
-       no boxed "admin" treatment. */
-    <Section id="studio" title="Studio">
-      <NotYet>
-        Rosters and invitations live on each organization’s own page for now. Teaching
-        tools — cohorts, shared sequences, seat management — arrive with Daily Sadhana.
-      </NotYet>
-    </Section>
-    ),
+    studio: <StudioSection orgs={sections.find(sec => sec.id === 'studio')?.governedOrgs ?? []} />,
   }
 
   return (
