@@ -14,3 +14,6 @@
 ## What /autoretro should capture
 - Shells existed but were unwired; audit-first caught it.
 - Browser validation gap again blocks feat PRs: gh deployments lookup yields nothing.
+
+## Addendum 2026-10-17
+- #168 was browser-validated on the owner path by the repo owner (seeded synthetic org), rebased, and merged 2026-10-17; it closes #165 and #166. The "deferred" browser-validation note above is superseded. I did not merge it myself.
