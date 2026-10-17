@@ -171,7 +171,7 @@ check-in survives a reload and flushes with no user action once online.
 displayed streak never decreases, rest logs as a distinct state, no screen contains a
 countdown, a warning colour, or a missed-day count.
 
-- [ ] T028 [US2] `src/lib/sadhana/streak.ts` — `computeStreak(checkins, graceBudget)`,
+- [x] T028 [US2] `src/lib/sadhana/streak.ts` — `computeStreak(checkins, graceBudget)`,
   pure, per `research.md`'s consumption rule; a single number that never decreases and
   never shows zero after a first practice (FR-015)
 - [ ] T029 [US2] Streak display: no warning colour state, no countdown, anywhere
@@ -193,7 +193,7 @@ countdown, a warning colour, or a missed-day count.
   (FR-024). This task's "implementation" is the confirmed absence, not a feature
 - [ ] T035 [P] [US2] `npm run lint:copy` over every new string on this path — a
   deliberately introduced coercive phrase must fail the build (FR-025, SC-009)
-- [ ] T036 [P] [US2] Vitest: generated check-in histories with gaps, asserting the streak
+- [x] T036 [P] [US2] Vitest: generated check-in histories with gaps, asserting the streak
   never decreases and never re-shows zero after a first practice (SC-004)
 
 **Gate**: SC-004, SC-005, SC-006, SC-007, SC-008 asserted by the tests above, not
