@@ -1303,3 +1303,41 @@ immutable, so changing it means creating a new Price and moving the `lookup_key`
 **Not applied to production.** The seed ships as a migration and is unapplied;
 FR-008 makes migrations owner-gated, so production `plan_features` is still empty
 and checkout still returns `unknown_plan` there until the owner runs it.
+
+## 2026-10-17 — Test fixtures go through the app's own RPCs, not direct inserts
+
+**Context:** Production had zero rows in `organizations` and zero in `memberships`,
+so `syntheticstesting@gmail.com` could not exercise any owner or admin path. Two
+browser validations independently discovered this and stopped: PR `#129` on
+2026-10-12 ("member/owner variants not browser-checkable (test account has no
+org)") and PR `#168` on 2026-10-17 (held `auto/needs-human` for "the owner-path
+studio block the synthetic account cannot perform"). It also made all of 002/US3
+unreachable, since cohorts live under `/org/[orgId]/`.
+
+**Decision:** Seed the fixture by calling `app_create_organization`
+(`20260826224201_identity_tenancy.sql:195`) as the signed-in synthetic user, via
+`scripts/seed-synthetic-org.mjs`. Not direct inserts into `organizations` and
+`memberships`.
+
+**Why:** That function is `SECURITY DEFINER` and writes the organization and the
+creator's owner membership in one transaction, deriving both from `auth.uid()`. A
+fixture built that way is by construction the exact shape the application
+produces. Hand-rolled inserts can satisfy the table constraints and still differ
+from what the app would create — a wrong `roles` array, a missing `created_by`, a
+status the app never sets — and a fixture that differs from real data is worse
+than no fixture, because every test written against it encodes the difference.
+
+It also means the fixture cannot be created with the service key: execute is
+revoked from `public` and granted only to `authenticated`, and a service-role call
+has no `auth.uid()`. That constraint is a feature — it forces the fixture through
+the same authorization path a real user takes.
+
+**Scope of the fix:** at the source, once, rather than per-PR. The script is
+idempotent and refuses to create a second organization, because two would leave
+the fixture ambiguous about which one a test should use. `autodev.md` step 5.3 now
+states that the account owns an org and tells a run not to re-derive the old
+conclusion — the gap recurred twice precisely because nothing recorded it.
+
+**Known remaining limit:** one account cannot browser-check member-vs-owner
+contrast. `autodev.md` now says to state that plainly rather than reporting the
+whole owner path as unverifiable.

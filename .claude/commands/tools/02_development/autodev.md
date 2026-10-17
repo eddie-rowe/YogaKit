@@ -265,6 +265,20 @@ MCP-native lifecycle (no `/tools:02_development:up`, no Docker):
       project (branching is off) — this account is dedicated and
       unmistakably named for exactly that reason.
 
+      **This account owns an organization**, so owner/admin paths ARE
+      reachable: `8f77499b-a8c0-4253-9caf-8711698f8be0` "Synthetics Testing
+      Studio", `org_types: ['studio']`, membership `roles: ['owner']`. That
+      makes `/settings`' studio block and everything under `/org/[orgId]/`
+      (members, cohorts) validatable. Before 2026-10-17 it owned nothing, and
+      two runs gave up on owner-path checks for that reason alone (`#129`,
+      `#168`) — do not re-derive that conclusion, it is fixed. If the fixture
+      is ever missing, `scripts/seed-synthetic-org.mjs` recreates it
+      idempotently through the app's own `app_create_organization` RPC.
+
+      It has no *second* membership, so member-vs-owner contrast still cannot
+      be browser-checked with one account. Say so plainly if a check needs it,
+      rather than reporting the owner path as unverifiable.
+
       **Primary — page-context `signInWithPassword`.** Proven 2026-10-12
       against PR `#129`'s preview: returned `ok`, and `/settings` rendered
       `syntheticstesting@gmail.com` after a reload. The app has no password
