@@ -6,17 +6,18 @@ import BodyDiagram from '@/components/poses/BodyDiagram'
 import { CHAKRA_DOTS } from '@/lib/pose-library/body-map'
 import { describeEnergeticDirection } from '@/lib/pose-library/energetic-direction'
 import * as haptics from '@/lib/haptics'
+import { DEPTH_STEPS, DEPTH_RANK, REVEAL_CLASS } from '@/lib/pose-library/depth'
 
 interface Props {
   pose: Pose
 }
 
 export type DetailLayer = 'simple' | 'advanced' | 'expert' | 'custom'
-export const DETAIL_LAYERS: DetailLayer[] = ['simple', 'advanced', 'expert', 'custom']
+export const DETAIL_LAYERS: DetailLayer[] = [...DEPTH_STEPS, 'custom']
 export const DETAIL_LAYER_STORAGE_KEY = 'krama-pose-detail-layer'
 // Field-group visibility for the custom layer, stored alongside DETAIL_LAYER_STORAGE_KEY.
 export const CUSTOM_FIELDS_STORAGE_KEY = 'krama-pose-detail-custom-fields'
-const LAYER_RANK: Record<DetailLayer, number> = { simple: 0, advanced: 1, expert: 2, custom: 3 }
+const LAYER_RANK: Record<DetailLayer, number> = { ...DEPTH_RANK, custom: 3 }
 
 export type CustomFieldGroup =
   | 'breathing'
@@ -177,7 +178,7 @@ export default function PoseDetailContent({ pose, layer, customFields }: Content
   const showDiagram = showMusclesJoints && hasAnatomyData
 
   return (
-    <div className={showDiagram ? 'grid grid-cols-1 md:grid-cols-[2fr_3fr] gap-8' : 'max-w-2xl'}>
+    <div key={layer} className={`${REVEAL_CLASS} ${showDiagram ? 'grid grid-cols-1 md:grid-cols-[2fr_3fr] gap-8' : 'max-w-2xl'}`}>
 
       {/* Left: body diagram */}
       {showDiagram && (

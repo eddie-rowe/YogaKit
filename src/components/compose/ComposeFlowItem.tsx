@@ -2,6 +2,7 @@
 
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { useState } from 'react'
 import { X } from 'lucide-react'
 import type { Pose } from '@/lib/pose-types'
 import type { FlowItem, LayerName } from '@/lib/flow/types'
@@ -9,6 +10,7 @@ import { resolveItemName } from '@/lib/pose-library/display-name'
 import { describeEnergeticDirection } from '@/lib/pose-library/energetic-direction'
 import { SECONDS_PER_BREATH } from '@/lib/flow/duration'
 import type { ValidatorWarning } from '@/lib/validator/lite'
+import { nextDepth, depthAtLeast, REVEAL_CLASS, type DepthStep } from '@/lib/pose-library/depth'
 import ComposeWarningMarker from './ComposeWarningMarker'
 
 // The one sanctioned non-accent color for pose-content chips (guardrails §2): the
@@ -59,6 +61,14 @@ export default function ComposeFlowItem({
     id: item.id,
   })
 
+  // Per-item tap override of the composer-wide layer (US8). Null follows the layer chips.
+  const [depthOverride, setDepthOverride] = useState<DepthStep | null>(null)
+  const layerStep: DepthStep = layer === 'custom' ? 'simple' : layer
+  const depth = depthOverride ?? layerStep
+  const showGeometry = depthAtLeast(depth, 'advanced')
+  const showEnergetics = depthAtLeast(depth, 'expert')
+  const cue = pose?.modes.find(m => m.type === 'yin')?.cue_notes ?? pose?.modes[0]?.cue_notes
+
   const style = {
     transform: CSS.Translate.toString(transform),
     transition,
@@ -84,9 +94,15 @@ export default function ComposeFlowItem({
           >
             ⠿
           </button>
-          <span className="kk-nocallout text-sm font-medium flex-1 min-w-0">
+          <button
+            type="button"
+            data-testid={`compose-item-depth-toggle-${index}`}
+            aria-expanded={depth !== 'simple'}
+            onClick={() => setDepthOverride(nextDepth(depth))}
+            className="kk-nocallout text-sm font-medium flex-1 min-w-0 text-left py-2.5"
+          >
             {resolveItemName(pose, item.poseSlug)}
-          </span>
+          </button>
           <div data-testid={`compose-item-measure-${index}`} className="flex items-center gap-1 text-xs">
             <select
               value={item.measure.breaths != null ? 'breaths' : 'seconds'}
@@ -162,8 +178,13 @@ export default function ComposeFlowItem({
             className="kk-input px-2 py-2"
           />
         )}
-        {pose && (layer === 'advanced' || layer === 'expert') && (
-          <div data-testid={`compose-item-geometry-${index}`} className="flex flex-wrap gap-1 text-xs">
+        {pose && cue && showGeometry && (
+          <p data-testid={`compose-item-cue-${index}`} className={`${REVEAL_CLASS} text-xs`} style={{ color: 'var(--muted)' }}>
+            {cue}
+          </p>
+        )}
+        {pose && showGeometry && (
+          <div data-testid={`compose-item-geometry-${index}`} className={`${REVEAL_CLASS} flex flex-wrap gap-1 text-xs`}>
             <span className="capitalize px-2 py-1 rounded" style={{ background: 'var(--surface-raised)', color: 'var(--foreground)' }}>
               {pose.body_position}
             </span>
@@ -182,8 +203,8 @@ export default function ComposeFlowItem({
             )}
           </div>
         )}
-        {pose && layer === 'expert' && (
-          <div data-testid={`compose-item-energetics-${index}`} className="flex flex-wrap gap-1 text-xs">
+        {pose && showEnergetics && (
+          <div data-testid={`compose-item-energetics-${index}`} className={`${REVEAL_CLASS} flex flex-wrap gap-1 text-xs`}>
             {pose.energetic_quality.map(eq => (
               <span key={eq} className="px-1.5 py-0.5 rounded capitalize" style={CHAKRA_HUE}>{eq}</span>
             ))}

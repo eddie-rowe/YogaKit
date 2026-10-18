@@ -131,6 +131,12 @@ input[type=range] {
   to   { opacity: 1; transform: scale(1); }
 }
 
+/* Depth-escalation reveal, shared by Poses detail and Compose flow items (004 FR-056).
+   Fade only, at --duration-base, no bounce (guardrails §2). */
+.kk-reveal {
+  animation: kk-fade-in var(--duration-base) var(--ease-standard);
+}
+
 /* Full-screen overlay entrance/exit (Poses detail). Backdrop fades, panel fades +
    scales in very slightly — no bounce, ≤200ms (guardrails §2). */
 .kk-overlay-backdrop {
