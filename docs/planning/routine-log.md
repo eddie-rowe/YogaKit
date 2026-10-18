@@ -128,3 +128,4 @@ YYYY-MM-DD HH:MM /autoobs [STATUS] — overall: [HEALTHY/DEGRADED/AT-RISK]; moni
 2026-10-17 08:40 /autopm [OK] — 4 issues ready-for-dev (#170, #171, #172, #107; #165/#166 in PR #168); board: Needs Attention; focus: 005 C0 + pure libs; handoff: docs/planning/autopm/autopm-handoff-2026-10-17.md
 2026-10-17 10:30 /autodev [OK] — 3 PRs merged (#173, #174, #175); 0 dependabot merged; skipped 8 (#168 held needs-human; #107 not picked, cap 3; 6 already needs-human); failed 0; handoff: docs/planning/autopm/autodev-handoff-2026-10-17.md
 2026-10-17 17:00 /autoretro [OK] — shipped 3 PRs (#173 #174 #175 by /autodev, dev-complete); momentum HIGH; production DEGRADED (known #39); friction: issue text predated research (computeStreak signature); carry: 005 T020 outbox, #107, #168 rebase check; CEO brief: docs/planning/ceo-brief/2026-10-17.md
+2026-10-18 08:15 /autoobs [OK] — overall: DEGRADED; monitors: 11 ok / 2 alert (3 no-data); digest: docs/observation/autoobs/2026-10-18.md
