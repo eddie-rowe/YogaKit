@@ -48,6 +48,9 @@ export default defineConfig({
         // 007 T009: the routine-log validator (#48 guardrail) — a CI gate that asserts
         // "no routine credited with a run it has no evidence for" and was itself untested.
         'scripts/lib/routine-log.mjs',
+        // 005 US6: the guidance validator behind FR-038 — a CI gate on trigger/priority
+        // uniqueness that was itself untested would be a claim, not a gate.
+        'scripts/lib/guidance.mjs',
         // scripts/lib/sourcemaps.mjs and scripts/lib/dd-version.mjs are deliberately
         // NOT here. Their existing tests still run; they just no longer gate at 100%,
         // because the owner's call is that Datadog plumbing does not earn new unit
