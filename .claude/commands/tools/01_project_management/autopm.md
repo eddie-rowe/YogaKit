@@ -164,6 +164,8 @@ itself. Each sweep, in addition to digest-driven items, generate
    narrowing, data backfills/`UPDATE` migrations, RLS/policy changes, all
    auth changes, all Stripe billing changes. Money/access-control risk stays
    gated regardless of diff size.
+   Also never `auto-ok`: issues that write `.claude/settings.json`, hooks, or
+   permissions (the agent cannot modify its own config).
 
 **Output**: N connector-independent auto-ok issues filed; Dependabot PRs
 flagged for merge.
