@@ -58,6 +58,11 @@ describe('validateGuidance', () => {
     expect(r.errors.join('\n')).toMatch(/a\.md.*trigger.*missing/i)
   })
 
+  it('fails an empty trigger that is the last frontmatter line', () => {
+    const r = validateGuidance([entry('a.md', 'priority: 1\ntrigger:')])
+    expect(r.errors.join('\n')).toMatch(/a\.md.*trigger.*missing/i)
+  })
+
   it('fails an entry with two trigger keys (FR-036)', () => {
     const r = validateGuidance([entry('a.md', 'trigger: one\ntrigger: two\npriority: 1')])
     expect(r.errors.join('\n')).toMatch(/a\.md.*exactly one trigger/i)

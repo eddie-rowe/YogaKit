@@ -41,6 +41,11 @@ jobs:
       - name: Validate pose library
         run: npm run validate:poses
 
+      # 005 FR-038: a guidance entry with a missing or duplicate priority, or not exactly
+      # one trigger, fails the build. Passes on an empty data/guidance/.
+      - name: Validate guidance corpus
+        run: npm run validate:guidance
+
       # Blocking, no `|| true` — #48: no routine may be credited with a run it has no
       # first-party artifact for. See scripts/validate-routine-log.mjs and
       # docs/planning/routines.md "Shared guardrails".
