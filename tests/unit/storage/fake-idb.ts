@@ -9,7 +9,7 @@
 // overwrite each other and hide exactly the bug these tests exist to catch.
 
 /** Key path per store, matching src/lib/storage/db.ts. */
-const KEY_PATHS: Record<string, string> = { flows: 'id', outbox: 'flowId' }
+const KEY_PATHS: Record<string, string> = { flows: 'id', outbox: 'flowId', 'checkin-outbox': 'localDate' }
 
 export type Row = Record<string, unknown>
 
