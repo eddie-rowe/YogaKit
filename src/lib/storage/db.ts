@@ -10,11 +10,13 @@ import { openDB, type IDBPDatabase } from 'idb'
 
 const DB_NAME = 'krama'
 
-/** v1 shipped `flows` alone. v2 adds `outbox` (004 US2, data-model.md §5). */
-export const DB_VERSION = 2
+/** v1 shipped `flows` alone. v2 adds `outbox` (004 US2, data-model.md §5). v3 adds
+ *  `checkin-outbox` (005 US1, research.md §2). */
+export const DB_VERSION = 3
 
 export const FLOWS_STORE = 'flows'
 export const OUTBOX_STORE = 'outbox'
+export const CHECKINS_OUTBOX_STORE = 'checkin-outbox'
 
 let dbPromise: Promise<IDBPDatabase> | null = null
 
@@ -32,6 +34,9 @@ export function getDb(): Promise<IDBPDatabase> {
         }
         if (!db.objectStoreNames.contains(OUTBOX_STORE)) {
           db.createObjectStore(OUTBOX_STORE, { keyPath: 'flowId' })
+        }
+        if (!db.objectStoreNames.contains(CHECKINS_OUTBOX_STORE)) {
+          db.createObjectStore(CHECKINS_OUTBOX_STORE, { keyPath: 'localDate' })
         }
       },
     })
