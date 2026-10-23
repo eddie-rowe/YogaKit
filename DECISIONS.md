@@ -1436,3 +1436,39 @@ and migration state instead of rebuilding from the previous digest, which is how
 
 **Why this is one entry:** all four are the same failure at different layers — a claim
 written once, never re-checked, and read by a routine that has no reason to doubt it.
+
+## 2026-10-23 — `autoobs` honours `yogakit:no-data-expected`; and the "broken RUM monitor" that wasn't
+
+**Context:** `autoobs` reported the overall status `DEGRADED` on every sweep from 10-12 to
+10-23. Until about 10-22 that was `#39`'s rolling SLO window. After it rolled off, both SLOs
+read healthy (Read View Availability 99.971%) and the only remaining cause was four
+monitors reading `No Data`. A status that cannot go green stops carrying information.
+
+**What I got wrong first.** A review of the week concluded that `RUM Telemetry Missing for
+30 Minutes` had a query "that matches nothing, so it can never fire", and proposed fixing the
+manifest. That was a diagnosis from the symptom, not the data. Checked against Datadog
+directly, `rum.measure.session` **exists and returns data** — 14 sessions in 24h. The
+monitor is not broken, and changing a working production monitor on a wrong diagnosis would
+have been the actual error. The proposed manifest change was dropped before it was made.
+
+**What is actually true.** `rum.measure.session` and the `rum.measure.view.*` family are
+populated by **real-user sessions only**. The same query with and without a synthetic
+exclusion returns identical totals (14 and 14), and a synthetic-only query returns zero.
+At roughly 14 real sessions a day, most 30-minute windows are empty, so `No Data` is the
+correct state. All four `No Data` monitors already carry `yogakit:no-data-expected`, and
+`datadog/README.md` already says tagged monitors are expected to read `No Data` and that
+untagged ones fail `datadog:validate-live`. The contract existed; `autoobs` simply never
+read it.
+
+**Decision:** `autoobs.md` now reports a tagged monitor reading `No Data` as `No Data
+(expected)` and excludes it from the overall status; an untagged one remains a genuine
+finding. A monitor returning "this signal is quiet" has returned real data, so it is not a
+failed step.
+
+**The cost, stated:** the tag will mask a real outage in these monitors once real traffic
+exists. `autoobs.md` therefore carries a launch note — remove `yogakit:no-data-expected` from
+the real-user monitors when traffic starts, so `validate-live` begins enforcing them. This is
+a launch-checklist item (~Nov 2026), not a today item.
+
+**Also noted:** RUM *intake* freshness is covered by the synthetic `Read View RUM Session`
+browser test, which is healthy. The real-user metrics were never a substitute for it.

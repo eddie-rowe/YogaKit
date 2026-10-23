@@ -98,6 +98,28 @@ Datadog but not one of the manifest files is either the documented synthetic-tes
 companion-monitor drift (`datadog/README.md` "Expected drift") or a genuine
 out-of-band change worth flagging.
 
+**`No Data` is not automatically a problem — read the manifest's tags.** A monitor whose
+manifest carries `yogakit:no-data-expected` (`datadog/README.md`: real-user monitors with
+no real traffic yet, and the paused offline-read stub) is *documented* to read `No Data`.
+Report it as `No Data (expected)` and **do not let it make the overall status `DEGRADED`**.
+An **untagged** monitor reading `No Data` is a genuine finding — that is the same rule
+`datadog:validate-live` enforces in CI. On 2026-10-12 → 10-23 the overall status read
+`DEGRADED` every day: first for `#39`'s rolling window, then, once that rolled off and
+both SLOs were healthy, purely because four tagged monitors read `No Data`. A status that
+cannot go green stops carrying information.
+
+Why those four are quiet, so a run does not re-derive it: `rum.measure.session` and the
+`rum.measure.view.*` metrics are populated by **real-user sessions only**. Synthetic
+sessions never appear in them (verified 2026-10-23: the same query with and without a
+synthetic exclusion returns identical totals, and a synthetic-only query returns zero).
+At ~14 real sessions a day most 30-minute windows are empty, so `No Data` is the correct
+state, not a broken query. RUM *intake* freshness is covered by the synthetic
+`Read View RUM Session` browser test, not by these.
+
+**Launch note:** when real traffic starts, remove `yogakit:no-data-expected` from the
+real-user monitors so `validate-live` begins enforcing them. Left on, the tag would hide a
+real outage in exactly the monitors meant to catch one.
+
 **Output**: one line per monitor — name, status, whether it matches an expected
 manifest or is expected/unexpected drift.
 
@@ -255,7 +277,9 @@ Log: docs/planning/routine-log.md
 - If a step fails or times out, log it as `DEGRADED — <what was tried>` and continue
   to the next step — never abort the whole sweep over one dark connector.
 - Mark overall sweep status `DEGRADED` (not `HEALTHY`) if any step failed to return
-  real data, even if every signal that *did* return reads healthy.
+  real data, even if every signal that *did* return reads healthy. A monitor that reads
+  `No Data (expected)` per its `yogakit:no-data-expected` tag **did** return real data —
+  it reports that the signal is quiet — so it does not count as a failed step.
 - Never call `AskUserQuestion` or wait for approval at any point in this command.
 
 ## Notes
