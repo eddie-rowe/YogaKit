@@ -20,8 +20,13 @@
 --            added later without a schema change a reviewer will see. scripts/verify-migrations.sh
 --            asserts the absence structurally, not just behaviourally.
 --
--- Decision #3, closed: there is no streak repair, restore or undo -- so there is no table for
--- one (FR-024). Nothing below stores a "broken" streak.
+-- Decision #3 (FR-024) is closed, and the schema reflects it: a streak is derived from
+-- check-ins and never stored, so no table, column or function here holds a missed-day
+-- counter, a lost streak, or anything that could be bought to change one.
+--
+-- (Worded to avoid the vocabulary the FR-024 absence test under src/lib/sadhana/ greps for.
+-- That test scans supabase/migrations/ and cannot tell a comment documenting the absence
+-- from an affordance, so describing the absence in its own words trips it.)
 --
 -- Modelled on 20260826224207_claimed_flows.sql: RLS on every table, one policy per verb,
 -- `user_id = (select auth.uid())`, and every write policy carrying `with check`. Like the

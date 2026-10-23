@@ -122,7 +122,7 @@ and `npx tsc --noEmit` is clean against the regenerated types. No user-visible c
   `practice_milestones`
 - [X] T017 [US1] `data/sadhana/grace-budget.json` — `{ "size": N, "periodDays": M }` — data file present on main since #175 (6ab7234)
   (decision #4). The number is data; no user-facing string may embed it literally (FR-019)
-- [ ] T018 [US2] Regenerate `src/types/database.ts` via `scripts/db-types-check.sh`
+- [X] T018 [US2] Regenerate `src/types/database.ts` via `scripts/db-types-check.sh` — types applied from CI's own `db-types-check` diff in the 005-C1 PR (byte-identical to the pinned generator); awaiting owner review with the migration
 
 **Gate**: `bash scripts/verify-migrations.sh` → `MIGRATION VERIFICATION PASSED`, including
 the new RULE-V5 assertion (T015).
