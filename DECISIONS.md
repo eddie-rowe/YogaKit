@@ -1383,3 +1383,56 @@ partly on a false premise.
 themes. One names a clinical nervous-system state, the other a body location, and a
 browsable theme called "Chronic vigilance" would diagnose the reader on a catalog
 page.
+
+## 2026-10-23 — Corrections to three claims I made, and the ordering rule autodev was missing
+
+**Context:** A review of the 2026-10-17 → 10-23 routine runs found the loop healthy but
+pointed at leaf work, and found that several things the routines were treating as fact came
+from text I wrote. Corrected here rather than edited in place, since this file is
+append-only.
+
+**1. Supersedes the 2026-10-12 entry "Plan purchasability is derived from Stripe" on one
+point — the seed migration IS applied in production.** That entry says it is unapplied and
+that FR-008 makes migrations owner-gated, so checkout still returns `unknown_plan`. Wrong.
+The Supabase GitHub integration applies `supabase/migrations` to production on push to
+`main` (`supabase-branch.yml:5-10`); `plan_features` has held all 5 seeded rows since the
+merge, verified 2026-10-13 and again 2026-10-23. The claim was written from a 0-row check
+that predated the push. I identified the error in conversation on 10-13 and did not correct
+the repo, so `tasks.md` T060 and this file kept saying it, and `autopm` copied it into the
+owner digest (`#38`) where it stood as an owner action for ten days. `tasks.md` T060 is
+corrected in the same commit as this entry.
+
+**2. Supersedes the 2026-10-17 split of `#111`.** I relabelled T001/T002/T004/T005 `auto-ok`
+on the reasoning that only T003 touched a permission boundary. That was wrong: the
+session-end gates are Stop hooks, and Stop hooks live in `.claude/settings.json`, which the
+session classifier blocks an agent from writing as self-modification. Autodev attempted it
+on 2026-10-18, was blocked, and reverted the label. So `#111` as a whole is owner-executed,
+not just T003, and it belongs with `#176` since both edit the same file. The classifier was
+right and my split was a mis-sort; it cost one wasted sweep slot.
+
+**3. Comments are not bodies.** On 2026-10-17 I signed off the two 003 copy contracts and
+corrected `#82`, `#83` and `#61` by posting *comments*. Routines read issue bodies, not
+comment threads, so on 10-22 autodev skipped `#82`/`#83` because "body says merge held for
+owner copy sign-off", and `#83` still said the taxonomy had 13 entries when the signed-off
+set is 14 — a build from the body would have produced the wrong taxonomy. All three bodies
+are rewritten 2026-10-23. Rule going forward: a correction that changes what an issue asks
+for edits the body; a comment is for the history.
+
+**Decision — autodev gets an ordering rule.** `autodev.md` Step 1 had a cap of 3 and a
+parallel/sequential rule but no way to rank issues. Across 10-18 → 10-23 every sweep worked
+exactly 2 issues, and six handoffs skipped `#107` citing "cap" — a cap that never bound. With
+nothing to rank by, selection collapsed to whatever felt cheapest, so pure modules shipped
+and UI-with-copy work starved: `#107` carried seven consecutive sweeps, and `/autopm` asked
+for it solo on 10-22 and was ignored. Step 1 now ranks green PRs, then `/autopm`'s stated
+focus, then oldest-eligible, and takes any issue carried three sweeps **first and solo**.
+"Cap" is a valid skip reason only when exactly 3 were worked, and "needs browser validation"
+no longer is one — `#108` was validated on its PR preview on 10-18, so the capability is
+proven. Autodev also ticks the `tasks.md` row in the PR that ships a task; the 005 tracker
+read 4 done / 61 open while at least nine tasks had shipped.
+
+**Also:** `autopm.md` Step 3 now reconciles each owner-digest item against live issue, PR
+and migration state instead of rebuilding from the previous digest, which is how `#96`
+(closed 10-17), `#168` (merged 10-17) and the applied seed all survived as "owner actions".
+
+**Why this is one entry:** all four are the same failure at different layers — a claim
+written once, never re-checked, and read by a routine that has no reason to doubt it.

@@ -89,7 +89,31 @@ possibly-hung agent.
 
 List open `ready-for-dev` issues. Apply guardrails:
 
-- **Cap** at 3 issues/run.
+- **Order, then cap.** Rank eligible issues before taking any, in this order:
+  1. **Green PRs first** — land them (Step 1a) before building anything.
+  2. **`/autopm`'s stated `focus`** — the handoff names what it wants worked first.
+     Honour it; it is the planner's instruction, not a suggestion.
+  3. **Oldest eligible first** — by how many consecutive sweeps an issue has been
+     eligible and not taken, not by how easy it looks.
+  4. **An issue carried 3 sweeps is taken first and solo.** Not alongside a cheaper pair,
+     not "next time". On 2026-10-12 → 10-23 `#107` was carried seven consecutive sweeps
+     while pure-library issues were taken ahead of it every day.
+
+  Without this, ranking collapses to "what feels cheapest", and UI-with-copy work starves
+  behind pure modules indefinitely.
+- **Cap** at 3 issues/run. **"Cap" is a valid reason to skip an issue only if the issues
+  actually worked equals 3.** From 2026-10-18 to 10-23 every sweep worked exactly 2 issues
+  and six handoffs skipped `#107` citing the cap. Record the real reason — "effort",
+  "unclear", "blocked on X" — and the true count, e.g. "worked 2 of 3".
+- **"Needs browser validation" is not a reason to skip.** The capability is proven:
+  `#108` was validated on its PR preview on 2026-10-18 (identity verified, interaction
+  exercised). A UI issue costs more than a pure lib; it is not blocked. If validation
+  genuinely cannot run, step 5 says what to do — skip the *validation*, not the issue.
+- **Tick the tracker in the same PR.** A PR that ships a `tasks.md` task flips that row to
+  `[X]` (with a short `— shipped #N` note) in the same commit range. If the task is only
+  partly satisfied — logic without the UI, say — leave it unchecked and annotate
+  `— **PARTIAL:** …`. On 2026-10-23 the 005 tracker read 4 done / 61 open while at least
+  nine tasks had shipped, and `#118` had already had to fix the same drift in 007/009.
 - **Skip** anything touching DROP/RENAME migrations, data backfills, RLS,
   auth, or Stripe billing unless it carries `auto-ok`; leave those
   `auto/needs-human` and note them. Additive migrations (new

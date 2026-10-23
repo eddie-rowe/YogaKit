@@ -110,6 +110,20 @@ digest:
   grouped by blocker class (payment-file, roadmap-gate, owner-judgment,
   browser-UI, migration), each with an age and the single owner action that
   clears it.
+- **Reconcile every item against live state before writing it.** Do not rebuild the
+  digest from the previous digest. For each item, check it now:
+  - an issue number → `mcp__github__get_issue`; if `closed`, or a PR that is `merged`, it
+    is **not** an owner action — drop it;
+  - "migration unapplied / not yet applied" → check `supabase/migrations/` against
+    `git log origin/main`, and the live table if reachable; the Supabase integration
+    applies migrations on merge to `main` (`supabase-branch.yml:5-10`), so a migration
+    that is on `main` is applied;
+  - a label/body claim ("sign-off still open", "US4 unbuilt") → read the issue **body**
+    and the spec it cites; if the spec contradicts the body, fix the body (you may edit
+    issue bodies) rather than carrying the contradiction forward.
+  On 2026-10-12 → 10-23 the digest listed `#96` (closed 10-17), `#168` (merged 10-17) and
+  a "seed unapplied" migration (applied since 10-13) as owner actions for six sweeps,
+  because each rebuild started from the last one.
 - **Only update the issue when the content actually changes** (compare to
   the current body first). If nothing changed, do nothing — no comment, no
   edit.

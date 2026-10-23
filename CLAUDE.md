@@ -30,8 +30,9 @@ Key artifacts:
   `docs/design/002-schema.md`
 - 003 spec + plan (pose library):        `specs/003-pose-library/spec.md`,
   `specs/003-pose-library/plan.md`, `specs/003-pose-library/tasks.md`
-- 003 copy awaiting sign-off:            `specs/003-pose-library/contracts/theme-taxonomy.md`,
-  `specs/003-pose-library/contracts/score-explanation.md`
+- 003 copy contracts, signed off 2026-10-17: `specs/003-pose-library/contracts/theme-taxonomy.md`
+  (14 themes, not 13 — read its "Sign-off rulings"), `specs/003-pose-library/contracts/score-explanation.md`
+- 005 copy awaiting sign-off:            `specs/005-daily-sadhana/contracts/guidance-tone.md` (T007, not yet authored)
 - 004 spec + plan (sequencing composer):  `specs/004-sequencing-composer/spec.md`,
   `specs/004-sequencing-composer/plan.md`, `specs/004-sequencing-composer/research.md`,
   `specs/004-sequencing-composer/data-model.md`, `specs/004-sequencing-composer/tasks.md`

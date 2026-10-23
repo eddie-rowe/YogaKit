@@ -120,7 +120,7 @@ and `npx tsc --noEmit` is clean against the regenerated types. No user-visible c
 - [ ] T016 [P] [US2] Append a `verify-migrations.sh` block proving a second account reads
   zero rows of another's `practice_checkins`, `practice_reflections`, `intentions`, and
   `practice_milestones`
-- [ ] T017 [US1] `data/sadhana/grace-budget.json` — `{ "size": N, "periodDays": M }`
+- [X] T017 [US1] `data/sadhana/grace-budget.json` — `{ "size": N, "periodDays": M }` — data file present on main since #175 (6ab7234)
   (decision #4). The number is data; no user-facing string may embed it literally (FR-019)
 - [ ] T018 [US2] Regenerate `src/types/database.ts` via `scripts/db-types-check.sh`
 
@@ -139,7 +139,7 @@ check-in survives a reload and flushes with no user action once online.
 
 - [x] T019 [US1] `src/lib/sadhana/local-day.ts` — `resolveLocalDay()`, computed from the
   browser's current timezone at submission, never at open (FR-005, decision #1)
-- [ ] T020 [US1] `src/lib/storage/checkin-outbox.ts` — the offline queue, per
+- [X] T020 [US1] `src/lib/storage/checkin-outbox.ts` — the offline queue, per — shipped #181
   `research.md`'s decision on reuse-vs-new (T005); a check-in made offline is never lost
   and never reported in a state the server does not hold (FR-010)
 - [ ] T021 [US1] Check-in UI: one-tap mood (3–5 discrete icons, no slider — FR-001),
@@ -147,10 +147,10 @@ check-in survives a reload and flushes with no user action once online.
   link optional and visually secondary (FR-003)
 - [ ] T022 [US1] Permanent "only you can see this" microcopy beside the check-in fields,
   not behind a link or in settings (FR-004, UX-002)
-- [ ] T023 [US1] The bounded "log for yesterday" affordance: visible only within the short
+- [ ] T023 [US1] The bounded "log for yesterday" affordance: visible only within the short — **PARTIAL:** LOGIC shipped #192 (`canLogYesterday` in `checkin-day.ts`); the affordance UI is still open
   window decision #1 describes, gone once the window passes or a newer check-in exists, no
   free-form date entry anywhere (FR-006, FR-007)
-- [ ] T024 [US1] A second check-in on the same local day updates the first rather than
+- [ ] T024 [US1] A second check-in on the same local day updates the first rather than — **PARTIAL:** create-vs-update DECISION shipped #192 (`resolveCheckinDay`); "never a second row" also needs the per-day uniqueness in C1 (T009)
   creating a second day or double-advancing any count (FR-008)
 - [ ] T025 [P] [US1] `npm run lint:copy` over every new string on this path
 - [ ] T026 [P] [US1] `npm run lint:telemetry` over any new call site near the check-in
@@ -178,16 +178,16 @@ countdown, a warning colour, or a missed-day count.
   (FR-016, FR-017)
 - [ ] T030 [US2] "Log rest" — one tap, same visual weight as "Log practice," neither
   smaller nor de-emphasized (FR-013, UX-005)
-- [ ] T031 [US2] Practice-state model: practised, rested, silently-absent. Only the first
+- [X] T031 [US2] Practice-state model: practised, rested, silently-absent. Only the first — shipped #185 (`practice-state.ts`)
   two render calendar chips; a silently-absent day renders nothing and produces no notice
   (FR-011, FR-012). Practice takes precedence over rest on a day with both, with no
   double-count (FR-014)
 - [ ] T032 [US2] Grace-budget detail: absent from Today (FR-018), stated calmly on request
   from the streak detail, reading sensibly at both zero-used and fully-used (FR-020)
-- [ ] T033 [US2] Milestone cards (10/30/90): shown once, forward-invitation framing,
+- [ ] T033 [US2] Milestone cards (10/30/90): shown once, forward-invitation framing, — **PARTIAL:** SELECTION lib shipped #185 (`milestones.ts`); the card UI is still open
   nothing to defend/protect/maintain/lose, no purchase offered (FR-021, FR-022). Two
   milestones in one day: one card at a time, neither lost (FR-023)
-- [ ] T034 [US2] **Decision #3, negative assertion**: a test (or, failing a positive test
+- [X] T034 [US2] **Decision #3, negative assertion**: a test (or, failing a positive test — shipped #191 (negative-assertion test)
   of an absence, a documented manual check recorded in this task's PR) confirming no
   streak-repair, -restore, or -undo affordance exists anywhere in the UI or as an RPC
   (FR-024). This task's "implementation" is the confirmed absence, not a feature
@@ -212,7 +212,7 @@ revision, confirm the card quotes the earlier version and offers the three respo
 - [ ] T037 [US3] `intentions` write path: every revision is a new row, no version
   overwritten or deleted (FR-026) — enforced by T009/T012's RLS (no update/delete policy),
   not by application discipline alone
-- [ ] T038 [US3] `src/lib/sadhana/return-card.ts` — the version-matched lookup: quote the
+- [X] T038 [US3] `src/lib/sadhana/return-card.ts` — the version-matched lookup: quote the — shipped #188 (`return-card.ts`)
   intention active when the lapse *began*, not the newest version (FR-027)
 - [ ] T039 [US3] Return card: plain elapsed-time statement, two flat equal-weight actions
   ("keep" / "update"), neither styled as a warning (FR-028, FR-029)
@@ -291,13 +291,13 @@ nothing or is refused.
 selected by authored priority, and that dismissing it consumes the trigger with no queue
 left behind.
 
-- [ ] T059 [US6] `data/guidance/*.md` frontmatter schema: exactly one named trigger, one
+- [X] T059 [US6] `data/guidance/*.md` frontmatter schema: exactly one named trigger, one — shipped #182 (schema + validator; `data/guidance/` correctly empty until T007 is signed off)
   authored static priority (decision #7, FR-036, FR-037) — **no entry body is authored
   until `contracts/guidance-tone.md` (T007) is signed off**; this task ships the schema
   and validator against zero or placeholder-only entries
-- [ ] T060 [US6] `scripts/validate-guidance.mjs` — CI fails on a missing or duplicate
+- [X] T060 [US6] `scripts/validate-guidance.mjs` — CI fails on a missing or duplicate — shipped #182 (`scripts/validate-guidance.mjs` + CI step)
   priority (FR-038, decision #7)
-- [ ] T061 [US6] `src/lib/sadhana/guidance.ts` — trigger/priority selection, pure; at most
+- [X] T061 [US6] `src/lib/sadhana/guidance.ts` — trigger/priority selection, pure; at most — shipped #197 (`guidance.ts`)
   one card renders at any time (FR-039)
 - [ ] T062 [US6] A shown-or-dismissed card consumes its trigger via
   `practice_guidance_dismissals` and is never queued; no unread badge, no count, no
@@ -306,7 +306,7 @@ left behind.
   shows no reset to zero (FR-042) — **held pending T007's sign-off**, same as T059
 - [ ] T064 [US6] The corpus is not exposed as a browsable library; no navigation entry
   leads to one (FR-043)
-- [ ] T065 [P] [US6] Vitest: simultaneous-trigger selection resolves to exactly one card,
+- [X] T065 [P] [US6] Vitest: simultaneous-trigger selection resolves to exactly one card, — shipped #197
   by authored priority (SC-012); CI fails on 100% of missing/duplicate-priority fixtures
   (SC-013)
 
