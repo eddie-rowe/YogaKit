@@ -3,10 +3,14 @@
 import {
   DndContext,
   type DragEndEvent,
+  type DragOverEvent,
+  type DragStartEvent,
   type SensorDescriptor,
   type SensorOptions,
 } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { useState } from 'react'
+import { insertionSlot } from '@/lib/compose/seam-geometry'
 import type { Pose } from '@/lib/pose-types'
 import type { FlowItem, LayerName } from '@/lib/flow/types'
 import { isStillnessNode } from '@/lib/flow/types'
@@ -47,14 +51,35 @@ export default function ComposeFlowList({
   onUpdate,
   onRemove,
 }: Props) {
+  const [activeId, setActiveId] = useState<string | null>(null)
+  const [overId, setOverId] = useState<string | null>(null)
+  const slot = insertionSlot(activeId, overId, items.map(i => i.id))
+
+  function clearDrag() {
+    setActiveId(null)
+    setOverId(null)
+  }
+
   return (
-    <div className="space-y-1">
+    <div>
       {items.length === 0 && (
         <p className="text-sm text-center py-8" style={{ color: 'var(--muted)' }}>
           Search above to add your first pose.
         </p>
       )}
-      <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}>
+      <DndContext
+        sensors={sensors}
+        onDragStart={(e: DragStartEvent) => {
+          setActiveId(String(e.active.id))
+          onDragStart()
+        }}
+        onDragOver={(e: DragOverEvent) => setOverId(e.over ? String(e.over.id) : null)}
+        onDragCancel={clearDrag}
+        onDragEnd={e => {
+          clearDrag()
+          onDragEnd(e)
+        }}
+      >
         <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
           {items.map((item, index) => {
             const pose = poseBySlug.get(item.poseSlug)
@@ -75,6 +100,7 @@ export default function ComposeFlowList({
                 isLast={index === items.length - 1}
                 next={next}
                 seam={seam}
+                insertionSide={slot?.overId === item.id ? slot.side : null}
                 warnings={warnings.filter(w => w.itemId === item.id)}
                 onDismissWarning={onDismissWarning}
                 onMove={onMove}
