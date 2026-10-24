@@ -307,18 +307,43 @@ input[type=range] {
 .kk-seam {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   color: var(--muted);
   font-size: 0.75rem;
-  transition: color 160ms ease;
+  cursor: help;
+  /* Top tier widens the row gap via --kk-seam-row-gap (US5 s5). */
+  margin-block: var(--kk-seam-row-gap, 0.25rem);
+  border-radius: 0.25rem;
+  transition: color 160ms ease, background-color 160ms ease;
+}
+/* Hover/focus affordance: the seam reads as interactive and its title is reachable. */
+.kk-seam:hover,
+.kk-seam:focus-visible {
+  color: var(--foreground);
+  background: var(--surface-raised);
 }
 .kk-seam-line {
-  flex: 1;
-  height: 1px;
+  /* Length and width both progress with tier (US5 s4) — line-based, no shape redraw. */
+  flex: 0 1 var(--kk-seam-line-length, 30%);
+  height: var(--kk-seam-line-width, 1px);
   background: var(--border);
 }
-.kk-seam[data-tier="2"] .kk-seam-line { height: 2px; }
-.kk-seam[data-tier="3"] .kk-seam-line { height: 2px; background: var(--muted); }
+.kk-seam[data-tier="3"] .kk-seam-line { background: var(--muted); }
+
+/* Drag insertion gap: opens within the base motion budget, ease-out, no bounce (US5 s2). */
+.kk-insertion-gap {
+  height: 0;
+  border-radius: 0.5rem;
+  border: 1px dashed var(--border);
+  animation: kk-gap-open var(--duration-base) var(--ease-standard) forwards;
+}
+@keyframes kk-gap-open {
+  to { height: 2.5rem; margin-block: 0.25rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kk-insertion-gap { animation-duration: 1ms; }
+}
 
 /* Compose drag-reorder: a quiet, certain lift — never a bounce (guardrails §2). */
 .kk-drag-item {

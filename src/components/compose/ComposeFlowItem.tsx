@@ -11,6 +11,8 @@ import { describeEnergeticDirection } from '@/lib/pose-library/energetic-directi
 import { SECONDS_PER_BREATH } from '@/lib/flow/duration'
 import type { ValidatorWarning } from '@/lib/validator/lite'
 import { nextDepth, depthAtLeast, REVEAL_CLASS, type DepthStep } from '@/lib/pose-library/depth'
+import { seamGeometry } from '@/lib/compose/seam-geometry'
+import type { FrictionTier } from '@/lib/friction'
 import ComposeWarningMarker from './ComposeWarningMarker'
 
 // The one sanctioned non-accent color for pose-content chips (guardrails §2): the
@@ -20,7 +22,7 @@ import ComposeWarningMarker from './ComposeWarningMarker'
 const CHAKRA_HUE = { background: '#faf5ff', color: '#7e22ce' }
 
 interface SeamInfo {
-  tier: number
+  tier: FrictionTier
   reasons: string[]
 }
 
@@ -34,6 +36,8 @@ interface Props {
   isLast: boolean
   next: FlowItem | undefined
   seam: SeamInfo | undefined
+  /** Set while a drag is in flight and this row is under the pointer. */
+  insertionSide?: 'before' | 'after' | null
   warnings?: ValidatorWarning[]
   onDismissWarning?: (warning: ValidatorWarning) => void
   onMove: (index: number, direction: -1 | 1) => void
@@ -51,6 +55,7 @@ export default function ComposeFlowItem({
   isLast,
   next,
   seam,
+  insertionSide = null,
   warnings = [],
   onDismissWarning,
   onMove,
@@ -69,6 +74,18 @@ export default function ComposeFlowItem({
   const showEnergetics = depthAtLeast(depth, 'expert')
   const cue = pose?.modes.find(m => m.type === 'yin')?.cue_notes ?? pose?.modes[0]?.cue_notes
 
+  // Every adjacent pair keeps a seam node; a pair with no friction result is the floor.
+  const seamInfo: SeamInfo = seam ?? { tier: 1, reasons: [] }
+  const geometry = seamGeometry(seamInfo.tier)
+  const gap = insertionSide && (
+    <div
+      data-testid={`compose-insertion-gap-${index}`}
+      data-side={insertionSide}
+      aria-hidden="true"
+      className="kk-insertion-gap"
+    />
+  )
+
   const style = {
     transform: CSS.Translate.toString(transform),
     transition,
@@ -76,6 +93,7 @@ export default function ComposeFlowItem({
 
   return (
     <div>
+      {insertionSide === 'before' && gap}
       <div
         ref={setNodeRef}
         style={style}
@@ -214,18 +232,25 @@ export default function ComposeFlowItem({
           </div>
         )}
       </div>
-      {next && seam && (
+      {insertionSide === 'after' && gap}
+      {next && (
         <div
           data-testid={`compose-seam-${index}-${index + 1}`}
-          data-tier={seam.tier}
+          data-tier={seamInfo.tier}
+          tabIndex={0}
           className="kk-seam px-3 py-1"
-          title={seam.reasons.join('; ')}
+          style={{
+            '--kk-seam-line-width': `${geometry.lineWidthPx}px`,
+            '--kk-seam-line-length': `${geometry.lineLengthPct}%`,
+            '--kk-seam-row-gap': `${geometry.rowGapRem}rem`,
+          } as React.CSSProperties}
+          title={seamInfo.reasons.join('; ')}
         >
           <span className="kk-seam-line" />
           <span>
-            tier {seam.tier}
-            {seam.reasons.length > 0 && layer !== 'expert' && `: ${seam.reasons[0]}`}
-            {seam.reasons.length > 0 && layer === 'expert' && `: ${seam.reasons.join(', ')}`}
+            tier {seamInfo.tier}
+            {seamInfo.reasons.length > 0 && layer !== 'expert' && `: ${seamInfo.reasons[0]}`}
+            {seamInfo.reasons.length > 0 && layer === 'expert' && `: ${seamInfo.reasons.join(', ')}`}
           </span>
           <span className="kk-seam-line" />
         </div>

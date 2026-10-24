@@ -302,7 +302,7 @@ has a later LCP still.
 |---|---|
 | US2 scenario 9 / FR-018 — two devices, last write wins with disclosure | `research.md` §8. The schema supports it; only the detection and the notice are deferred |
 | Authored breath cues (↑ ↓ ~) on the seam | `research.md` §1. The honest form of FR-001, and its own story |
-| US5 — drag insertion preview and seam hover (P2) | Follow-on PR |
+| US5 — drag insertion preview and seam hover (P2) | Shipped #107 (insertion gap, seam hover + tier geometry) |
 | US6 — warning anchoring and per-session dismissal (P2) | Follow-on PR |
 | US7 — phase drag-reorder, derived intent tag, persisted collapse (P2) | Follow-on PR. Note the `intent_tag` tension in `data-model.md` §2 |
 | US8 — inline depth escalation in the composer (P3) | Follow-on PR |
