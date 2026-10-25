@@ -174,7 +174,7 @@ countdown, a warning colour, or a missed-day count.
 - [x] T028 [US2] `src/lib/sadhana/streak.ts` — `computeStreak(checkins, graceBudget)`,
   pure, per `research.md`'s consumption rule; a single number that never decreases and
   never shows zero after a first practice (FR-015)
-- [ ] T029 [US2] Streak display: no warning colour state, no countdown, anywhere
+- [X] T029 [US2] Streak display: no warning colour state, no countdown, anywhere — shipped #195 (`StreakDisplay.tsx`)
   (FR-016, FR-017)
 - [ ] T030 [US2] "Log rest" — one tap, same visual weight as "Log practice," neither
   smaller nor de-emphasized (FR-013, UX-005)
@@ -182,7 +182,7 @@ countdown, a warning colour, or a missed-day count.
   two render calendar chips; a silently-absent day renders nothing and produces no notice
   (FR-011, FR-012). Practice takes precedence over rest on a day with both, with no
   double-count (FR-014)
-- [ ] T032 [US2] Grace-budget detail: absent from Today (FR-018), stated calmly on request
+- [X] T032 [US2] Grace-budget detail — shipped #195 (`GraceBudgetDetail.tsx`; not yet mounted on any screen): absent from Today (FR-018), stated calmly on request
   from the streak detail, reading sensibly at both zero-used and fully-used (FR-020)
 - [ ] T033 [US2] Milestone cards (10/30/90): shown once, forward-invitation framing, — **PARTIAL:** SELECTION lib shipped #185 (`milestones.ts`); the card UI is still open
   nothing to defend/protect/maintain/lose, no purchase offered (FR-021, FR-022). Two
@@ -191,7 +191,7 @@ countdown, a warning colour, or a missed-day count.
   of an absence, a documented manual check recorded in this task's PR) confirming no
   streak-repair, -restore, or -undo affordance exists anywhere in the UI or as an RPC
   (FR-024). This task's "implementation" is the confirmed absence, not a feature
-- [ ] T035 [P] [US2] `npm run lint:copy` over every new string on this path — a
+- [X] T035 [P] [US2] — shipped #195 (lint:copy clean over new strings; the seeded-violation proof is 009's) `npm run lint:copy` over every new string on this path — a
   deliberately introduced coercive phrase must fail the build (FR-025, SC-009)
 - [x] T036 [P] [US2] Vitest: generated check-in histories with gaps, asserting the streak
   never decreases and never re-shows zero after a first practice (SC-004)
