@@ -2,6 +2,7 @@
 
 import type { Pose, FiveElement } from '@/lib/pose-types'
 import { resolveDisplayName } from '@/lib/pose-library/display-name'
+import { ScoreWithExplanation } from './ScoreExplanation'
 
 interface Props {
   pose: Pose
@@ -51,6 +52,11 @@ export default function PoseCard({ pose, onOpen }: Props) {
           </div>
         </div>
       </button>
+      {/* Outside the open button: the explanation trigger is itself a button. */}
+      <div className="flex flex-wrap items-start gap-x-4 gap-y-1 px-4 pb-3 text-xs" style={{ color: 'var(--muted)' }}>
+        <ScoreWithExplanation pose={pose} field="complexity" />
+        <ScoreWithExplanation pose={pose} field="injury_risk" />
+      </div>
     </article>
   )
 }

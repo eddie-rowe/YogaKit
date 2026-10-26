@@ -249,29 +249,29 @@ Ships in the same commit as Phase 4.
 
 ---
 
-## Phase 6: US4 — filter affordances and score explanations (P2) — *deferred*
+## Phase 6: US4 — filter affordances and score explanations (P2) — *shipped #82*
 
-**Blocked on**: `contracts/score-explanation.md` sign-off (T005).
+**Unblocked**: `contracts/score-explanation.md` signed off 2026-10-17. T048–T056 shipped in #82 (T053 was already satisfied; now covered by a test).
 
-- [ ] T048 [US4] Give multi-select chip groups an affordance beyond active-state colour, so
+- [X] T048 [US4] Give multi-select chip groups an affordance beyond active-state colour, so
   an inactive multi-select is distinguishable from an inactive single-select (FR-020, SC-008)
-- [ ] T049 [US4] Confirm multi-select result sets combine rather than replace, consistent
+- [X] T049 [US4] Confirm multi-select result sets combine rather than replace, consistent
   with the affordance shown (FR-021)
-- [ ] T050 [US4] Render `complexity` and `injury_risk` for the first time — neither appears
+- [X] T050 [US4] Render `complexity` and `injury_risk` for the first time — neither appears
   in the UI today, only as sort options and two max sliders. `complexity` unconditionally
   (Tier-1); `injury_risk` behind a `!= null` guard (Tier-2, `plan.md` decision 1), so today's
   67/67 coverage does not become load-bearing
-- [ ] T051 [US4] Add the in-place explanation from `contracts/score-explanation.md`
+- [X] T051 [US4] Add the in-place explanation from `contracts/score-explanation.md`
   (FR-022, FR-023). It must not claim a computation: these are authored integers, and the
   friction engine never reads either field
-- [ ] T052 [US4] State which constraints produced a zero-result filter combination (FR-024)
-- [ ] T053 [US4] Make clear-all reachable from the top level whenever any filter is active,
+- [X] T052 [US4] State which constraints produced a zero-result filter combination (FR-024)
+- [X] T053 [US4] Make clear-all reachable from the top level whenever any filter is active,
   independent of the advanced panel's state (FR-025)
-- [ ] T054 [P] [US4] Test SC-009 mechanically: every rendered score node has an adjacent
+- [X] T054 [P] [US4] Test SC-009 mechanically: every rendered score node has an adjacent
   explanation trigger, so the ratio cannot silently drop below 100%
-- [ ] T055 [P] [US4] Copy test rejecting "calculated", "derived", "computed", "the engine"
+- [X] T055 [P] [US4] Copy test rejecting "calculated", "derived", "computed", "the engine"
   in the explanation strings — what keeps the contract true after the PR that introduced it
-- [ ] T056 [P] [US4] Assert the 40px touch-target floor on every filter chip (FR-026)
+- [X] T056 [P] [US4] Assert the 40px touch-target floor on every filter chip (FR-026)
 
 ---
 
