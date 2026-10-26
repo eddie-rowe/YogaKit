@@ -7,6 +7,7 @@ import type { Pose, PoseTypeTag, MuscleGroup, FiveElement, NervousSystemEffect, 
 import { allSearchableNames, resolveDisplayName } from '@/lib/pose-library/display-name'
 import PoseCard from './PoseCard'
 import PoseOverlay from './PoseOverlay'
+import { describeConstraints } from './zero-result'
 import * as haptics from '@/lib/haptics'
 
 interface Props {
@@ -179,6 +180,18 @@ export default function PosesClient({ poses }: Props) {
     setSortBy('alpha')
   }
 
+  const constraints = describeConstraints({
+    search,
+    element: filterElement,
+    position: filterPosition,
+    typeTags: filterTypeTags,
+    muscleGroups: filterMuscleGroups,
+    nervousSystem: filterNS,
+    seqPosition: filterSeqPosition,
+    complexityMax: filterComplexityMax,
+    riskMax: filterRiskMax,
+  })
+
   // All filters (used by "Clear all" visibility)
   const hasActiveFilters =
     search || filterElement || filterPosition || filterNS || filterSeqPosition ||
@@ -282,7 +295,7 @@ export default function PosesClient({ poses }: Props) {
               <button
                 key={el}
                 onClick={() => setFilterElement(prev => prev === el ? '' : el)}
-                className={`px-3 py-1 text-xs rounded-full border capitalize transition-colors ${
+                className={`px-3 py-1 text-xs rounded-full border capitalize transition-colors min-h-10 ${
                   filterElement === el
                     ? ELEMENT_CHIP_ACTIVE[el]
                     : 'kk-chip'
@@ -331,7 +344,7 @@ export default function PosesClient({ poses }: Props) {
                       <button
                         key={ns}
                         onClick={() => setFilterNS(prev => prev === ns ? '' : ns)}
-                        className={`px-2 py-1 text-xs rounded border capitalize transition-colors ${filterNS === ns ? NS_COLORS[ns] : 'kk-chip'}`}
+                        className={`px-2 py-1 text-xs rounded border capitalize transition-colors min-h-10 ${filterNS === ns ? NS_COLORS[ns] : 'kk-chip'}`}
                         style={{ transitionDuration: '150ms' }}
                       >
                         {ns}
@@ -386,15 +399,18 @@ export default function PosesClient({ poses }: Props) {
 
               {/* Type tags */}
               <div>
-                <label className="text-xs font-medium block mb-1" style={{ color: 'var(--muted)' }}>Type tags (all selected must match)</label>
+                <label className="text-xs font-medium block mb-1" style={{ color: 'var(--muted)' }}>Type tags — select several, a pose must match all</label>
                 <div className="flex flex-wrap gap-1">
                   {TYPE_TAGS.map(tag => (
                     <button
                       key={tag}
                       onClick={() => toggleTypeTag(tag)}
                       data-active={filterTypeTags.includes(tag)}
+                      data-multi="true"
+                      aria-pressed={filterTypeTags.includes(tag)}
                       className="kk-chip px-3 py-1 text-xs"
                     >
+                      <span aria-hidden="true" className="mr-1" data-testid="multi-chip-mark">{filterTypeTags.includes(tag) ? '✓' : '+'}</span>
                       {tag}
                     </button>
                   ))}
@@ -403,15 +419,18 @@ export default function PosesClient({ poses }: Props) {
 
               {/* Muscle groups */}
               <div>
-                <label className="text-xs font-medium block mb-1" style={{ color: 'var(--muted)' }}>Muscle groups (all selected must match)</label>
+                <label className="text-xs font-medium block mb-1" style={{ color: 'var(--muted)' }}>Muscle groups — select several, a pose must match all</label>
                 <div className="flex flex-wrap gap-1">
                   {MUSCLE_GROUPS.map(m => (
                     <button
                       key={m}
                       onClick={() => toggleMuscleGroup(m)}
                       data-active={filterMuscleGroups.includes(m)}
+                      data-multi="true"
+                      aria-pressed={filterMuscleGroups.includes(m)}
                       className="kk-chip px-3 py-1 text-xs"
                     >
+                      <span aria-hidden="true" className="mr-1" data-testid="multi-chip-mark">{filterMuscleGroups.includes(m) ? '✓' : '+'}</span>
                       {m}
                     </button>
                   ))}
@@ -518,6 +537,11 @@ export default function PosesClient({ poses }: Props) {
         {filtered.length === 0 ? (
           <div className="text-center py-20" style={{ color: 'var(--muted)' }}>
             <p className="text-lg">No poses match your filters.</p>
+            {constraints.length > 0 && (
+              <p className="mt-1 text-sm" data-testid="poses-zero-result-constraints">
+                Nothing matches all of: {constraints.join(', ')}.
+              </p>
+            )}
             <button onClick={clearFilters} className="mt-2 text-sm underline transition-colors" style={{ transitionDuration: '150ms' }}>Clear filters</button>
           </div>
         ) : (
