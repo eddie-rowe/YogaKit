@@ -14,3 +14,7 @@
 ## What /autoretro should capture
 - Source-scan test bans certain words even in comments across src/components/sadhana.
 - Three tracker rows (T021/T022, T030, T033) ticked in the same PRs.
+
+## Update (post-CI)
+- Merged (squash, `ci` green): #210 (`1b701c0`), #211 (`78566d9`).
+- #209 left open: its `ci` run failed on a `next/font/google` build error; the same job passed on #210/#211, so likely transient. Re-run was 403 from this session. Next sweep Step 1a: re-check, merge if green.
