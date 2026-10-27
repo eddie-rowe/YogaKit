@@ -142,10 +142,10 @@ check-in survives a reload and flushes with no user action once online.
 - [X] T020 [US1] `src/lib/storage/checkin-outbox.ts` — the offline queue, per — shipped #181
   `research.md`'s decision on reuse-vs-new (T005); a check-in made offline is never lost
   and never reported in a state the server does not hold (FR-010)
-- [ ] T021 [US1] Check-in UI: one-tap mood (3–5 discrete icons, no slider — FR-001),
+- [X] T021 [US1] Check-in UI — shipped #207 (`CheckinForm.tsx`, unmounted; submit is a callback): one-tap mood (3–5 discrete icons, no slider — FR-001),
   duration auto-filled from a just-completed flow and editable (FR-002), note and flow
   link optional and visually secondary (FR-003)
-- [ ] T022 [US1] Permanent "only you can see this" microcopy beside the check-in fields,
+- [X] T022 [US1] (shipped #207) Permanent "only you can see this" microcopy beside the check-in fields,
   not behind a link or in settings (FR-004, UX-002)
 - [ ] T023 [US1] The bounded "log for yesterday" affordance: visible only within the short — **PARTIAL:** LOGIC shipped #192 (`canLogYesterday` in `checkin-day.ts`); the affordance UI is still open
   window decision #1 describes, gone once the window passes or a newer check-in exists, no
