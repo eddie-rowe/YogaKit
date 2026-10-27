@@ -176,7 +176,7 @@ countdown, a warning colour, or a missed-day count.
   never shows zero after a first practice (FR-015)
 - [X] T029 [US2] Streak display: no warning colour state, no countdown, anywhere — shipped #195 (`StreakDisplay.tsx`)
   (FR-016, FR-017)
-- [ ] T030 [US2] "Log rest" — one tap, same visual weight as "Log practice," neither
+- [X] T030 [US2] "Log rest" — shipped #206 (`LogActions.tsx`, unmounted) — one tap, same visual weight as "Log practice," neither
   smaller nor de-emphasized (FR-013, UX-005)
 - [X] T031 [US2] Practice-state model: practised, rested, silently-absent. Only the first — shipped #185 (`practice-state.ts`)
   two render calendar chips; a silently-absent day renders nothing and produces no notice
