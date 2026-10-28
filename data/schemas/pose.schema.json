@@ -285,7 +285,10 @@
         "required": ["emotion", "tcm_organ"],
         "additionalProperties": false,
         "properties": {
-          "emotion": { "type": "string", "minLength": 1 },
+          "emotion": {
+            "enum": ["grief", "sadness", "fear", "frustration", "vulnerability", "control", "courage", "surrender", "groundedness", "anger", "openness", "letting-go", "trust", "integration"],
+            "description": "Closed set (FR-029) — see data/schemas/theme-taxonomy.json."
+          },
           "tcm_organ": { "type": "string", "minLength": 1 },
           "notes": { "type": "string" }
         }

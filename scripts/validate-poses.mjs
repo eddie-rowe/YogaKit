@@ -15,6 +15,7 @@ import {
   parseReviewRecord,
   tier1Coverage,
 } from './lib/tier1-report.mjs'
+import { checkTaxonomy } from './lib/theme-taxonomy.mjs'
 
 const sha256 = value => createHash('sha256').update(value).digest('hex')
 
@@ -113,6 +114,22 @@ if (fs.existsSync(reviewPath)) {
   for (const slug of unknown) {
     console.warn(`⚠️  Tier-1 review names a pose that is not in the library: ${slug}`)
   }
+}
+
+// SC-010 / FR-029: the theme set is closed. The schema enum already rejects an unknown
+// emotion per file; this catches the other drift — a theme with no subhead, or the enum and
+// the taxonomy file disagreeing.
+const taxonomy = JSON.parse(
+  fs.readFileSync(path.join(here, '../data/schemas/theme-taxonomy.json'), 'utf8')
+)
+const taxonomyProblems = checkTaxonomy({
+  taxonomy,
+  schemaEnum: schema.properties.emotional_release_potential.items.properties.emotion.enum,
+  poses,
+})
+for (const problem of taxonomyProblems) {
+  console.error(`❌ theme taxonomy: ${problem}`)
+  errors++
 }
 
 if (tier2Gaps.length > 0) {

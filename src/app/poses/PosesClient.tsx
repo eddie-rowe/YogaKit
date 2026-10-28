@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import type { Pose, PoseTypeTag, MuscleGroup, FiveElement, NervousSystemEffect, SequencingPosition } from '@/lib/pose-types'
 import { allSearchableNames, resolveDisplayName } from '@/lib/pose-library/display-name'
+import { THEMES } from '@/lib/pose-library/theme-taxonomy'
 import PoseCard from './PoseCard'
 import PoseOverlay from './PoseOverlay'
 import { describeConstraints } from './zero-result'
@@ -55,10 +56,6 @@ const NS_COLORS: Record<NervousSystemEffect, string> = {
 const SEQ_OPTIONS: SequencingPosition[] = ['opening', 'building', 'peak', 'cooldown', 'integration']
 
 type ViewMode = 'filter' | 'theme'
-
-function slugifyEmotion(emotion: string) {
-  return emotion.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-}
 
 export default function PosesClient({ poses }: Props) {
   const [search, setSearch] = useState('')
@@ -132,19 +129,19 @@ export default function PosesClient({ poses }: Props) {
         const [dosha, effect] = themeFilterDosha.split(':') as [keyof NonNullable<Pose['dosha_affinity']>, string]
         if (pose.dosha_affinity?.[dosha] !== effect) continue
       }
-      for (const e of pose.emotional_release_potential ?? []) {
-        const list = groups.get(e.emotion) ?? []
+      // A pose can carry two emotions that sit under one theme; list it once per theme.
+      for (const slug of new Set((pose.emotional_release_potential ?? []).map(e => e.emotion))) {
+        const list = groups.get(slug) ?? []
         list.push(pose)
-        groups.set(e.emotion, list)
+        groups.set(slug, list)
       }
     }
-    return [...groups.entries()]
-      .sort((a, b) => a[0].localeCompare(b[0]))
-      .map(([emotion, list]) => ({
-        emotion,
-        slug: slugifyEmotion(emotion),
-        poses: [...list].sort((a, b) => resolveDisplayName(a).localeCompare(resolveDisplayName(b))),
-      }))
+    // Section order and titles come from the closed taxonomy, never from the data (FR-029).
+    return THEMES.filter(theme => groups.has(theme.slug)).map(theme => ({
+      theme,
+      slug: theme.slug,
+      poses: [...groups.get(theme.slug)!].sort((a, b) => resolveDisplayName(a).localeCompare(resolveDisplayName(b))),
+    }))
   }, [poses, themeFilterElement, themeFilterChakra, themeFilterDosha])
 
   const openPose = useMemo(() => poses.find(p => p.slug === openSlug) ?? null, [poses, openSlug])
@@ -513,9 +510,10 @@ export default function PosesClient({ poses }: Props) {
           ) : (
             themeGroups.map(group => (
               <section key={group.slug} data-testid={`poses-theme-section-${group.slug}`}>
-                <h2 className="font-serif text-lg font-semibold capitalize mb-2" style={{ color: 'var(--foreground)' }}>
-                  {group.emotion}
+                <h2 className="font-serif text-lg font-semibold mb-1" style={{ color: 'var(--foreground)' }}>
+                  {group.theme.label}
                 </h2>
+                <p className="text-sm mb-2" style={{ color: 'var(--muted)' }}>{group.theme.subhead}</p>
                 <div className="flex flex-wrap gap-2">
                   {group.poses.map(pose => (
                     <button
