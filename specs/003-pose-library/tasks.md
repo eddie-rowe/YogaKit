@@ -281,26 +281,28 @@ Ships in the same commit as Phase 4.
 **Re-estimate before scheduling.** This is a data migration wearing a copy story's clothes
 — see `research.md` §2.
 
-- [ ] T057 [US5] Create `data/schemas/theme-taxonomy.json` — 13 entries with `slug`, `label`,
-  `subhead`, `tcm_organs[]`, per the signed contract
-- [ ] T058 [US5] Add an `enum` on `emotional_release_potential[].emotion` in
+- [X] T057 [US5] Create `data/schemas/theme-taxonomy.json` — 13 entries with `slug`, `label`,
+  `subhead`, `tcm_organs[]`, per the signed contract — shipped #83 (14 entries per the
+  sign-off rulings, not 13)
+- [X] T058 [US5] Add an `enum` on `emotional_release_potential[].emotion` in
   `data/schemas/pose.schema.json`, keeping the field in `x-tier2-properties` so the enum can
   fail CI on a bad value without the Tier-1 gate changing shape
-- [ ] T059 [US5] Patch the pose files carrying non-canonical values, in one attributable
+- [X] T059 [US5] Patch the pose files carrying non-canonical values, in one attributable
   commit. 38 distinct strings across 101 occurrences today, including three spellings of
   grief, three of frustration, and one snake-cased `tension_and_control`
-- [ ] T060 [US5] Delete `slugifyEmotion` (`PosesClient.tsx:57-59`) and group on taxonomy
+- [X] T060 [US5] Delete `slugifyEmotion` (`PosesClient.tsx:57-59`) and group on taxonomy
   slugs, so `poses-theme-section-{slug}` becomes stable
-- [ ] T061 [US5] Render the subheads (FR-027) — one per section, non-prescriptive. The
+- [X] T061 [US5] Render the subheads (FR-027) — one per section, non-prescriptive. The
   contract's tone rule: describe anatomy and intent, never the reader's inner state
-- [ ] T062 [US5] Fix the `--font-cormorant` bug — `--font-serif` maps to an undefined
+- [X] T062 [US5] Fix the `--font-cormorant` bug — `--font-serif` maps to an undefined
   variable, so every `font-serif` heading silently falls back. It affects exactly the theme
-  headings this phase reworks, which is why it lands here rather than on its own
-- [ ] T063 [US5] Keep element, chakra, and dosha visible as cross-filters in theme mode
+  headings this phase reworks, which is why it lands here rather than on its own —
+  already fixed on main; confirmed #83
+- [X] T063 [US5] Keep element, chakra, and dosha visible as cross-filters in theme mode
   (FR-028)
-- [ ] T064 [US5] Confirm theme browsing stays stateless with respect to the reader — no
+- [X] T064 [US5] Confirm theme browsing stays stateless with respect to the reader — no
   mood, no history, no inference (FR-030)
-- [ ] T065 [P] [US5] Validator cross-check: every emotion in the data resolves to a taxonomy
+- [X] T065 [P] [US5] Validator cross-check: every emotion in the data resolves to a taxonomy
   entry, and every taxonomy entry has a non-empty subhead. That mechanises SC-010 rather
   than asserting it
 

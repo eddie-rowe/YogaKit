@@ -26,6 +26,9 @@ export default defineConfig({
         // be a tested claim rather than an asserted one — an untested reporter would put
         // us back where we started with a different file name.
         'scripts/lib/tier1-report.mjs',
+        // 003 US5: the theme-taxonomy cross-check (SC-010) — a closed-set gate nobody tested
+        // is the same claim-not-gate problem as the reporter above.
+        'scripts/lib/theme-taxonomy.mjs',
         // 009 US1: the copy-lint's matching logic. Same argument as above, with more
         // force — this module is the mechanism behind a constitutional rule (RULE-C5),
         // and a voice gate nobody has tested is exactly the kind of check that quietly

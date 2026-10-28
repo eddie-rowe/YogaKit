@@ -6,6 +6,7 @@ import BodyDiagram from '@/components/poses/BodyDiagram'
 import { CHAKRA_DOTS } from '@/lib/pose-library/body-map'
 import { describeEnergeticDirection } from '@/lib/pose-library/energetic-direction'
 import * as haptics from '@/lib/haptics'
+import { themeBySlug } from '@/lib/pose-library/theme-taxonomy'
 import { DEPTH_STEPS, DEPTH_RANK, REVEAL_CLASS } from '@/lib/pose-library/depth'
 
 interface Props {
@@ -292,7 +293,7 @@ export default function PoseDetailContent({ pose, layer, customFields }: Content
             <div className="space-y-2">
               {pose.emotional_release_potential!.map((e, i) => (
                 <div key={i} className="flex flex-wrap gap-2 items-start">
-                  <span className="text-xs px-2 py-0.5 bg-rose-50 text-rose-700 rounded-full capitalize whitespace-nowrap">{e.emotion}</span>
+                  <span className="text-xs px-2 py-0.5 bg-rose-50 text-rose-700 rounded-full whitespace-nowrap">{themeBySlug(e.emotion)?.label ?? e.emotion}</span>
                   <span className="text-xs" style={{ color: 'var(--muted)' }}>({e.tcm_organ})</span>
                   {e.notes && <p className="text-xs leading-relaxed w-full" style={{ color: 'var(--muted)' }}>{e.notes}</p>}
                 </div>
