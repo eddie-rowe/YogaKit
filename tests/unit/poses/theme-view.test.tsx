@@ -74,3 +74,14 @@ describe('cross-filters and statelessness (T063, T064)', () => {
     setItem.mockRestore()
   })
 })
+
+describe('pose detail emotional territory', () => {
+  it('shows the theme label, not the raw slug', () => {
+    localStorage.setItem('krama-pose-detail-layer', 'expert')
+    render(<PosesClient poses={poses} />)
+    fireEvent.click(within(screen.getByTestId('poses-card-snail')).getAllByRole('button')[0])
+    expect(screen.getAllByText('Letting go').length).toBeGreaterThan(0)
+    expect(screen.queryByText('letting-go')).not.toBeInTheDocument()
+    localStorage.clear()
+  })
+})
