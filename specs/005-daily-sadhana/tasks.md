@@ -184,7 +184,7 @@ countdown, a warning colour, or a missed-day count.
   double-count (FR-014)
 - [X] T032 [US2] Grace-budget detail — shipped #195 (`GraceBudgetDetail.tsx`; not yet mounted on any screen): absent from Today (FR-018), stated calmly on request
   from the streak detail, reading sensibly at both zero-used and fully-used (FR-020)
-- [ ] T033 [US2] Milestone cards (10/30/90): shown once, forward-invitation framing, — **PARTIAL:** SELECTION lib shipped #185 (`milestones.ts`); the card UI is still open
+- [X] T033 [US2] Milestone cards (10/30/90): shown once, forward-invitation framing, — shipped #205 (`MilestoneCard.tsx` + selection lib #185; unmounted, dismissal persistence waits on PR #199)
   nothing to defend/protect/maintain/lose, no purchase offered (FR-021, FR-022). Two
   milestones in one day: one card at a time, neither lost (FR-023)
 - [X] T034 [US2] **Decision #3, negative assertion**: a test (or, failing a positive test — shipped #191 (negative-assertion test)
