@@ -167,3 +167,4 @@ YYYY-MM-DD HH:MM /autoobs [STATUS] — overall: [HEALTHY/DEGRADED/AT-RISK]; moni
 2026-10-27 10:30 /autodev [OK] — 0 PRs merged (#209 #210 #211 opened, CI pending); 0 dependabot merged; skipped 3 (cap: #200, #83, #61); failed 0; handoff: docs/planning/autopm/autodev-handoff-2026-10-27.md
 2026-10-27 10:25 /autodev [OK] — 2 PRs merged (#210 #211); #209 left open (ci build error, likely transient); 0 dependabot; skipped 3 (cap); failed 0; handoff: docs/planning/autopm/autodev-handoff-2026-10-27.md
 2026-10-27 17:00 /autoretro [OK] — shipped 2 PRs (#210 #211 by /autodev, dev-complete); momentum STEADY-STATE-OWNER-BLOCKED; production HEALTHY; friction: #209 stranded on transient CI error, no re-run rights; carry: merge #209, mount 005 components, draft #200; CEO brief: docs/planning/ceo-brief/2026-10-27.md
+2026-10-28 08:15 /autoobs [OK] — overall: HEALTHY; monitors: 12 ok / 0 alert (4 no-data expected); digest: docs/observation/autoobs/2026-10-28.md
