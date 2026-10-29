@@ -214,9 +214,9 @@ revision, confirm the card quotes the earlier version and offers the three respo
   not by application discipline alone
 - [X] T038 [US3] `src/lib/sadhana/return-card.ts` — the version-matched lookup: quote the — shipped #188 (`return-card.ts`)
   intention active when the lapse *began*, not the newest version (FR-027)
-- [ ] T039 [US3] Return card: plain elapsed-time statement, two flat equal-weight actions
+- [X] T039 [US3] Return card: plain elapsed-time statement, two flat equal-weight actions — shipped (component, not yet mounted)
   ("keep" / "update"), neither styled as a warning (FR-028, FR-029)
-- [ ] T040 [US3] "I'm resting, not stopping" as a third response — the card is never a
+- [X] T040 [US3] "I'm resting, not stopping" as a third response — the card is never a — shipped (component, not yet mounted)
   binary between practising and ignoring it (FR-030). Choosing it does not immediately
   re-show the card and frames nothing as a lapse (FR-031)
 - [ ] T041 [US3] Re-entry offer: the smallest unit the pose model supports, drawn from the
@@ -245,12 +245,12 @@ durably off. **Independent test (US5)**: Run a query with a cohort teacher's cre
 directly against `practice_reflections` for an enrolled student and confirm it returns
 nothing or is refused.
 
-- [ ] T046 [US4] Sharing pill: visible on Today whenever an enrollment's `share_signals`
+- [ ] T046 [US4] Sharing pill: visible on Today whenever an enrollment's `share_signals` — **PARTIAL:** component shipped, not yet mounted or persisted
   is true, naming the organization (FR-044). No pill when an account belongs to an org
   with no active enrollment (FR-052)
-- [ ] T047 [US4] Tapping the pill opens a sheet listing exactly what is shared, in plain
+- [X] T047 [US4] Tapping the pill opens a sheet listing exactly what is shared, in plain — shipped (component, not yet mounted)
   language, before a single named "stop sharing with [Org]" action (FR-045)
-- [ ] T048 [US4] One control per enrollment, never a single global switch (FR-046);
+- [X] T048 [US4] One control per enrollment, never a single global switch (FR-046); — shipped (component, not yet mounted)
   stopping one does not affect another (FR-047)
 - [ ] T049 [US4] Wire the stop action to `002`'s existing `app_revoke_signal_sharing` RPC
   — a direct single write, no soft flag, no derived permission (FR-048)
@@ -299,12 +299,12 @@ left behind.
   priority (FR-038, decision #7)
 - [X] T061 [US6] `src/lib/sadhana/guidance.ts` — trigger/priority selection, pure; at most — shipped #197 (`guidance.ts`)
   one card renders at any time (FR-039)
-- [ ] T062 [US6] A shown-or-dismissed card consumes its trigger via
+- [ ] T062 [US6] A shown-or-dismissed card consumes its trigger via — **PARTIAL:** component shipped, not yet mounted or persisted
   `practice_guidance_dismissals` and is never queued; no unread badge, no count, no
   backlog (FR-040, FR-041)
-- [ ] T063 [US6] A gap-triggered card gives one clear next action, counts no missed days,
+- [X] T063 [US6] A gap-triggered card gives one clear next action, counts no missed days, — shipped (component, not yet mounted)
   shows no reset to zero (FR-042) — **held pending T007's sign-off**, same as T059
-- [ ] T064 [US6] The corpus is not exposed as a browsable library; no navigation entry
+- [X] T064 [US6] The corpus is not exposed as a browsable library; no navigation entry — shipped (component, not yet mounted)
   leads to one (FR-043)
 - [X] T065 [P] [US6] Vitest: simultaneous-trigger selection resolves to exactly one card, — shipped #197
   by authored priority (SC-012); CI fails on 100% of missing/duplicate-priority fixtures
