@@ -147,7 +147,7 @@ check-in survives a reload and flushes with no user action once online.
   link optional and visually secondary (FR-003)
 - [X] T022 [US1] (shipped #207) Permanent "only you can see this" microcopy beside the check-in fields,
   not behind a link or in settings (FR-004, UX-002)
-- [ ] T023 [US1] The bounded "log for yesterday" affordance: visible only within the short — **PARTIAL:** LOGIC shipped #192 (`canLogYesterday` in `checkin-day.ts`); the affordance UI is still open
+- [X] T023 [US1] The bounded "log for yesterday" affordance: visible only within the short — shipped (logic #192, UI #217)
   window decision #1 describes, gone once the window passes or a newer check-in exists, no
   free-form date entry anywhere (FR-006, FR-007)
 - [ ] T024 [US1] A second check-in on the same local day updates the first rather than — **PARTIAL:** create-vs-update DECISION shipped #192 (`resolveCheckinDay`); "never a second row" also needs the per-day uniqueness in C1 (T009)
