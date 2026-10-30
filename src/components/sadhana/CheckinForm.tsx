@@ -4,10 +4,12 @@
 // never a slider. Note and flow link are optional and set lower. The privacy line sits
 // beside the fields and is always rendered. The local day is resolved when the form is
 // submitted, not when it opened. Content stays author-only through RLS, not here; this
-// component only hands its values to the caller.
+// component only hands its values to the caller. "Log for yesterday" is a single toggle
+// offered only while `canLogYesterday` holds (FR-006); there is no date entry (FR-007).
 
 import { useState } from 'react'
-import { resolveLocalDay } from '@/lib/sadhana/local-day'
+import { canLogYesterday, resolveCheckinDay } from '@/lib/sadhana/checkin-day'
+import type { Checkin } from '@/lib/sadhana/streak'
 
 export interface CheckinSubmission {
   localDate: string
@@ -20,6 +22,7 @@ export interface CheckinSubmission {
 interface CheckinFormProps {
   durationPrefill?: number
   timeZone?: string
+  existing?: readonly Checkin[]
   onSubmit: (checkin: CheckinSubmission) => void
 }
 
@@ -30,18 +33,20 @@ const MOODS = [
   { value: 4, icon: '☀️', label: 'Bright' },
 ]
 
-export default function CheckinForm({ durationPrefill, timeZone, onSubmit }: CheckinFormProps) {
+export default function CheckinForm({ durationPrefill, timeZone, existing = [], onSubmit }: CheckinFormProps) {
   const [mood, setMood] = useState<number | null>(null)
   const [duration, setDuration] = useState(durationPrefill === undefined ? '' : String(durationPrefill))
   const [note, setNote] = useState('')
   const [flowLink, setFlowLink] = useState('')
+  const [forYesterday, setForYesterday] = useState(false)
+  const offerYesterday = canLogYesterday(new Date(), existing, timeZone)
 
   function submit(e: React.FormEvent) {
     e.preventDefault()
     if (mood === null) return
     const minutes = Number.parseInt(duration, 10)
     onSubmit({
-      localDate: resolveLocalDay(new Date(), timeZone),
+      localDate: resolveCheckinDay(new Date(), existing, forYesterday ? 'yesterday' : 'today', timeZone).localDate,
       mood,
       durationMinutes: Number.isNaN(minutes) ? null : minutes,
       note,
@@ -68,6 +73,19 @@ export default function CheckinForm({ durationPrefill, timeZone, onSubmit }: Che
           </button>
         ))}
       </div>
+
+      {offerYesterday && (
+        <button
+          type="button"
+          data-testid="sadhana-checkin-yesterday"
+          aria-pressed={forYesterday}
+          onClick={() => setForYesterday((v) => !v)}
+          className="rounded-lg px-3 py-1 text-xs"
+          style={{ background: forYesterday ? 'var(--surface)' : 'transparent', outline: forYesterday ? '2px solid var(--foreground)' : '1px solid var(--muted)' }}
+        >
+          Log for yesterday
+        </button>
+      )}
 
       <label className="block">
         Minutes
