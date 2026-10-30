@@ -72,7 +72,7 @@ raise has a stated resolution, not a "TODO." No code changes in this phase.
   (`intentions`, `practice_checkins`, `practice_reflections`, `practice_ritual_state`,
   `practice_milestones`), `practice_guidance_dismissals`, every RLS policy body, and the
   `data/sadhana/grace-budget.json` shape (decision #4)
-- [ ] T007 [P] Author `specs/005-daily-sadhana/contracts/guidance-tone.md` **[OWNER
+- [ ] T007 [P] — **PARTIAL:** draft shipped (awaiting owner sign-off) — Author `specs/005-daily-sadhana/contracts/guidance-tone.md` **[OWNER
   SIGN-OFF, decision #6]** — a short copy-style note (gentle, pattern-based, per the
   recommended default) that the guidance corpus and its copy-lint entries will be written
   against. This contract is opened, not closed, in this phase — no guidance entry is
