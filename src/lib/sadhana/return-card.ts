@@ -22,3 +22,36 @@ export function activeIntentionAtLapseStart<T extends IntentionRevision>(
   }
   return active
 }
+
+export interface ReturnCardInput<T extends IntentionRevision> {
+  revisions: readonly T[]
+  /** `YYYY-MM-DD` the current lapse began. Also the lapse's identity. */
+  lapseStart: string
+  /** Days lapsed so far, computed by the caller. */
+  lapseDays: number
+  /** The person's current lapse threshold, in days. */
+  threshold: number
+  /** Lapse-start dates already answered (keep / update / rest). */
+  answeredLapses: readonly string[]
+}
+
+export interface ReturnCardDecision<T extends IntentionRevision> {
+  due: boolean
+  intention: T | null
+}
+
+/**
+ * Whether a return card is due (FR-031, FR-034, FR-035). Data only, no copy.
+ *
+ * No intention active at the lapse start: not due, and nothing is substituted. An answered
+ * lapse, including a "rest" answer, is keyed by its start date, so changing the threshold
+ * in either direction mid-lapse cannot re-offer it; a new lapse is a new key.
+ */
+export function returnCardDue<T extends IntentionRevision>(
+  input: ReturnCardInput<T>,
+): ReturnCardDecision<T> {
+  const intention = activeIntentionAtLapseStart(input.revisions, input.lapseStart)
+  const answered = input.answeredLapses.includes(input.lapseStart)
+  const due = intention !== null && !answered && input.lapseDays >= input.threshold
+  return { due, intention: due ? intention : null }
+}
