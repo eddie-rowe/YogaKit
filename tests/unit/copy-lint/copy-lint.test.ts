@@ -514,15 +514,48 @@ describe('checkOperationalHonesty (009 US3, FR-024)', () => {
   })
 })
 
+describe('markdown guidance bodies (009 / 005 guidance-tone contract)', () => {
+  const violating = "You failed to practice yesterday, so your streak is gone."
+  const ruleHit = (text: string) => lintSource(text, 'data/guidance/x.md', rules).violations
+
+  it('flags a violating body', () => {
+    const md = `---\ntitle: Welcome back\n---\n\n${violating}\n`
+    const hits = ruleHit(md)
+    expect(hits.length).toBeGreaterThan(0)
+    expect(hits[0].line).toBe(5)
+  })
+
+  it('does not lint the same text inside frontmatter', () => {
+    const md = `---\nnote: ${violating}\n---\n\nSit when you are ready. The practice is here.\n`
+    expect(ruleHit(md)).toEqual([])
+  })
+
+  it('passes a clean body', () => {
+    expect(ruleHit('---\nid: a\n---\nBegin where you are today.\n')).toEqual([])
+  })
+
+  it('lints the whole file when there is no frontmatter', () => {
+    expect(ruleHit(violating).length).toBeGreaterThan(0)
+  })
+
+  it('treats an unterminated frontmatter fence as body', () => {
+    expect(ruleHit(`---\n${violating}\n`).length).toBeGreaterThan(0)
+  })
+
+  it('ignores short non-prose lines such as headings markers and rules', () => {
+    expect(ruleHit('---\nid: a\n---\n# Hi\n\n***\n').length).toBe(0)
+  })
+})
+
 describe('scoping', () => {
   it('scans the user-facing directories and the settings strings, not the engine modules', () => {
-    expect(SCAN_DIRS).toEqual(['src/app', 'src/components', 'src/lib/settings'])
+    expect(SCAN_DIRS).toEqual(['src/app', 'src/components', 'src/lib/settings', 'data/guidance'])
     // RULE-H6's modules author no copy; lint noise on that path is worse than no cover.
     expect(SCAN_DIRS.some((d) => /^src\/lib\/(friction|validator)/.test(d))).toBe(false)
   })
 
-  it('scans TS and TSX only', () => {
-    expect(SCAN_EXTENSIONS).toEqual(['.ts', '.tsx'])
+  it('scans TS, TSX and Markdown only', () => {
+    expect(SCAN_EXTENSIONS).toEqual(['.ts', '.tsx', '.md'])
   })
 
   it('excludes test files, which seed violations on purpose', () => {
