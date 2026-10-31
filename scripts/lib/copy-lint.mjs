@@ -22,10 +22,10 @@ import ts from 'typescript'
  * `src/lib` is deliberately absent: it holds the friction engine and validator-lite,
  * which author no copy, and scanning them would put lint noise on RULE-H6's path.
  */
-export const SCAN_DIRS = ['src/app', 'src/components', 'src/lib/settings']
+export const SCAN_DIRS = ['src/app', 'src/components', 'src/lib/settings', 'data/guidance']
 
 /** Extensions worth parsing. */
-export const SCAN_EXTENSIONS = ['.ts', '.tsx']
+export const SCAN_EXTENSIONS = ['.ts', '.tsx', '.md']
 
 /** Files excluded by name pattern — tests seed violations on purpose. */
 export const EXCLUDED_PATTERNS = [/\.test\.tsx?$/, /\.spec\.tsx?$/, /\/__tests__\//]
@@ -178,6 +178,42 @@ export function extractCopy(source, filename = 'input.tsx') {
 }
 
 /**
+ * Pull the prose out of a Markdown guidance entry (005 guidance-tone contract).
+ *
+ * The leading `---` frontmatter block is skipped, so only the entry body is linted. An
+ * unterminated fence is not frontmatter and the whole file is body. Text is read a
+ * paragraph at a time so a phrase wrapped across two lines still matches a rule. There
+ * is no exception marker for Markdown by design.
+ */
+export function extractMarkdownCopy(source) {
+  const lines = source.split('\n')
+  let start = 0
+  if (lines[0]?.trim() === '---') {
+    const close = lines.findIndex((l, i) => i > 0 && l.trim() === '---')
+    if (close !== -1) start = close + 1
+  }
+  const found = []
+  let para = null
+  const flush = () => {
+    if (!para) return
+    const text = para.parts.join(' ').trim()
+    if (looksLikeProse(text)) found.push({ text, line: para.line, column: 1, kind: 'markdown' })
+    para = null
+  }
+  for (let i = start; i < lines.length; i++) {
+    const cleaned = lines[i].trim().replace(/^(?:#{1,6}\s+|>\s*|[-*+]\s+|\d+\.\s+)/, '')
+    if (cleaned.length === 0) {
+      flush()
+      continue
+    }
+    if (!para) para = { line: i + 1, parts: [] }
+    para.parts.push(cleaned)
+  }
+  flush()
+  return found
+}
+
+/**
  * Find FR-016 exception markers.
  *
  * `// copy-lint-ignore-next-line VOICE-AI-TELLS — why this string is genuinely fine`
@@ -267,8 +303,11 @@ export function compileRules(ruleSet) {
  * @returns {{violations: Array, scanned: number, suppressed: Array, malformed: Array}}
  */
 export function lintSource(source, filename, compiledRules) {
-  const strings = extractCopy(source, filename)
-  const { exceptions, malformed } = parseExceptions(source)
+  const isMarkdown = filename.endsWith('.md')
+  const strings = isMarkdown ? extractMarkdownCopy(source) : extractCopy(source, filename)
+  const { exceptions, malformed } = isMarkdown
+    ? { exceptions: new Map(), malformed: [] }
+    : parseExceptions(source)
   const violations = []
   const suppressed = []
 
@@ -481,7 +520,7 @@ export function formatViolation(v) {
 export function coverageLimits() {
   return [
     'Interpolated copy: only the literal fragments of a template are read. A string assembled from variables is invisible.',
-    'Location: only src/app, src/components and src/lib/settings are scanned. data/poses (authored content), migrations, and emails are not.',
+    'Location: only src/app, src/components, src/lib/settings and data/guidance are scanned. data/poses (authored content), migrations, and emails are not.',
     'Tone: condescension, false cheer, hedging, and second-person diagnosis all pass. Those are VOICE.md §1–§3b, enforced in review.',
     'Structure: a screen built from individually compliant strings can still read as a countdown. RULE-C2 is about experience, not substrings.',
     'Language: English only. Localised copy is entirely uncovered.',
