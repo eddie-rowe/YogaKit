@@ -221,10 +221,10 @@ revision, confirm the card quotes the earlier version and offers the three respo
   re-show the card and frames nothing as a lapse (FR-031)
 - [ ] T041 [US3] Re-entry offer: the smallest unit the pose model supports, drawn from the
   intention's original flow (FR-032); no copy proposes catching up (FR-033)
-- [ ] T042 [US3] No intention recorded: no return card is shown and nothing is invented in
-  its place (FR-034)
-- [ ] T043 [US3] A lapse threshold changed mid-lapse takes effect without re-showing a
-  card already answered (FR-035)
+- [X] T042 [US3] No intention recorded: no return card is shown and nothing is invented in
+  its place (FR-034) — shipped #223
+- [X] T043 [US3] A lapse threshold changed mid-lapse takes effect without re-showing a
+  card already answered (FR-035) — shipped #223
 - [ ] T044 [P] [US3] `npm run lint:copy` over every new string on this path
 - [ ] T045 [P] [US3] Vitest: write an intention, revise it, simulate a lapse start before
   the revision, assert the card quotes the pre-revision version (SC-010)
