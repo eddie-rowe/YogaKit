@@ -353,3 +353,15 @@ does not parse a log body. The widget rendered as an empty panel, and an empty
 names against live series and has no equivalent check for a log query. That asymmetry is
 worth remembering when adding any signal: a metric with no data fails a check, while a log
 query with no results is indistinguishable from health.
+
+2026-11-01 — RUM audit for the three-sweep real-user LCP/INP no-data (#231): the cause is not in the
+scrubber. `beforeSend` in `src/instrumentation-client.ts` rewrites only `view.url`, `view.name`,
+`error.message`/`error.stack` and `resource.url`, and always returns `true`; it never reads or deletes
+`view.largest_contentful_paint` / `view.interaction_to_next_paint`, and `src/lib/telemetry/scrub.ts`
+has no code path that touches web-vital fields. Init sets no sampling or `trackViewsManually` override
+of its own (`@datadog/browser-rum-nextjs`'s `nextjsPlugin()` sets `trackViewsManually = true`, so
+`DatadogRumView.tsx`'s `startView` after hydration is the only view source). Nothing here proves the
+SDK drops the vitals on manually-started views — that is an unverified suspect, not a finding. Next
+sweep: stop re-reporting this as a code defect; check the query side (`@view.loading_type:initial_load`
+and the metric/aggregation used by the monitor) and one raw view event in RUM Explorer for the
+`view.largest_contentful_paint` field before touching the SDK config.
