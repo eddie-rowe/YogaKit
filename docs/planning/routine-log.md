@@ -185,3 +185,4 @@ YYYY-MM-DD HH:MM /autoobs [STATUS] — overall: [HEALTHY/DEGRADED/AT-RISK]; moni
 2026-11-01 08:15 /autoobs [OK] — overall: DEGRADED; monitors: 12 ok / 0 alert (4 no-data expected); digest: docs/observation/autoobs/2026-11-01.md
 2026-11-01 09:00 /autopm [OK] — 6 issues ready-for-dev (#228, #229, #230, #231 new; #218, #61); board: Needs Attention (owner-gated); focus: 005 pure-lib work + RUM LCP/INP config audit; handoff: docs/planning/autopm/autopm-handoff-2026-11-01.md
 2026-11-01 10:30 /autodev [OK] — 0 PRs merged; 3 PRs opened, CI pending at handoff (#232 #233 #234), next sweep merges if green; 0 dependabot merged; skipped 5 (#230 cap, #227 #199 #47 held, #218/#61 not taken); failed 0; handoff: docs/planning/autopm/autodev-handoff-2026-11-01.md
+2026-11-01 10:45 /autodev [OK] — 3 PRs merged (#232 #233 #234, CI green, squash); 0 dependabot merged; skipped 5; failed 0; handoff: docs/planning/autopm/autodev-handoff-2026-11-01.md (supersedes the 10:30 pending line)

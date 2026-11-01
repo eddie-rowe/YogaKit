@@ -2,7 +2,7 @@
 
 **Run time:** ~10:30 UTC
 **Issues worked:** 3 of 3 cap — #231, #228, #229 (#230 not taken: cap reached)
-**PRs opened:** #232 (#231, FRICTION note, no code), #233 (#228 practicedToday), #234 (#229 reentryOffer) — CI pending at handoff time; green ones are merged by the next sweep (Step 1a)
+**PRs opened:** #232 (#231, FRICTION note, no code), #233 (#228 practicedToday), #234 (#229 reentryOffer) — all three merged (squash) after CI went green: #232, #233, #234
 **Runbooks written:** none
 **Gate results:** tsc / lint:copy / validate:poses / lint:telemetry / test:coverage green on #228 and #229 (100% held); #231 docs-only
 **Browser validation:** none needed — no rendered surface on any of the three
