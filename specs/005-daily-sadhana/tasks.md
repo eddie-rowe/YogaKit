@@ -219,8 +219,8 @@ revision, confirm the card quotes the earlier version and offers the three respo
 - [X] T040 [US3] "I'm resting, not stopping" as a third response — the card is never a — shipped (component, not yet mounted)
   binary between practising and ignoring it (FR-030). Choosing it does not immediately
   re-show the card and frames nothing as a lapse (FR-031)
-- [ ] T041 [US3] Re-entry offer: the smallest unit the pose model supports, drawn from the
-  intention's original flow (FR-032); no copy proposes catching up (FR-033)
+- [X] T041 [US3] Re-entry offer: the smallest unit the pose model supports, drawn from the
+  intention's original flow (FR-032); no copy proposes catching up (FR-033) — shipped #229 (`reentry-offer.ts` selection lib; not yet mounted in the card)
 - [X] T042 [US3] No intention recorded: no return card is shown and nothing is invented in
   its place (FR-034) — shipped #223
 - [X] T043 [US3] A lapse threshold changed mid-lapse takes effect without re-showing a
