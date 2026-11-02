@@ -271,7 +271,7 @@ nothing or is refused.
 - [ ] T056 [US5] A student who stopped sharing is absent from the dashboard, and their
   absence is not itself reported as a status (FR-058); an ended enrollment stops being
   returned on the next query (FR-061); a student in two cohorts is visible to each teacher
-  only to the extent that enrollment's sharing state permits (FR-060)
+  only to the extent that enrollment's sharing state permits (FR-060) — **PARTIAL:** roster filter lib shipped #230 (FR-058); the query-side ended-enrollment check (FR-061) and two-cohort rule (FR-060) land with the dashboard route (T052)
 - [ ] T057 [P] [US4] [US5] `npm run lint:copy` over every new string on this path
 - [ ] T058 [P] [US5] Vitest/integration: the SC-016 query test against `practice_reflections`
   (may already be satisfied by T015 in Phase C1 — confirm and cross-reference rather than

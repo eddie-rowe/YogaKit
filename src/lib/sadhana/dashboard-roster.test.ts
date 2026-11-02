@@ -1,0 +1,49 @@
+import { describe, expect, it } from 'vitest'
+import { visibleRoster, type RosterEnrollment } from './dashboard-roster'
+
+const e = (over: Partial<RosterEnrollment> = {}): RosterEnrollment => ({
+  studentName: 'Asha',
+  shareSignals: true,
+  endedAt: null,
+  checkinDates: ['2026-11-01'],
+  milestoneProgress: 3,
+  ...over,
+})
+
+describe('visibleRoster (T056, FR-058)', () => {
+  it('keeps students who are sharing on an active enrollment', () => {
+    const out = visibleRoster([e()])
+    expect(out).toHaveLength(1)
+    expect(out[0].studentName).toBe('Asha')
+  })
+
+  it('omits a student who stopped sharing, leaving no trace', () => {
+    const out = visibleRoster([e({ studentName: 'Ben', shareSignals: false }), e()])
+    expect(out).toHaveLength(1)
+    expect(JSON.stringify(out)).not.toContain('Ben')
+  })
+
+  it('omits an ended enrollment', () => {
+    const out = visibleRoster([e({ studentName: 'Cy', endedAt: '2026-10-01' })])
+    expect(out).toEqual([])
+  })
+
+  it('shows a re-enrolled student through the new active enrollment only', () => {
+    const out = visibleRoster([
+      e({ studentName: 'Dee', endedAt: '2026-09-01', checkinDates: ['2026-08-01'] }),
+      e({ studentName: 'Dee', checkinDates: ['2026-11-01'] }),
+    ])
+    expect(out).toHaveLength(1)
+    expect(out[0].checkinDates).toEqual(['2026-11-01'])
+  })
+
+  it('returns an empty roster for empty input', () => {
+    expect(visibleRoster([])).toEqual([])
+  })
+
+  it('adds no status marker: output keys are exactly the signal fields', () => {
+    const [row] = visibleRoster([e()])
+    expect(Object.keys(row).sort()).toEqual(['checkinDates', 'milestoneProgress', 'studentName'])
+    expect(JSON.stringify(row)).not.toMatch(/stopped|absent|inactive/i)
+  })
+})
