@@ -267,7 +267,7 @@ nothing or is refused.
 - [ ] T053 [US5] Status pill: plain non-punitive vocabulary, no warning colour (FR-054)
 - [X] T054 [US5] **Decision #2**: derived "practiced today" boolean, from check-in
   existence only, structurally separate from the check-in component tree (FR-059) — shipped #228 (lib only; not yet wired to the dashboard)
-- [ ] T055 [US5] Persistent one-line boundary caption on the dashboard (FR-057, UX-018)
+- [X] T055 [US5] Persistent one-line boundary caption on the dashboard (FR-057, UX-018) — shipped #239 (component only; not yet mounted)
 - [ ] T056 [US5] A student who stopped sharing is absent from the dashboard, and their
   absence is not itself reported as a status (FR-058); an ended enrollment stops being
   returned on the next query (FR-061); a student in two cohorts is visible to each teacher
