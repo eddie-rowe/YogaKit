@@ -254,9 +254,9 @@ nothing or is refused.
   stopping one does not affect another (FR-047)
 - [ ] T049 [US4] Wire the stop action to `002`'s existing `app_revoke_signal_sharing` RPC
   — a direct single write, no soft flag, no derived permission (FR-048)
-- [ ] T050 [US4] **Decision #8**: a single undo toast (5–8s), no blocking confirmation
+- [X] T050 [US4] **Decision #8**: a single undo toast (5–8s), no blocking confirmation
   dialog (FR-049). **Decision #13**: reuse the existing accent and ≤200ms motion budget —
-  no new design token
+  no new design token — shipped #240 (component only; RPC wiring is T049)
 - [ ] T051 [US4] After the undo window passes, signals are no longer returned to that
   organization, including to an in-progress teacher session (FR-050); sharing does not
   reactivate on any event other than an explicit named grant (FR-051)
