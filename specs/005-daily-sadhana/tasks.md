@@ -265,7 +265,7 @@ nothing or is refused.
   status, streak state, days since last check-in, milestone progress (FR-053) — reading
   only `practice_checkins` and `practice_milestones`, never `practice_reflections` or
   `intentions` (FR-055)
-- [ ] T053 [US5] Status pill: plain non-punitive vocabulary, no warning colour (FR-054)
+- [X] T053 [US5] Status pill: plain non-punitive vocabulary, no warning colour (FR-054) — shipped #237
 - [X] T054 [US5] **Decision #2**: derived "practiced today" boolean, from check-in
   existence only, structurally separate from the check-in component tree (FR-059) — shipped #228 (lib only; not yet wired to the dashboard)
 - [X] T055 [US5] Persistent one-line boundary caption on the dashboard (FR-057, UX-018) — shipped #239 (component only; not yet mounted)
