@@ -1,5 +1,5 @@
 // Non-punitive cohort status pill (005 T053, FR-054, FR-058, Principle VII).
-// Presentational and unmounted. Neutral tokens only: no warning colour, and no key for a student
+// Presentational and unmounted. Neutral tokens only (no alert hues), and no key for a student
 // who stopped sharing (such students are omitted from the roster, never labelled). Vocabulary is
 // provisional until contracts/guidance-tone.md (T007) is signed off; STATUS_LABELS is the one
 // place to swap it.
