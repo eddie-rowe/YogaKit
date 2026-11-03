@@ -260,6 +260,7 @@ nothing or is refused.
 - [ ] T051 [US4] After the undo window passes, signals are no longer returned to that
   organization, including to an in-progress teacher session (FR-050); sharing does not
   reactivate on any event other than an explicit named grant (FR-051)
+  — **PARTIAL:** window decision lib shipped #242 (`src/lib/sadhana/sharing-window.ts`); server-side enforcement (T049/RLS) open
 - [ ] T052 [US5] Cohort dashboard (route TBD in `research.md`, T005): per student, name,
   status, streak state, days since last check-in, milestone progress (FR-053) — reading
   only `practice_checkins` and `practice_milestones`, never `practice_reflections` or
