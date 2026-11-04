@@ -264,7 +264,7 @@ nothing or is refused.
 - [ ] T052 [US5] Cohort dashboard (route TBD in `research.md`, T005): per student, name,
   status, streak state, days since last check-in, milestone progress (FR-053) — reading
   only `practice_checkins` and `practice_milestones`, never `practice_reflections` or
-  `intentions` (FR-055)
+  `intentions` (FR-055) — **PARTIAL:** view-model lib shipped (`src/lib/sadhana/dashboard-row.ts`, #243); component and route open
 - [X] T053 [US5] Status pill: plain non-punitive vocabulary, no warning colour (FR-054) — shipped #237
 - [X] T054 [US5] **Decision #2**: derived "practiced today" boolean, from check-in
   existence only, structurally separate from the check-in component tree (FR-059) — shipped #228 (lib only; not yet wired to the dashboard)
