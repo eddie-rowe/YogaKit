@@ -95,31 +95,31 @@ has reviewed the migration (T004 to T007).
 owner account; assert the section list, order, and absence (not disablement) of conditional
 sections.
 
-- [ ] T013 [auto-ok] [US1] Audit the shipped `src/app/settings/` and
+- [X] T013 [auto-ok] [US1] Audit the shipped `src/app/settings/` and
   `src/app/account/page.tsx` against FR-001 to FR-007; list gaps in the PR description.
-  Plan disagreement 1: this is completion, not a rebuild
-- [ ] T014 [P] [auto-ok] [US1] `src/lib/settings/sections.ts` — pure
+  Plan disagreement 1: this is completion, not a rebuild — shipped: audit done 2026-11-04 (#247): FR-001..FR-007 met in shipped code; only gap is T024 Playwright walk
+- [X] T014 [P] [auto-ok] [US1] `src/lib/settings/sections.ts` — pure
   `visibleSections(accountState)` returning the ordered list: profile, appearance,
   notifications, privacy, account and security, data export and delete, billing, org
   memberships, studio (FR-002). Org memberships iff member of at least one org (FR-003);
-  studio iff owner or admin in at least one (FR-004)
-- [ ] T015 [P] [auto-ok] [US1] Unit tests for T014: zero-org gives neither conditional
+  studio iff owner or admin in at least one (FR-004) — shipped: `src/lib/settings/sections.ts`
+- [X] T015 [P] [auto-ok] [US1] Unit tests for T014: zero-org gives neither conditional
   section; member gives memberships only; owner or admin gives both; owner of one org and
-  member of another gives studio naming the governed org (FR-005); ordering is fixed
-- [ ] T016 [auto-ok] [US1] `SettingsClient.tsx` renders from `visibleSections`, with a visible
+  member of another gives studio naming the governed org (FR-005); ordering is fixed — shipped: `tests/unit/settings/sections.test.ts`
+- [X] T016 [auto-ok] [US1] `SettingsClient.tsx` renders from `visibleSections`, with a visible
   index and no section reachable only by URL (FR-001, SC-001). Absent sections are not in the
-  page or the index (FR-003/004, SC-002)
-- [ ] T017 [auto-ok] [US1] Studio block separated by spacing, hairlines, and labels only, no
+  page or the index (FR-003/004, SC-002) — shipped: `src/app/settings/SettingsClient.tsx`, `settings-client-sections.test.tsx`
+- [X] T017 [auto-ok] [US1] Studio block separated by spacing, hairlines, and labels only, no
   second accent colour (FR-006, SC-004, guardrails section 2). Studio controls name the
-  organization each governs (FR-005)
-- [ ] T018 [auto-ok] [US1] Any control the account cannot change states why in plain language
+  organization each governs (FR-005) — shipped: `sections/StudioSection.tsx` (hairlines, names governed org)
+- [X] T018 [auto-ok] [US1] Any control the account cannot change states why in plain language
   (FR-007, SC-003). Add notifications, data export and delete, org memberships, and studio
-  section shells to `src/app/settings/sections/`
-- [ ] T019 [auto-ok] [US1] A role change while settings is open takes effect on the next load,
-  not by mutating the open page (FR-039)
-- [ ] T020 [auto-ok] [US1] Confirm settings adds no auth gate on reading cached personal
+  section shells to `src/app/settings/sections/` — shipped: `sections/{Notifications,Data,OrgMemberships}Section.tsx` `*-why` blocks, `section-shells.test.tsx`
+- [X] T019 [auto-ok] [US1] A role change while settings is open takes effect on the next load,
+  not by mutating the open page (FR-039) — shipped: `use-load-time-sections.ts`, `role-change-next-load.test.tsx`
+- [X] T020 [auto-ok] [US1] Confirm settings adds no auth gate on reading cached personal
   preferences, and renders with defaults when browser storage is unavailable (FR-010,
-  FR-036; RULE-L3/L4)
+  FR-036; RULE-L3/L4) — shipped: `prefs-offline.test.tsx`
 - [ ] T021 [needs-human] (billing) [US1] Billing section: the entry point hands off to the
   existing `src/app/billing/portal` route, no reimplementation (FR-008). Copy states what is
   and is not gated, consistent with fail-open-on-read and fail-closed-on-write (FR-009,
@@ -127,8 +127,8 @@ sections.
 - [ ] T022 [needs-human] (rls) [US1] Data export: reads only through the requesting user's
   RLS-scoped client, never service role (FR-038). Test with two accounts that the export
   contains the author's own content and zero rows of another account's (SC-014)
-- [ ] T023 [P] [auto-ok] [US1] `npm run lint:copy` over every new string in the shell
-- [ ] T024 [auto-ok] [US1] Playwright walk (390x844): zero-org, member, owner
+- [X] T023 [P] [auto-ok] [US1] `npm run lint:copy` over every new string in the shell — shipped: `npm run lint:copy` green in CI gate
+- [ ] T024 [auto-ok] [US1] Playwright walk (390x844): zero-org, member, owner — **GAP:** no spec exists under `tests/e2e*`; human-maintained suite
 
 **Gate**: T015 and T024 green; `npm run lint:copy` green; no existing testid changed.
 
