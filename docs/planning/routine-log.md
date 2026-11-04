@@ -195,3 +195,4 @@ YYYY-MM-DD HH:MM /autoobs [STATUS] — overall: [HEALTHY/DEGRADED/AT-RISK]; moni
 2026-11-03 10:25 /autodev [OK] — 3 PRs merged (#244 #245 #246); 0 dependabot merged; skipped 4 (#243 cap, #218 #61 not taken, #220 superseded by held #227); failed 0 (one local gate failure on #237 fixed pre-merge); handoff: docs/planning/autopm/autodev-handoff-2026-11-03.md
 2026-11-04 08:20 /autoobs [OK] — overall: DEGRADED; monitors: 12 ok / 0 alert (4 no-data expected); digest: docs/observation/autoobs/2026-11-04.md
 2026-11-04 09:00 /autopm [OK] — 7 issues ready-for-dev (#247, #248, #249 new; #243, #218, #61, #220-superseded); board: Needs Attention (owner-gated); focus: 005 US5 dashboard + 006 reconcile; handoff: docs/planning/autopm/autopm-handoff-2026-11-04.md
+2026-11-04 10:25 /autodev [OK] — 3 PRs merged (#250 #251 #252); 0 dependabot merged; skipped 4 (#249 cap, #218 #61 cap, #220 superseded); failed 0; handoff: docs/planning/autopm/autodev-handoff-2026-11-04.md
