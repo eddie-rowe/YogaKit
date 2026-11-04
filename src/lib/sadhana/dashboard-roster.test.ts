@@ -46,4 +46,34 @@ describe('visibleRoster (T056, FR-058)', () => {
     expect(Object.keys(row).sort()).toEqual(['checkinDates', 'milestoneProgress', 'studentName'])
     expect(JSON.stringify(row)).not.toMatch(/stopped|absent|inactive/i)
   })
+
+  describe('two cohorts and ended enrollments (T056, FR-060/FR-061)', () => {
+    const KEYS = ['checkinDates', 'milestoneProgress', 'studentName']
+
+    it('one sharing and one not: only the sharing enrollment yields a row', () => {
+      const out = visibleRoster([
+        e({ studentName: 'Eli', checkinDates: ['2026-11-01'] }),
+        e({ studentName: 'Eli', shareSignals: false, checkinDates: ['2026-11-02'] }),
+      ])
+      expect(out).toHaveLength(1)
+      expect(out[0].checkinDates).toEqual(['2026-11-01'])
+      expect(Object.keys(out[0]).sort()).toEqual(KEYS)
+    })
+
+    it('both sharing: two rows', () => {
+      const out = visibleRoster([e({ studentName: 'Fay' }), e({ studentName: 'Fay', milestoneProgress: 5 })])
+      expect(out).toHaveLength(2)
+    })
+
+    it('one ended: only the active enrollment is returned, with no marker for the other', () => {
+      const out = visibleRoster([
+        e({ studentName: 'Gus', endedAt: '2026-10-01', checkinDates: ['2026-09-01'] }),
+        e({ studentName: 'Gus', checkinDates: ['2026-11-01'] }),
+      ])
+      expect(out).toHaveLength(1)
+      expect(out[0].checkinDates).toEqual(['2026-11-01'])
+      expect(Object.keys(out[0]).sort()).toEqual(KEYS)
+      expect(JSON.stringify(out)).not.toMatch(/ended|stopped|absent|inactive/i)
+    })
+  })
 })
