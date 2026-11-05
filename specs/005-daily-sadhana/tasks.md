@@ -226,8 +226,8 @@ revision, confirm the card quotes the earlier version and offers the three respo
 - [X] T043 [US3] A lapse threshold changed mid-lapse takes effect without re-showing a
   card already answered (FR-035) — shipped #223
 - [ ] T044 [P] [US3] `npm run lint:copy` over every new string on this path
-- [ ] T045 [P] [US3] Vitest: write an intention, revise it, simulate a lapse start before
-  the revision, assert the card quotes the pre-revision version (SC-010)
+- [X] T045 [P] [US3] Vitest: write an intention, revise it, simulate a lapse start before
+  the revision, assert the card quotes the pre-revision version (SC-010) — shipped #253 (`tests/unit/sadhana/return-card-sc010.test.tsx`; tests-only, passed first run, no red phase)
 
 **Gate**: SC-010, SC-011 asserted; `npm run lint:copy` green. Decision #5 (memory-echo)
 stays out of scope — see "Deferred, and why" below.
