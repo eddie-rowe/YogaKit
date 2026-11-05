@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import ReturnCard from '@/components/sadhana/ReturnCard'
+import type { ReentryOffer } from '@/lib/sadhana/reentry-offer'
 
 const GUILT = /missed|lapse|fail|behind|catch up|streak|lost|broke|urgent|hurry|don'?t|must|shame/i
 
@@ -51,8 +52,8 @@ describe('ReturnCard (T039/T040)', () => {
     expect(container.textContent).not.toMatch(GUILT)
   })
   describe('re-entry offer (T041 mount, FR-032/033)', () => {
-    const phaseOffer = { kind: 'phase', phaseId: 'p1', itemIds: ['a', 'b'] } as const
-    const poseOffer = { kind: 'pose', itemId: 'a', poseSlug: 'tadasana' } as const
+    const phaseOffer: ReentryOffer = { kind: 'phase', phaseId: 'p1', itemIds: ['a', 'b'] }
+    const poseOffer: ReentryOffer = { kind: 'pose', itemId: 'a', poseSlug: 'tadasana' }
 
     it('renders one plain line naming a phase unit and a start control', () => {
       const onStartOffer = vi.fn()
