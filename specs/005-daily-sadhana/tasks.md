@@ -220,7 +220,7 @@ revision, confirm the card quotes the earlier version and offers the three respo
   binary between practising and ignoring it (FR-030). Choosing it does not immediately
   re-show the card and frames nothing as a lapse (FR-031)
 - [X] T041 [US3] Re-entry offer: the smallest unit the pose model supports, drawn from the
-  intention's original flow (FR-032); no copy proposes catching up (FR-033) — shipped #229 (`reentry-offer.ts` selection lib; not yet mounted in the card)
+  intention's original flow (FR-032); no copy proposes catching up (FR-033) — shipped #229 (`reentry-offer.ts` selection lib) + #254 (offer line and start control in `ReturnCard`; caller supplies the offer, not yet mounted on a route)
 - [X] T042 [US3] No intention recorded: no return card is shown and nothing is invented in
   its place (FR-034) — shipped #223
 - [X] T043 [US3] A lapse threshold changed mid-lapse takes effect without re-showing a

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import ReturnCard from '@/components/sadhana/ReturnCard'
+import type { ReentryOffer } from '@/lib/sadhana/reentry-offer'
 
 const GUILT = /missed|lapse|fail|behind|catch up|streak|lost|broke|urgent|hurry|don'?t|must|shame/i
 
@@ -49,5 +50,59 @@ describe('ReturnCard (T039/T040)', () => {
   it('frames nothing as a lapse and proposes no catching up', () => {
     const { container } = render(<ReturnCard {...base} />)
     expect(container.textContent).not.toMatch(GUILT)
+  })
+  describe('re-entry offer (T041 mount, FR-032/033)', () => {
+    const phaseOffer: ReentryOffer = { kind: 'phase', phaseId: 'p1', itemIds: ['a', 'b'] }
+    const poseOffer: ReentryOffer = { kind: 'pose', itemId: 'a', poseSlug: 'tadasana' }
+
+    it('renders one plain line naming a phase unit and a start control', () => {
+      const onStartOffer = vi.fn()
+      render(<ReturnCard {...base} offer={phaseOffer} onStartOffer={onStartOffer} />)
+      expect(screen.getByTestId('sadhana-return-offer')).toHaveTextContent(/first phase/i)
+      fireEvent.click(screen.getByTestId('sadhana-return-offer-start'))
+      expect(onStartOffer).toHaveBeenCalledTimes(1)
+    })
+
+    it('names a single pose when the offer is a pose', () => {
+      render(<ReturnCard {...base} offer={poseOffer} onStartOffer={() => {}} />)
+      expect(screen.getByTestId('sadhana-return-offer')).toHaveTextContent(/first pose/i)
+    })
+
+    it.each([[undefined], [null]])('renders nothing extra when offer is %s', (offer) => {
+      render(<ReturnCard {...base} offer={offer} />)
+      expect(screen.queryByTestId('sadhana-return-offer')).toBeNull()
+      expect(screen.queryByTestId('sadhana-return-offer-start')).toBeNull()
+    })
+
+    it('uses no catch-up or guilt wording and does not count anything missed', () => {
+      const { container } = render(<ReturnCard {...base} offer={phaseOffer} onStartOffer={() => {}} />)
+      const offerText = screen.getByTestId('sadhana-return-offer').textContent ?? ''
+      expect(offerText).not.toMatch(GUILT)
+      expect(offerText).not.toMatch(/\d/)
+      expect(container.textContent).not.toMatch(/make up|catch/i)
+    })
+
+    it('gives the start control the same class and style as keep and update', () => {
+      render(<ReturnCard {...base} offer={phaseOffer} onStartOffer={() => {}} />)
+      const keep = screen.getByTestId('sadhana-return-keep')
+      const start = screen.getByTestId('sadhana-return-offer-start')
+      expect(start.className).toBe(keep.className)
+      expect(start.getAttribute('style')).toBe(keep.getAttribute('style'))
+    })
+
+    it('leaves the three existing responses identical with and without an offer', () => {
+      const a = render(<ReturnCard {...base} />)
+      const without = ['keep', 'update', 'rest'].map((k) => {
+        const el = screen.getByTestId(`sadhana-return-${k}`)
+        return [el.className, el.getAttribute('style')]
+      })
+      a.unmount()
+      render(<ReturnCard {...base} offer={phaseOffer} onStartOffer={() => {}} />)
+      const withOffer = ['keep', 'update', 'rest'].map((k) => {
+        const el = screen.getByTestId(`sadhana-return-${k}`)
+        return [el.className, el.getAttribute('style')]
+      })
+      expect(withOffer).toEqual(without)
+    })
   })
 })
