@@ -1242,6 +1242,341 @@ END $do$;
 RESET ROLE;
 EOF
 
+# ===========================================================================
+# 005 C1 (T015, T016): the sadhana privacy split, proven rather than asserted.
+#
+# Principle VIII: practice CONTENT (reflections, intentions, ritual state, guidance
+# dismissals) is visible only to its author, at the table layer. Practice SIGNALS
+# (check-ins, milestones) may reach a cohort teacher, only through
+# app_visible_student_ids(), and only while share_signals is true.
+#
+# Fixture: student 51 is enrolled and sharing in a cohort of Org A. Teacher 52 is a
+# cohort teacher through cohort_teachers ONLY -- no org role at all -- so the policy is
+# exercised through the narrow door, not through an org-wide role. a..02 is an Org A
+# admin who is not in cohort_teachers; a..03 is the owner of an unrelated org.
+# ===========================================================================
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+INSERT INTO auth.users (id, email, email_confirmed_at) VALUES
+  ('a0000000-0000-0000-0000-000000000051', 'sadhana-student@example.com', now()),
+  ('a0000000-0000-0000-0000-000000000052', 'sadhana-teacher@example.com', now());
+
+DO $do$
+DECLARE v_org uuid; v_cohort uuid;
+BEGIN
+  SELECT id INTO v_org FROM organizations WHERE name = 'Org A';
+  INSERT INTO cohorts (org_id, name, kind) VALUES (v_org, '005 sadhana fixture', 'ytt')
+    RETURNING id INTO v_cohort;
+  INSERT INTO cohort_enrollments (cohort_id, user_id)
+    VALUES (v_cohort, 'a0000000-0000-0000-0000-000000000051');   -- share_signals defaults true
+  INSERT INTO cohort_teachers (cohort_id, user_id)
+    VALUES (v_cohort, 'a0000000-0000-0000-0000-000000000052');
+END $do$;
+EOF
+
+# --- 005 C1 / I1: the content tables have no column a policy could join to an org.
+# The structural half of Principle VIII, and the only assertion here that holds against a
+# migration nobody has written yet: the behavioural blocks below prove today's policies
+# work, this proves tomorrow's migration cannot quietly stop them working (RULE-V1/V2).
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+DO $do$
+DECLARE v_bad text;
+BEGIN
+  SELECT string_agg(table_name || '.' || column_name, ', ') INTO v_bad
+    FROM information_schema.columns
+   WHERE table_schema = 'public'
+     AND table_name IN ('practice_reflections', 'intentions',
+                        'practice_ritual_state', 'practice_guidance_dismissals')
+     AND column_name ~ '(org|cohort|team|role|visib|shared|public)';
+  IF v_bad IS NOT NULL THEN
+    RAISE EXCEPTION '005 content table gained a joinable column: % -- see FR-009 / RULE-V2', v_bad;
+  END IF;
+  RAISE NOTICE 'PASS 005-I1 sadhana content tables have no org/cohort/role/visibility column';
+END $do$;
+EOF
+
+# --- 005 C1 / I2: no policy on a content table mentions an org, cohort, teacher or admin,
+# policy counts are exact (so a quietly added policy fails here), and the ONLY two policies
+# in the whole feature that reach app_visible_student_ids() are the two signal-table ones.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+DO $do$
+DECLARE
+  v_bad   text;
+  v_count int;
+  v_teach text;
+  r record;
+BEGIN
+  FOR r IN SELECT * FROM (VALUES
+      ('practice_reflections', 4), ('intentions', 2),
+      ('practice_ritual_state', 3), ('practice_guidance_dismissals', 2)
+    ) AS t(tbl, expected)
+  LOOP
+    SELECT count(*) INTO v_count FROM pg_policies
+     WHERE schemaname = 'public' AND tablename = r.tbl;
+    IF v_count <> r.expected THEN
+      RAISE EXCEPTION '005-I2: expected % policies on %, found %', r.expected, r.tbl, v_count;
+    END IF;
+  END LOOP;
+
+  SELECT string_agg(tablename || '.' || policyname, ', ') INTO v_bad FROM pg_policies
+   WHERE schemaname = 'public'
+     AND tablename IN ('practice_reflections', 'intentions',
+                       'practice_ritual_state', 'practice_guidance_dismissals')
+     AND (coalesce(qual, '') || ' ' || coalesce(with_check, ''))
+         ~ '(org|cohort|team|role|admin|teacher|visible_student)';
+  IF v_bad IS NOT NULL THEN
+    RAISE EXCEPTION '005-I2: a content-table policy mentions an org/cohort/teacher/admin: %', v_bad;
+  END IF;
+
+  -- Only policies that actually reference the helper, across every sadhana table.
+  SELECT string_agg(tablename || '.' || policyname, ', ' ORDER BY tablename) INTO v_teach
+    FROM pg_policies
+   WHERE schemaname = 'public'
+     AND (tablename LIKE 'practice\_%' OR tablename = 'intentions')
+     AND (coalesce(qual, '') || ' ' || coalesce(with_check, '')) ~ 'app_visible_student_ids';
+  IF v_teach IS DISTINCT FROM
+     'practice_checkins.practice_checkins_select_visible_student, practice_milestones.practice_milestones_select_visible_student' THEN
+    RAISE EXCEPTION '005-I2: teacher-reachable sadhana policies are not exactly the two signal ones: %', v_teach;
+  END IF;
+
+  RAISE NOTICE 'PASS 005-I2 content tables carry only caller-keyed policies; only the two signal tables reach a teacher';
+END $do$;
+EOF
+
+# --- The student writes real rows through RLS (also proves every insert policy works),
+# so the zeros asserted below are zeros of rows that EXIST, not of an empty table.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000051';
+INSERT INTO practice_checkins (id, user_id, local_date, kind, duration_minutes) VALUES
+  ('c0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000051', current_date - 1, 'practice', 20);
+INSERT INTO practice_reflections (checkin_id, user_id, mood, energy, note) VALUES
+  ('c0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000051', 4, 3, 'a private note');
+INSERT INTO intentions (id, user_id, body) VALUES
+  ('d0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000051', 'show up gently');
+INSERT INTO practice_ritual_state (user_id, lapse_threshold_days) VALUES
+  ('a0000000-0000-0000-0000-000000000051', 7);
+INSERT INTO practice_milestones (user_id, threshold, reached_on) VALUES
+  ('a0000000-0000-0000-0000-000000000051', 10, current_date);
+INSERT INTO practice_guidance_dismissals (user_id, entry_id) VALUES
+  ('a0000000-0000-0000-0000-000000000051', 'fixture-entry');
+DO $do$
+DECLARE v int;
+BEGIN
+  SELECT count(*) INTO v FROM practice_checkins;
+  IF v <> 1 THEN RAISE EXCEPTION '005: the author cannot read back their own check-in (% rows)', v; END IF;
+  SELECT count(*) INTO v FROM practice_reflections;
+  IF v <> 1 THEN RAISE EXCEPTION '005: the author cannot read back their own reflection (% rows)', v; END IF;
+  RAISE NOTICE 'PASS 005 the author writes and reads back all six tables';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- 005 C1 / T016: a second account, in a different org, reads zero rows of any of them.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000003';
+DO $do$
+DECLARE v_c int; v_r int; v_i int; v_m int; v_s int; v_d int;
+BEGIN
+  SELECT count(*) INTO v_c FROM practice_checkins;
+  SELECT count(*) INTO v_r FROM practice_reflections;
+  SELECT count(*) INTO v_i FROM intentions;
+  SELECT count(*) INTO v_m FROM practice_milestones;
+  SELECT count(*) INTO v_s FROM practice_ritual_state;
+  SELECT count(*) INTO v_d FROM practice_guidance_dismissals;
+  IF (v_c, v_r, v_i, v_m, v_s, v_d) IS DISTINCT FROM (0, 0, 0, 0, 0, 0) THEN
+    RAISE EXCEPTION 'RLS leak: an unrelated account sees % checkins, % reflections, % intentions, % milestones, % ritual, % dismissals',
+      v_c, v_r, v_i, v_m, v_s, v_d;
+  END IF;
+  RAISE NOTICE 'PASS 005-T016 an unrelated account reads zero rows of all six sadhana tables';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- 005 C1 / SC-003: an org ADMIN who is not the student's teacher is refused all CONTENT.
+# Deliberately NOT asserted here: whether that admin can read the student's check-ins.
+# app_visible_student_ids() (002) grants owner/admin/teacher roles of the cohort's org
+# visibility of sharing students' SIGNALS; the 005 data model says an admin sees none.
+# SC-003 only requires content refusal, so this block asserts exactly that and no more --
+# pinning the signal behaviour either way would cement an unresolved question. See the PR.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000002';
+DO $do$
+DECLARE v_r int; v_i int; v_s int; v_d int;
+BEGIN
+  SELECT count(*) INTO v_r FROM practice_reflections;
+  SELECT count(*) INTO v_i FROM intentions;
+  SELECT count(*) INTO v_s FROM practice_ritual_state;
+  SELECT count(*) INTO v_d FROM practice_guidance_dismissals;
+  IF (v_r, v_i, v_s, v_d) IS DISTINCT FROM (0, 0, 0, 0) THEN
+    RAISE EXCEPTION 'SC-003 breach: an org admin sees % reflections, % intentions, % ritual rows, % dismissals',
+      v_r, v_i, v_s, v_d;
+  END IF;
+  RAISE NOTICE 'PASS 005-SC003 an org admin who is not the author reads zero rows of every content table';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- 005 C1 / T015: THE RULE-V5 PROOF, filling 002's stub (FR-009, FR-056, SC-016).
+# A cohort-teacher session, for an enrolled and sharing student, gets zero rows of every
+# CONTENT table -- and a positive control proves the signal door is genuinely open, so the
+# zeros cannot be an artefact of a broken fixture. Then one revocation closes the signal
+# door on the very next query (FR-050).
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000052';
+DO $do$
+DECLARE v_r int; v_i int; v_s int; v_d int; v_c int; v_m int;
+BEGIN
+  SELECT count(*) INTO v_r FROM practice_reflections;
+  SELECT count(*) INTO v_i FROM intentions;
+  SELECT count(*) INTO v_s FROM practice_ritual_state;
+  SELECT count(*) INTO v_d FROM practice_guidance_dismissals;
+  IF (v_r, v_i, v_s, v_d) IS DISTINCT FROM (0, 0, 0, 0) THEN
+    RAISE EXCEPTION 'RULE-V5 breach: a cohort teacher sees % reflections, % intentions, % ritual rows, % dismissals',
+      v_r, v_i, v_s, v_d;
+  END IF;
+
+  SELECT count(*) INTO v_c FROM practice_checkins;
+  SELECT count(*) INTO v_m FROM practice_milestones;
+  IF v_c <> 1 OR v_m <> 1 THEN
+    RAISE EXCEPTION 'positive control failed: a cohort teacher should see the sharing student''s 1 check-in and 1 milestone, saw % and %', v_c, v_m;
+  END IF;
+  RAISE NOTICE 'PASS 005-T015 a cohort teacher reads zero content rows and exactly the signal rows (RULE-V5)';
+END $do$;
+
+-- Read-only: the teacher policy is select-only, so a teacher cannot rewrite a student's day.
+DO $do$
+DECLARE v_u int; v_d int;
+BEGIN
+  UPDATE practice_checkins SET duration_minutes = 1
+   WHERE user_id = 'a0000000-0000-0000-0000-000000000051';
+  GET DIAGNOSTICS v_u = ROW_COUNT;
+  DELETE FROM practice_checkins WHERE user_id = 'a0000000-0000-0000-0000-000000000051';
+  GET DIAGNOSTICS v_d = ROW_COUNT;
+  IF v_u <> 0 OR v_d <> 0 THEN
+    RAISE EXCEPTION 'a cohort teacher changed % and deleted % of a student''s check-ins', v_u, v_d;
+  END IF;
+  RAISE NOTICE 'PASS 005 a cohort teacher can read a sharing student''s check-ins but not change or delete them';
+END $do$;
+RESET ROLE;
+
+-- The student revokes sharing, in one call, through 002's existing RPC.
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000051';
+SELECT app_revoke_signal_sharing(id) FROM cohort_enrollments
+ WHERE user_id = 'a0000000-0000-0000-0000-000000000051';
+RESET ROLE;
+
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000052';
+DO $do$
+DECLARE v_c int; v_m int;
+BEGIN
+  SELECT count(*) INTO v_c FROM practice_checkins;
+  SELECT count(*) INTO v_m FROM practice_milestones;
+  IF (v_c, v_m) IS DISTINCT FROM (0, 0) THEN
+    RAISE EXCEPTION 'FR-050 breach: after revocation a cohort teacher still sees % check-ins and % milestones', v_c, v_m;
+  END IF;
+  RAISE NOTICE 'PASS 005-FR050 after one revocation the teacher''s next query returns zero signal rows';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- 005 C1 / FR-026: intentions are append-only. The migration writes no update and no
+# delete policy; this asserts the DENIAL (zero rows changed), not the comment that says so.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000051';
+DO $do$
+DECLARE v_u int; v_d int; v_body text;
+BEGIN
+  UPDATE intentions SET body = 'rewritten history' WHERE user_id = 'a0000000-0000-0000-0000-000000000051';
+  GET DIAGNOSTICS v_u = ROW_COUNT;
+  DELETE FROM intentions WHERE user_id = 'a0000000-0000-0000-0000-000000000051';
+  GET DIAGNOSTICS v_d = ROW_COUNT;
+  SELECT body INTO v_body FROM intentions WHERE id = 'd0000000-0000-0000-0000-000000000001';
+  IF v_u <> 0 OR v_d <> 0 OR v_body IS DISTINCT FROM 'show up gently' THEN
+    RAISE EXCEPTION 'FR-026 breach: intentions changed (updated %, deleted %, body now %)', v_u, v_d, v_body;
+  END IF;
+  RAISE NOTICE 'PASS 005-FR026 an intention cannot be updated or deleted by its own author';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- 005 C1 / DEVIATION 1: a reflection cannot be attached to someone else's check-in,
+# on insert OR on update. The update half is the hardening data-model.md did not specify;
+# without it, `update ... set checkin_id = <stranger's check-in>` succeeds because a
+# foreign-key check bypasses RLS.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+-- The victim's check-in must have NO reflection. If it already had one, a successful
+-- re-point would collide on the reflections primary key and the test would fail with an
+-- unrelated duplicate-key error instead of reporting the hole -- found by mutation-testing
+-- this very block.
+INSERT INTO practice_checkins (id, user_id, local_date, kind) VALUES
+  ('c0000000-0000-0000-0000-000000000006', 'a0000000-0000-0000-0000-000000000051', current_date - 2, 'rest');
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000003';
+INSERT INTO practice_checkins (id, user_id, local_date, kind, duration_minutes) VALUES
+  ('c0000000-0000-0000-0000-000000000002', 'a0000000-0000-0000-0000-000000000003', current_date - 1, 'practice', 10);
+INSERT INTO practice_reflections (checkin_id, user_id, mood) VALUES
+  ('c0000000-0000-0000-0000-000000000002', 'a0000000-0000-0000-0000-000000000003', 2);
+DO $do$
+DECLARE v_blocked_insert boolean := false; v_blocked_update boolean := false;
+BEGIN
+  BEGIN
+    INSERT INTO practice_reflections (checkin_id, user_id, mood) VALUES
+      ('c0000000-0000-0000-0000-000000000006', 'a0000000-0000-0000-0000-000000000003', 1);
+  EXCEPTION WHEN insufficient_privilege THEN v_blocked_insert := true;
+  END;
+  BEGIN
+    UPDATE practice_reflections
+       SET checkin_id = 'c0000000-0000-0000-0000-000000000006'
+     WHERE checkin_id = 'c0000000-0000-0000-0000-000000000002';
+  EXCEPTION WHEN insufficient_privilege THEN v_blocked_update := true;
+  END;
+  IF NOT v_blocked_insert THEN
+    RAISE EXCEPTION '005: a reflection was attached to another user''s check-in on INSERT';
+  END IF;
+  IF NOT v_blocked_update THEN
+    RAISE EXCEPTION '005: a reflection was re-pointed at another user''s check-in on UPDATE';
+  END IF;
+  RAISE NOTICE 'PASS 005 a reflection cannot be attached to another user''s check-in, on insert or update';
+END $do$;
+RESET ROLE;
+EOF
+
+# --- 005 C1 / FR-008, FR-007: one check-in per local day, and no dates in nobody's present.
+psql -v ON_ERROR_STOP=1 -q <<'EOF'
+SET ROLE authenticated;
+SET request.jwt.claim.sub = 'a0000000-0000-0000-0000-000000000051';
+DO $do$
+DECLARE v_dupe boolean := false; v_future boolean := false; v_rest boolean := false;
+BEGIN
+  BEGIN
+    INSERT INTO practice_checkins (id, user_id, local_date, kind) VALUES
+      ('c0000000-0000-0000-0000-000000000003', 'a0000000-0000-0000-0000-000000000051', current_date - 1, 'rest');
+  EXCEPTION WHEN unique_violation THEN v_dupe := true;
+  END;
+  BEGIN
+    INSERT INTO practice_checkins (id, user_id, local_date, kind) VALUES
+      ('c0000000-0000-0000-0000-000000000004', 'a0000000-0000-0000-0000-000000000051', current_date + 3, 'practice');
+  EXCEPTION WHEN check_violation THEN v_future := true;
+  END;
+  BEGIN
+    INSERT INTO practice_checkins (id, user_id, local_date, kind, duration_minutes) VALUES
+      ('c0000000-0000-0000-0000-000000000005', 'a0000000-0000-0000-0000-000000000051', current_date - 5, 'rest', 15);
+  EXCEPTION WHEN check_violation THEN v_rest := true;
+  END;
+  IF NOT v_dupe   THEN RAISE EXCEPTION 'FR-008: a second check-in on the same local day was accepted'; END IF;
+  IF NOT v_future THEN RAISE EXCEPTION 'FR-007: a check-in dated 3 days ahead was accepted'; END IF;
+  IF NOT v_rest   THEN RAISE EXCEPTION 'a rest day was accepted with a duration'; END IF;
+  RAISE NOTICE 'PASS 005 one check-in per local day; no future dates; a rest day carries no duration';
+END $do$;
+RESET ROLE;
+EOF
+
 export PGDATABASE=postgres
 psql -q -c "DROP DATABASE yogakit_mig_verify"
 echo "MIGRATION VERIFICATION PASSED"
