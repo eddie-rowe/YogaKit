@@ -2,7 +2,7 @@
 
 **Run time:** ~10:15 UTC
 **Issues worked:** #259 (worked 1 of 3; the cap was not the limiter)
-**PRs opened:** #260 — chore(005) lint verification, branch autodev/259-sadhana-lint-verify (merge status in routine-log / chat reply)
+**PRs opened:** #260 — chore(005) lint verification, branch autodev/259-sadhana-lint-verify — merged (squash) after CI green
 **Runbooks written:** none
 **Gate results:** #259 — tsc, lint:copy, validate:poses, lint:telemetry, test:coverage all pass (100% coverage)
 **Browser validation:** n/a — no rendered surface (docs-only change)
