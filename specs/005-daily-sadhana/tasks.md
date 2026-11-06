@@ -152,8 +152,8 @@ check-in survives a reload and flushes with no user action once online.
   free-form date entry anywhere (FR-006, FR-007)
 - [ ] T024 [US1] A second check-in on the same local day updates the first rather than — **PARTIAL:** create-vs-update DECISION shipped #192 (`resolveCheckinDay`); "never a second row" also needs the per-day uniqueness in C1 (T009)
   creating a second day or double-advancing any count (FR-008)
-- [ ] T025 [P] [US1] `npm run lint:copy` over every new string on this path
-- [ ] T026 [P] [US1] `npm run lint:telemetry` over any new call site near the check-in
+- [X] T025 [P] [US1] `npm run lint:copy` over every new string on this path — shipped #259 (scans `src/components/**`, covering `src/components/sadhana/*`; 0 violations 2026-11-06)
+- [X] T026 [P] [US1] `npm run lint:telemetry` over any new call site near the check-in — shipped #259 (scans all of `src/`; no logger/RUM call sites in `src/components/sadhana` or `src/lib/sadhana`)
   component tree — mood and note must never appear as a field name, even indirectly
 - [ ] T027 [US1] Playwright: check-in walk (one tap, microcopy present, second account
   denied); a second walk with `context.setOffline(true)` proving the offline case (T020)
@@ -225,7 +225,7 @@ revision, confirm the card quotes the earlier version and offers the three respo
   its place (FR-034) — shipped #223
 - [X] T043 [US3] A lapse threshold changed mid-lapse takes effect without re-showing a
   card already answered (FR-035) — shipped #223
-- [ ] T044 [P] [US3] `npm run lint:copy` over every new string on this path
+- [X] T044 [P] [US3] `npm run lint:copy` over every new string on this path — shipped #259 (`ReturnCard.tsx` strings covered, 0 violations)
 - [X] T045 [P] [US3] Vitest: write an intention, revise it, simulate a lapse start before
   the revision, assert the card quotes the pre-revision version (SC-010) — shipped #253 (`tests/unit/sadhana/return-card-sc010.test.tsx`; tests-only, passed first run, no red phase)
 
@@ -273,7 +273,7 @@ nothing or is refused.
   absence is not itself reported as a status (FR-058); an ended enrollment stops being
   returned on the next query (FR-061); a student in two cohorts is visible to each teacher
   only to the extent that enrollment's sharing state permits (FR-060) — **PARTIAL:** roster filter lib shipped #230 (FR-058); the query-side ended-enrollment check (FR-061) and two-cohort rule (FR-060) land with the dashboard route (T052); two-enrollment and ended-enrollment lib cases pinned in `dashboard-roster.test.ts` (#248)
-- [ ] T057 [P] [US4] [US5] `npm run lint:copy` over every new string on this path
+- [ ] T057 [P] [US4] [US5] `npm run lint:copy` over every new string on this path — **PARTIAL:** shipped components (`SharingPill`, `DashboardRow`, `MilestoneCard`) pass 0 violations (#259); the dashboard route (T052) is unbuilt so its strings are not yet checked. Note `src/lib/sadhana` is outside lint:copy's scan roots
 - [ ] T058 [P] [US5] Vitest/integration: the SC-016 query test against `practice_reflections`
   (may already be satisfied by T015 in Phase C1 — confirm and cross-reference rather than
   duplicate)
