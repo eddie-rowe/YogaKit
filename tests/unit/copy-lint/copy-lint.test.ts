@@ -549,7 +549,7 @@ describe('markdown guidance bodies (009 / 005 guidance-tone contract)', () => {
 
 describe('scoping', () => {
   it('scans the user-facing directories and the settings strings, not the engine modules', () => {
-    expect(SCAN_DIRS).toEqual(['src/app', 'src/components', 'src/lib/settings', 'data/guidance'])
+    expect(SCAN_DIRS).toEqual(['src/app', 'src/components', 'src/lib/settings', 'src/lib/sadhana', 'data/guidance'])
     // RULE-H6's modules author no copy; lint noise on that path is worse than no cover.
     expect(SCAN_DIRS.some((d) => /^src\/lib\/(friction|validator)/.test(d))).toBe(false)
   })
