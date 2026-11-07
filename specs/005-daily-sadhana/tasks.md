@@ -328,7 +328,7 @@ the same commit.
 - [ ] T066 [US7] Primary navigation: exactly three destinations — Today, Teach, Poses
   (FR-062). `/compose` and `/flows` merge under Teach
 - [ ] T067 [US7] Account avatar: standalone header element, not a fourth nav entry, same
-  minimum touch target as the tabs (FR-063)
+  minimum touch target as the tabs (FR-063) — **PARTIAL:** component shipped #262 (`AccountAvatar`, not yet mounted; AccountMenu trigger unchanged)
 - [X] T068 [US7] **Decision #12**: initials-based placeholder when no profile image is set — shipped #241 (lib only; avatar component T066/T067/T069 open)
   (FR-064)
 - [ ] T069 [US7] Retire `nav-home`, `nav-compose`, `nav-flows`, `nav-poses`, `nav-learn`
