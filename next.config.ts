@@ -31,6 +31,11 @@ const nextConfig: NextConfig = {
   // this produces are deleted from the build output right after upload (see that
   // script), so nothing sits publicly readable at /_next/static in the deployed app.
   productionBrowserSourceMaps: true,
+  // 005 US7 T070 (FR-066/FR-067): /learn is retired. A bookmarked visit lands on the
+  // Today surface (/) with a 308 instead of a 404.
+  async redirects() {
+    return [{ source: '/learn', destination: '/', permanent: true }]
+  },
 };
 
 export default nextConfig;

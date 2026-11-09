@@ -334,9 +334,9 @@ the same commit.
 - [ ] T069 [US7] Retire `nav-home`, `nav-compose`, `nav-flows`, `nav-poses`, `nav-learn`
   from the `docs/krama-guardrails.md` §1.3 testid contract table, and update every
   affected Playwright walk test, **in the same commit** as T066 (FR-065)
-- [ ] T070 [US7] **Decision #11**: retire `/learn` as a route; fold its content into what
+- [X] T070 [US7] **Decision #11**: retire `/learn` as a route; fold its content into what
   Today surfaces. A previously bookmarked `/learn` visit redirects to its new location
-  rather than erroring (FR-066, FR-067)
+  rather than erroring (FR-066, FR-067) — shipped #272 (308 in next.config.ts; the header nav link is retired by #273)
 - [ ] T071 [P] [US7] `npm run test:e2e` — full suite green with the retired identifiers
   gone and no follow-up commit required (SC-019, SC-020)
 
