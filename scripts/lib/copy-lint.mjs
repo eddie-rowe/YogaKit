@@ -518,9 +518,10 @@ export function formatViolation(v) {
  * is for the gate to say so out loud every time somebody watches it go green.
  */
 export function coverageLimits() {
+  const scanned = `${SCAN_DIRS.slice(0, -1).join(', ')} and ${SCAN_DIRS[SCAN_DIRS.length - 1]}`
   return [
     'Interpolated copy: only the literal fragments of a template are read. A string assembled from variables is invisible.',
-    'Location: only src/app, src/components, src/lib/settings, src/lib/sadhana and data/guidance are scanned. data/poses (authored content), migrations, and emails are not.',
+    `Location: only ${scanned} are scanned. data/poses (authored content), migrations, and emails are not.`,
     'Tone: condescension, false cheer, hedging, and second-person diagnosis all pass. Those are VOICE.md §1–§3b, enforced in review.',
     'Structure: a screen built from individually compliant strings can still read as a countdown. RULE-C2 is about experience, not substrings.',
     'Language: English only. Localised copy is entirely uncovered.',
