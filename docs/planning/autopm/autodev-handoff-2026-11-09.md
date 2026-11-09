@@ -2,8 +2,8 @@
 
 **Run time:** ~10:20 UTC
 **Issues worked:** #272 (worked 1 of 3)
-**PRs merged:** #270 (closes #267), #271 (closes #268), both squash. Dependabot: none open.
-**PRs left open:** #274 (#272, /learn redirect), labelled `auto/dev-failure`; `ci` + `db-types-check` still pending at the end of the bounded window. Next sweep's Step 1a merges it when green.
+**PRs merged:** #270 (closes #267), #271 (closes #268), #274 (closes #272, merged after CI went green at ~10:10 UTC), all squash. Dependabot: none open.
+**PRs left open:** none. #274 was briefly labelled `auto/dev-failure` while CI was pending; the label was removed on merge.
 **Staleness:** #270 was 4 behind, #271 was 5 behind, both ≤10. #220's PR #227 is 50 behind and held `auto/needs-human`; it was not touched.
 **Gate results:** #272 — tsc / lint:copy / validate:poses / lint:telemetry / test:coverage all green (100% lines). #270/#271 were gated last sweep and their remote CI is green after the branch update.
 **Browser validation:** none for #272 — a config redirect with no rendered surface.
