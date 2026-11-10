@@ -249,9 +249,9 @@ ships with the enrollment flow, which does not yet exist (`005` Assumptions).
 
 **Purpose**: Correctness wins that need the shell. **Story: US6.**
 
-- [ ] T050 [auto-ok] [US6] Conformance check of `src/lib/theme.ts` and the pre-paint script
+- [X] T050 [auto-ok] [US6] Conformance check of `src/lib/theme.ts` and the pre-paint script
   against FR-032/033: first paint correct, persists across sessions, absent or corrupt cookie
-  falls back to the default. Change code only if a gap is found
+  falls back to the default. Change code only if a gap is found — shipped #276 (tests only, no code gap)
 - [ ] T051 [auto-ok] [US6] Measure first paint rather than assuming it (SC-012), and confirm
   no Lighthouse regression on the read view (RULE-L6)
 - [ ] T052 [P] [auto-ok] [US6] `src/lib/settings/preferences.ts` — pure migration of
