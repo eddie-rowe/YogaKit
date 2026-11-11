@@ -79,8 +79,8 @@ author boundary structural before any UI depends on it. **Stories: US2, US5, US6
   sharing off, FR-019)
 - [ ] T011 [needs-human] (rls) Confirm the existing RULE-V5 assertion (teacher account reading
   practice content for an enrolled student gets zero rows) is unmodified and still green
-- [ ] T012 [auto-ok] Regenerate `src/types/database.ts` via `scripts/db-types-check.sh`
-  (needs the local Supabase stack)
+- [X] T012 [auto-ok] Regenerate `src/types/database.ts` via `scripts/db-types-check.sh`
+  (needs the local Supabase stack) — verified 2026-11-10: `src/types/database.ts` carries the 006 columns; CI `db-types-check` enforces drift (#275)
 
 **Gate**: `bash scripts/verify-migrations.sh` reports `MIGRATION VERIFICATION PASSED`; owner
 has reviewed the migration (T004 to T007).
@@ -151,8 +151,8 @@ see the same control reflecting the new state with identical copy.
   is never reported complete, and offline shows "not yet recorded" rather than "revoked"
   (FR-016)
 - [ ] T027 [P] [auto-ok] [US2] State sync between mountings: a change in one is reflected in
-  the other without a refresh (FR-014)
-- [ ] T028 [auto-ok] [US2] No cohort enrollment renders no implied audience (FR-017)
+  the other without a refresh (FR-014) — **PARTIAL:** `src/lib/settings/visibility-store.ts` + `tests/unit/settings/visibility-store.test.ts` prove two subscribers stay in sync; no component mounts the store yet, so cross-mounting sync is unproven in the UI (T029/T030 open)
+- [ ] T028 [auto-ok] [US2] No cohort enrollment renders no implied audience (FR-017) — **PARTIAL:** `deriveAudience` (`src/lib/settings/audience.ts`, `audience.test.ts`) returns `none` for no enrollments; no rendered mounting yet (T029/T030 open)
 - [ ] T029 [auto-ok] [US2] Mount in the settings privacy section
 - [ ] T030 [needs-human] (copy) [US2] Mount inline on Today. **Blocked on `005`'s Today
   screen.** If `005` has not landed, record RULE-V6 as an open gap in `FRICTION.md` and do not
@@ -175,10 +175,10 @@ see the same control reflecting the new state with identical copy.
 **Independent test**: Compose flows anonymously, sign in, confirm nothing is claimed until a
 confirmation naming each flow; confirm declining leaves a re-entry point.
 
-- [ ] T034 [P] [auto-ok] [US3] `src/lib/settings/claim.ts` — pure `itemize(localFlows)`
-  returning names plus count, for the prompt
-- [ ] T035 [P] [auto-ok] [US3] Unit tests for T034, including a long list that stays fully
-  reviewable rather than truncating to a count (FR-022)
+- [X] T034 [P] [auto-ok] [US3] `src/lib/settings/claim.ts` — pure `itemize(localFlows)`
+  returning names plus count, for the prompt — `src/lib/settings/claim.ts` `itemize` shipped (#275 reconcile)
+- [X] T035 [P] [auto-ok] [US3] Unit tests for T034, including a long list that stays fully
+  reviewable rather than truncating to a count (FR-022) — `tests/unit/settings/claim.test.ts` incl. non-truncating long list (#275 reconcile)
 - [ ] T036 [needs-human] (auth) [US3] `src/app/onboarding/ClaimFlowsPrompt.tsx` — nothing is
   adopted when authentication completes (FR-021); the prompt lists every flow by name with
   the count inline (FR-022); confirm claims exactly the listed flows; decline claims nothing
@@ -186,15 +186,15 @@ confirmation naming each flow; confirm declining leaves a re-entry point.
 - [ ] T037 [needs-human] (auth) [US3] Test across every authentication path (magic link,
   pasted code, callback, confirm) that zero local flows are adopted without a confirmation
   (SC-007)
-- [ ] T038 [auto-ok] [US3] Named re-entry point in the account surface after a decline,
+- [X] T038 [auto-ok] [US3] Named re-entry point in the account surface after a decline,
   showing the same itemized confirmation (FR-024, SC-009). Replaces the permanent
-  `krama-claim-flows-decided` flag with a model that has a way back
+  `krama-claim-flows-decided` flag with a model that has a way back — `SecuritySection.tsx` re-entry + `claim-reentry.test.tsx` (#275 reconcile)
 - [ ] T039 [needs-human] (schema) [US3] Partial failure: report which flows were claimed and
   which were not, leave the rest locally readable (FR-025). Verify second-device claims do
   not duplicate against `claimed_flows` and `app_save_flow` (FR-026, plan disagreement 5), and
   that nothing is adopted into an account being deleted (FR-027)
-- [ ] T040 [P] [auto-ok] [US3] `npm run lint:copy` over the claim and re-entry copy; the
-  re-entry is a plain link with no badge, counter, or reminder (RULE-C2)
+- [X] T040 [P] [auto-ok] [US3] `npm run lint:copy` over the claim and re-entry copy; the
+  re-entry is a plain link with no badge, counter, or reminder (RULE-C2) — `tests/unit/settings/copy-scope.test.ts` runs copy-lint over claim + re-entry copy (#275 reconcile)
 
 **Gate**: T037 green for all paths; the 6am offline-read walk
 (`tests/e2e-qa/offline-read.spec.ts`) passes unmodified.
@@ -254,16 +254,16 @@ ships with the enrollment flow, which does not yet exist (`005` Assumptions).
   falls back to the default. Change code only if a gap is found — shipped #276 (tests only, no code gap)
 - [ ] T051 [auto-ok] [US6] Measure first paint rather than assuming it (SC-012), and confirm
   no Lighthouse regression on the read view (RULE-L6)
-- [ ] T052 [P] [auto-ok] [US6] `src/lib/settings/preferences.ts` — pure migration of
+- [X] T052 [P] [auto-ok] [US6] `src/lib/settings/preferences.ts` — pure migration of
   `krama-compose-layer`, `krama-pose-detail-layer`, `krama-pose-detail-custom-fields`, and
   `krama-claim-flows-decided`; existing values carry over, defaults apply when storage is
-  unavailable (FR-035, FR-036)
-- [ ] T053 [P] [auto-ok] [US6] Unit tests for T052, including corrupt and absent values
+  unavailable (FR-035, FR-036) — `src/lib/settings/preferences.ts` `migratePreferences` shipped (#275 reconcile)
+- [X] T053 [P] [auto-ok] [US6] Unit tests for T052, including corrupt and absent values — `tests/unit/settings/preferences.test.ts` covers corrupt, absent, throwing storage (#275 reconcile)
 - [ ] T054 [auto-ok] [US6] Visible, changeable controls for each stranded preference in the
   preferences section (FR-034, SC-013); compose and pose detail read the migrated model
 - [ ] T055 [auto-ok] [US6] Named presets for the pose-detail custom field checklist: save,
   reapply by name, rename and delete affecting only the target (FR-037). Persists through the
-  table from T006 once Phase 2 merges; until then local only, noted in the PR
+  table from T006 once Phase 2 merges; until then local only, noted in the PR — **PARTIAL:** pure preset lib `src/lib/settings/presets.ts` + `presets.test.ts` (save/apply/rename/delete/parse) shipped; **not yet imported by any UI** and no persistence wired — save/reapply UI and storage remain
 
 **Gate**: T053 green; migration keeps 100% of existing values (SC-013).
 
