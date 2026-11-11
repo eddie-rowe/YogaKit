@@ -8,6 +8,7 @@ describe('visibleSections', () => {
     expect(ids({ orgs: [] })).toEqual([
       'profile',
       'appearance',
+      'preferences',
       'notifications',
       'privacy',
       'account-security',
@@ -47,6 +48,7 @@ describe('visibleSections', () => {
     expect(r).toEqual([
       'profile',
       'appearance',
+      'preferences',
       'notifications',
       'privacy',
       'account-security',

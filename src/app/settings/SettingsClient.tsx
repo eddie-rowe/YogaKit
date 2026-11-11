@@ -9,6 +9,7 @@ import type { AccountState, OrgRole, SectionId } from '@/lib/settings/sections'
 import { Section, NotYet } from './sections/Section'
 import ProfileSection from './sections/ProfileSection'
 import AppearanceSection from './sections/AppearanceSection'
+import PreferencesSection from './sections/PreferencesSection'
 import SecuritySection from './sections/SecuritySection'
 import NotificationsSection from './sections/NotificationsSection'
 import StudioSection from './sections/StudioSection'
@@ -33,6 +34,7 @@ const ANCHOR: Partial<Record<SectionId, string>> = { 'account-security': 'securi
 const TITLE: Record<SectionId, string> = {
   profile: 'Profile',
   appearance: 'Appearance',
+  preferences: 'Preferences',
   notifications: 'Notifications',
   privacy: 'Privacy',
   'account-security': 'Account & security',
@@ -76,6 +78,7 @@ export default function SettingsClient({
     appearance: (
     <AppearanceSection />
     ),
+    preferences: <PreferencesSection />,
     notifications: <NotificationsSection />,
     privacy: (
     <Section id="privacy" title="Privacy">
@@ -162,9 +165,10 @@ export default function SettingsClient({
           </p>
         </div>
 
-        {/* The index 006 FR-002 requires. Nine sections is under the 8–10 threshold
-            where search starts to earn its place, so this is a list of anchors and
-            nothing more (docs/design-research/19-settings-profile.md). */}
+        {/* The index 006 FR-002 requires. Ten sections (with Preferences, 006 T054) sits
+            at the top of the 8–10 range where search starts to earn its place; until it
+            grows past that, a list of anchors is enough
+            (docs/design-research/19-settings-profile.md). */}
         <nav data-testid="settings-index" aria-label="Settings sections" className="flex flex-wrap gap-x-4 gap-y-1.5">
           {sections.map(section => (
             <a

@@ -16,6 +16,7 @@ export interface AccountState {
 export type SectionId =
   | 'profile'
   | 'appearance'
+  | 'preferences'
   | 'notifications'
   | 'privacy'
   | 'account-security'
@@ -34,6 +35,7 @@ export interface SettingsSection {
 const ALWAYS: readonly SettingsSection[] = [
   { id: 'profile', label: 'Profile' },
   { id: 'appearance', label: 'Appearance' },
+  { id: 'preferences', label: 'Preferences' },
   { id: 'notifications', label: 'Notifications' },
   { id: 'privacy', label: 'Privacy' },
   { id: 'account-security', label: 'Account and security' },

@@ -10,6 +10,7 @@ import type { ReactNode } from 'react'
 export const SECTIONS = [
   { id: 'profile', title: 'Profile' },
   { id: 'appearance', title: 'Appearance' },
+  { id: 'preferences', title: 'Preferences' },
   { id: 'notifications', title: 'Notifications' },
   { id: 'privacy', title: 'Privacy' },
   { id: 'security', title: 'Account & security' },

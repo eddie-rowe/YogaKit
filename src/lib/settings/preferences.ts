@@ -87,3 +87,30 @@ export function migratePreferences(reader: PreferenceReader | null): Preferences
     claimFlowsDecided: read(reader, PREFERENCE_KEYS.claimFlowsDecided) !== null,
   }
 }
+
+export interface PreferenceWriter {
+  setItem(key: string, value: string): void
+}
+
+/** The preferences a person sets from a control. `claimFlowsDecided` is an internal
+ *  one-shot flag owned by the claim-flows prompt, so it is not writable here. */
+export type WritablePreference = 'composeLayer' | 'poseDetailLayer' | 'poseDetailCustomFields'
+
+/** Writes one preference under the same key and value format the surfaces already
+ *  read: layers as their bare name, custom fields as a JSON object. Never throws — a
+ *  missing or throwing storage (blocked site data, some private modes) returns false,
+ *  and the caller carries on with what it has (FR-036). */
+export function writePreference<K extends WritablePreference>(
+  writer: PreferenceWriter | null,
+  key: K,
+  value: Preferences[K],
+): boolean {
+  if (!writer) return false
+  const raw = typeof value === 'string' ? value : JSON.stringify(value)
+  try {
+    writer.setItem(PREFERENCE_KEYS[key], raw)
+    return true
+  } catch {
+    return false
+  }
+}
