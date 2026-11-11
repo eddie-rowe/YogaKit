@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useStoredPreference } from '@/lib/settings/use-stored-preference'
 import type { Pose } from '@/lib/pose-types'
 import BodyDiagram from '@/components/poses/BodyDiagram'
 import { CHAKRA_DOTS } from '@/lib/pose-library/body-map'
@@ -15,9 +15,6 @@ interface Props {
 
 export type DetailLayer = 'simple' | 'advanced' | 'expert' | 'custom'
 export const DETAIL_LAYERS: DetailLayer[] = [...DEPTH_STEPS, 'custom']
-export const DETAIL_LAYER_STORAGE_KEY = 'krama-pose-detail-layer'
-// Field-group visibility for the custom layer, stored alongside DETAIL_LAYER_STORAGE_KEY.
-export const CUSTOM_FIELDS_STORAGE_KEY = 'krama-pose-detail-custom-fields'
 const LAYER_RANK: Record<DetailLayer, number> = { ...DEPTH_RANK, custom: 3 }
 
 export type CustomFieldGroup =
@@ -39,16 +36,6 @@ export const CUSTOM_FIELD_GROUPS: { key: CustomFieldGroup; label: string }[] = [
   { key: 'contraindications-props', label: 'Contraindications & props' },
 ]
 
-const DEFAULT_CUSTOM_FIELDS: Record<CustomFieldGroup, boolean> = {
-  breathing: true,
-  chakras: true,
-  dosha: true,
-  emotional: true,
-  modifications: true,
-  'muscles-joints': true,
-  'contraindications-props': true,
-}
-
 const DIFFICULTY_COLORS: Record<string, string> = {
   accessible:   'bg-emerald-100 text-emerald-800',
   intermediate: 'bg-amber-100 text-amber-800',
@@ -67,34 +54,15 @@ const DOSHA_EFFECT_COLORS: Record<string, string> = {
   aggravating: 'text-rose-600',
 }
 
+// 006 T054: layer and custom fields are read and written through the shared preference
+// model (PREFERENCE_KEYS, migratePreferences), so /settings and this view agree and a
+// throwing or missing storage falls back to defaults instead of crashing.
 export function useDetailLayer() {
-  const [layer, setLayer] = useState<DetailLayer>(() => {
-    if (typeof window === 'undefined') return 'simple'
-    const stored = window.localStorage.getItem(DETAIL_LAYER_STORAGE_KEY)
-    return stored && (DETAIL_LAYERS as string[]).includes(stored) ? (stored as DetailLayer) : 'simple'
-  })
-  const [customFields, setCustomFields] = useState<Record<CustomFieldGroup, boolean>>(() => {
-    if (typeof window === 'undefined') return DEFAULT_CUSTOM_FIELDS
-    const storedFields = window.localStorage.getItem(CUSTOM_FIELDS_STORAGE_KEY)
-    if (!storedFields) return DEFAULT_CUSTOM_FIELDS
-    try {
-      return { ...DEFAULT_CUSTOM_FIELDS, ...JSON.parse(storedFields) }
-    } catch {
-      return DEFAULT_CUSTOM_FIELDS
-    }
-  })
-
-  function selectLayer(next: DetailLayer) {
-    setLayer(next)
-    if (typeof window !== 'undefined') window.localStorage.setItem(DETAIL_LAYER_STORAGE_KEY, next)
-  }
+  const [layer, selectLayer] = useStoredPreference('poseDetailLayer')
+  const [customFields, setCustomFields] = useStoredPreference('poseDetailCustomFields')
 
   function toggleCustomField(key: CustomFieldGroup) {
-    setCustomFields(prev => {
-      const next = { ...prev, [key]: !prev[key] }
-      if (typeof window !== 'undefined') window.localStorage.setItem(CUSTOM_FIELDS_STORAGE_KEY, JSON.stringify(next))
-      return next
-    })
+    setCustomFields({ ...customFields, [key]: !customFields[key] })
   }
 
   return { layer, selectLayer, customFields, toggleCustomField }

@@ -75,10 +75,14 @@ export function migratePreferences(reader: PreferenceReader | null): Preferences
   const compose = read(reader, PREFERENCE_KEYS.composeLayer)
   const detail = read(reader, PREFERENCE_KEYS.poseDetailLayer)
   return {
+    // 'custom' was removed as a compose layer; the composer has always read a stored
+    // 'custom' as 'advanced', so the migration carries it over the same way (FR-035).
     composeLayer:
-      compose !== null && COMPOSE_LAYERS.includes(compose)
-        ? (compose as ComposeLayer)
-        : DEFAULT_PREFERENCES.composeLayer,
+      compose === 'custom'
+        ? 'advanced'
+        : compose !== null && COMPOSE_LAYERS.includes(compose)
+          ? (compose as ComposeLayer)
+          : DEFAULT_PREFERENCES.composeLayer,
     poseDetailLayer:
       detail !== null && DETAIL_LAYERS.includes(detail)
         ? (detail as PoseDetailLayer)
