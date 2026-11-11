@@ -28,15 +28,13 @@ import ComposeWarnings from '@/components/compose/ComposeWarnings'
 import ComposeFlowList from '@/components/compose/ComposeFlowList'
 import ComposePhases from '@/components/compose/ComposePhases'
 import * as haptics from '@/lib/haptics'
+import { useStoredPreference } from '@/lib/settings/use-stored-preference'
 
 interface Props {
   poses: Pose[]
   builtins: Flow[]
   flowId?: string
 }
-
-const LAYERS: LayerName[] = ['simple', 'advanced', 'expert']
-const LAYER_STORAGE_KEY = 'krama-compose-layer'
 
 function nowIso(): string {
   return new Date().toISOString()
@@ -67,14 +65,9 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
   const [flow, setFlow] = useState<Flow | null>(flowId ? null : emptyFlow())
   const [loading, setLoading] = useState(!!flowId)
   const [search, setSearch] = useState('')
-  const [layer, setLayer] = useState<LayerName>(() => {
-    const stored = typeof window !== 'undefined' ? window.localStorage.getItem(LAYER_STORAGE_KEY) : null
-    // 'custom' was removed as a Compose layer; fall back to 'advanced' for anyone
-    // who had it saved from before rather than crashing on an unknown layer.
-    if (stored === 'custom') return 'advanced'
-    if (stored && (LAYERS as string[]).includes(stored)) return stored as LayerName
-    return 'simple'
-  })
+  // 006 T054: read and written through the shared preference model (one key source,
+  // storage-safe; a stored 'custom' still lands on 'advanced').
+  const [layer, setLayer] = useStoredPreference('composeLayer')
   // Honest save state: 'dirty' as soon as anything changes, 'saving' while the
   // write is in flight, 'saved' only once that exact write has landed, 'error' if
   // it didn't. Replaces the old savedAt-forever "Saved" label (Phase 1).
@@ -166,8 +159,9 @@ export default function ComposeClient({ poses, builtins, flowId }: Props) {
 
   function setLayerAndPersist(next: LayerName) {
     haptics.tick()
-    setLayer(next)
-    if (typeof window !== 'undefined') window.localStorage.setItem(LAYER_STORAGE_KEY, next)
+    // The chips only offer simple/advanced/expert; LayerName still carries the
+    // retired 'custom', which maps to 'advanced' exactly as a stored one does.
+    setLayer(next === 'custom' ? 'advanced' : next)
   }
 
   function updateFlow(fn: (f: Flow) => Flow) {
