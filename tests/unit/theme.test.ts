@@ -62,6 +62,13 @@ describe('theme persistence conformance', () => {
     expect(run('krama-theme=%E0%A4')).toBeNull()
   })
 
+  it('does not throw and leaves the attribute off when cookie access throws', () => {
+    document.documentElement.removeAttribute('data-theme')
+    Object.defineProperty(document, 'cookie', { configurable: true, get: () => { throw new Error('cookies disabled') }, set: () => {} })
+    expect(() => new Function(PRE_PAINT_SCRIPT)()).not.toThrow()
+    expect(document.documentElement.hasAttribute('data-theme')).toBe(false)
+  })
+
   it('round-trips: applyTheme writes a long-lived cookie readThemeCookie reads back', () => {
     let jar = ''
     Object.defineProperty(document, 'cookie', { configurable: true, get: () => jar, set: (v: string) => { jar = v.split(';')[0] } })
