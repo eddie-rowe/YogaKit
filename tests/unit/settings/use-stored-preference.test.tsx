@@ -60,6 +60,17 @@ describe('useStoredPreference', () => {
   })
 })
 
+describe('two controls on the same key', () => {
+  it('a write from one shows in the other', () => {
+    const a = renderHook(() => useStoredPreference('composeLayer'))
+    const b = renderHook(() => useStoredPreference('composeLayer'))
+    act(() => a.result.current[1]('expert'))
+    act(() => b.result.current[1]('advanced'))
+    expect(a.result.current[0]).toBe('advanced')
+    expect(b.result.current[0]).toBe('advanced')
+  })
+})
+
 describe('legacy compose value', () => {
   it("a stored compose 'custom' (removed layer) carries over as 'advanced', as the composer always did", () => {
     expect(migratePreferences({ getItem: k => (k === 'krama-compose-layer' ? 'custom' : null) }).composeLayer).toBe(

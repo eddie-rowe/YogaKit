@@ -20,8 +20,8 @@ import {
  *  storage, which hydrates with the server's markup and never shows the stored value.
  *  The snapshot is the value's JSON so object preferences stay stable between reads.
  *
- *  A change applies in memory first, then is written. Where storage is missing or
- *  throws, the control still responds for this visit instead of looking dead. */
+ *  A change is written, then read back. Where storage is missing or throws, it is
+ *  held in memory so the control still responds for this visit instead of looking dead. */
 export function useStoredPreference<K extends WritablePreference>(
   key: K,
 ): readonly [Preferences[K], (next: Preferences[K]) => void] {
@@ -34,8 +34,9 @@ export function useStoredPreference<K extends WritablePreference>(
 
   const set = useCallback(
     (next: Preferences[K]) => {
-      setOverride(next)
-      writePreference(browserStorage(), key, next)
+      // Hold the value in memory only when it couldn't be written; otherwise storage
+      // stays the source, so another control writing the same key still shows here.
+      setOverride(writePreference(browserStorage(), key, next) ? null : next)
       notifyClientValueChanged()
     },
     [key],
