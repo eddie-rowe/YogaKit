@@ -7,6 +7,7 @@ import {
   type CustomFieldKey,
   type PoseDetailLayer,
 } from '@/lib/settings/preferences'
+import PresetsControl from './PresetsControl'
 import { Section } from './Section'
 
 // 006 US6 (T054, FR-034/FR-035/FR-036, SC-013): every preference that used to live
@@ -121,6 +122,7 @@ export default function PreferencesSection() {
             </button>
           ))}
         </div>
+        <PresetsControl fields={fields} onApply={setFields} />
       </div>
       <p className="text-sm" style={{ color: 'var(--muted)' }}>
         These stay on this device, and the composer and pose pages open the way you set them here.

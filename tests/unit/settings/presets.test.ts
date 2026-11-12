@@ -3,8 +3,11 @@ import {
   applyPreset,
   deletePreset,
   parsePresets,
+  PRESETS_KEY,
+  readPresets,
   renamePreset,
   savePreset,
+  writePresets,
   type Preset,
 } from '@/lib/settings/presets'
 
@@ -81,5 +84,43 @@ describe('parsePresets', () => {
   )
   it('drops malformed entries but keeps valid ones', () => {
     expect(parsePresets(JSON.stringify([base[0], { name: 3 }]))).toEqual([base[0]])
+  })
+})
+
+describe('readPresets / writePresets (T055 storage adapter)', () => {
+  it('round-trips through a storage under PRESETS_KEY', () => {
+    const mem = new Map<string, string>()
+    const store = { getItem: (k: string) => mem.get(k) ?? null, setItem: (k: string, v: string) => void mem.set(k, v) }
+    expect(writePresets(store, base)).toBe(true)
+    expect(mem.has(PRESETS_KEY)).toBe(true)
+    expect(readPresets(store)).toEqual(base)
+  })
+
+  it('missing storage reads empty and writes false', () => {
+    expect(readPresets(null)).toEqual([])
+    expect(writePresets(null, base)).toBe(false)
+  })
+
+  it('throwing storage reads empty and writes false, never throws', () => {
+    const boom = {
+      getItem: () => {
+        throw new Error('SecurityError')
+      },
+      setItem: () => {
+        throw new Error('SecurityError')
+      },
+    }
+    expect(readPresets(boom)).toEqual([])
+    expect(writePresets(boom, base)).toBe(false)
+  })
+})
+
+describe('parsePresets de-duplication', () => {
+  it('keeps the first preset of a repeated name', () => {
+    const raw = JSON.stringify([
+      { name: 'A', fields: ['x'] },
+      { name: 'A', fields: ['y'] },
+    ])
+    expect(parsePresets(raw)).toEqual([{ name: 'A', fields: ['x'] }])
   })
 })

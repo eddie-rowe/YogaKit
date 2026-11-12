@@ -44,8 +44,49 @@ export function parsePresets(raw: string | null | undefined): Preset[] {
   if (!raw) return []
   try {
     const parsed: unknown = JSON.parse(raw)
-    return Array.isArray(parsed) ? parsed.filter(isPreset).map((p) => ({ name: p.name, fields: [...p.fields] })) : []
+    if (!Array.isArray(parsed)) return []
+    // Names are identities: keep the first of any repeat so rename/delete stay targeted.
+    const seen = new Set<string>()
+    return parsed
+      .filter(isPreset)
+      .filter((p) => (seen.has(p.name) ? false : (seen.add(p.name), true)))
+      .map((p) => ({ name: p.name, fields: [...p.fields] }))
   } catch {
     return []
+  }
+}
+
+// ── Storage adapter (006 T055) ────────────────────────────────────────────────
+// Local only until the T006 server table merges: presets live in browser storage
+// beside the preference they feed, as a JSON array of { name, fields }.
+
+/** Storage key for the saved presets. */
+export const PRESETS_KEY = 'krama-pose-detail-presets'
+
+interface PresetReader {
+  getItem(key: string): string | null
+}
+interface PresetWriter {
+  setItem(key: string, value: string): void
+}
+
+/** Reads saved presets. Missing, throwing, or corrupt storage yields an empty list. */
+export function readPresets(reader: PresetReader | null): Preset[] {
+  if (!reader) return []
+  try {
+    return parsePresets(reader.getItem(PRESETS_KEY))
+  } catch {
+    return []
+  }
+}
+
+/** Writes presets. Never throws; returns false where storage is missing or throws. */
+export function writePresets(writer: PresetWriter | null, presets: ReadonlyArray<Preset>): boolean {
+  if (!writer) return false
+  try {
+    writer.setItem(PRESETS_KEY, JSON.stringify(presets))
+    return true
+  } catch {
+    return false
   }
 }
