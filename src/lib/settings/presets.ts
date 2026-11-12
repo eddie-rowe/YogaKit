@@ -44,7 +44,13 @@ export function parsePresets(raw: string | null | undefined): Preset[] {
   if (!raw) return []
   try {
     const parsed: unknown = JSON.parse(raw)
-    return Array.isArray(parsed) ? parsed.filter(isPreset).map((p) => ({ name: p.name, fields: [...p.fields] })) : []
+    if (!Array.isArray(parsed)) return []
+    // Names are identities: keep the first of any repeat so rename/delete stay targeted.
+    const seen = new Set<string>()
+    return parsed
+      .filter(isPreset)
+      .filter((p) => (seen.has(p.name) ? false : (seen.add(p.name), true)))
+      .map((p) => ({ name: p.name, fields: [...p.fields] }))
   } catch {
     return []
   }

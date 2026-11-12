@@ -114,3 +114,13 @@ describe('readPresets / writePresets (T055 storage adapter)', () => {
     expect(writePresets(boom, base)).toBe(false)
   })
 })
+
+describe('parsePresets de-duplication', () => {
+  it('keeps the first preset of a repeated name', () => {
+    const raw = JSON.stringify([
+      { name: 'A', fields: ['x'] },
+      { name: 'A', fields: ['y'] },
+    ])
+    expect(parsePresets(raw)).toEqual([{ name: 'A', fields: ['x'] }])
+  })
+})

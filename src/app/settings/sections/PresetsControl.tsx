@@ -118,10 +118,11 @@ export default function PresetsControl({
         </p>
       ) : (
         <ul className="space-y-1.5">
-          {presets.map(preset => (
+          {presets.map((preset, i) => (
             <li
               key={preset.name}
-              data-testid={`settings-preset-item-${preset.name}`}
+              data-testid={`settings-preset-item-${i}`}
+              aria-label={preset.name}
               className="flex flex-wrap items-center gap-2"
             >
               {renaming === preset.name ? (
@@ -131,13 +132,13 @@ export default function PresetsControl({
                     value={renameTo}
                     onChange={e => setRenameTo(e.target.value)}
                     aria-label={`New name for ${preset.name}`}
-                    data-testid="settings-preset-rename-input"
+                    data-testid="settings-preset-renaming-input"
                     className="kk-input min-w-0 flex-1 px-3 text-sm"
                   />
                   <button
                     type="button"
                     onClick={confirmRename}
-                    data-testid="settings-preset-rename-confirm"
+                    data-testid="settings-preset-renaming-confirm"
                     className="kk-chip px-3 text-sm"
                   >
                     Save name
@@ -145,7 +146,7 @@ export default function PresetsControl({
                   <button
                     type="button"
                     onClick={() => setRenaming(null)}
-                    data-testid="settings-preset-rename-cancel"
+                    data-testid="settings-preset-renaming-cancel"
                     className="kk-chip px-3 text-sm"
                   >
                     Cancel
@@ -157,7 +158,8 @@ export default function PresetsControl({
                   <button
                     type="button"
                     onClick={() => apply(preset.name)}
-                    data-testid={`settings-preset-apply-${preset.name}`}
+                    data-testid={`settings-preset-apply-${i}`}
+                    aria-label={`Apply ${preset.name}`}
                     className="kk-chip px-3 text-sm"
                   >
                     Apply
@@ -165,7 +167,8 @@ export default function PresetsControl({
                   <button
                     type="button"
                     onClick={() => startRename(preset.name)}
-                    data-testid={`settings-preset-rename-${preset.name}`}
+                    data-testid={`settings-preset-rename-${i}`}
+                    aria-label={`Rename ${preset.name}`}
                     className="kk-chip px-3 text-sm"
                   >
                     Rename
@@ -173,7 +176,8 @@ export default function PresetsControl({
                   <button
                     type="button"
                     onClick={() => remove(preset.name)}
-                    data-testid={`settings-preset-delete-${preset.name}`}
+                    data-testid={`settings-preset-delete-${i}`}
+                    aria-label={`Delete ${preset.name}`}
                     className="kk-chip px-3 text-sm"
                   >
                     Delete

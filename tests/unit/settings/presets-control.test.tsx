@@ -33,7 +33,7 @@ describe('pose-detail presets control', () => {
         fields: ['breathing', 'dosha', 'emotional', 'modifications', 'muscles-joints', 'contraindications-props'],
       },
     ])
-    const item = screen.getByTestId('settings-preset-item-Teaching')
+    const item = screen.getByTestId('settings-preset-item-0')
     expect(within(item).getByText('Teaching')).toBeTruthy()
     expect((screen.getByTestId('settings-preset-name-input') as HTMLInputElement).value).toBe('')
     expect(screen.queryByTestId('settings-preset-error')).toBeNull()
@@ -62,7 +62,7 @@ describe('pose-detail presets control', () => {
       JSON.stringify([{ name: 'Breath only', fields: ['breathing'] }]),
     )
     render(<PreferencesSection />)
-    fireEvent.click(screen.getByTestId('settings-preset-apply-Breath only'))
+    fireEvent.click(screen.getByTestId('settings-preset-apply-0'))
     expect(checked('settings-pref-field-breathing')).toBe('true')
     expect(checked('settings-pref-field-chakras')).toBe('false')
     const fields = storedFields()
@@ -77,7 +77,7 @@ describe('pose-detail presets control', () => {
       JSON.stringify([{ name: 'Old', fields: ['chakras', 'retired-field'] }]),
     )
     render(<PreferencesSection />)
-    fireEvent.click(screen.getByTestId('settings-preset-apply-Old'))
+    fireEvent.click(screen.getByTestId('settings-preset-apply-0'))
     const fields = storedFields()
     expect(fields.chakras).toBe(true)
     expect(fields.breathing).toBe(false)
@@ -93,14 +93,14 @@ describe('pose-detail presets control', () => {
       ]),
     )
     render(<PreferencesSection />)
-    fireEvent.click(screen.getByTestId('settings-preset-rename-A'))
-    fireEvent.change(screen.getByTestId('settings-preset-rename-input'), { target: { value: 'Morning' } })
-    fireEvent.click(screen.getByTestId('settings-preset-rename-confirm'))
+    fireEvent.click(screen.getByTestId('settings-preset-rename-0'))
+    fireEvent.change(screen.getByTestId('settings-preset-renaming-input'), { target: { value: 'Morning' } })
+    fireEvent.click(screen.getByTestId('settings-preset-renaming-confirm'))
     expect(stored()).toEqual([
       { name: 'Morning', fields: ['breathing'] },
       { name: 'B', fields: ['chakras'] },
     ])
-    expect(screen.getByTestId('settings-preset-item-Morning')).toBeTruthy()
+    expect(screen.getByTestId('settings-preset-item-0').getAttribute('aria-label')).toBe('Morning')
   })
 
   it('rename to an existing name shows inline copy and changes nothing', () => {
@@ -112,9 +112,9 @@ describe('pose-detail presets control', () => {
       ]),
     )
     render(<PreferencesSection />)
-    fireEvent.click(screen.getByTestId('settings-preset-rename-A'))
-    fireEvent.change(screen.getByTestId('settings-preset-rename-input'), { target: { value: 'B' } })
-    fireEvent.click(screen.getByTestId('settings-preset-rename-confirm'))
+    fireEvent.click(screen.getByTestId('settings-preset-rename-0'))
+    fireEvent.change(screen.getByTestId('settings-preset-renaming-input'), { target: { value: 'B' } })
+    fireEvent.click(screen.getByTestId('settings-preset-renaming-confirm'))
     expect(screen.getByTestId('settings-preset-error').textContent).toMatch(/already/i)
     expect(stored().map((p: { name: string }) => p.name)).toEqual(['A', 'B'])
   })
@@ -122,9 +122,9 @@ describe('pose-detail presets control', () => {
   it('rename can be cancelled', () => {
     window.localStorage.setItem(PRESETS_KEY, JSON.stringify([{ name: 'A', fields: [] }]))
     render(<PreferencesSection />)
-    fireEvent.click(screen.getByTestId('settings-preset-rename-A'))
-    fireEvent.click(screen.getByTestId('settings-preset-rename-cancel'))
-    expect(screen.queryByTestId('settings-preset-rename-input')).toBeNull()
+    fireEvent.click(screen.getByTestId('settings-preset-rename-0'))
+    fireEvent.click(screen.getByTestId('settings-preset-renaming-cancel'))
+    expect(screen.queryByTestId('settings-preset-renaming-input')).toBeNull()
     expect(stored()).toEqual([{ name: 'A', fields: [] }])
   })
 
@@ -137,10 +137,10 @@ describe('pose-detail presets control', () => {
       ]),
     )
     render(<PreferencesSection />)
-    fireEvent.click(screen.getByTestId('settings-preset-delete-A'))
+    fireEvent.click(screen.getByTestId('settings-preset-delete-0'))
     expect(stored()).toEqual([{ name: 'B', fields: ['chakras'] }])
-    expect(screen.queryByTestId('settings-preset-item-A')).toBeNull()
-    expect(screen.getByTestId('settings-preset-item-B')).toBeTruthy()
+    expect(screen.getByTestId('settings-preset-item-0').getAttribute('aria-label')).toBe('B')
+    expect(screen.queryByTestId('settings-preset-item-1')).toBeNull()
   })
 
   it('presets survive a remount (reload)', () => {
@@ -148,7 +148,7 @@ describe('pose-detail presets control', () => {
     save('Keep')
     first.unmount()
     render(<PreferencesSection />)
-    expect(screen.getByTestId('settings-preset-item-Keep')).toBeTruthy()
+    expect(screen.getByTestId('settings-preset-item-0')).toBeTruthy()
   })
 
   it('corrupt storage falls back to an empty list', () => {
@@ -169,9 +169,39 @@ describe('pose-detail presets control', () => {
     })
     expect(() => render(<PreferencesSection />)).not.toThrow()
     expect(() => save('Visit')).not.toThrow()
-    expect(screen.getByTestId('settings-preset-item-Visit')).toBeTruthy()
-    expect(() => fireEvent.click(screen.getByTestId('settings-preset-apply-Visit'))).not.toThrow()
-    expect(() => fireEvent.click(screen.getByTestId('settings-preset-delete-Visit'))).not.toThrow()
-    expect(screen.queryByTestId('settings-preset-item-Visit')).toBeNull()
+    expect(screen.getByTestId('settings-preset-item-0')).toBeTruthy()
+    expect(() => fireEvent.click(screen.getByTestId('settings-preset-apply-0'))).not.toThrow()
+    expect(() => fireEvent.click(screen.getByTestId('settings-preset-delete-0'))).not.toThrow()
+    expect(screen.queryByTestId('settings-preset-item-0')).toBeNull()
+  })
+
+  it('a preset named like an editor control does not collide with it', () => {
+    window.localStorage.setItem(
+      PRESETS_KEY,
+      JSON.stringify([
+        { name: 'cancel', fields: [] },
+        { name: 'B', fields: ['chakras'] },
+      ]),
+    )
+    render(<PreferencesSection />)
+    fireEvent.click(screen.getByTestId('settings-preset-rename-1'))
+    expect(screen.getAllByTestId('settings-preset-renaming-cancel')).toHaveLength(1)
+    fireEvent.click(screen.getByTestId('settings-preset-renaming-cancel'))
+    expect(stored().map((p: { name: string }) => p.name)).toEqual(['cancel', 'B'])
+  })
+
+  it('a repeated name in storage keeps the first, so delete stays targeted', () => {
+    window.localStorage.setItem(
+      PRESETS_KEY,
+      JSON.stringify([
+        { name: 'A', fields: ['breathing'] },
+        { name: 'A', fields: ['chakras'] },
+        { name: 'B', fields: [] },
+      ]),
+    )
+    render(<PreferencesSection />)
+    expect(screen.queryAllByTestId(/^settings-preset-item-\d+$/)).toHaveLength(2)
+    fireEvent.click(screen.getByTestId('settings-preset-delete-0'))
+    expect(stored()).toEqual([{ name: 'B', fields: [] }])
   })
 })
