@@ -261,9 +261,9 @@ ships with the enrollment flow, which does not yet exist (`005` Assumptions).
 - [X] T053 [P] [auto-ok] [US6] Unit tests for T052, including corrupt and absent values — `tests/unit/settings/preferences.test.ts` covers corrupt, absent, throwing storage (#275 reconcile)
 - [X] T054 [auto-ok] [US6] Visible, changeable controls for each stranded preference in the
   preferences section (FR-034, SC-013); compose and pose detail read the migrated model — shipped #280 (`PreferencesSection` + `writePreference`; `krama-claim-flows-decided` stays internal, no control) + #281 (compose and pose detail read/write via `useStoredPreference`). Owner note: FR-002's order list doesn't name Preferences; it renders after Appearance
-- [ ] T055 [auto-ok] [US6] Named presets for the pose-detail custom field checklist: save,
+- [X] T055 [auto-ok] [US6] Named presets for the pose-detail custom field checklist: save,
   reapply by name, rename and delete affecting only the target (FR-037). Persists through the
-  table from T006 once Phase 2 merges; until then local only, noted in the PR — **PARTIAL:** pure preset lib `src/lib/settings/presets.ts` + `presets.test.ts` (save/apply/rename/delete/parse) shipped; **not yet imported by any UI** and no persistence wired — save/reapply UI and storage remain
+  table from T006 once Phase 2 merges; until then local only, noted in the PR — shipped #285 PR (`PresetsControl` in `PreferencesSection`, `useStoredPresets`, storage adapter in `presets.ts` under `krama-pose-detail-presets`). **Local only until T006** — no migration, no server write
 
 **Gate**: T053 green; migration keeps 100% of existing values (SC-013).
 

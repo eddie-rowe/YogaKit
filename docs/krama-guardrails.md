@@ -120,6 +120,9 @@ carries a `data-testid`. Naming: `{area}-{element}`, kebab-case, stable across r
 | Settings | `settings-email`, `settings-provider` | Read-only identity facts |
 | Settings | `settings-claim-flows-reopen` | Re-entry point for a dismissed claim prompt |
 | Settings | `settings-data-export` | Link to the per-flow `.krama.json` export on `/flows` |
+| Settings | `settings-pref-compose-{simple,advanced,expert}`, `settings-pref-detail-{simple,advanced,expert,custom}`, `settings-pref-field-{key}` | Preference controls (006 T054) |
+| Settings | `settings-presets`, `settings-preset-name-input`, `settings-preset-save`, `settings-preset-error`, `settings-preset-empty` | Saved field sets for the Custom pose detail (006 T055) |
+| Settings | `settings-preset-item-{name}`, `settings-preset-{apply,rename,delete}-{name}`, `settings-preset-rename-{input,confirm,cancel}` | Per-preset row and its actions (006 T055) |
 | Settings | `settings-orgs-list`, `settings-org-{orgId}` | Membership list, present only with ≥1 org (006 FR-003) |
 | Settings | `settings-org-new` | "Create an organization" entry point |
 | Org | `org-new-form`, `org-new-name-input`, `org-new-type-{value}`, `org-new-error`, `org-new-submit` | Organization creation |
