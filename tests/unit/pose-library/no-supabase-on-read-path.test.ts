@@ -25,12 +25,20 @@ export const FORBIDDEN: RegExp[] = [
 
 const EXTS = ['.ts', '.tsx', '.js', '.jsx', '.mjs']
 
-// Static `import … from`, `export … from`, bare `import '…'`, and dynamic `import('…')`.
-const SPECIFIER = /(?:import|export)\s[^'"]*?from\s*['"]([^'"]+)['"]|import\s*['"]([^'"]+)['"]|import\(\s*['"]([^'"]+)['"]\s*\)/g
+// Static `import … from`, `export … from`, bare `import '…'`, dynamic `import('…')`, and
+// `require('…')`.
+const SPECIFIER =
+  /(?:import|export)\s[^'"]*?from\s*['"]([^'"]+)['"]|import\s*['"]([^'"]+)['"]|(?:import|require)\(\s*['"]([^'"]+)['"]\s*\)/g
+
+// Comments are stripped first: an apostrophe in `// don't` inside a multi-line import list
+// would otherwise end the `[^'"]` run early and hide the whole import from SPECIFIER.
+// (Naive: a `//` inside a string literal is also cut. That can only drop text after a
+// specifier on the same line, never the specifier itself.)
+const COMMENTS = /\/\*[\s\S]*?\*\/|(^|[^:])\/\/.*$/gm
 
 export function specifiersOf(text: string): string[] {
   const out: string[] = []
-  for (const m of text.matchAll(SPECIFIER)) out.push(m[1] ?? m[2] ?? m[3])
+  for (const m of text.replace(COMMENTS, '$1').matchAll(SPECIFIER)) out.push(m[1] ?? m[2] ?? m[3])
   return out
 }
 
@@ -119,9 +127,11 @@ describe('signed-out pose read path reaches no Supabase client (T074 / I7 / SC-0
       "import '@/lib/storage/sharing/x'",
       "const m = await import('@/lib/supabase/server')",
       "import { ok } from '@/lib/pose-types'",
+      "import {\n  a, // don't\n  b, /* it's */\n} from '@/lib/storage/sync'",
+      "const c = require('@supabase/supabase-js')",
     ].join('\n')
     const specs = specifiersOf(text)
-    expect(specs.filter((s) => FORBIDDEN.some((re) => re.test(s)))).toHaveLength(5)
+    expect(specs.filter((s) => FORBIDDEN.some((re) => re.test(s)))).toHaveLength(7)
     expect(specs).toContain('@/lib/pose-types')
   })
 })
