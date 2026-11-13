@@ -333,8 +333,9 @@ its whole claim is that FR-033 is verifiable from the schema alone.
   a *later* migration (RULE-V2)
 - [ ] T073 [P] [US6] Test I5 (SC-013): deleting the `auth.users` row leaves zero rows in
   either table
-- [ ] T074 [P] [US6] Test I7 (SC-012): the signed-out pose read path issues no Supabase call.
-  The one a well-meaning refactor breaks by accident
+- [X] T074 [P] [US6] Test I7 (SC-012): the signed-out pose read path issues no Supabase call.
+  The one a well-meaning refactor breaks by accident — shipped #289
+  (`tests/unit/pose-library/no-supabase-on-read-path.test.ts`: static import-graph walk)
 
 ---
 
