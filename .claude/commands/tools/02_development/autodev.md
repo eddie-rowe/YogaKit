@@ -42,6 +42,10 @@ possibly-hung agent.
 - **Fully autonomous.** Never call `AskUserQuestion` and never wait for human
   input. If something is ambiguous or blocked, record it in the handoff file,
   label the issue `auto/needs-human`, and move on.
+- **Install dependencies with `npx -y npm@11`** (`npx -y npm@11 ci`, or
+  `npx -y npm@11 install` on a dependency PR), never the bundled `npm`. Reason:
+  the bundled npm 10.9.9 crashes in arborist (`edgesOut` null) on this tree
+  (retro 2026-11-11).
 - **Tests run via package scripts** that work headless:
   ```
   npx tsc --noEmit && npm run lint:copy && npm run validate:poses && npm run lint:telemetry && npm run test:coverage
@@ -158,6 +162,13 @@ about a tree nobody is proposing to merge.
   Re-deriving from an issue that still states its acceptance criteria is
   cheaper than resolving that much drift, and the rebuilt branch is tested
   against current main instead of against an unreviewed merge.
+
+- **After any `--ours` conflict resolution** (a rebase or merge, especially on a
+  stacked branch), diff each conflicted file against `origin/main`
+  (`git diff origin/main -- <file>`) before pushing. Confirm the diff shows only
+  this PR's intended change. Reason: on 2026-11-11 a `--ours` resolution
+  silently reverted #277's T050 tick in `tasks.md`, and only a manual diff caught it
+  (retro 2026-11-11).
 
 Report every staleness action in the handoff. **Never count a stale-green PR
 as "held" for an unrelated reason** — on 2026-10-12 thirteen PRs stood open at
