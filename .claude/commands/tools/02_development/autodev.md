@@ -156,18 +156,19 @@ about a tree nobody is proposing to merge.
 - **≤ 10 behind** — treat the rollup as current. Merge per the normal rules.
 - **11-40 behind** — rebase onto `origin/main`, push, and re-run the full gate.
   Merge only on the post-rebase result.
-- **After any `--ours` conflict resolution** (a rebase or merge, especially on a
-  stacked branch), diff each conflicted file against `origin/main`
-  (`git diff origin/main -- <file>`) before pushing. Confirm the diff shows only
-  this PR's intended change. Reason: on 2026-11-11 a `--ours` resolution
-  silently reverted #277's T050 tick in `tasks.md`, and only a manual diff caught it
-  (retro 2026-11-11).
 - **> 40 behind** — do **not** rebase and do **not** merge. Close the PR, state
   the commits-behind count and the source issue in the closing comment, and
   confirm that issue is open with `ready-for-dev` so it re-enters the queue.
   Re-deriving from an issue that still states its acceptance criteria is
   cheaper than resolving that much drift, and the rebuilt branch is tested
   against current main instead of against an unreviewed merge.
+
+- **After any `--ours` conflict resolution** (a rebase or merge, especially on a
+  stacked branch), diff each conflicted file against `origin/main`
+  (`git diff origin/main -- <file>`) before pushing. Confirm the diff shows only
+  this PR's intended change. Reason: on 2026-11-11 a `--ours` resolution
+  silently reverted #277's T050 tick in `tasks.md`, and only a manual diff caught it
+  (retro 2026-11-11).
 
 Report every staleness action in the handoff. **Never count a stale-green PR
 as "held" for an unrelated reason** — on 2026-10-12 thirteen PRs stood open at
