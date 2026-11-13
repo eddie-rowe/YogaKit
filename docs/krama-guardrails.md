@@ -149,6 +149,17 @@ is now a safe prefix selector over exactly the row roots. `compose-item-*` remai
 prefix for the sibling controls it still names (measure, notes, reorder, drag-handle,
 geometry, energetics) since none of those collide with `compose-row-*`.
 
+**No testid may interpolate a user-entered string.** Names, titles, and notes a person typed
+never go into a `data-testid`. Key a per-item testid on its list index or a stable generated
+id, and carry the human-readable name in `aria-label` (or visible text), which is what tests
+and assistive tech should match on. Reason: user text can collide with a fixed sibling
+testid, and it breaks the prefix rule above. A preset named "cancel" turned
+`settings-preset-rename-${name}` into `settings-preset-rename-cancel`, the editor's own cancel
+button (caught in review of #288). The worked example is the `settings-preset-item-{index}` /
+`settings-preset-{apply,rename,delete}-{index}` row in the table above, where the preset name
+is the `aria-label`. Slugs, enum values, and database ids are fine: the app generates them, a
+person does not type them.
+
 **Deliberate renames.** The `/account` stopgap became `/settings` (006 FR-001), and its
 testids moved with it: `account-page-email` → `settings-email`, `account-profile-*` →
 `settings-profile-*`, `account-display-name-input` / `account-timezone-input` /
