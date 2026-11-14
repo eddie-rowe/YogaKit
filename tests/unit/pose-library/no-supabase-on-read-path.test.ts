@@ -11,6 +11,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join, relative, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { specifiersOf } from '../architecture/import-scan'
 
 const ROOT = join(__dirname, '..', '..', '..')
 const SRC = join(ROOT, 'src')
@@ -24,23 +25,6 @@ export const FORBIDDEN: RegExp[] = [
 ]
 
 const EXTS = ['.ts', '.tsx', '.js', '.jsx', '.mjs']
-
-// Static `import … from`, `export … from`, bare `import '…'`, dynamic `import('…')`, and
-// `require('…')`.
-const SPECIFIER =
-  /(?:import|export)\s[^'"]*?from\s*['"]([^'"]+)['"]|import\s*['"]([^'"]+)['"]|(?:import|require)\(\s*['"]([^'"]+)['"]\s*\)/g
-
-// Comments are stripped first: an apostrophe in `// don't` inside a multi-line import list
-// would otherwise end the `[^'"]` run early and hide the whole import from SPECIFIER.
-// (Naive: a `//` inside a string literal is also cut. That can only drop text after a
-// specifier on the same line, never the specifier itself.)
-const COMMENTS = /\/\*[\s\S]*?\*\/|(^|[^:])\/\/.*$/gm
-
-export function specifiersOf(text: string): string[] {
-  const out: string[] = []
-  for (const m of text.replace(COMMENTS, '$1').matchAll(SPECIFIER)) out.push(m[1] ?? m[2] ?? m[3])
-  return out
-}
 
 function resolveFile(base: string): string | null {
   if (existsSync(base) && statSync(base).isFile()) return base
