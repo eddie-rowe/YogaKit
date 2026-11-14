@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
+import { specifiersOf } from './import-scan'
 
 // SC-013 / RULE-H6, made mechanical.
 //
@@ -38,14 +39,6 @@ function listFiles(dir: string): string[] {
     if (entry.isDirectory()) return listFiles(rel)
     return /\.tsx?$/.test(entry.name) ? [rel] : []
   })
-}
-
-function importsOf(source: string): string[] {
-  const specifiers: string[] = []
-  const re = /(?:from|import)\s*['"]([^'"]+)['"]/g
-  let match: RegExpExecArray | null
-  while ((match = re.exec(source)) !== null) specifiers.push(match[1])
-  return specifiers
 }
 
 const onDisk = (file: string) => {
@@ -93,9 +86,13 @@ function violationsFrom(
 
     if (FETCH.test(source)) violations.push(file + ' calls fetch()')
 
-    for (const specifier of importsOf(source)) {
+    for (const specifier of specifiersOf(source)) {
       const forbidden = FORBIDDEN.find(rule => rule.pattern.test(specifier))
-      if (forbidden) violations.push(file + ' imports ' + specifier + ' — ' + forbidden.why)
+      if (forbidden) {
+        // Report the edge and stop there. What a Supabase client imports is not news.
+        violations.push(file + ' imports ' + specifier + ' — ' + forbidden.why)
+        continue
+      }
 
       const resolved = resolveLocal(specifier, file, exists)
       if (resolved && !seen.has(resolved)) {
@@ -152,9 +149,7 @@ describe('engine isolation scanner catches what it claims to (RULE-H6)', () => {
       "import '@supabase/ssr'",
       "export const get = () => fetch('/api/x')",
     ].join('\n')
-    // Nothing resolves here: the forbidden modules are real files with imports of their
-    // own, and this case is about the planted file's edges only.
-    expect(violationsFrom([PLANTED], () => source, () => false)).toEqual([
+    expect(scan(source)).toEqual([
       PLANTED + ' calls fetch()',
       PLANTED + ' imports next/headers — a per-request server API',
       PLANTED + ' imports @/lib/storage/sync — persistence (IndexedDB, the outbox, sync)',
