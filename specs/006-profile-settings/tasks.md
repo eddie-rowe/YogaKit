@@ -208,18 +208,29 @@ confirmation naming each flow; confirm declining leaves a re-entry point.
 **Independent test**: Find sign-in and sign-out from primary navigation with no URL typing;
 complete sign-in by pasted code on a second device.
 
-- [ ] T041 [auto-ok] [US4] Sign-in reachable from primary navigation when signed out, and
+- [X] T041 [auto-ok] [US4] Sign-in reachable from primary navigation when signed out, and
   sign-out when signed in (FR-028). Place in the existing `AppHeader.tsx` now; re-home to
   `005`'s avatar when it lands (plan Dependencies on `005`). New testids obey the guardrails
-  prefix rule
+  prefix rule — shipped (`src/components/layout/AccountMenu.tsx`, mounted in `AppHeader.tsx`:
+  `account-sign-in` → `/auth/sign-in` when signed out, `account-menu-sign-out` with a confirm
+  dialog when signed in; `tests/unit/layout/app-header-account.test.tsx` "signed out: the
+  header carries a sign-in link to /auth/sign-in, no URL typing" and "signed in: sign-out is
+  reachable from the header avatar menu"; reconciled #292, re-verified 2026-11-14)
+  - Follow-up, still open: re-home to `005`'s mounted `AccountAvatar` once the
+    three-destination nav lands (#273).
 - [ ] T042 [needs-human] (auth) [US4] `SignInClient.tsx` — resend affordance, with any rate
   limit stated plainly (FR-029)
 - [ ] T043 [needs-human] (auth) [US4] Pasted-code fallback so a sign-in requested on one
   device completes there when the email opens on another (FR-030, SC-011)
 - [ ] T044 [needs-human] (auth) [US4] Expired or already-used code: plain failure with a next
   step, no partial session created (FR-031)
-- [ ] T045 [P] [auto-ok] [US4] `npm run lint:copy` over sign-in copy: no urgency, no
-  countdown on resend
+- [X] T045 [P] [auto-ok] [US4] `npm run lint:copy` over sign-in copy: no urgency, no
+  countdown on resend — shipped (`node scripts/copy-lint.mjs --dir src/app/auth`: 11 strings
+  in 4 files, 6 rules, no violations; `app-header-account.test.tsx` "sign-in is plain text
+  with no urgency or countdown wording"; reconciled #292, re-verified 2026-11-14). The resend
+  affordance is T042 and has no copy yet. When it lands it sits under `src/app`, which the
+  blocking `lint:copy` CI job already scans, so VOICE-COUNTDOWN applies to it with no
+  further task.
 
 **Gate**: cross-device walk green; a bad code leaves no session.
 
