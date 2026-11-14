@@ -229,9 +229,15 @@ account, confirm correct role and full cross-org isolation.
   UI, calls the create-invitation application logic (contracts/org-membership-api.md)
 - [X] T039 [US2] Create `src/app/org/invitations/accept/page.tsx` — acceptance landing
   page, calls `app_accept_invitation`, handles the generic-failure case per FR-005
-- [ ] T040 [US2] Implement invitation-creation server logic (route handler or server
+- [X] T040 [US2] Implement invitation-creation server logic (route handler or server
   action) generating the raw token, storing only `sha256(token)`, sending the email link
-  (contracts/org-membership-api.md)
+  (contracts/org-membership-api.md) — shipped (`src/app/api/org/invitations/route.ts` calls
+  the `app_create_invitation` RPC, builds the accept URL from the returned `raw_token` and
+  sends it through `@/lib/email/resend`;
+  `supabase/migrations/20260826224208_membership_invitation_rpcs.sql` generates the token
+  with `gen_random_bytes(32)`, writes only `encode(digest(token, 'sha256'), 'hex')` to
+  `invitations.token_hash`, and returns the raw token once in the RPC result; reconciled
+  #297, checked 2026-11-14)
 
 **Checkpoint**: User Stories 1 AND 2 both independently functional.
 
@@ -350,15 +356,35 @@ cancel and confirm access continues to period end.
 
 - [ ] T061 [P] Run `quickstart.md` end to end locally, fix any drift between the
   document and actual commands/paths
-- [ ] T062 [P] Add copy-lint scan (even though this feature's user-facing strings are
+- [X] T062 [P] Add copy-lint scan (even though this feature's user-facing strings are
   billing/invitation emails, not sadhana copy) confirming no manufactured-urgency
-  language per plan.md's Constitution Check row VII note
+  language per plan.md's Constitution Check row VII note — shipped (`npm run lint:copy` is
+  a blocking CI job since `448ee6a`; `SCAN_DIRS` in `scripts/lib/copy-lint.mjs` covers
+  `src/app` and `src/components`, which hold every 002 string authored in this repo: sign-in,
+  org, invitation and billing UI, and the invitation email body in
+  `src/app/api/org/invitations/route.ts`, whose expiry line carries a reasoned
+  `copy-lint-ignore-next-line VOICE-COUNTDOWN`; `src/lib/email/resend.ts` is a transport
+  wrapper with no copy; reconciled #297, checked 2026-11-14)
+  - Outside any repo scan, by nature: Supabase's hosted sign-in emails (no custom template
+    in `supabase/config.toml`, so the defaults are used) and Stripe-hosted Checkout, portal
+    and receipt copy. If a custom Supabase email template is ever added under `supabase/`,
+    it is not in `SCAN_DIRS` and needs adding.
 - [ ] T063 Verify Lighthouse mobile score on the read view has not regressed below 90
   (RULE-L6) — confirm no render-blocking auth check was added to that path
 - [ ] T064 [P] Session-refresh smoke test asserting an actual refreshed cookie value
   across a request boundary, not just a passing build (research.md item 2)
-- [ ] T065 Update `CLAUDE.md` if any file path in this feature's Project Structure
-  changed during implementation
+- [X] T065 Update `CLAUDE.md` if any file path in this feature's Project Structure
+  changed during implementation — checked 2026-11-14 (#297): no update needed for paths.
+  `CLAUDE.md` lists 002's spec, plan and `docs/design/002-schema.md`, all present, and names
+  no source path from plan.md's Source Code tree. Of that tree's 25 file and directory paths,
+  23 exist where planned and none moved; all five planned migrations exist. Two are not built: `src/app/org/[orgId]/cohorts/[cohortId]/page.tsx`
+  (cohort roster, #61) and `tests/integration/rls/` (the RLS assertions live in
+  `scripts/verify-migrations.sh` instead). Built but not in the plan's tree:
+  `src/app/api/org/invitations/route.ts`, `src/app/billing/portal/`,
+  `src/app/billing/BillingClient.tsx`, `src/lib/email/resend.ts`, and migrations
+  `identity_policies`, `claimed_flows`, `membership_invitation_rpcs`, `profile_bootstrap`.
+  One unrelated stale line fixed in the same change: the 005 guidance-tone note now reads
+  "draft authored, awaiting sign-off"
 - [ ] T066 Full run of `npm run test:coverage`, `npm run test:rls`
   (`scripts/verify-migrations.sh`), `bash scripts/db-types-check.sh` (CI's actual
   drift-check invocation — `npm run db:types` runs `db-types-local.sh`, a different
