@@ -95,6 +95,14 @@ function violationsFrom(
       }
 
       const resolved = resolveLocal(specifier, file, exists)
+      // A relative path names the same module as its alias. `../storage/db` from the
+      // engine is `@/lib/storage/db`, and the rule is about the module, not the spelling.
+      const aliased = resolved?.startsWith('src/') ? '@/' + resolved.slice(4) : null
+      const viaPath = aliased && aliased !== specifier && FORBIDDEN.find(rule => rule.pattern.test(aliased))
+      if (viaPath) {
+        violations.push(file + ' imports ' + specifier + ' — ' + viaPath.why)
+        continue
+      }
       if (resolved && !seen.has(resolved)) {
         seen.add(resolved)
         queue.push(resolved)
@@ -106,10 +114,10 @@ function violationsFrom(
 
 describe('engine isolation (RULE-H6)', () => {
   it('reaches no server, database, or network from the friction engine or validator-lite', () => {
+    // A refactor that moves or renames either directory must not turn this into a test
+    // that passes by having nothing to check, so each root is counted on its own.
+    for (const root of ROOTS) expect(listFiles(root).length, root).toBeGreaterThan(0)
     const entries = ROOTS.flatMap(listFiles)
-    // A refactor that moves or renames these directories must not turn this into a test
-    // that passes by having nothing to check.
-    expect(entries.length).toBeGreaterThan(0)
 
     expect(violationsFrom(entries)).toEqual([])
   })
@@ -155,6 +163,42 @@ describe('engine isolation scanner catches what it claims to (RULE-H6)', () => {
       PLANTED + ' imports @/lib/storage/sync — persistence (IndexedDB, the outbox, sync)',
       PLANTED + ' imports @supabase/ssr — a Supabase SDK',
     ])
+  })
+
+  // The next four came out of #298's review. Each hid a real import from the first
+  // version of the shared scanner.
+  it('is not fooled by a comment marker inside a string literal', () => {
+    expect(scan("const A = 'image/*'\nimport x from '@/lib/supabase/client'\n/** doc */\n")).toEqual([
+      PLANTED + ' imports @/lib/supabase/client — the Supabase client',
+    ])
+    expect(scan("const s = cond ? '//cdn' : require('@supabase/supabase-js')\n")).toEqual([
+      PLANTED + ' imports @supabase/supabase-js — a Supabase SDK',
+    ])
+  })
+
+  it('reports a template-literal specifier and a dynamic import with options', () => {
+    const source = [
+      'const a = import(`@/lib/supabase/client`)',
+      "const b = import('@/lib/storage/outbox', { with: { type: 'json' } })",
+    ].join('\n')
+    expect(scan(source)).toEqual([
+      PLANTED + ' imports @/lib/supabase/client — the Supabase client',
+      PLANTED + ' imports @/lib/storage/outbox — persistence (IndexedDB, the outbox, sync)',
+    ])
+  })
+
+  it('reports an import written with no whitespace', () => {
+    expect(scan("import{a}from'@/lib/supabase/client'\nexport*from'@supabase/ssr'\n")).toEqual([
+      PLANTED + ' imports @/lib/supabase/client — the Supabase client',
+      PLANTED + ' imports @supabase/ssr — a Supabase SDK',
+    ])
+  })
+
+  it('reports a forbidden module reached by a relative path', () => {
+    const db = 'src/lib/storage/db.ts'
+    expect(
+      violationsFrom([PLANTED], file => (file === PLANTED ? "import { getDb } from '../storage/db'\n" : ''), file => file === db),
+    ).toEqual([PLANTED + ' imports ../storage/db — persistence (IndexedDB, the outbox, sync)'])
   })
 
   it('follows the graph: a dynamic import planted in a real engine file is reported there', () => {
