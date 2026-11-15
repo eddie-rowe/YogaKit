@@ -225,6 +225,95 @@ describe('engine isolation scanner catches what it claims to (RULE-H6)', () => {
     ])
   })
 
+  // #301: indirect network sinks, and source files that are not TypeScript. Every case
+  // below except the string-literal one was watched failing against the #298 scanner
+  // before the scanner changed. The string-literal case already reported under #298, so
+  // it was seeded the other way: sink matching was pointed at literal-stripped text and
+  // the case went red.
+  it.each([
+    ['globalThis.fetch(', "export const get = () => globalThis.fetch('/api/x')\n", 'globalThis.fetch'],
+    ['window.fetch(', "export const get = () => window.fetch('/api/x')\n", 'window.fetch'],
+    ['self.fetch(', "export const get = () => self.fetch('/api/x')\n", 'self.fetch'],
+    ['optional-chained fetch', "export const get = () => globalThis?.fetch('/api/x')\n", 'globalThis.fetch'],
+    ['new XMLHttpRequest', 'const xhr = new XMLHttpRequest()\n', 'XMLHttpRequest'],
+    ['new WebSocket', "const ws = new WebSocket('wss://x')\n", 'WebSocket'],
+    ['new EventSource', "const es = new EventSource('/events')\n", 'EventSource'],
+    ['sendBeacon(', "navigator.sendBeacon('/log', body)\n", 'sendBeacon'],
+  ])('reports %s', (_name, source, sink) => {
+    expect(scan(source)).toEqual([PLANTED + ' reaches the network through ' + sink])
+  })
+
+  it('reports each sink once per file, and still reports the imports after it', () => {
+    const source = [
+      "const a = new WebSocket('wss://a')",
+      "const b = new WebSocket('wss://b')",
+      "navigator.sendBeacon('/log')",
+      "import '@supabase/ssr'",
+    ].join('\n')
+    expect(scan(source)).toEqual([
+      PLANTED + ' reaches the network through WebSocket',
+      PLANTED + ' reaches the network through sendBeacon',
+      PLANTED + ' imports @supabase/ssr — a Supabase SDK',
+    ])
+  })
+
+  it('does not report a sink that is only named in a comment', () => {
+    const source = [
+      '// never call fetch( here, and no new WebSocket( either',
+      '/* globalThis.fetch(url) and navigator.sendBeacon(url) are out too;',
+      '   so are new XMLHttpRequest() and new EventSource(url) */',
+      'export const n = 1',
+    ].join('\n')
+    expect(scan(source)).toEqual([])
+  })
+
+  it('reports a sink spelled inside a string literal, because it cannot tell that from a call', () => {
+    // Fail-closed by choice. The shared lexer keeps literals so that `'image/*'` stays a
+    // string; the cost is that a sink name in a string reports. An engine file has no
+    // reason to hold one, and a false report is cheap next to a missed call built from
+    // a template (`${'fetch'}`-style indirection, or code handed to `new Function`).
+    expect(scan("export const label = 'fetch('\n")).toEqual([PLANTED + ' calls fetch()'])
+    expect(scan('export const hint = `open a WebSocket`\n')).toEqual([
+      PLANTED + ' reaches the network through WebSocket',
+    ])
+  })
+
+  it('is not fooled by a comment marker in a string ahead of a sink', () => {
+    expect(scan("const A = 'image/*'\nconst ws = new WebSocket(A)\n/** doc */\n")).toEqual([
+      PLANTED + ' reaches the network through WebSocket',
+    ])
+  })
+
+  it.each(['.js', '.jsx', '.mjs'])('resolves an import to a %s file and scans it', ext => {
+    const helper = 'src/lib/friction/helper' + ext
+    const sources: Record<string, string> = {
+      [PLANTED]: "import { help } from './helper'\n",
+      [helper]: "export const help = () => fetch('/api/x')\n",
+    }
+    expect(violationsFrom([PLANTED], file => sources[file] ?? '', file => file === helper)).toEqual([
+      helper + ' calls fetch()',
+    ])
+  })
+
+  it.each(['.js', '.jsx', '.mjs'])('resolves a directory import to index%s', ext => {
+    const index = 'src/lib/friction/widget/index' + ext
+    const sources: Record<string, string> = {
+      [PLANTED]: "import { Widget } from './widget'\n",
+      [index]: "import { createClient } from '@/lib/supabase/client'\n",
+    }
+    expect(violationsFrom([PLANTED], file => sources[file] ?? '', file => file === index)).toEqual([
+      index + ' imports @/lib/supabase/client — the Supabase client',
+    ])
+  })
+
+  it.each(['.ts', '.tsx', '.js', '.jsx', '.mjs'])('lists a %s file as an entry point', ext => {
+    expect(isSource('engine' + ext)).toBe(true)
+  })
+
+  it('does not list data or docs as entry points', () => {
+    for (const name of ['weights.json', 'README.md', 'engine.ts.snap', 'tsx']) expect(isSource(name), name).toBe(false)
+  })
+
   it('accepts a clean source, so the planted cases are not passing by rejecting everything', () => {
     expect(scan("import type { Pose } from '@/lib/pose-types'\nexport const n = 1\n")).toEqual([])
   })
