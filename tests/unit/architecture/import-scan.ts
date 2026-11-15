@@ -1,3 +1,5 @@
+import path from 'node:path'
+
 // Shared by the import-graph guards (engine-isolation, no-supabase-on-read-path), so the
 // two cannot drift on which import forms they see. A scanner that misses a form is a guard
 // that passes on exactly the code it exists to catch.
@@ -9,9 +11,14 @@
  *  import in between. The same goes for `'//cdn'`. Walking the text and skipping over
  *  literals is the only way a comment marker inside a string stays a string.
  *
- *  Known limit: a regex literal containing a quote (`/'/`) is read as opening a string.
- *  Nothing in the guarded directories does that, and the failure is a missed specifier
- *  after it on the same statement, not a crash. */
+ *  Known limits, all around text the lexer cannot tell from a comment or a string. None
+ *  occurs in the guarded directories, and each fails by missing what follows, not by
+ *  crashing:
+ *  - a regex literal containing a quote (`/'/`) is read as opening a string;
+ *  - a regex literal containing `//` or a slash-star (`/\//`, `/\/*/`) is read as opening
+ *    a comment, which hides the rest of the line or, for the block form, everything up to
+ *    the next comment close;
+ *  - JSX text containing `//` (a bare URL) hides the rest of that line. */
 export function stripComments(text: string): string {
   let out = ''
   let i = 0
@@ -71,5 +78,5 @@ export const isSource = (name: string) => SOURCE_EXTS.some(ext => name.endsWith(
 export const candidatesFor = (base: string): string[] => [
   base,
   ...SOURCE_EXTS.map(ext => base + ext),
-  ...SOURCE_EXTS.map(ext => base + '/index' + ext),
+  ...SOURCE_EXTS.map(ext => path.join(base, 'index' + ext)),
 ]

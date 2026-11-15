@@ -32,18 +32,18 @@ const FORBIDDEN: { pattern: RegExp; why: string }[] = [
  *  last part is deliberate: text cannot tell `'fetch('` from a call assembled out of
  *  strings, and the guard fails closed.
  *
- *  The constructors and `sendBeacon` match on the bare name, not on `new X(` or
- *  `navigator.sendBeacon(`, so `const W = WebSocket` and `const { sendBeacon } = navigator`
- *  report too.
+ *  Every sink matches on the bare name, not on a call: `fetch` anywhere, not `fetch(`, and
+ *  `WebSocket`, not `new WebSocket(`. So `const f = fetch`, `fetch?.(…)`,
+ *  `(globalThis as any).fetch(…)`, `globalThis['fetch']`, `const W = WebSocket` and
+ *  `const { sendBeacon } = navigator` all report. The cost is that a method or property
+ *  that is merely called `fetch` reports too; rename it.
  *
- *  Not seen, by construction: a sink reached through a computed name
- *  (`globalThis['fe' + 'tch']`), and an alias of the global object (`const g = globalThis`
- *  then `g.fetch(…)`). */
+ *  Not seen, by construction: a name assembled at run time (`globalThis['fe' + 'tch']`). */
 const SINKS: { pattern: RegExp; report: (match: RegExpMatchArray) => string }[] = [
-  { pattern: /(?<![\w.])fetch\s*\(/, report: () => 'calls fetch()' },
   {
-    pattern: /\b(globalThis|window|self)\s*\??\.\s*fetch\b/,
-    report: match => 'reaches the network through ' + match[1] + '.fetch',
+    // The optional group only improves the message when the global object is spelled out.
+    pattern: /(?:\b(globalThis|window|self)\s*[!?]?\.\s*)?\bfetch\b/,
+    report: match => (match[1] ? 'reaches the network through ' + match[1] + '.fetch' : 'calls fetch()'),
   },
   ...['XMLHttpRequest', 'WebSocket', 'EventSource', 'sendBeacon'].map(name => ({
     pattern: new RegExp('\\b' + name + '\\b'),
@@ -53,12 +53,19 @@ const SINKS: { pattern: RegExp; report: (match: RegExpMatchArray) => string }[] 
 
 const repoRoot = path.resolve(__dirname, '../../..')
 
-function listFiles(dir: string): string[] {
+type Entry = { name: string; isDirectory: () => boolean }
+
+const dirFromDisk = (dir: string): Entry[] => {
   const abs = path.join(repoRoot, dir)
-  if (!fs.existsSync(abs)) return []
-  return fs.readdirSync(abs, { withFileTypes: true }).flatMap(entry => {
+  return fs.existsSync(abs) ? fs.readdirSync(abs, { withFileTypes: true }) : []
+}
+
+/** Every source file under `dir`. `readdir` defaults to the real tree; the planted cases
+ *  swap it for an in-memory listing. */
+function listFiles(dir: string, readdir: (dir: string) => Entry[] = dirFromDisk): string[] {
+  return readdir(dir).flatMap(entry => {
     const rel = path.join(dir, entry.name)
-    if (entry.isDirectory()) return listFiles(rel)
+    if (entry.isDirectory()) return listFiles(rel, readdir)
     return isSource(entry.name) ? [rel] : []
   })
 }
@@ -137,7 +144,7 @@ describe('engine isolation (RULE-H6)', () => {
     // A refactor that moves or renames either directory must not turn this into a test
     // that passes by having nothing to check, so each root is counted on its own.
     for (const root of ROOTS) expect(listFiles(root).length, root).toBeGreaterThan(0)
-    const entries = ROOTS.flatMap(listFiles)
+    const entries = ROOTS.flatMap(root => listFiles(root))
 
     expect(violationsFrom(entries)).toEqual([])
   })
@@ -249,8 +256,9 @@ describe('engine isolation scanner catches what it claims to (RULE-H6)', () => {
   // comment and resolution cases were watched failing against the #298 scanner before it
   // changed. Two could not go red that way and were seeded on the new code instead: the
   // string-literal case (the `'fetch('` half already reported), by pointing sink matching
-  // at literal-stripped text; and the listing cases (`isSource` did not exist), by
-  // cutting `SOURCE_EXTS` back to `.ts`/`.tsx`.
+  // at literal-stripped text; and the listing case (`listFiles` had no seam), by cutting
+  // `SOURCE_EXTS` back to `.ts`/`.tsx` and, separately, by putting `/\.tsx?$/` back in
+  // `listFiles`.
   it.each([
     ['globalThis.fetch(', "export const get = () => globalThis.fetch('/api/x')\n", 'globalThis.fetch'],
     ['window.fetch(', "export const get = () => window.fetch('/api/x')\n", 'window.fetch'],
@@ -327,12 +335,48 @@ describe('engine isolation scanner catches what it claims to (RULE-H6)', () => {
     ])
   })
 
-  it.each(['.ts', '.tsx', '.js', '.jsx', '.mjs'])('lists a %s file as an entry point', ext => {
-    expect(isSource('engine' + ext)).toBe(true)
+  it('lists .ts, .tsx, .js, .jsx and .mjs files as entry points, nested ones too, and nothing else', () => {
+    const file = (name: string) => ({ name, isDirectory: () => false })
+    const tree: Record<string, { name: string; isDirectory: () => boolean }[]> = {
+      'src/lib/friction': [
+        file('a.ts'), file('b.tsx'), file('c.js'), file('d.jsx'), file('e.mjs'),
+        file('weights.json'), file('README.md'), file('a.ts.snap'),
+        { name: 'deep', isDirectory: () => true },
+      ],
+      'src/lib/friction/deep': [file('f.mjs'), file('notes.txt')],
+    }
+    expect(listFiles('src/lib/friction', dir => tree[dir] ?? [])).toEqual([
+      'src/lib/friction/a.ts',
+      'src/lib/friction/b.tsx',
+      'src/lib/friction/c.js',
+      'src/lib/friction/d.jsx',
+      'src/lib/friction/e.mjs',
+      'src/lib/friction/deep/f.mjs',
+    ])
   })
 
-  it('does not list data or docs as entry points', () => {
-    for (const name of ['weights.json', 'README.md', 'engine.ts.snap', 'tsx']) expect(isSource(name), name).toBe(false)
+  // From #304's review: forms of `fetch` that are not `fetch(` or `<global>.fetch(`.
+  it.each([
+    ['a cast on the global object', "(globalThis as any).fetch('/x')\n", 'calls fetch()'],
+    ['a non-null assertion', "window!.fetch('/x')\n", 'reaches the network through window.fetch'],
+    ['a bracket lookup', "globalThis['fetch']('/x')\n", 'calls fetch()'],
+    ['a destructured alias', "const { fetch: f } = globalThis\nf('/x')\n", 'calls fetch()'],
+    ['an optional call', "fetch?.('/x')\n", 'calls fetch()'],
+    ['.call', "fetch.call(null, '/x')\n", 'calls fetch()'],
+    ['a plain alias', "const f = fetch\nf('/x')\n", 'calls fetch()'],
+  ])('reports fetch reached through %s', (_name, source, message) => {
+    expect(scan(source)).toEqual([PLANTED + ' ' + message])
+  })
+
+  it('resolves a specifier with a trailing slash to the same index file', () => {
+    const index = 'src/lib/friction/widget/index.ts'
+    const sources: Record<string, string> = {
+      [PLANTED]: "import './widget/'\nimport './widget'\n",
+      [index]: "export const get = () => fetch('/api/x')\n",
+    }
+    expect(violationsFrom([PLANTED], file => sources[file] ?? '', file => file === index)).toEqual([
+      index + ' calls fetch()',
+    ])
   })
 
   it('accepts a clean source, so the planted cases are not passing by rejecting everything', () => {
