@@ -15,7 +15,7 @@ import path from 'node:path'
  *  occurs in the guarded directories, and each fails by missing what follows, not by
  *  crashing:
  *  - a regex literal containing a quote (`/'/`) is read as opening a string;
- *  - a regex literal containing `//` or a slash-star (`/\//`, `/\/*/`) is read as opening
+ *  - a regex literal containing two slashes or a slash then a star is read as opening
  *    a comment, which hides the rest of the line or, for the block form, everything up to
  *    the next comment close;
  *  - JSX text containing `//` (a bare URL) hides the rest of that line. */
