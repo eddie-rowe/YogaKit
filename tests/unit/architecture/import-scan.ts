@@ -1,3 +1,5 @@
+import path from 'node:path'
+
 // Shared by the import-graph guards (engine-isolation, no-supabase-on-read-path), so the
 // two cannot drift on which import forms they see. A scanner that misses a form is a guard
 // that passes on exactly the code it exists to catch.
@@ -9,9 +11,14 @@
  *  import in between. The same goes for `'//cdn'`. Walking the text and skipping over
  *  literals is the only way a comment marker inside a string stays a string.
  *
- *  Known limit: a regex literal containing a quote (`/'/`) is read as opening a string.
- *  Nothing in the guarded directories does that, and the failure is a missed specifier
- *  after it on the same statement, not a crash. */
+ *  Known limits, all around text the lexer cannot tell from a comment or a string. None
+ *  occurs in the guarded directories, and each fails by missing what follows, not by
+ *  crashing:
+ *  - a regex literal containing a quote (`/'/`) is read as opening a string;
+ *  - a regex literal containing two slashes or a slash then a star is read as opening
+ *    a comment, which hides the rest of the line or, for the block form, everything up to
+ *    the next comment close;
+ *  - JSX text containing `//` (a bare URL) hides the rest of that line. */
 export function stripComments(text: string): string {
   let out = ''
   let i = 0
@@ -58,3 +65,18 @@ export function specifiersOf(text: string): string[] {
   for (const m of stripComments(text).matchAll(SPECIFIER)) out.push(m[1] ?? m[2] ?? m[3])
   return out
 }
+
+/** Extensions a guard must walk. A `.js` or `.mjs` file is as able to reach a network as a
+ *  `.ts` one, and a guard that lists only TypeScript passes on it without reading it. */
+export const SOURCE_EXTS = ['.ts', '.tsx', '.js', '.jsx', '.mjs']
+
+/** True for a file name a guard should read. */
+export const isSource = (name: string) => SOURCE_EXTS.some(ext => name.endsWith(ext))
+
+/** The files a specifier's path could name, in resolution order: the path itself, the path
+ *  with each source extension, then `index.*` inside it. */
+export const candidatesFor = (base: string): string[] => [
+  base,
+  ...SOURCE_EXTS.map(ext => base + ext),
+  ...SOURCE_EXTS.map(ext => path.join(base, 'index' + ext)),
+]
