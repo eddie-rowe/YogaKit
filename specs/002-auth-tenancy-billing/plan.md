@@ -85,25 +85,49 @@ This is **Option 1: single project**, matching the existing `001` structure — 
 App Router monolith, no separate backend/frontend split. New code for this feature is
 additive to the existing tree:
 
+Reconciled against `main` on 2026-11-15 (#303): every path below exists unless marked PLANNED.
+
 ```text
 src/
 ├── app/
 │   ├── auth/
 │   │   ├── callback/route.ts       # PKCE exchangeCodeForSession (NEW — NextMove lacks this)
 │   │   ├── confirm/route.ts        # OTP verifyOtp for email-link flow (NEW)
-│   │   └── sign-in/page.tsx        # Google + email sign-in UI (NEW)
+│   │   └── sign-in/
+│   │       ├── page.tsx            # Google + email sign-in UI (NEW)
+│   │       └── SignInClient.tsx    # (BUILT, not in original plan) client half of the page:
+│   │                               # Google OAuth and email-OTP buttons, link-error messages
+│   ├── onboarding/
+│   │   └── ClaimFlowsPrompt.tsx    # (BUILT, not in original plan) shown once per device after
+│   │                               # sign-in when local flows exist: claim them or decline (T030)
 │   ├── org/
-│   │   ├── new/page.tsx            # Create-organization flow (NEW)
+│   │   ├── new/
+│   │   │   ├── page.tsx            # Create-organization flow (NEW)
+│   │   │   └── OrgNewClient.tsx    # (BUILT, not in original plan) client form: name + org type
 │   │   ├── [orgId]/
-│   │   │   ├── members/page.tsx    # Membership list, invite UI (NEW)
-│   │   │   └── cohorts/
-│   │   │       └── [cohortId]/page.tsx  # Cohort roster, mark-graduated action (NEW)
+│   │   │   ├── members/
+│   │   │   │   ├── page.tsx        # Membership list, invite UI (NEW)
+│   │   │   │   └── OrgMembersClient.tsx  # (BUILT, not in original plan) client half: member
+│   │   │   │                             # list and the invite form
+│   │   │   └── cohorts/            # (PLANNED, not built — tracked by #61)
+│   │   │       └── [cohortId]/page.tsx  # Cohort roster, mark-graduated action
+│   │   │                                # (PLANNED, not built — tracked by #61)
 │   │   └── invitations/
-│   │       └── accept/page.tsx     # Invitation acceptance landing page (NEW)
+│   │       └── accept/
+│   │           ├── page.tsx        # Invitation acceptance landing page (NEW)
+│   │           └── AcceptInvitationClient.tsx  # (BUILT, not in original plan) client half:
+│   │                                           # reads the token, accepts, redirects
 │   ├── billing/
 │   │   ├── page.tsx                 # Plan view, manage/cancel entry point (NEW)
-│   │   └── checkout/route.ts        # Stripe Checkout session creation (NEW)
+│   │   ├── BillingClient.tsx        # (BUILT, not in original plan) client half: current
+│   │   │                            # entitlements, purchasable plans, feature labels
+│   │   ├── checkout/route.ts        # Stripe Checkout session creation (NEW)
+│   │   └── portal/route.ts          # (BUILT, not in original plan) POST: the manage/cancel
+│   │                                # link, split out so the page stays a server component
 │   └── api/
+│       ├── org/
+│       │   └── invitations/route.ts # (BUILT, not in original plan) POST: create an invitation
+│       │                            # through the app_create_invitation RPC, then email it
 │       └── webhooks/
 │           └── stripe/route.ts      # Stripe webhook receiver + stripe_events ledger (NEW)
 ├── lib/
@@ -111,6 +135,18 @@ src/
 │   │   ├── client.ts                 # Browser client (NEW, ported pattern)
 │   │   ├── server.ts                 # Server client w/ cookies (NEW, ported pattern)
 │   │   └── service.ts                # service_role client, server-only guard (NEW)
+│   ├── auth/
+│   │   └── redirect.ts               # (BUILT, not in original plan) safeNextPath: validates the
+│   │                                 # `next` redirect for /auth/callback and /auth/confirm
+│   ├── email/
+│   │   └── resend.ts                 # (BUILT, not in original plan) server-only Resend wrapper,
+│   │                                 # sends invitation email (ported from NextMove)
+│   ├── stripe/
+│   │   ├── client.ts                 # (BUILT, not in original plan) one lazily built Stripe client
+│   │   ├── handle-event.ts           # (BUILT, not in original plan) webhook event → subscriptions
+│   │   │                             # row, behind a narrow store interface so it unit-tests
+│   │   └── plans.ts                  # (BUILT, not in original plan) purchasable plans: Stripe
+│   │                                 # prices joined to plan_features
 │   ├── entitlements/
 │   │   └── index.ts                  # Wraps app_entitlements() in React cache() (NEW)
 │   ├── env.ts                        # zod env schema, fail-fast at boot (NEW, ported)
@@ -128,13 +164,32 @@ src/
 supabase/
 ├── config.toml                       # Committed, with preview-URL redirect allowlist (NEW)
 └── migrations/
-    ├── <ts>_helper_functions.sql      # SECURITY DEFINER RLS helpers (NEW)
-    ├── <ts>_identity_tenancy.sql      # profiles, profile_cards, organizations, memberships,
-    │                                  # invitations, integration_connections (NEW)
-    ├── <ts>_cohorts.sql                # cohorts, cohort_enrollments, cohort_teachers (NEW)
-    ├── <ts>_entitlements_billing.sql   # plan_features, stripe_customers, subscriptions,
-    │                                  # seat_assignments, entitlement_grants, stripe_events (NEW)
-    └── <ts>_org_escalation_triggers.sql # last-owner / self-promotion guard triggers (NEW)
+    ├── 20260826224201_identity_tenancy.sql      # profiles, profile_cards, organizations,
+    │                                            # memberships, invitations,
+    │                                            # integration_connections (NEW)
+    ├── 20260826224202_helper_functions.sql      # SECURITY DEFINER RLS helpers (NEW)
+    ├── 20260826224203_identity_policies.sql     # (BUILT, not in original plan) the identity
+    │                                            # RLS policies that need the helpers, split
+    │                                            # out so they run after both exist
+    ├── 20260826224204_org_escalation_triggers.sql # last-owner / self-promotion guard
+    │                                            # triggers (NEW)
+    ├── 20260826224205_entitlements_billing.sql  # plan_features, stripe_customers,
+    │                                            # subscriptions, seat_assignments,
+    │                                            # entitlement_grants, stripe_events (NEW)
+    ├── 20260826224206_cohorts.sql               # cohorts, cohort_enrollments,
+    │                                            # cohort_teachers (NEW)
+    ├── 20260826224207_claimed_flows.sql         # (BUILT, not in original plan) landing table
+    │                                            # for local flows claimed at sign-up (T030)
+    ├── 20260826224208_membership_invitation_rpcs.sql # (BUILT, not in original plan) RPCs for
+    │                                            # role/status changes and invitation
+    │                                            # creation (T037-T040)
+    ├── 20260831190000_profile_bootstrap.sql     # (BUILT, not in original plan) trigger on
+    │                                            # auth.users that creates the profiles row
+    ├── 20260925010000_fix_entitlements_expiry.sql # (BUILT, not in original plan)
+    │                                            # app_entitlements() now also checks
+    │                                            # subscriptions.current_period_end
+    └── 20261012120000_seed_plan_features.sql    # (BUILT, not in original plan) seeds
+                                                 # plan_features for `pro` and `org_seat` (T060)
 
 scripts/
 ├── verify-migrations.sh              # RLS isolation assertions, ported + extended (NEW)
@@ -142,7 +197,9 @@ scripts/
 
 tests/
 ├── unit/entitlements/                # app_entitlements() resolution logic (client-side wrapper) (NEW)
-├── integration/rls/                  # Cross-tenant isolation, last-owner, invitation-reuse cases (NEW)
+├── integration/rls/                  # Cross-tenant isolation, last-owner, invitation-reuse cases
+│                                     # (PLANNED, not built — these assertions live in
+│                                     # scripts/verify-migrations.sh instead)
 └── e2e-qa/auth-org-invite.spec.ts    # Sign up → create org → invite → accept → graduate walk (NEW)
 ```
 
