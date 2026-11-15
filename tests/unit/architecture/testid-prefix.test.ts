@@ -34,6 +34,23 @@ const KNOWN_CONTAINER_PREFIXES: string[] = [
   'sadhana-undo-toast',
 ]
 
+/** The twelve ids found on 2026-11-15, frozen. Never edit this one: it is what stops a
+ *  new id being pinned in the place of a renamed container. */
+const PREDATES_THE_CHECK: readonly string[] = [
+  'account-avatar',
+  'account-menu',
+  'onboarding-claim-flows',
+  'poses-overlay',
+  'sadhana-dashboard-row',
+  'sadhana-guidance',
+  'sadhana-milestone',
+  'sadhana-return',
+  'sadhana-return-offer',
+  'sadhana-sharing',
+  'sadhana-streak',
+  'sadhana-undo-toast',
+]
+
 const repoRoot = path.resolve(__dirname, '../../..')
 
 function listFiles(dir: string): string[] {
@@ -105,9 +122,8 @@ describe('testid prefix rule (guardrails §1.3)', () => {
     expect(prefixProblems(ids, KNOWN_CONTAINER_PREFIXES)).toEqual([])
   })
 
-  it('pins no more than the twelve containers that predate the check', () => {
-    // Twelve on 2026-11-15. Lower this number when an entry is removed; never raise it.
-    expect(KNOWN_CONTAINER_PREFIXES.length).toBeLessThanOrEqual(12)
+  it('pins only containers that predate the check, so a new id cannot take a freed slot', () => {
+    expect(KNOWN_CONTAINER_PREFIXES.filter(id => !PREDATES_THE_CHECK.includes(id))).toEqual([])
     expect([...KNOWN_CONTAINER_PREFIXES].sort()).toEqual(KNOWN_CONTAINER_PREFIXES)
     expect(new Set(KNOWN_CONTAINER_PREFIXES).size).toBe(KNOWN_CONTAINER_PREFIXES.length)
   })
