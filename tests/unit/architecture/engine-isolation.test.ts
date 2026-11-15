@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
-import { specifiersOf } from './import-scan'
+import { candidatesFor, isSource, specifiersOf, stripComments } from './import-scan'
 
 // SC-013 / RULE-H6, made mechanical.
 //
@@ -25,9 +25,31 @@ const FORBIDDEN: { pattern: RegExp; why: string }[] = [
   { pattern: /^next\/(headers|cache)$/, why: 'a per-request server API' },
 ]
 
-/** Bare `fetch(` in the source. Crude on purpose: the rule is that these modules do not
- *  talk to a network, and there is no legitimate use here that would trip it. */
-const FETCH = /(?<![\w.])fetch\s*\(/
+/** Ways to reach a network without importing anything. Crude on purpose: the rule is that
+ *  these modules do not talk to a network, and there is no legitimate use here that would
+ *  trip it. Matched against comment-stripped source (the shared lexer, never a regex), so
+ *  a sink named in a comment is not reported and one named in a string literal is. That
+ *  last part is deliberate: text cannot tell `'fetch('` from a call assembled out of
+ *  strings, and the guard fails closed.
+ *
+ *  The constructors and `sendBeacon` match on the bare name, not on `new X(` or
+ *  `navigator.sendBeacon(`, so `const W = WebSocket` and `const { sendBeacon } = navigator`
+ *  report too.
+ *
+ *  Not seen, by construction: a sink reached through a computed name
+ *  (`globalThis['fe' + 'tch']`), and an alias of the global object (`const g = globalThis`
+ *  then `g.fetch(…)`). */
+const SINKS: { pattern: RegExp; report: (match: RegExpMatchArray) => string }[] = [
+  { pattern: /(?<![\w.])fetch\s*\(/, report: () => 'calls fetch()' },
+  {
+    pattern: /\b(globalThis|window|self)\s*\??\.\s*fetch\b/,
+    report: match => 'reaches the network through ' + match[1] + '.fetch',
+  },
+  ...['XMLHttpRequest', 'WebSocket', 'EventSource', 'sendBeacon'].map(name => ({
+    pattern: new RegExp('\\b' + name + '\\b'),
+    report: () => 'reaches the network through ' + name,
+  })),
+]
 
 const repoRoot = path.resolve(__dirname, '../../..')
 
@@ -37,7 +59,7 @@ function listFiles(dir: string): string[] {
   return fs.readdirSync(abs, { withFileTypes: true }).flatMap(entry => {
     const rel = path.join(dir, entry.name)
     if (entry.isDirectory()) return listFiles(rel)
-    return /\.tsx?$/.test(entry.name) ? [rel] : []
+    return isSource(entry.name) ? [rel] : []
   })
 }
 
@@ -58,13 +80,7 @@ function resolveLocal(
   else if (specifier.startsWith('.')) base = path.join(path.dirname(fromFile), specifier)
   else return null
 
-  const candidates = [
-    base,
-    base + '.ts',
-    base + '.tsx',
-    path.join(base, 'index.ts'),
-    path.join(base, 'index.tsx'),
-  ]
+  const candidates = candidatesFor(base)
   return candidates.find(exists) ?? null
 }
 
@@ -84,7 +100,11 @@ function violationsFrom(
     const file = queue.shift() as string
     const source = read(file)
 
-    if (FETCH.test(source)) violations.push(file + ' calls fetch()')
+    const code = stripComments(source)
+    for (const sink of SINKS) {
+      const match = code.match(sink.pattern)
+      if (match) violations.push(file + ' ' + sink.report(match))
+    }
 
     for (const specifier of specifiersOf(source)) {
       const forbidden = FORBIDDEN.find(rule => rule.pattern.test(specifier))
@@ -225,11 +245,12 @@ describe('engine isolation scanner catches what it claims to (RULE-H6)', () => {
     ])
   })
 
-  // #301: indirect network sinks, and source files that are not TypeScript. Every case
-  // below except the string-literal one was watched failing against the #298 scanner
-  // before the scanner changed. The string-literal case already reported under #298, so
-  // it was seeded the other way: sink matching was pointed at literal-stripped text and
-  // the case went red.
+  // #301: indirect network sinks, and source files that are not TypeScript. The sink,
+  // comment and resolution cases were watched failing against the #298 scanner before it
+  // changed. Two could not go red that way and were seeded on the new code instead: the
+  // string-literal case (the `'fetch('` half already reported), by pointing sink matching
+  // at literal-stripped text; and the listing cases (`isSource` did not exist), by
+  // cutting `SOURCE_EXTS` back to `.ts`/`.tsx`.
   it.each([
     ['globalThis.fetch(', "export const get = () => globalThis.fetch('/api/x')\n", 'globalThis.fetch'],
     ['window.fetch(', "export const get = () => window.fetch('/api/x')\n", 'window.fetch'],
