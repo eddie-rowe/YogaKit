@@ -149,6 +149,11 @@ is now a safe prefix selector over exactly the row roots. `compose-item-*` remai
 prefix for the sibling controls it still names (measure, notes, reorder, drag-handle,
 geometry, energetics) since none of those collide with `compose-row-*`.
 
+This rule is CI-checked for literal ids by `tests/unit/architecture/testid-prefix.test.ts`.
+Twelve container ids predate the check and are pinned in that test's
+`KNOWN_CONTAINER_PREFIXES`; the list can shrink as containers are renamed and cannot grow.
+Template-literal ids (`settings-preset-item-{index}` and the like) are not covered.
+
 **No testid may interpolate a user-entered string.** Names, titles, and notes a person typed
 never go into a `data-testid`. Key a per-item testid on its list index or a stable generated
 id, and carry the human-readable name in `aria-label` (or visible text), which is what tests

@@ -19,7 +19,20 @@ import { stripComments } from './import-scan'
  *  selectors, which is an owner call (#302, owner digest #38). Do not add to this list:
  *  give a new id a sibling name instead (§1.3). Remove an entry when its container is
  *  renamed; the stale-entry test below fails until you do. */
-const KNOWN_CONTAINER_PREFIXES: string[] = []
+const KNOWN_CONTAINER_PREFIXES: string[] = [
+  'account-avatar',
+  'account-menu',
+  'onboarding-claim-flows',
+  'poses-overlay',
+  'sadhana-dashboard-row',
+  'sadhana-guidance',
+  'sadhana-milestone',
+  'sadhana-return',
+  'sadhana-return-offer',
+  'sadhana-sharing',
+  'sadhana-streak',
+  'sadhana-undo-toast',
+]
 
 const repoRoot = path.resolve(__dirname, '../../..')
 
@@ -92,9 +105,11 @@ describe('testid prefix rule (guardrails §1.3)', () => {
     expect(prefixProblems(ids, KNOWN_CONTAINER_PREFIXES)).toEqual([])
   })
 
-  it('pins exactly the twelve containers that predate the check', () => {
-    expect(KNOWN_CONTAINER_PREFIXES).toHaveLength(12)
+  it('pins no more than the twelve containers that predate the check', () => {
+    // Twelve on 2026-11-15. Lower this number when an entry is removed; never raise it.
+    expect(KNOWN_CONTAINER_PREFIXES.length).toBeLessThanOrEqual(12)
     expect([...KNOWN_CONTAINER_PREFIXES].sort()).toEqual(KNOWN_CONTAINER_PREFIXES)
+    expect(new Set(KNOWN_CONTAINER_PREFIXES).size).toBe(KNOWN_CONTAINER_PREFIXES.length)
   })
 })
 
