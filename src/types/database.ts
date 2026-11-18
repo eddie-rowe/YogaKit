@@ -362,6 +362,38 @@ export type Database = {
           },
         ]
       }
+      intentions: {
+        Row: {
+          body: string
+          created_at: string
+          flow_id: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          flow_id?: string | null
+          id: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          flow_id?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intentions_flow_id_fkey"
+            columns: ["flow_id"]
+            isOneToOne: false
+            referencedRelation: "flows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invitations: {
         Row: {
           accepted_at: string | null
@@ -534,6 +566,144 @@ export type Database = {
         Update: {
           feature_key?: string
           plan_key?: string
+        }
+        Relationships: []
+      }
+      practice_checkins: {
+        Row: {
+          created_at: string
+          duration_minutes: number | null
+          id: string
+          kind: string
+          local_date: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_minutes?: number | null
+          id: string
+          kind: string
+          local_date: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          kind?: string
+          local_date?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      practice_guidance_dismissals: {
+        Row: {
+          consumed_at: string
+          entry_id: string
+          user_id: string
+        }
+        Insert: {
+          consumed_at?: string
+          entry_id: string
+          user_id: string
+        }
+        Update: {
+          consumed_at?: string
+          entry_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      practice_milestones: {
+        Row: {
+          acknowledged_at: string | null
+          reached_on: string
+          threshold: number
+          user_id: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          reached_on: string
+          threshold: number
+          user_id: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          reached_on?: string
+          threshold?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      practice_reflections: {
+        Row: {
+          checkin_id: string
+          energy: number | null
+          flow_id: string | null
+          mood: number | null
+          note: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          checkin_id: string
+          energy?: number | null
+          flow_id?: string | null
+          mood?: number | null
+          note?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          checkin_id?: string
+          energy?: number | null
+          flow_id?: string | null
+          mood?: number | null
+          note?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "practice_reflections_checkin_id_fkey"
+            columns: ["checkin_id"]
+            isOneToOne: true
+            referencedRelation: "practice_checkins"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "practice_reflections_flow_id_fkey"
+            columns: ["flow_id"]
+            isOneToOne: false
+            referencedRelation: "flows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      practice_ritual_state: {
+        Row: {
+          answered_lapse_start: string | null
+          lapse_threshold_days: number
+          resting_until: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          answered_lapse_start?: string | null
+          lapse_threshold_days?: number
+          resting_until?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          answered_lapse_start?: string | null
+          lapse_threshold_days?: number
+          resting_until?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

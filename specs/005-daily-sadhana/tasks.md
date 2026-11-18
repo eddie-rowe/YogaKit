@@ -97,32 +97,32 @@ boundary structural from the first migration. **Story: foundation for US1, US2, 
 **Independent test**: `bash scripts/verify-migrations.sh` passes with the new assertions,
 and `npx tsc --noEmit` is clean against the regenerated types. No user-visible change.
 
-- [ ] T009 [US2] New migration `supabase/migrations/<ts>_sadhana.sql` — `intentions`
+- [X] T009 [US2] New migration `supabase/migrations/<ts>_sadhana.sql` — `intentions` — drafted in the 005-C1 PR, **awaiting owner review (RLS, FR-008)**; not yet applied
   (append-only: insert + select policies only, no update, no delete, satisfying FR-026),
   `practice_checkins` (signal: `local_date`, `duration_minutes`, `kind`, `flow_id`),
   `practice_reflections` (content: `mood`, `note`, 1:1 with a check-in), per `data-model.md`
-- [ ] T010 [US2] `practice_ritual_state` (self-only: lapse tracking for the return card)
+- [X] T010 [US2] `practice_ritual_state` (self-only: lapse tracking for the return card) — drafted in the 005-C1 PR, **awaiting owner review (RLS, FR-008)**; not yet applied
   and `practice_milestones` (self-only + teacher-readable milestone progress, per FR-053)
-- [ ] T011 [US6] `practice_guidance_dismissals` (self-only: consumed triggers, FR-040)
-- [ ] T012 [US2] RLS: `practice_checkins`, `intentions`, `practice_ritual_state` — self
+- [X] T011 [US6] `practice_guidance_dismissals` (self-only: consumed triggers, FR-040) — drafted in the 005-C1 PR, **awaiting owner review (RLS, FR-008)**; not yet applied
+- [X] T012 [US2] RLS: `practice_checkins`, `intentions`, `practice_ritual_state` — self — drafted in the 005-C1 PR, **awaiting owner review (RLS, FR-008)**; not yet applied
   policies only, `user_id = (select auth.uid())`, matching `004`'s pattern (`with check`
   on every write policy)
-- [ ] T013 [US2] RLS: `practice_reflections` — self policies only, **and no policy of any
+- [X] T013 [US2] RLS: `practice_reflections` — self policies only, **and no policy of any — drafted in the 005-C1 PR, **awaiting owner review (RLS, FR-008)**; not yet applied
   kind referencing a cohort, org, or teacher role** — the absence is the guarantee
   (Principle VIII, RULE-V1/V2)
-- [ ] T014 [US5] RLS: `practice_checkins` and `practice_milestones` gain an additional
+- [X] T014 [US5] RLS: `practice_checkins` and `practice_milestones` gain an additional — drafted in the 005-C1 PR, **awaiting owner review (RLS, FR-008)**; not yet applied
   `select` policy scoped to `app_visible_student_ids()` (from `002`) — the only two
   sadhana tables a cohort teacher's role may ever query
-- [ ] T015 [P] [US5] **The RULE-V5 proof, filling `002`'s stub**: append an assertion to
+- [X] T015 [P] [US5] **The RULE-V5 proof, filling `002`'s stub**: append an assertion to — drafted in the 005-C1 PR, **awaiting owner review (RLS, FR-008)**; not yet applied
   `scripts/verify-migrations.sh` proving a cohort-teacher-role query against
   `practice_reflections` and `intentions` for an enrolled student returns zero rows or is
   refused (FR-009, FR-056, SC-016)
-- [ ] T016 [P] [US2] Append a `verify-migrations.sh` block proving a second account reads
+- [X] T016 [P] [US2] Append a `verify-migrations.sh` block proving a second account reads — drafted in the 005-C1 PR, **awaiting owner review (RLS, FR-008)**; not yet applied
   zero rows of another's `practice_checkins`, `practice_reflections`, `intentions`, and
   `practice_milestones`
 - [X] T017 [US1] `data/sadhana/grace-budget.json` — `{ "size": N, "periodDays": M }` — data file present on main since #175 (6ab7234)
   (decision #4). The number is data; no user-facing string may embed it literally (FR-019)
-- [ ] T018 [US2] Regenerate `src/types/database.ts` via `scripts/db-types-check.sh`
+- [X] T018 [US2] Regenerate `src/types/database.ts` via `scripts/db-types-check.sh` — types applied from CI's own `db-types-check` diff in the 005-C1 PR (byte-identical to the pinned generator); awaiting owner review with the migration
 
 **Gate**: `bash scripts/verify-migrations.sh` → `MIGRATION VERIFICATION PASSED`, including
 the new RULE-V5 assertion (T015).
